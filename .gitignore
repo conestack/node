@@ -1,0 +1,16 @@
+# /
+*.pyc
+/bda.ldap.egg-info
+/coverage
+/dist
+/bin
+/develop-eggs
+/parts
+/.*.cfg
+/devsrc
+/eggs
+
+# /src/
+/src/bda.ldap.egg-info
+
+.mrsd
