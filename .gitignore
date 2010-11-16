@@ -12,5 +12,6 @@
 
 # /src/
 /src/bda.ldap.egg-info
+/src/node.egg-info
 
 .mrsd
