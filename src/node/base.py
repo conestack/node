@@ -1,5 +1,11 @@
 from zope.interface.common.mapping import IFullMapping
 
+try:
+    from zope.location import LocationIterator
+except ImportError:
+    from zope.app.location import LocationIterator # BBB
+
+
 class AbstractNode(object):
     """The base for all kinds of nodes, agnostic to the type of node
 
