@@ -136,6 +136,14 @@ class AliasedNodespace(AbstractNode):
         self.context = context
         self.aliaser = aliaser
 
+    @property
+    def changed(self):
+        return self.context.changed
+
+    @property
+    def __call__(self):
+        return self.context.__call__()
+
     def __delitem__(self, key):
         unaliased_key = self.aliaser and self.aliaser.unalias(key) or key
         try:
