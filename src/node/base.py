@@ -25,11 +25,7 @@ class AbstractNode(object):
 
     @property
     def path(self):
-        path = list()
-        for parent in LocationIterator(self):
-            path.append(parent.__name__)
-        path.reverse()
-        return path
+        return reversed([parent.__name__ for parent in LocationIterator(self)])
 
     @property
     def root(self):
