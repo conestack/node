@@ -19,9 +19,9 @@ class AbstractNode(object):
     If __getitem__ is expensive, also:
     - __contains__
     """
-    def __init__(self, name=None):
+    def __init__(self, name=None, parent=None):
         self.__name__ = name
-        self.__parent = None
+        self.__parent = parent
 
     @property
     def path(self):
