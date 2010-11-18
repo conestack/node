@@ -10,12 +10,14 @@ class AbstractNode(object):
     """The base for all kinds of nodes, agnostic to the type of node
 
     methods defined here are only methods that use the node itself, but make no
-    assumptions about where the nodes data is stored. Storage specific methods
+    assumptions about where the node's data is stored. Storage specific methods
     raise NotImplementedError, that are:
     - __delitem__
     - __getitem__
     - __setitem__
     - __iter__
+    If __getitem__ is expensive, also:
+    - __contains__
     """
     def __init__(self, name=None):
         self.__name__ = name
@@ -38,6 +40,8 @@ class AbstractNode(object):
 
     def __contains__(self, key):
         """uses __getitem__
+
+        This should be overriden by nodes, where __getitem__ is expensive.
         """
         try:
             self[key]
