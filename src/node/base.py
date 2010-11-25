@@ -21,7 +21,7 @@ class AbstractNode(object):
     """
     def __init__(self, name=None, parent=None):
         self.__name__ = name
-        self.__parent = parent
+        self.__parent__ = parent
 
     @property
     def path(self):
