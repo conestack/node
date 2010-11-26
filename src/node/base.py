@@ -1,9 +1,15 @@
 from zope.interface.common.mapping import IFullMapping
 
-try:
-    from zope.location import LocationIterator
-except ImportError:
-    from zope.app.location import LocationIterator # BBB
+
+def LocationIterator(object):
+    """Iterate over an object and all of its parents.
+
+    Copied from ``zope.location.LocationIterator``.
+
+    """
+    while object is not None:
+        yield object
+        object = getattr(object, '__parent__', None)
 
 
 class AbstractNode(object):
