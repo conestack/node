@@ -1,3 +1,4 @@
+from odict import odict
 from zope.interface import implements
 from zope.interface.common.mapping import IEnumerableMapping
 from zope.interface.common.mapping import IFullMapping
@@ -8,7 +9,7 @@ from node.base import AbstractNode
 from node.interfaces import IAliaser
 
 
-class DictAliaser(dict):
+class DictAliaser(odict):
     """Uses its own dictionary for aliasing
 
     ``__getitem__`` -> unalias
