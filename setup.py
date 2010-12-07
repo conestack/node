@@ -28,7 +28,6 @@ setup(name='node',
       zip_safe=True,
       install_requires=[
           'setuptools',
-          'zope.location',
       ],
       extras_require={
           'test': [
