@@ -164,7 +164,7 @@ class _FullMappingMixin(object):
     def __delitem__(self, key):
         raise NotImplementedError
     
-    def __setitem__(self, key):
+    def __setitem__(self, key, value):
         raise NotImplementedError
     
     ###
@@ -267,13 +267,13 @@ class _NodeSpaceMixin(_NodeMixin, _ImplMixin):
     object and return its class in ``self._impl()``.
     """
     
-    def __init__(self, name=None):
+    def __init__(self, name=None, parent=None):
         """
         ``name``
             Optional name used for ``__name__`` declared by ``ILocation``.
         """
         self._impl().__init__(self)
-        _NodeMixin.__init__(self, name)
+        _NodeMixin.__init__(self, name, parent)
         self._nodespaces = None
     
     @property
@@ -299,11 +299,16 @@ class _NodeSpaceMixin(_NodeMixin, _ImplMixin):
             raise KeyError(key)
     
     def __setitem__(self, key, val):
+        # XXX: checking against ``_NodeMixin`` instance requires all node
+        #      implementations to inherit from it. Check wether
+        #      ``INode.providedBy`` is slower than ``isinstance``.
+        #is_node = isinstance(val, _NodeMixin)
+        is_node = INode.providedBy(val)
+        if is_node:
+            val.__name__ = key
+            val.__parent__ = self
         # blend in our nodespaces as children, with name __<name>__
         if key.startswith('__') and key.endswith('__'):
-            if isinstance(val, _Node):
-                val.__name__ = key
-                val.__parent__ = self
             # a reserved child key mapped to the nodespace behind
             # nodespaces[key], nodespaces is an odict
             self.nodespaces[key] = val
@@ -311,7 +316,7 @@ class _NodeSpaceMixin(_NodeMixin, _ImplMixin):
             return
         if not self.allow_non_node_childs and inspect.isclass(val):
             raise ValueError, u"It isn't allowed to use classes as values."
-        if not self.allow_non_node_childs and not INode.providedBy(val):
+        if not self.allow_non_node_childs and not is_node:
             raise ValueError("Non-node childs are not allowed.")
         self._impl().__setitem__(self, key, val)
     

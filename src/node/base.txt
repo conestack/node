@@ -1,18 +1,6 @@
 node.base
 =========
 
-Helper function for creating identically trees from different classes.
-::
-
-    >>> def create_tree(class_):
-    ...     root = class_()
-    ...     for i in range(3):
-    ...         root['child-%i' % i] = class_()
-    ...         for j in range(2):
-    ...             root['child-%i' % i]['subchild-%j'] = class_()
-    ...     return root
-
-
 ``IFullMapping`` in short:
 ::
     
@@ -52,6 +40,17 @@ Helper function for creating identically trees from different classes.
         - ``pop``
         - ``popitem``
 
+Helper function for creating identically tree structures from different classes.
+::
+
+    >>> def create_tree(class_):
+    ...     root = class_()
+    ...     for i in range(3):
+    ...         root['child-%i' % i] = class_()
+    ...         for j in range(2):
+    ...             root['child-%i' % i]['subchild-%i' % j] = class_()
+    ...     return root
+
 
 AbstractNode
 ------------
@@ -67,7 +66,113 @@ AbstractNode
     >>> abstract = AbstractNode()
     >>> abstract
     <AbstractNode object 'None' at ...>
+
+Storage related operations of AbstractNode raise ``NotImplementedError``.
+::
+
+    >>> abstract['foo']
+    Traceback (most recent call last):
+      ...
+    NotImplementedError
     
+    >>> del abstract['foo']
+    Traceback (most recent call last):
+      ...
+    NotImplementedError
+    
+    >>> abstract['foo'] = 'bar'
+    Traceback (most recent call last):
+      ...
+    NotImplementedError
+    
+    >>> [key for key in abstract]
+    Traceback (most recent call last):
+      ...
+    NotImplementedError
+    
+    >>> abstract_copy = abstract.copy()
+    Traceback (most recent call last):
+      ...
+    NotImplementedError
+    
+    >>> abstract.clear()
+    Traceback (most recent call last):
+      ...
+    NotImplementedError
+    
+    >>> abstract.update((('foo', 'bar'),))
+    Traceback (most recent call last):
+      ...
+    NotImplementedError
+    
+    >>> abstract.setdefault('foo', 'bar')
+    Traceback (most recent call last):
+      ...
+    NotImplementedError
+    
+    >>> abstract.pop('foo')
+    Traceback (most recent call last):
+      ...
+    NotImplementedError
+    
+    >>> abstract.popitem()
+    Traceback (most recent call last):
+      ...
+    NotImplementedError
+    
+Subclass ``AbstractNode`` and provide needed functions.
+
+Below we utilize ``odict.odict`` for most of the work. There exists node 
+``OrderedNode``, which already uses odict, so for illustration we import odict
+as somefullmapping.
+::
+
+    >>> from odict import odict as somefullmapping
+    >>> class MyNode(AbstractNode, somefullmapping):
+    ...     def __init__(self, name=None, parent=None):
+    ...         # XXX: using ``super`` on dedicated base class? how?
+    ...         somefullmapping.__init__(self)
+    ...         AbstractNode.__init__(self, name, parent)
+    ... 
+    ...     __getitem__ = somefullmapping.__getitem__
+    ... 
+    ...     __delitem__ = somefullmapping.__delitem__
+    ... 
+    ...     def __setitem__(self, key, val):
+    ...         val.__name__ = key
+    ...         val.__parent__ = self
+    ...         somefullmapping.__setitem__(self, key, val)
+    ... 
+    ...     __iter__ = somefullmapping.__iter__
+    ... 
+    ...     copy = somefullmapping.copy
+    ... 
+    ...     clear = somefullmapping.clear
+    ... 
+    ...     update = somefullmapping.update
+    ... 
+    ...     setdefault = somefullmapping.setdefault
+    ... 
+    ...     pop = somefullmapping.pop
+    ... 
+    ...     popitem = somefullmapping.popitem
+    
+    >>> mynode = create_tree(MyNode)
+    >>> mynode
+    <MyNode object 'None' at ...>
+    
+    >>> mynode.printtree()
+    <class 'MyNode'>: None
+      <class 'MyNode'>: child-0
+        <class 'MyNode'>: subchild-0
+        <class 'MyNode'>: subchild-1
+      <class 'MyNode'>: child-1
+        <class 'MyNode'>: subchild-0
+        <class 'MyNode'>: subchild-1
+      <class 'MyNode'>: child-2
+        <class 'MyNode'>: subchild-0
+        <class 'MyNode'>: subchild-1
+
 
 BaseNode
 --------
@@ -84,7 +189,17 @@ BaseNode
     >>> base
     <BaseNode object 'None' at ...>
     
-    >>> #base.printtree()
+    >>> base.printtree()
+    <class 'node.base.BaseNode'>: None
+      <class 'node.base.BaseNode'>: child-2
+        <class 'node.base.BaseNode'>: subchild-1
+        <class 'node.base.BaseNode'>: subchild-0
+      <class 'node.base.BaseNode'>: child-0
+        <class 'node.base.BaseNode'>: subchild-1
+        <class 'node.base.BaseNode'>: subchild-0
+      <class 'node.base.BaseNode'>: child-1
+        <class 'node.base.BaseNode'>: subchild-1
+        <class 'node.base.BaseNode'>: subchild-0
 
 
 OrderedNode
@@ -101,6 +216,18 @@ OrderedNode
     >>> ordered = create_tree(OrderedNode)
     >>> ordered
     <OrderedNode object 'None' at ...>
+    
+    >>> ordered.printtree()
+    <class 'node.base.OrderedNode'>: None
+      <class 'node.base.OrderedNode'>: child-0
+        <class 'node.base.OrderedNode'>: subchild-0
+        <class 'node.base.OrderedNode'>: subchild-1
+      <class 'node.base.OrderedNode'>: child-1
+        <class 'node.base.OrderedNode'>: subchild-0
+        <class 'node.base.OrderedNode'>: subchild-1
+      <class 'node.base.OrderedNode'>: child-2
+        <class 'node.base.OrderedNode'>: subchild-0
+        <class 'node.base.OrderedNode'>: subchild-1
 
 
 Check ``ILocation`` interface.
