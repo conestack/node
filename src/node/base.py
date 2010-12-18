@@ -26,44 +26,26 @@ from events import (
     NodeModifiedEvent,
     NodeDetachedEvent,
 )
-#from aliasing import AliasedNodespace
-
-# XXX: python 2.4 does relative imports and would not find the toplevel node
-# package, 2.5 and 2.6 support absolute_import behavior via from future import,
-# 2.7 will do absolute imports by default. As soon as we drop 2.4 support we
-# can switch to:
-#from __future__ import absolute_import
-#from node.aliasing import AliasedNodespace
-#try:
-#    from node.aliasing import AliasedNodespace
-#except ImportError:
-    # 2.4 or 2.5/2.5 without absolute_import turned on
-#    node = __import__('node.aliasing', {})
-#    AliasedNodespace = node.aliasing.AliasedNodespace
-# XXX: deprecated message as soon as the new location is stable
-#deprecated(
-#    'AliasedNodespace',
-#    "Will be removed in 2.0, Use node.aliasing.AliasedNodespace instead.",
-#    )
 
 
-class AbstractNode(object):
-    """The base for all kinds of nodes, agnostic to the type of node
+class _AbstractNode(object):
+    """The base for all kinds of nodes, agnostic to the type of node.
 
-    methods defined here are only methods that use the node itself, but make no
+    Methods defined here are only methods that use the node itself, but make no
     assumptions about where the node's data is stored. Storage specific methods
     raise NotImplementedError, that are:
-    - __delitem__
-    - __getitem__
-    - __setitem__
-    - __iter__
-    If __getitem__ is expensive, also:
-    - __contains__
+        - __delitem__
+        - __getitem__
+        - __setitem__
+        - __iter__
+    
+    If ``__getitem__`` is expensive, also:
+        - __contains__
     """
     def __init__(self, name=None, parent=None):
         self.__name__ = name
         self.__parent__ = parent
-
+    
     @property
     def path(self):
         return reversed([parent.__name__ for parent in LocationIterator(self)])
@@ -74,17 +56,34 @@ class AbstractNode(object):
         for parent in LocationIterator(self):
             root = parent
         return root
+    
+    def filtereditems(self, interface):
+        # XXX: inconsistent naming, this should be filtereditervalues()
+        for node in self.values():
+            if interface.providedBy(node):
+                yield node
+    
+    def as_attribute_access(self):
+        return AttributeAccess(self)
+    
+    def printtree(self, indent=0):
+        print "%s%s" % (indent * ' ', self.noderepr)
+        for node in self.values():
+            try:
+                node.printtree(indent+2)
+            except AttributeError:
+                # Non-Node values are just printed
+                print "%s%s" % (indent * ' ', node)
 
-    def __contains__(self, key):
-        """uses __getitem__
+    def __repr__(self):
+        # XXX: This is mainly used in doctest, I think
+        # doctest fails if we output utf-8
+        name = unicode(self.__name__).encode('ascii', 'replace')
+        return "<%s object '%s' at %s>" % (self.__class__.__name__,
+                                           name,
+                                           hex(id(self))[:-1])
 
-        This should be overriden by nodes, where __getitem__ is expensive.
-        """
-        try:
-            self[key]
-        except KeyError:
-            return False
-        return True
+    __str__ = __repr__
     
     def __delitem__(self, key):
         raise NotImplementedError
@@ -94,17 +93,28 @@ class AbstractNode(object):
 
     def __setitem__(self, key):
         raise NotImplementedError
-
-    def __len__(self):
-        """based on keys()
-        """
-        return len(self.keys())
-
+    
     def __iter__(self):
         raise NotImplementedError
+    
+    def __contains__(self, key):
+        """uses __getitem__.
 
+        This should be overriden by nodes, where __getitem__ is expensive.
+        """
+        try:
+            self[key]
+        except KeyError:
+            return False
+        return True
+
+    def __len__(self):
+        """based on keys().
+        """
+        return len(self.keys())
+    
     def get(self, key, default=None):
-        """based on __getitem__
+        """based on __getitem__.
         """
         try:
             return self[key]
@@ -112,37 +122,134 @@ class AbstractNode(object):
             return default
 
     def iterkeys(self):
-        """returns __iter__()
+        """returns __iter__().
         """
         return self.__iter__()
 
     def iteritems(self):
-        """based on __iter__ and __getitem__
+        """based on __iter__ and __getitem__.
         """
         for key in self:
             yield key, self[key]
 
     def itervalues(self):
-        """based on __iter and __getitem__
+        """based on __iter and __getitem__.
         """
         for key in self:
             yield self[key]
 
     def items(self):
-        """based on iteritems
+        """based on iteritems.
         """
         return [x for x in self.iteritems()]
 
     def keys(self):
-        """based on __iter__
+        """based on __iter__.
         """
         return [x for x in self]
 
     def values(self):
-        """based on itervalues
+        """based on itervalues.
         """
         return [x for x in self.itervalues()]
 
+# BBB
+AbstractNode = _AbstractNode
+
+
+class _NodeMixin(_AbstractNode):
+    """Base node implementation.
+    
+    Still an abstract implementation.
+    
+    Subclass must inherit from this object and an ``IFullMapping`` implementing
+    class and return this second base class in ``self._node_impl()``.
+    """
+    implements(INode)
+    
+    def _node_impl(self):
+        raise NotImplementedError
+    
+    def __init__(self, name=None):
+        """
+        ``name``
+            Optional name used for ``__name__`` declared by ``ILocation``.
+        """
+        super(self._node_impl(), self).__init__()
+        self.__parent__ = None
+        self.__name__ = name
+        self.allow_non_node_childs = False
+        
+        # XXX: should aliaser be part of this basic thing?
+        self.aliaser = None
+        self._nodespaces = None
+    
+    # a storage and general way to access our nodespaces
+    # an AttributedNode uses this to store the attrs nodespace
+    @property
+    def nodespaces(self):
+        if self._nodespaces is None:
+            self._nodespaces = odict()
+            self._nodespaces['__children__'] = self
+        return self._nodespaces
+    
+    def __getitem__(self, key):
+        # blend in our nodespaces as children, with name __<name>__
+        if key.startswith('__') and key.endswith('__'):
+            # a reserved child key mapped to the nodespace behind
+            # nodespaces[key], nodespaces is an odict
+            return self.nodespaces[key]
+        try:
+            return self._node_impl().__getitem__(self, key)
+        except KeyError:
+            raise KeyError(key)
+    
+    def __setitem__(self, key, val):
+        # blend in our nodespaces as children, with name __<name>__
+        if key.startswith('__') and key.endswith('__'):
+            if isinstance(val, _Node):
+                val.__name__ = key
+                val.__parent__ = self
+            # a reserved child key mapped to the nodespace behind
+            # nodespaces[key], nodespaces is an odict
+            self.nodespaces[key] = val
+            # index checks below must not happen for other nodespace.
+            return
+        if not self.allow_non_node_childs and inspect.isclass(val):
+            raise ValueError, u"It isn't allowed to use classes as values."
+        if not self.allow_non_node_childs:
+            raise ValueError("Non-node childs are not allowed.")
+        self._node_impl().__setitem__(self, key, val)
+    
+    def __delitem__(self, key):
+        # blend in our nodespaces as children, with name __<name>__
+        if key.startswith('__') and key.endswith('__'):
+            # a reserved child key mapped to the nodespace behind
+            # nodespaces[key], nodespaces is an odict
+            del self.nodespaces[key]
+            return
+        # fail immediately if key does not exist
+        self[key]
+        self._node_impl().__delitem__(self, key)
+
+
+class BaseNode(_NodeMixin, dict):
+    """Base node, not ordered.
+    """
+    def _node_impl(self):
+        return dict
+
+
+class OrderedNode(_NodeMixin, odict):
+    """Ordered node.
+    """
+    def _node_impl(self):
+        return odict
+
+
+###############################################################################
+# original from zodict below
+###############################################################################
 
 class NodeIndex(object):
     implements(IReadMapping)
@@ -627,9 +734,6 @@ class LifecycleNode(AttributedNode):
         objectEventNotify(self.events['detached'](node, oldParent=self,
                                                   oldName=key))
         return node
-
-
-
 
 
 # XXX: WIP

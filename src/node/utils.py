@@ -16,6 +16,8 @@ def LocationIterator(object):
 
 class Zodict(odict):
     """Mark ordered dict with corresponding interface.
+    
+    XXX: I think we might not need this any longer.
     """
     implements(IFullMapping)
     

@@ -4,7 +4,7 @@ from zope.interface.common.mapping import IEnumerableMapping
 from zope.interface.common.mapping import IFullMapping
 from interfaces import IAliaser
 from utils import ReverseMapping
-from base import AbstractNode
+from base import _AbstractNode
 
 
 class DictAliaser(odict):
@@ -70,6 +70,7 @@ class SuffixAliaser(object):
 
 
 # XXX: what was that again?
+# rnix: no idea
 class NodespaceAliases(dict):
     pass
     
@@ -82,8 +83,9 @@ class AliaserChain(object):
     chain.unalias(alias_key) == aliaser2.unalias(aliaser1.unalias(aliased_key))
     """
     implements(IAliaser)
+    
     # XXX: we are IEnumerableMapping if one of our childs is, which is
-    # important as we become a whitelist, eg. for Node.__iter__
+    #      important as we become a whitelist, eg. for Node.__iter__
 
     def __init__(self, chain=None):
         self.chain = chain
@@ -102,6 +104,7 @@ class AliaserChain(object):
 class PrefixSuffixAliaser(AliaserChain):
     """Prefixes and suffixes
     """
+    
     def __init__(self, prefix=None, suffix=None):
         self.chain = (
                 PrefixAliaser(prefix),
@@ -114,7 +117,7 @@ class NamedAliasers(dict):
     """
 
 
-class AliasedNodespace(AbstractNode):
+class AliasedNodespace(_AbstractNode):
     """Performs aliasing/unaliasing for node children
 
     Is not the parent of its children, the children don't know about their name
@@ -123,6 +126,7 @@ class AliasedNodespace(AbstractNode):
     Future additional mode: children are wrapped, wrapper knows name and we are
     parent of wrapper
     """
+    
     def __init__(self, context, aliaser=None):
         """
         ``context``

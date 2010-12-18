@@ -1,0 +1,102 @@
+node.utils
+==========
+
+Zodict
+------
+
+Test BBB - deprecated usage.
+::
+
+    >>> from node.utils import zodict as BBBzodict
+    >>> BBBzodict
+    <class 'node.utils.Zodict'>
+
+Test Zodict.
+::
+
+    >>> from zope.interface.common.mapping import IFullMapping
+    >>> from zodict import Zodict
+    >>> zod = Zodict()
+    >>> IFullMapping.providedBy(zod)
+    True
+    
+    ### all interface methods there?
+
+ReverseMapping
+--------------
+::
+
+    >>> from node.utils import ReverseMapping
+    >>> context = {
+    ...     'foo': 'a',
+    ...     'bar': 'b',
+    ... }
+    >>> mapping = ReverseMapping(context)
+
+    >>> [v for v in mapping]
+    ['a', 'b']
+
+    >>> mapping.keys()
+    ['a', 'b']
+    
+    >>> mapping.values()
+    ['foo', 'bar']
+    
+    >>> mapping.items()
+    [('a', 'foo'), ('b', 'bar')]
+    
+    >>> len(mapping)
+    2
+    
+    >>> 'a' in mapping
+    True
+    
+    >>> 'foo' in mapping
+    False
+    
+    >>> mapping['a']
+    'foo'
+    
+    >>> mapping['foo']
+    Traceback (most recent call last):
+      ...
+    KeyError: 'foo'
+    
+    >>> mapping.get('b')
+    'bar'
+    
+    >>> mapping.get('foo', 'DEFAULT')
+    'DEFAULT'
+
+AttributeAccess
+---------------
+::
+
+    >>> from node.utils import AttributeAccess
+    >>> attraccess = AttributeAccess(context)
+    >>> attraccess.foo
+    'a'
+    
+    >>> attraccess.a
+    Traceback (most recent call last):
+      ...
+    AttributeError: a
+    
+    >>> attraccess.foo = 'foo'
+    >>> attraccess.foo
+    'foo'
+    
+    >>> attraccess['foo']
+    'foo'
+    
+    >>> attraccess['baz'] = 'bla'
+    >>> attraccess.baz
+    'bla'
+    
+    >>> del attraccess['bar']
+    >>> object.__getattribute__(attraccess, 'context').keys()
+    ['baz', 'foo']
+
+    >>> attraccess.x = 0
+    >>> object.__getattribute__(attraccess, 'context').keys()
+    ['baz', 'foo', 'x']
