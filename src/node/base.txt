@@ -291,17 +291,122 @@ IFullMapping contract
     [('foo', <OrderedNode object 'foo' at ...>), 
     ('bar', <OrderedNode object 'bar' at ...>)]
 
-``__delitem__``
 ``__contains__``
-``__len__`` 
-``copy``
-``has_key``
-``clear``
-``update``
-``setdefault``
-``pop``
-``popitem``
+::
 
+    >>> 'bar' in mynode
+    True
+    
+    >>> 'bar' in basenode
+    True
+    
+    >>> 'bar' in orderednode
+    True
+
+``has_key``
+::
+
+    >>> mynode.has_key('foo')
+    True
+    
+    >>> basenode.has_key('foo')
+    True
+    
+    >>> orderednode.has_key('foo')
+    True
+
+``__len__``
+::
+
+    >>> len(mynode)
+    2
+    
+    >>> len(basenode)
+    2
+    
+    >>> len(orderednode)
+    2
+
+``update``
+::
+
+    >>> mynode.update((('baz', MyNode()),))
+    >>> mynode['baz']
+    <MyNode object 'baz' at ...>
+    
+    >>> basenode.update((('baz', BaseNode()),))
+    >>> basenode['baz']
+    <BaseNode object 'baz' at ...>
+    
+    >>> orderednode.update((('baz', OrderedNode()),))
+    >>> orderednode['baz']
+    <OrderedNode object 'baz' at ...>
+
+``__delitem__``
+::
+
+    >>> del mynode['bar']
+    >>> mynode.keys()
+    ['foo', 'baz']
+    
+    >>> del basenode['bar']
+    >>> basenode.keys()
+    ['baz', 'foo']
+    
+    >>> del orderednode['bar']
+    >>> orderednode.keys()
+    ['foo', 'baz']
+
+``copy``
+
+XXX
+::
+
+    >>> #copied = mynode.copy()
+    >>> #copied
+    
+    >>> #copied.items()
+    
+    >>> #copied is mynode
+    False
+    
+    >>> #copied = basenode.copy()
+    >>> #copied
+    
+    >>> #copied.items()
+    
+    >>> #copied is basenode
+    False
+    
+    >>> #copied = orderednode.copy()
+    >>> #copied
+    
+    >>> #copied.items()
+    
+    >>> #copied is orderednode
+    False
+
+``setdefault``
+::
+
+    XXX
+
+``pop``
+::
+
+    XXX
+
+``popitem``
+::
+
+    XXX
+
+``clear``
+::
+
+    XXX
+
+##################
 
     >>> mynode = create_tree(MyNode)
     >>> mynode

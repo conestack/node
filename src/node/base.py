@@ -356,6 +356,12 @@ class BaseNode(_NodeSpaceMixin, dict):
     
     def _impl(self):
         return dict
+    
+    def update(self, data=(), **kw):
+        for key, value in data:
+            self[key] = value
+        for key, value in kw.items():
+            self[key] = value
 
 
 class OrderedNode(_NodeSpaceMixin, odict):
