@@ -3,30 +3,34 @@ import inspect
 from odict import odict
 from odict.pyodict import _nil
 from zope.interface import implements
-from zope.interface.common.mapping import IReadMapping
-from zope.interface.common.mapping import IFullMapping
+from zope.interface.common.mapping import (
+    IReadMapping,
+    IFullMapping)
 from zope.deprecation import deprecated
 try:
     from zope.component.event import objectEventNotify
 except ImportError, e:
     from zope.app.event.objectevent import objectEventNotify # BBB
-from utils import Zodict
-from utils import AttributeAccess
-from utils import LocationIterator
 from interfaces import (
     INode,
     INodeAttributes,
     IAttributedNode,
-    ILifecycleNode,
-)
+    ILifecycleNode)
 from events import (
     NodeCreatedEvent,
     NodeAddedEvent,
     NodeRemovedEvent,
     NodeModifiedEvent,
-    NodeDetachedEvent,
-)
+    NodeDetachedEvent)
+from utils import (
+    Zodict,
+    AttributeAccess,
+    LocationIterator)
 
+
+###############################################################################
+# Base mixin classes
+###############################################################################
 
 class _NodeMixin(object):
     """The base for all kinds of nodes, agnostic to the type of node.
@@ -114,23 +118,34 @@ class _FullMappingMixin(object):
     Methods defined here are only methods that use the node itself, but make no
     assumptions about where the node's data is stored. Storage specific methods
     raise ``NotImplementedError``, that are:
-        - ``__delitem__``
-        - ``__getitem__``
-        - ``__setitem__``
-        - ``__iter__``
+    - ``__getitem__``
+    - ``__delitem__``
+    - ``__setitem__``
+    - ``__iter__``
+    - ``copy``
+    - ``clear``
+    - ``update``
+    - ``setdefault``
+    - ``pop``
+    - ``popitem``
     """
     
-    def __delitem__(self, key):
-        raise NotImplementedError
-
+    ###
+    # ``IItemMapping``
+    
     def __getitem__(self, key):
         raise NotImplementedError
-
-    def __setitem__(self, key):
-        raise NotImplementedError
     
-    def __iter__(self):
-        raise NotImplementedError
+    ###
+    # ``IReadMapping``
+    
+    def get(self, key, default=None):
+        """Uses ``__getitem__``.
+        """
+        try:
+            return self[key]
+        except KeyError:
+            return default
     
     def __contains__(self, key):
         """Uses ``__getitem__``.
@@ -142,51 +157,91 @@ class _FullMappingMixin(object):
         except KeyError:
             return False
         return True
+    
+    ###
+    # ``IWriteMapping``
+    
+    def __delitem__(self, key):
+        raise NotImplementedError
+    
+    def __setitem__(self, key):
+        raise NotImplementedError
+    
+    ###
+    # ``IEnumerableMapping``
+    
+    def keys(self):
+        """Uses ``__iter__``.
+        """
+        return [x for x in self]
+    
+    def __iter__(self):
+        raise NotImplementedError
+    
+    def values(self):
+        """Uses ``itervalues``.
+        """
+        return [x for x in self.itervalues()]
+    
+    def items(self):
+        """Uses ``iteritems``.
+        """
+        return [x for x in self.iteritems()]
 
     def __len__(self):
         """Uses ``keys``.
         """
         return len(self.keys())
     
-    def get(self, key, default=None):
-        """Uses ``__getitem__``.
-        """
-        try:
-            return self[key]
-        except KeyError:
-            return default
-
+    ###
+    # ``IIterableMapping``
+    
     def iterkeys(self):
         """Uses ``__iter__``.
         """
         return self.__iter__()
-
-    def iteritems(self):
-        """Uses ``__iter__`` and ``__getitem__``.
-        """
-        for key in self:
-            yield key, self[key]
-
+    
     def itervalues(self):
         """Uses ``__iter__`` and ``__getitem__``.
         """
         for key in self:
             yield self[key]
-
-    def items(self):
-        """Uses ``iteritems``.
+    
+    def iteritems(self):
+        """Uses ``__iter__`` and ``__getitem__``.
         """
-        return [x for x in self.iteritems()]
+        for key in self:
+            yield key, self[key]
+    
+    ###
+    # ``IClonableMapping``
+    
+    def copy(self):
+        raise NotImplementedError
 
-    def keys(self):
-        """Uses ``__iter__``.
-        """
-        return [x for x in self]
+    ###
+    # ``IExtendedReadMapping``
+    
+    def has_key(self, key):
+        return key in self
 
-    def values(self):
-        """Uses ``itervalues``.
-        """
-        return [x for x in self.itervalues()]
+    ###
+    # ``IExtendedWriteMapping``
+    
+    def clear(self):
+        raise NotImplementedError
+    
+    def update(self, data=(), **kw):
+        raise NotImplementedError
+    
+    def setdefault(self, key, default=None):
+        raise NotImplementedError
+    
+    def pop(self, key, default=None):
+        raise NotImplementedError
+    
+    def popitem(self):
+        raise NotImplementedError
 
 
 class _ImplMixin(object):
@@ -272,6 +327,10 @@ class _NodeSpaceMixin(_NodeMixin, _ImplMixin):
         self._impl().__delitem__(self, key)
 
 
+###############################################################################
+# base nodes
+###############################################################################
+
 class AbstractNode(_NodeMixin, _FullMappingMixin):
     """An abstract Node.
     
@@ -286,7 +345,7 @@ class BaseNode(_NodeSpaceMixin, dict):
     
     Uses ``dict`` as ``IFullMapping`` implementation.
     
-    Derive from this for 
+    Derive this for unordered trees.
     """
     implements(INode)
     
@@ -298,6 +357,8 @@ class OrderedNode(_NodeSpaceMixin, odict):
     """Ordered node.
     
     Uses ``odict`` as ``IFullMapping`` implementation.
+    
+    Derive this for ordered trees.
     """
     implements(INode)
     

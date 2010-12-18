@@ -1,7 +1,7 @@
 node.base
 =========
 
-Helper function for creating identically trees with different classes.
+Helper function for creating identically trees from different classes.
 ::
 
     >>> def create_tree(class_):
@@ -13,7 +13,48 @@ Helper function for creating identically trees with different classes.
     ...     return root
 
 
+``IFullMapping`` in short:
+::
+    
+    - derived from ``IItemMapping``
+        - ``__getitem__``
+    
+    - derived from ``IReadMapping``
+        - ``get``
+        - ``__contains__``
+
+    - derived from ``IWriteMapping``
+        - ``__delitem__``
+        - ``__setitem__``
+
+    - derived from ``IEnumerableMapping``
+        - ``keys``
+        - ``__iter__``
+        - ``values``
+        - ``items``
+        - ``__len__``
+    
+    - derived from ``IIterableMapping``
+        - ``iterkeys``
+        - ``itervalues``
+        - ``iteritems``
+
+    - derived from ``IClonableMapping``
+        - ``copy``
+
+    - derived from ``IExtendedReadMapping``
+        - ``has_key``
+
+    - derived from ``IExtendedWriteMapping``
+        - ``clear``
+        - ``update``
+        - ``setdefault``
+        - ``pop``
+        - ``popitem``
+
+
 AbstractNode
+------------
 ::
 
     >>> from node.base import AbstractNode
@@ -29,6 +70,7 @@ AbstractNode
     
 
 BaseNode
+--------
 ::
 
     >>> from node.base import BaseNode
@@ -46,6 +88,7 @@ BaseNode
 
 
 OrderedNode
+-----------
 ::
 
     >>> from node.base import OrderedNode
@@ -65,79 +108,6 @@ Check ``ILocation`` interface.
 
 
 
-Check ``IFullMapping`` interface.
-::
-
-
-``IFullMapping`` derived from ``IItemMapping``.
-
-    - ``__getitem__``
-
-::
-    
-``IFullMapping`` derived from ``IReadMapping``.
-    
-    - ``get``
-    
-    - ``__contains__``
-
-::
-
-``IFullMapping`` derived from ``IWriteMapping``.
-
-    - ``__delitem__``
-    
-    - ``__setitem__``
-
-::
-
-``IFullMapping`` derived from ``IEnumerableMapping``.
-
-    - ``keys``
-    
-    - ``__iter__``
-    
-    - ``values``
-    
-    - ``items``
-    
-    - ``__len__``
-
-::
-
-``IFullMapping`` derived from ``IIterableMapping``.
-
-    - ``iterkeys``
-    
-    - ``itervalues``
-    
-    - ``iteritems``
-
-::
-
-``IFullMapping`` derived from ``IClonableMapping``.
-
-    - ``copy``
-
-::
-
-``IFullMapping`` derived from ``IExtendedReadMapping``.
-
-    - ``has_key``
-
-::
-
-``IFullMapping`` derived from ``IExtendedWriteMapping``
-
-    ``clear``
-    
-    ``update``
-    
-    ``setdefault``
-    
-    ``pop``
-    
-    ``popitem``
 
 ::
 
