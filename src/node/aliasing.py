@@ -4,7 +4,7 @@ from zope.interface.common.mapping import IEnumerableMapping
 from zope.interface.common.mapping import IFullMapping
 from interfaces import IAliaser
 from utils import ReverseMapping
-from base import _AbstractNode
+from base import AbstractNode
 
 
 class DictAliaser(odict):
@@ -116,7 +116,7 @@ class NamedAliasers(dict):
     """
 
 
-class AliasedNodespace(_AbstractNode):
+class AliasedNodespace(AbstractNode):
     """Performs aliasing/unaliasing for node children.
 
     Is not the parent of its children, the children don't know about their name

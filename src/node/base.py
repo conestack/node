@@ -28,23 +28,24 @@ from events import (
 )
 
 
-class _AbstractNode(object):
+class _NodeMixin(object):
     """The base for all kinds of nodes, agnostic to the type of node.
-
-    Methods defined here are only methods that use the node itself, but make no
-    assumptions about where the node's data is stored. Storage specific methods
-    raise NotImplementedError, that are:
-        - __delitem__
-        - __getitem__
-        - __setitem__
-        - __iter__
     
-    If ``__getitem__`` is expensive, also:
-        - __contains__
+    Implements contracts of ``zope.location.interfaces.ILocation`` and the one
+    directly defined in ``node.intefaces.INode``.
+    
+    XXX: ``INode`` defines ``aliases``. Get rid in node interface?
+         Wrong name? Interface defines ``aliases`` while implementation
+         provides ``aliaser``?
     """
+    
     def __init__(self, name=None, parent=None):
         self.__name__ = name
         self.__parent__ = parent
+        self.allow_non_node_childs = False
+        # XXX: should aliaser be part of this basic thing?
+        #      ``aliaser`` or ``aliases``? See above.
+        self.aliaser = None
     
     @property
     def path(self):
@@ -57,16 +58,33 @@ class _AbstractNode(object):
             root = parent
         return root
     
-    def filtereditems(self, interface):
-        # XXX: inconsistent naming, this should be filtereditervalues()
+    def filteredvalues(self, interface):
+        """Uses ``values``.
+        """
         for node in self.values():
             if interface.providedBy(node):
                 yield node
     
+    # BBB
+    filtereditems = filteredvalues
+    
     def as_attribute_access(self):
         return AttributeAccess(self)
     
+    @property
+    def noderepr(self):
+        """``noderepr`` is used in ``printtree``.
+        
+        Thus, we can overwrite it in subclass and return any debug information
+        we need while ``__repr__`` is an enhanced standard object
+        representation, also used as ``__str__`` on nodes.
+        """
+        name = unicode(self.__name__).encode('ascii', 'replace')
+        return str(self.__class__) + ': ' + name[name.find(':') + 1:]
+    
     def printtree(self, indent=0):
+        """Uses ``values``.
+        """
         print "%s%s" % (indent * ' ', self.noderepr)
         for node in self.values():
             try:
@@ -77,13 +95,30 @@ class _AbstractNode(object):
 
     def __repr__(self):
         # XXX: This is mainly used in doctest, I think
-        # doctest fails if we output utf-8
+        #      doctest fails if we output utf-8
         name = unicode(self.__name__).encode('ascii', 'replace')
         return "<%s object '%s' at %s>" % (self.__class__.__name__,
                                            name,
                                            hex(id(self))[:-1])
 
     __str__ = __repr__
+
+
+class _FullMappingMixin(object):
+    """The base for all kinds of nodes not relying on an ``IFullMapping`` base
+    implementation, like ``dict`` or ``odict.odict``. This excludes all nodes
+    inheriting from ``BaseNode`` and ``OderedNode``.
+    
+    Implemented functions are agnostic to the type of node.
+
+    Methods defined here are only methods that use the node itself, but make no
+    assumptions about where the node's data is stored. Storage specific methods
+    raise ``NotImplementedError``, that are:
+        - ``__delitem__``
+        - ``__getitem__``
+        - ``__setitem__``
+        - ``__iter__``
+    """
     
     def __delitem__(self, key):
         raise NotImplementedError
@@ -98,9 +133,9 @@ class _AbstractNode(object):
         raise NotImplementedError
     
     def __contains__(self, key):
-        """uses __getitem__.
+        """Uses ``__getitem__``.
 
-        This should be overriden by nodes, where __getitem__ is expensive.
+        This should be overriden by nodes, where ``__getitem__`` is expensive.
         """
         try:
             self[key]
@@ -109,12 +144,12 @@ class _AbstractNode(object):
         return True
 
     def __len__(self):
-        """based on keys().
+        """Uses ``keys``.
         """
         return len(self.keys())
     
     def get(self, key, default=None):
-        """based on __getitem__.
+        """Uses ``__getitem__``.
         """
         try:
             return self[key]
@@ -122,72 +157,76 @@ class _AbstractNode(object):
             return default
 
     def iterkeys(self):
-        """returns __iter__().
+        """Uses ``__iter__``.
         """
         return self.__iter__()
 
     def iteritems(self):
-        """based on __iter__ and __getitem__.
+        """Uses ``__iter__`` and ``__getitem__``.
         """
         for key in self:
             yield key, self[key]
 
     def itervalues(self):
-        """based on __iter and __getitem__.
+        """Uses ``__iter__`` and ``__getitem__``.
         """
         for key in self:
             yield self[key]
 
     def items(self):
-        """based on iteritems.
+        """Uses ``iteritems``.
         """
         return [x for x in self.iteritems()]
 
     def keys(self):
-        """based on __iter__.
+        """Uses ``__iter__``.
         """
         return [x for x in self]
 
     def values(self):
-        """based on itervalues.
+        """Uses ``itervalues``.
         """
         return [x for x in self.itervalues()]
 
-# BBB
-AbstractNode = _AbstractNode
+
+class _ImplMixin(object):
+    """Abstract mixin class for different node implementations.
+    
+    A class utilizing this contract must inherit from choosen ``IFullMaping``.
+    
+    XXX: Use same contract in ``odict.odict`` for easier mixing.
+    """
+    
+    def _impl(self):
+        """Return ``IFullMaping`` implementing class.
+        """
+        raise NotImplementedError
 
 
-class _NodeMixin(_AbstractNode):
-    """Base node implementation.
+class _NodeSpaceMixin(_NodeMixin, _ImplMixin):
+    """Base nodespace support.
     
     Still an abstract implementation.
     
     Subclass must inherit from this object and an ``IFullMapping`` implementing
-    class and return this second base class in ``self._node_impl()``.
+    object and return its class in ``self._impl()``.
     """
-    implements(INode)
-    
-    def _node_impl(self):
-        raise NotImplementedError
     
     def __init__(self, name=None):
         """
         ``name``
             Optional name used for ``__name__`` declared by ``ILocation``.
         """
-        super(self._node_impl(), self).__init__()
-        self.__parent__ = None
-        self.__name__ = name
-        self.allow_non_node_childs = False
-        
-        # XXX: should aliaser be part of this basic thing?
-        self.aliaser = None
+        self._impl().__init__(self)
+        _NodeMixin.__init__(self, name)
         self._nodespaces = None
     
-    # a storage and general way to access our nodespaces
-    # an AttributedNode uses this to store the attrs nodespace
     @property
     def nodespaces(self):
+        """A storage and general way to access our nodespaces.
+        
+        An ``AttributedNode`` uses this to store the ``attrs`` nodespace i.e.
+        """
         if self._nodespaces is None:
             self._nodespaces = odict()
             self._nodespaces['__children__'] = self
@@ -200,7 +239,7 @@ class _NodeMixin(_AbstractNode):
             # nodespaces[key], nodespaces is an odict
             return self.nodespaces[key]
         try:
-            return self._node_impl().__getitem__(self, key)
+            return self._impl().__getitem__(self, key)
         except KeyError:
             raise KeyError(key)
     
@@ -217,9 +256,9 @@ class _NodeMixin(_AbstractNode):
             return
         if not self.allow_non_node_childs and inspect.isclass(val):
             raise ValueError, u"It isn't allowed to use classes as values."
-        if not self.allow_non_node_childs:
+        if not self.allow_non_node_childs and not INode.providedBy(val):
             raise ValueError("Non-node childs are not allowed.")
-        self._node_impl().__setitem__(self, key, val)
+        self._impl().__setitem__(self, key, val)
     
     def __delitem__(self, key):
         # blend in our nodespaces as children, with name __<name>__
@@ -230,20 +269,39 @@ class _NodeMixin(_AbstractNode):
             return
         # fail immediately if key does not exist
         self[key]
-        self._node_impl().__delitem__(self, key)
+        self._impl().__delitem__(self, key)
 
 
-class BaseNode(_NodeMixin, dict):
-    """Base node, not ordered.
+class AbstractNode(_NodeMixin, _FullMappingMixin):
+    """An abstract Node.
+    
+    Derive this if you like to implement all storage related functions on your
+    own.
     """
-    def _node_impl(self):
+    implements(INode)
+
+
+class BaseNode(_NodeSpaceMixin, dict):
+    """Base node, not ordered.
+    
+    Uses ``dict`` as ``IFullMapping`` implementation.
+    
+    Derive from this for 
+    """
+    implements(INode)
+    
+    def _impl(self):
         return dict
 
 
-class OrderedNode(_NodeMixin, odict):
+class OrderedNode(_NodeSpaceMixin, odict):
     """Ordered node.
+    
+    Uses ``odict`` as ``IFullMapping`` implementation.
     """
-    def _node_impl(self):
+    implements(INode)
+    
+    def _impl(self):
         return odict
 
 

@@ -1,0 +1,144 @@
+node.base
+=========
+
+Helper function for creating identically trees with different classes.
+::
+
+    >>> def create_tree(class_):
+    ...     root = class_()
+    ...     for i in range(3):
+    ...         root['child-%i' % i] = class_()
+    ...         for j in range(2):
+    ...             root['child-%i' % i]['subchild-%j'] = class_()
+    ...     return root
+
+
+AbstractNode
+::
+
+    >>> from node.base import AbstractNode
+    >>> AbstractNode
+    <class 'node.base.AbstractNode'>
+    
+    >>> AbstractNode.__bases__
+    (<class 'node.base._NodeMixin'>, <class 'node.base._FullMappingMixin'>)
+    
+    >>> abstract = AbstractNode()
+    >>> abstract
+    <AbstractNode object 'None' at ...>
+    
+
+BaseNode
+::
+
+    >>> from node.base import BaseNode
+    >>> BaseNode
+    <class 'node.base.BaseNode'>
+    
+    >>> BaseNode.__bases__
+    (<class 'node.base._NodeSpaceMixin'>, <type 'dict'>)
+    
+    >>> base = create_tree(BaseNode)
+    >>> base
+    <BaseNode object 'None' at ...>
+    
+    >>> #base.printtree()
+
+
+OrderedNode
+::
+
+    >>> from node.base import OrderedNode
+    >>> OrderedNode
+    <class 'node.base.OrderedNode'>
+    
+    >>> OrderedNode.__bases__
+    (<class 'node.base._NodeSpaceMixin'>, <class 'odict.pyodict.odict'>)
+    
+    >>> ordered = create_tree(OrderedNode)
+    >>> ordered
+    <OrderedNode object 'None' at ...>
+
+
+Check ``ILocation`` interface.
+::
+
+
+
+Check ``IFullMapping`` interface.
+::
+
+
+``IFullMapping`` derived from ``IItemMapping``.
+
+    - ``__getitem__``
+
+::
+    
+``IFullMapping`` derived from ``IReadMapping``.
+    
+    - ``get``
+    
+    - ``__contains__``
+
+::
+
+``IFullMapping`` derived from ``IWriteMapping``.
+
+    - ``__delitem__``
+    
+    - ``__setitem__``
+
+::
+
+``IFullMapping`` derived from ``IEnumerableMapping``.
+
+    - ``keys``
+    
+    - ``__iter__``
+    
+    - ``values``
+    
+    - ``items``
+    
+    - ``__len__``
+
+::
+
+``IFullMapping`` derived from ``IIterableMapping``.
+
+    - ``iterkeys``
+    
+    - ``itervalues``
+    
+    - ``iteritems``
+
+::
+
+``IFullMapping`` derived from ``IClonableMapping``.
+
+    - ``copy``
+
+::
+
+``IFullMapping`` derived from ``IExtendedReadMapping``.
+
+    - ``has_key``
+
+::
+
+``IFullMapping`` derived from ``IExtendedWriteMapping``
+
+    ``clear``
+    
+    ``update``
+    
+    ``setdefault``
+    
+    ``pop``
+    
+    ``popitem``
+
+::
+
+Check ``INode`` interface.

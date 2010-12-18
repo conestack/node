@@ -149,12 +149,13 @@ class INode(ILocation, IFullMapping):
     # XXX: should this be in base node interface ?
     #      in _NodeMixin there's no ``aliases`` attribute, only ``aliaser``
     #      both are not used in ``base.py``.
+    # XXX: should also be behavior.
     aliases = Attribute(u"zope.interface.common.mapping.IEnumerableMapping "
                         u"implementation defining key aliases or callable "
                         u"accepting Node as argument. If aliases is None, "
                         u"this feature is disables.")
 
-    def filtereditems(interface):
+    def filteredvalues(interface):
         """Return filtered child nodes by interface.
         """
     
