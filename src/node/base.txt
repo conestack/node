@@ -121,26 +121,7 @@ as somefullmapping.
     >>> mynode = MyNode()
     >>> mynode
     <MyNode object 'None' at ...>
-    
-    ### later
-    
-    >>> mynode = create_tree(MyNode)
-    >>> mynode
-    <MyNode object 'None' at ...>
-    
-    >>> mynode.printtree()
-    <class 'MyNode'>: None
-      <class 'MyNode'>: child-0
-        <class 'MyNode'>: subchild-0
-        <class 'MyNode'>: subchild-1
-      <class 'MyNode'>: child-1
-        <class 'MyNode'>: subchild-0
-        <class 'MyNode'>: subchild-1
-      <class 'MyNode'>: child-2
-        <class 'MyNode'>: subchild-0
-        <class 'MyNode'>: subchild-1
 
-    ### / later
 
 BaseNode
 --------
@@ -156,8 +137,187 @@ BaseNode
     >>> basenode = BaseNode()
     >>> basenode
     <BaseNode object 'None' at ...>
+
+
+OrderedNode
+-----------
+::
+
+    >>> from node.base import OrderedNode
+    >>> OrderedNode
+    <class 'node.base.OrderedNode'>
     
-    ### later
+    >>> OrderedNode.__bases__
+    (<class 'node.base._NodeSpaceMixin'>, <class 'odict.pyodict.odict'>)
+    
+    >>> orderednode = OrderedNode()
+    >>> orderednode
+    <OrderedNode object 'None' at ...>
+
+
+IFullMapping contract
+---------------------
+
+``__setitem__``
+::
+
+    >>> mynode['foo'] = MyNode()
+    >>> mynode['bar'] = MyNode()
+    >>> basenode['foo'] = BaseNode()
+    >>> basenode['bar'] = BaseNode()
+    >>> orderednode['foo'] = OrderedNode()
+    >>> orderednode['bar'] = OrderedNode()
+    
+``__getitem__``
+::
+
+    >>> mynode['foo']
+    <MyNode object 'foo' at ...>
+    
+    >>> basenode['foo']
+    <BaseNode object 'foo' at ...>
+    
+    >>> orderednode['foo']
+    <OrderedNode object 'foo' at ...>
+
+``get``
+::
+
+    >>> mynode.get('bar')
+    <MyNode object 'bar' at ...>
+    
+    >>> mynode.get('xxx', 'default')
+    'default'
+    
+    >>> basenode.get('bar')
+    <BaseNode object 'bar' at ...>
+    
+    >>> basenode.get('xxx', 'default')
+    'default'
+    
+    >>> orderednode.get('bar')
+    <OrderedNode object 'bar' at ...>
+    
+    >>> orderednode.get('xxx', 'default')
+    'default'
+
+``__iter__``
+::
+
+    >>> [key for key in mynode]
+    ['foo', 'bar']
+    
+    >>> [key for key in basenode]
+    ['foo', 'bar']
+    
+    >>> [key for key in orderednode]
+    ['foo', 'bar']
+
+``keys``
+::
+
+    >>> mynode.keys()
+    ['foo', 'bar']
+    
+    >>> basenode.keys()
+    ['foo', 'bar']
+    
+    >>> orderednode.keys()
+    ['foo', 'bar']
+
+``iterkeys``
+::
+
+    >>> [key for key in mynode.iterkeys()]
+    ['foo', 'bar']
+    
+    >>> [key for key in basenode.iterkeys()]
+    ['foo', 'bar']
+    
+    >>> [key for key in orderednode.iterkeys()]
+    ['foo', 'bar']
+
+``values``
+::
+
+    >>> mynode.values()
+    [<MyNode object 'foo' at ...>, <MyNode object 'bar' at ...>]
+    
+    >>> basenode.values()
+    [<BaseNode object 'foo' at ...>, <BaseNode object 'bar' at ...>]
+    
+    >>> orderednode.values()
+    [<OrderedNode object 'foo' at ...>, <OrderedNode object 'bar' at ...>]
+
+``itervalues``
+::
+
+    >>> [val for val in mynode.itervalues()]
+    [<MyNode object 'foo' at ...>, <MyNode object 'bar' at ...>]
+    
+    >>> [val for val in basenode.itervalues()]
+    [<BaseNode object 'foo' at ...>, <BaseNode object 'bar' at ...>]
+    
+    >>> [val for val in orderednode.itervalues()]
+    [<OrderedNode object 'foo' at ...>, <OrderedNode object 'bar' at ...>]
+
+``items``
+::
+    
+    >>> mynode.items()
+    [('foo', <MyNode object 'foo' at ...>), 
+    ('bar', <MyNode object 'bar' at ...>)]
+    
+    >>> basenode.items()
+    [('foo', <BaseNode object 'foo' at ...>), 
+    ('bar', <BaseNode object 'bar' at ...>)]
+    
+    >>> orderednode.items()
+    [('foo', <OrderedNode object 'foo' at ...>), 
+    ('bar', <OrderedNode object 'bar' at ...>)]
+
+``iteritems``
+::
+
+    >>> [item for item in mynode.iteritems()]
+    [('foo', <MyNode object 'foo' at ...>), 
+    ('bar', <MyNode object 'bar' at ...>)]
+    
+    >>> [item for item in basenode.iteritems()]
+    [('foo', <BaseNode object 'foo' at ...>), 
+    ('bar', <BaseNode object 'bar' at ...>)]
+    
+    >>> [item for item in orderednode.iteritems()]
+    [('foo', <OrderedNode object 'foo' at ...>), 
+    ('bar', <OrderedNode object 'bar' at ...>)]
+
+``__delitem__``
+``__contains__``
+``__len__`` 
+``copy``
+``has_key``
+``clear``
+``update``
+``setdefault``
+``pop``
+``popitem``
+
+
+    >>> mynode = create_tree(MyNode)
+    >>> mynode
+    <MyNode object 'None' at ...>
+    
+    >>> mynode.printtree()
+    <class 'MyNode'>: None
+      <class 'MyNode'>: child-0
+        <class 'MyNode'>: subchild-0
+        <class 'MyNode'>: subchild-1
+      <class 'MyNode'>: child-1
+        <class 'MyNode'>: subchild-0
+        <class 'MyNode'>: subchild-1
+      <class 'MyNode'>: child-2
+        <class 'MyNode'>: subchild-0
+        <class 'MyNode'>: subchild-1
     
     >>> basenode = create_tree(BaseNode)
     >>> basenode
@@ -174,25 +334,6 @@ BaseNode
       <class 'node.base.BaseNode'>: child-...
         <class 'node.base.BaseNode'>: subchild-...
         <class 'node.base.BaseNode'>: subchild-...
-
-    ### / later
-
-OrderedNode
------------
-::
-
-    >>> from node.base import OrderedNode
-    >>> OrderedNode
-    <class 'node.base.OrderedNode'>
-    
-    >>> OrderedNode.__bases__
-    (<class 'node.base._NodeSpaceMixin'>, <class 'odict.pyodict.odict'>)
-    
-    >>> orderednode = OrderedNode()
-    >>> orderednode
-    <OrderedNode object 'None' at ...>
-    
-    ### later
     
     >>> orderednode = create_tree(OrderedNode)
     >>> orderednode
@@ -210,48 +351,6 @@ OrderedNode
         <class 'node.base.OrderedNode'>: subchild-0
         <class 'node.base.OrderedNode'>: subchild-1
 
-    ### / later
-
-
-IFullMapping contract
----------------------
-::
-    
-    - derived from ``IItemMapping``
-        - ``__getitem__``
-    
-    - derived from ``IReadMapping``
-        - ``get``
-        - ``__contains__``
-
-    - derived from ``IWriteMapping``
-        - ``__delitem__``
-        - ``__setitem__``
-
-    - derived from ``IEnumerableMapping``
-        - ``keys``
-        - ``__iter__``
-        - ``values``
-        - ``items``
-        - ``__len__``
-    
-    - derived from ``IIterableMapping``
-        - ``iterkeys``
-        - ``itervalues``
-        - ``iteritems``
-
-    - derived from ``IClonableMapping``
-        - ``copy``
-
-    - derived from ``IExtendedReadMapping``
-        - ``has_key``
-
-    - derived from ``IExtendedWriteMapping``
-        - ``clear``
-        - ``update``
-        - ``setdefault``
-        - ``pop``
-        - ``popitem``
 
 ILocation contract
 ------------------
