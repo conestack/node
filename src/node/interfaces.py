@@ -188,13 +188,6 @@ class IReferenced(INodeAdapter):
         """
 
 
-class IAttributed(INodeAdapter):
-    """Provide attributes on node.
-    """
-    attrs = Attribute(u"``INodeAttributes`` implementation.")
-    attrs_factory = Attribute(u"``INodeAttributes`` implementation class")
-
-
 class IOrderable(INodeAdapter):
     """Reordering support.
     """
@@ -250,6 +243,13 @@ class ILifecycle(INodeAdapter):
     """
     events = Attribute(u"Dict with lifecycle event classes to use for "
                        u"notification.")
+
+
+class IAttributed(INodeAdapter):
+    """Provide attributes on node.
+    """
+    attrs = Attribute(u"``INodeAttributes`` implementation.")
+    attrs_factory = Attribute(u"``INodeAttributes`` implementation class")
 
 
 ###############################################################################
