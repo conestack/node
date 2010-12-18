@@ -1,45 +1,6 @@
 node.base
 =========
 
-``IFullMapping`` in short:
-::
-    
-    - derived from ``IItemMapping``
-        - ``__getitem__``
-    
-    - derived from ``IReadMapping``
-        - ``get``
-        - ``__contains__``
-
-    - derived from ``IWriteMapping``
-        - ``__delitem__``
-        - ``__setitem__``
-
-    - derived from ``IEnumerableMapping``
-        - ``keys``
-        - ``__iter__``
-        - ``values``
-        - ``items``
-        - ``__len__``
-    
-    - derived from ``IIterableMapping``
-        - ``iterkeys``
-        - ``itervalues``
-        - ``iteritems``
-
-    - derived from ``IClonableMapping``
-        - ``copy``
-
-    - derived from ``IExtendedReadMapping``
-        - ``has_key``
-
-    - derived from ``IExtendedWriteMapping``
-        - ``clear``
-        - ``update``
-        - ``setdefault``
-        - ``pop``
-        - ``popitem``
-
 Helper function for creating identically tree structures from different classes.
 ::
 
@@ -157,6 +118,12 @@ as somefullmapping.
     ... 
     ...     popitem = somefullmapping.popitem
     
+    >>> mynode = MyNode()
+    >>> mynode
+    <MyNode object 'None' at ...>
+    
+    ### later
+    
     >>> mynode = create_tree(MyNode)
     >>> mynode
     <MyNode object 'None' at ...>
@@ -173,6 +140,7 @@ as somefullmapping.
         <class 'MyNode'>: subchild-0
         <class 'MyNode'>: subchild-1
 
+    ### / later
 
 BaseNode
 --------
@@ -185,22 +153,29 @@ BaseNode
     >>> BaseNode.__bases__
     (<class 'node.base._NodeSpaceMixin'>, <type 'dict'>)
     
-    >>> base = create_tree(BaseNode)
-    >>> base
+    >>> basenode = BaseNode()
+    >>> basenode
     <BaseNode object 'None' at ...>
     
-    >>> base.printtree()
+    ### later
+    
+    >>> basenode = create_tree(BaseNode)
+    >>> basenode
+    <BaseNode object 'None' at ...>
+    
+    >>> basenode.printtree()
     <class 'node.base.BaseNode'>: None
-      <class 'node.base.BaseNode'>: child-2
-        <class 'node.base.BaseNode'>: subchild-1
-        <class 'node.base.BaseNode'>: subchild-0
-      <class 'node.base.BaseNode'>: child-0
-        <class 'node.base.BaseNode'>: subchild-1
-        <class 'node.base.BaseNode'>: subchild-0
-      <class 'node.base.BaseNode'>: child-1
-        <class 'node.base.BaseNode'>: subchild-1
-        <class 'node.base.BaseNode'>: subchild-0
+      <class 'node.base.BaseNode'>: child-...
+        <class 'node.base.BaseNode'>: subchild-...
+        <class 'node.base.BaseNode'>: subchild-...
+      <class 'node.base.BaseNode'>: child-...
+        <class 'node.base.BaseNode'>: subchild-...
+        <class 'node.base.BaseNode'>: subchild-...
+      <class 'node.base.BaseNode'>: child-...
+        <class 'node.base.BaseNode'>: subchild-...
+        <class 'node.base.BaseNode'>: subchild-...
 
+    ### / later
 
 OrderedNode
 -----------
@@ -213,11 +188,17 @@ OrderedNode
     >>> OrderedNode.__bases__
     (<class 'node.base._NodeSpaceMixin'>, <class 'odict.pyodict.odict'>)
     
-    >>> ordered = create_tree(OrderedNode)
-    >>> ordered
+    >>> orderednode = OrderedNode()
+    >>> orderednode
     <OrderedNode object 'None' at ...>
     
-    >>> ordered.printtree()
+    ### later
+    
+    >>> orderednode = create_tree(OrderedNode)
+    >>> orderednode
+    <OrderedNode object 'None' at ...>
+    
+    >>> orderednode.printtree()
     <class 'node.base.OrderedNode'>: None
       <class 'node.base.OrderedNode'>: child-0
         <class 'node.base.OrderedNode'>: subchild-0
@@ -229,13 +210,53 @@ OrderedNode
         <class 'node.base.OrderedNode'>: subchild-0
         <class 'node.base.OrderedNode'>: subchild-1
 
+    ### / later
 
-Check ``ILocation`` interface.
+
+IFullMapping contract
+---------------------
+::
+    
+    - derived from ``IItemMapping``
+        - ``__getitem__``
+    
+    - derived from ``IReadMapping``
+        - ``get``
+        - ``__contains__``
+
+    - derived from ``IWriteMapping``
+        - ``__delitem__``
+        - ``__setitem__``
+
+    - derived from ``IEnumerableMapping``
+        - ``keys``
+        - ``__iter__``
+        - ``values``
+        - ``items``
+        - ``__len__``
+    
+    - derived from ``IIterableMapping``
+        - ``iterkeys``
+        - ``itervalues``
+        - ``iteritems``
+
+    - derived from ``IClonableMapping``
+        - ``copy``
+
+    - derived from ``IExtendedReadMapping``
+        - ``has_key``
+
+    - derived from ``IExtendedWriteMapping``
+        - ``clear``
+        - ``update``
+        - ``setdefault``
+        - ``pop``
+        - ``popitem``
+
+ILocation contract
+------------------
 ::
 
-
-
-
+INode contract
+--------------
 ::
-
-Check ``INode`` interface.
