@@ -123,8 +123,18 @@ class IAliaser(Interface):
         """
 
 
+class IRoot(Interface):
+    """Marker for a root node.
+    """
+
+
+class ILeaf(Interface):
+    """Marker for node without children.
+    """
+
+
 ###############################################################################
-# nodes
+# node
 ###############################################################################
 
 class INode(ILocation, IFullMapping):
@@ -157,18 +167,18 @@ class INode(ILocation, IFullMapping):
         """
 
 
-class IRoot(INode):
-    """Marker for a root node.
+###############################################################################
+# behaviors
+###############################################################################
+
+class INodeAdapter(Interface):
+    """Adapter for nodes. Usually used to implement node behavior.
     """
+    context = Attribute(u"The adapted node.")
 
 
-class ILeaf(INode):
-    """Marker for node without children.
-    """
-
-
-class IReferencingNode(INode):
-    """Node holding an internal index of all nodes contained in the tree.
+class IReferenced(INodeAdapter):
+    """Holding an internal index of all nodes contained in the tree.
     """
     uuid = Attribute(u"``uuid.UUID`` of this node.")
     index = Attribute(u"The tree node index")
@@ -178,8 +188,15 @@ class IReferencingNode(INode):
         """
 
 
-class IOrderableNode(INode):
-    """Node which is ordered.
+class IAttributed(INodeAdapter):
+    """Provide attributes on node.
+    """
+    attrs = Attribute(u"``INodeAttributes`` implementation.")
+    attrs_factory = Attribute(u"``INodeAttributes`` implementation class")
+
+
+class IOrderable(INodeAdapter):
+    """Reordering support.
     """
     
     def insertbefore(newnode, refnode):
@@ -207,8 +224,8 @@ class IOrderableNode(INode):
         """
 
 
-class ICallableNode(INode):
-    """Node which implements the ``__call__`` function.
+class ICallable(INodeAdapter):
+    """Callable behavior.
     """
 
     def __call__():
@@ -216,8 +233,8 @@ class ICallableNode(INode):
         """
 
 
-class ITimoutNode(INode):
-    """Node which times out.
+class ITimout(INodeAdapter):
+    """Times out nodes.
     """
     timeout = Attribute(u"Node timeout in seconds.")
     elapse = Attribute(u"Minumum elapse time before timeout check is repeated "
@@ -228,33 +245,11 @@ class ITimoutNode(INode):
         """
 
 
-class IAttributedNode(INode):
-    """Node which care about its attributes.
-    """
-    attributes = Attribute(u"``INodeAttributes`` implementation.")
-    attributes_factory = Attribute(u"``INodeAttributes`` implementation class")
-
-
-class ILifecycleNode(INode):
-    """Node which care about its lifecycle.
+class ILifecycle(INodeAdapter):
+    """Takes care about lifecycle events.
     """
     events = Attribute(u"Dict with lifecycle event classes to use for "
                        u"notification.")
-
-
-class IComposition(INode):
-    """XXX: Write me
-    """
-
-
-class IAttributedComposition(IComposition, IAttributedNode):
-    """XXX: Write me
-    """
-
-
-class ILifecycleComposition(IComposition, ILifecycleNode):
-    """XXX: Write me
-    """
 
 
 ###############################################################################
@@ -288,4 +283,50 @@ class INodeAttributes(IEnumerableMapping, IWriteMapping):
 
 class ILifecycleNodeAttributes(INodeAttributes):
     """Node attributes which care about its lifecycle.
+    """
+
+
+###############################################################################
+# unchanged from zodict below
+###############################################################################
+
+# XXX: get rid of. use ICallable instead.
+class ICallableNode(INode):
+    """Node which implements the ``__call__`` function.
+    """
+
+    def __call__():
+        """Expose the tree contents to an output channel.
+        """
+
+
+# XXX: get rid of. use IAttributed instead.
+class IAttributedNode(INode):
+    """Node which care about its attributes.
+    """
+    attributes = Attribute(u"``INodeAttributes`` implementation.")
+    attributes_factory = Attribute(u"``INodeAttributes`` implementation class")
+
+
+# XXX: get rid of. use ILifecycle instead.
+class ILifecycleNode(INode):
+    """Node which care about its lifecycle.
+    """
+    events = Attribute(u"Dict with lifecycle event classes to use for "
+                       u"notification.")
+
+
+# XXX: is this a behavior as well?
+class IComposition(INode):
+    """XXX: Write me
+    """
+
+# XXX: should also be behavior.
+class IAttributedComposition(IComposition, IAttributedNode):
+    """XXX: Write me
+    """
+
+# XXX: should also be behavior.
+class ILifecycleComposition(IComposition, ILifecycleNode):
+    """XXX: Write me
     """
