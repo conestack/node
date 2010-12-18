@@ -4,23 +4,19 @@ node.utils
 Zodict
 ------
 
-Test BBB - deprecated usage.
-::
-
-    >>> from node.utils import zodict as BBBzodict
-    >>> BBBzodict
-    <class 'node.utils.Zodict'>
-
 Test Zodict.
 ::
 
     >>> from zope.interface.common.mapping import IFullMapping
-    >>> from zodict import Zodict
+    >>> from node.utils import Zodict
+    >>> Zodict
+    <class 'node.utils.Zodict'>
+    
     >>> zod = Zodict()
     >>> IFullMapping.providedBy(zod)
     True
     
-    ### all interface methods there?
+    ### XXX: all interface methods there.
 
 ReverseMapping
 --------------

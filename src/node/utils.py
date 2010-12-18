@@ -24,11 +24,6 @@ class Zodict(odict):
     def __init__(self, data=()):
         odict.__init__(self, data=data)
 
-zodict = Zodict
-from zope.deprecation import deprecated
-deprecated('zodict', "'zodict' has been renamed to 'Zodict'. Please modify your"
-                     " code and import to use: 'from zodict import Zodict'")
-
 
 class ReverseMapping(object):
     """Reversed IEnumerableMapping.

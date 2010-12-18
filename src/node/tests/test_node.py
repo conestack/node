@@ -10,6 +10,7 @@ optionflags = doctest.NORMALIZE_WHITESPACE | \
 TESTFILES = [
     '../utils.txt',
     '../base.txt',
+    '../aliasing.txt'
 ]
 
 def test_suite():

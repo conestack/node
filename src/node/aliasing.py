@@ -8,7 +8,7 @@ from base import _AbstractNode
 
 
 class DictAliaser(odict):
-    """Uses its own dictionary for aliasing
+    """Uses its own dictionary for aliasing.
 
     ``__getitem__`` -> unalias
     """
@@ -35,7 +35,7 @@ class PrefixAliaser(object):
         return (self.prefix or '') + key
 
     def unalias(self, prefixed_key):
-        """returns the real key for a prefixed_key
+        """Returns the real key for a prefixed_key.
         """
         prefix = self.prefix or ''
         if not prefixed_key.startswith(prefix):
@@ -76,7 +76,7 @@ class NodespaceAliases(dict):
     
 
 class AliaserChain(object):
-    """A chain of aliasers
+    """A chain of aliasers.
 
     chain = [aliaser1, aliaser2]
     chain.alias(key) == aliaser2.alias(aliaser1.alias(key))
@@ -102,29 +102,28 @@ class AliaserChain(object):
 
 
 class PrefixSuffixAliaser(AliaserChain):
-    """Prefixes and suffixes
+    """Prefixes and suffixes.
     """
     
     def __init__(self, prefix=None, suffix=None):
         self.chain = (
-                PrefixAliaser(prefix),
-                SuffixAliaser(suffix),
-                )
+            PrefixAliaser(prefix),
+            SuffixAliaser(suffix))
 
 
 class NamedAliasers(dict):
-    """A dictionary storing aliasers by name
+    """A dictionary storing aliasers by name.
     """
 
 
 class AliasedNodespace(_AbstractNode):
-    """Performs aliasing/unaliasing for node children
+    """Performs aliasing/unaliasing for node children.
 
     Is not the parent of its children, the children don't know about their name
     here.
 
     Future additional mode: children are wrapped, wrapper knows name and we are
-    parent of wrapper
+    parent of wrapper.
     """
     
     def __init__(self, context, aliaser=None):

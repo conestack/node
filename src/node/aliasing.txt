@@ -1,0 +1,99 @@
+node.aliasing
+=============
+
+DictAliaser
+-----------
+
+A dict aliaser takes a dictionary as base for aliasing.
+::
+
+    >>> from node.aliasing import DictAliaser
+    >>> da = DictAliaser([('alias1', 'key1'), ('alias2', 'key2')])
+
+    >>> da.alias('key1')
+    'alias1'
+
+    >>> da.unalias('alias2')
+    'key2'
+
+    >>> da.alias('foo')
+    Traceback (most recent call last):
+    ...
+    KeyError: 'foo'
+
+    >>> da.unalias('foo')
+    Traceback (most recent call last):
+    ...
+    KeyError: 'foo'
+
+PrefixAliaser
+-------------
+
+An aliaser that simply prefixes all keys.
+::
+
+    >>> from node.aliasing import PrefixAliaser
+    >>> pa = PrefixAliaser('prefix-')
+    
+    >>> pa.alias('foo')
+    'prefix-foo'
+
+    >>> pa.unalias('prefix-foo')
+    'foo'
+
+    >>> pa.unalias('foo')
+    Traceback (most recent call last):
+    ...
+    KeyError: u"key 'foo' does not match prefix 'prefix-'"
+
+SuffixAliaser
+-------------
+
+An aliaser that simply suffixes all keys.
+::
+
+    >>> from node.aliasing import SuffixAliaser
+    >>> sa = SuffixAliaser('-suffix')
+    
+    >>> sa.alias('foo')
+    'foo-suffix'
+
+    >>> sa.unalias('foo-suffix')
+    'foo'
+
+    >>> sa.unalias('foo')
+    Traceback (most recent call last):
+    ...
+    KeyError: u"key 'foo' does not match suffix '-suffix'"
+
+AliaserChain
+------------
+
+A chain of aliasers.
+::
+
+    >>> from node.aliasing import AliaserChain
+    >>> aliaser = AliaserChain()
+    >>> pa2 = PrefixAliaser('pre2-')
+    >>> aliaser.chain = [pa, pa2]
+    >>> aliaser.alias('foo')
+    'pre2-prefix-foo'
+
+    >>> aliaser.unalias(aliaser.alias('foo'))
+    'foo'
+
+    >>> aliaser.chain = [pa2, pa]
+    >>> aliaser.unalias(aliaser.alias('foo'))
+    'foo'
+
+PrefixSuffixAliaser
+-------------------
+::
+
+    >>> from node.aliasing import PrefixSuffixAliaser
+    >>> psa = PrefixSuffixAliaser('prefix-', '-suffix')
+    >>> psa.alias('foo')
+    'prefix-foo-suffix'
+    
+    >>> psa.unalias(psa.alias('foo'))
+    'foo'
