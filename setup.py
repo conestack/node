@@ -28,6 +28,10 @@ setup(name='node',
       zip_safe=True,
       install_requires=[
           'setuptools',
+          'uuid', # only needed for python2.4!
+          'odict',
+          'zope.lifecycleevent',
+          'zope.deprecation', # can be removed soon
       ],
       extras_require={
           'test': [

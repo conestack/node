@@ -2,11 +2,9 @@ from odict import odict
 from zope.interface import implements
 from zope.interface.common.mapping import IEnumerableMapping
 from zope.interface.common.mapping import IFullMapping
-
-from zodict import ReverseMapping
-
-from node.base import AbstractNode
-from node.interfaces import IAliaser
+from interfaces import IAliaser
+from utils import ReverseMapping
+from base import AbstractNode
 
 
 class DictAliaser(odict):
