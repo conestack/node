@@ -106,7 +106,12 @@ as somefullmapping.
     ... 
     ...     __iter__ = somefullmapping.__iter__
     ... 
-    ...     copy = somefullmapping.copy
+    ...     def copy(self):
+    ...         new = self.__class__()
+    ...         new.__name__ = self.__name__
+    ...         new.__parent__ = self.__parent__
+    ...         new.update(self.items())
+    ...         return new
     ... 
     ...     clear = somefullmapping.clear
     ... 
@@ -358,33 +363,50 @@ IFullMapping contract
     ['foo', 'baz']
 
 ``copy``
-
-XXX
 ::
 
-    >>> #copied = mynode.copy()
-    >>> #copied
+    >>> mycopied = mynode.copy()
+    >>> mycopied
+    <MyNode object 'None' at ...>
     
-    >>> #copied.items()
-    
-    >>> #copied is mynode
+    >>> mycopied is mynode
     False
     
-    >>> #copied = basenode.copy()
-    >>> #copied
+    >>> mycopied.items()
+    [('foo', <MyNode object 'foo' at ...>), 
+    ('baz', <MyNode object 'baz' at ...>)]
     
-    >>> #copied.items()
+    >>> mycopied['foo'] is mynode['foo']
+    True
     
-    >>> #copied is basenode
+    >>> basecopied = basenode.copy()
+    >>> basecopied
+    <BaseNode object 'None' at ...>
+    
+    >>> basecopied is basenode
     False
     
-    >>> #copied = orderednode.copy()
-    >>> #copied
+    >>> basecopied.items()
+    [('foo', <BaseNode object 'foo' at ...>), 
+    ('baz', <BaseNode object 'baz' at ...>)]
     
-    >>> #copied.items()
+    >>> basecopied['foo'] is basenode['foo']
+    True
     
-    >>> #copied is orderednode
+    >>> orderedcopied = orderednode.copy()
+    >>> orderedcopied
+    <OrderedNode object 'None' at ...>
+    
+    >>> orderedcopied is orderednode
     False
+    
+    >>> orderedcopied.items()
+    [('foo', <OrderedNode object 'foo' at ...>), 
+    ('baz', <OrderedNode object 'baz' at ...>)]
+    
+    >>> orderedcopied['foo'] is orderednode['foo']
+    True
+
 
 ``setdefault``
 ::

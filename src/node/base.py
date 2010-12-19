@@ -333,6 +333,13 @@ class _NodeSpaceMixin(_NodeMixin, _ImplMixin):
         # fail immediately if key does not exist
         self[key]
         self._mapping_impl().__delitem__(self, key)
+    
+    def copy(self):
+        new = self.__class__()
+        new.__name__ = self.__name__
+        new.__parent__ = self.__parent__
+        new.update(self.items())
+        return new
 
 
 ###############################################################################
