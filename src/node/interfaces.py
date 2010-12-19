@@ -229,6 +229,15 @@ class ICallable(INodeAdapter):
 
 class ITimout(INodeAdapter):
     """Times out nodes.
+    
+    # XXX: use timer?
+    >>> from threading import Timer
+    >>> def testme():
+    ...     print 'called'
+    ... 
+    >>> timer = Timer(5, testme) # timeout in seconds.
+    >>> timer.start()
+    >>> called
     """
     timeout = Attribute(u"Node timeout in seconds.")
     elapse = Attribute(u"Minumum elapse time before timeout check is repeated "

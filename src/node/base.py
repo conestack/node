@@ -249,10 +249,13 @@ class _ImplMixin(object):
     
     A class utilizing this contract must inherit from choosen ``IFullMaping``.
     
-    XXX: Use same contract in ``odict.odict`` for easier mixing.
+    We cannot use same contract as in ``odict.odict`` -> ``_dict_impl``.
+    Odict requires the dict implementation to store it's internal double linked
+    list while we need to have an implementation which must provide a ready to
+    use ``IFullMapping``
     """
     
-    def _impl(self):
+    def _mapping_impl(self):
         """Return ``IFullMaping`` implementing class.
         """
         raise NotImplementedError
@@ -264,7 +267,7 @@ class _NodeSpaceMixin(_NodeMixin, _ImplMixin):
     Still an abstract implementation.
     
     Subclass must inherit from this object and an ``IFullMapping`` implementing
-    object and return its class in ``self._impl()``.
+    object and return its class in ``self._mapping_impl()``.
     """
     
     def __init__(self, name=None, parent=None):
@@ -272,7 +275,7 @@ class _NodeSpaceMixin(_NodeMixin, _ImplMixin):
         ``name``
             Optional name used for ``__name__`` declared by ``ILocation``.
         """
-        self._impl().__init__(self)
+        self._mapping_impl().__init__(self)
         _NodeMixin.__init__(self, name, parent)
         self._nodespaces = None
     
@@ -294,7 +297,7 @@ class _NodeSpaceMixin(_NodeMixin, _ImplMixin):
             # nodespaces[key], nodespaces is an odict
             return self.nodespaces[key]
         try:
-            return self._impl().__getitem__(self, key)
+            return self._mapping_impl().__getitem__(self, key)
         except KeyError:
             raise KeyError(key)
     
@@ -318,7 +321,7 @@ class _NodeSpaceMixin(_NodeMixin, _ImplMixin):
             raise ValueError, u"It isn't allowed to use classes as values."
         if not self.allow_non_node_childs and not is_node:
             raise ValueError("Non-node childs are not allowed.")
-        self._impl().__setitem__(self, key, val)
+        self._mapping_impl().__setitem__(self, key, val)
     
     def __delitem__(self, key):
         # blend in our nodespaces as children, with name __<name>__
@@ -329,7 +332,7 @@ class _NodeSpaceMixin(_NodeMixin, _ImplMixin):
             return
         # fail immediately if key does not exist
         self[key]
-        self._impl().__delitem__(self, key)
+        self._mapping_impl().__delitem__(self, key)
 
 
 ###############################################################################
@@ -354,7 +357,7 @@ class BaseNode(_NodeSpaceMixin, dict):
     """
     implements(INode)
     
-    def _impl(self):
+    def _mapping_impl(self):
         return dict
     
     def update(self, data=(), **kw):
@@ -373,7 +376,7 @@ class OrderedNode(_NodeSpaceMixin, odict):
     """
     implements(INode)
     
-    def _impl(self):
+    def _mapping_impl(self):
         return odict
 
 
