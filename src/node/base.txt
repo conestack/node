@@ -106,13 +106,6 @@ as somefullmapping.
     ... 
     ...     __iter__ = somefullmapping.__iter__
     ... 
-    ...     def copy(self):
-    ...         new = self.__class__()
-    ...         new.__name__ = self.__name__
-    ...         new.__parent__ = self.__parent__
-    ...         new.update(self.items())
-    ...         return new
-    ... 
     ...     clear = somefullmapping.clear
     ... 
     ...     update = somefullmapping.update

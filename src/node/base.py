@@ -106,6 +106,16 @@ class _NodeMixin(object):
                                            hex(id(self))[:-1])
 
     __str__ = __repr__
+    
+    ###
+    # Agnostic IFullMapping related.
+    
+    def copy(self):
+        new = self.__class__()
+        new.__name__ = self.__name__
+        new.__parent__ = self.__parent__
+        new.update(self.items())
+        return new
 
 
 class _FullMappingMixin(object):
@@ -122,7 +132,7 @@ class _FullMappingMixin(object):
     - ``__delitem__``
     - ``__setitem__``
     - ``__iter__``
-    - ``copy``
+    - ``copy`` (FYI - _NodeMixin implements an agnostic ``copy`` function)
     - ``clear``
     - ``update``
     - ``setdefault``
@@ -337,15 +347,6 @@ class _NodeSpaceMixin(_NodeMixin, _ImplMixin):
         # fail immediately if key does not exist
         self[key]
         self._mapping_impl().__delitem__(self, key)
-    
-    def copy(self):
-        """XXX: maybe move to _NodeMixin.
-        """
-        new = self.__class__()
-        new.__name__ = self.__name__
-        new.__parent__ = self.__parent__
-        new.update(self.items())
-        return new
 
 
 ###############################################################################
