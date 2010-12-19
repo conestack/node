@@ -862,6 +862,14 @@ FullMappingTester
     ``iterkeys``: OK
     ``values``: OK
     ``itervalues``: OK
+    ``items``: OK
+    ``iteritems``: OK
+    ``__contains__``: OK
+    ``has_key``: OK
+    ``__len__``: OK
+    ``update``: OK
+    ``__delitem__``: OK
+    ``copy``: OK
 
 
 LocationTester
