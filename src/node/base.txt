@@ -88,7 +88,9 @@ Below we utilize ``odict.odict`` for most of the work. There exists node
 as somefullmapping.
 ::
 
+    >>> import inspect
     >>> from odict import odict as somefullmapping
+    >>> from node.interfaces import INode
     >>> class MyNode(AbstractNode, somefullmapping):
     ...     def __init__(self, name=None, parent=None):
     ...         # XXX: using ``super`` on dedicated base class? how?
@@ -100,8 +102,13 @@ as somefullmapping.
     ...     __delitem__ = somefullmapping.__delitem__
     ... 
     ...     def __setitem__(self, key, val):
-    ...         val.__name__ = key
-    ...         val.__parent__ = self
+    ...         if not self.allow_non_node_childs and inspect.isclass(val):
+    ...             raise ValueError, u"It isn't allowed to use classes as values."
+    ...         if not self.allow_non_node_childs and not INode.providedBy(val):
+    ...             raise ValueError("Non-node childs are not allowed.")
+    ...         if INode.providedBy(val):
+    ...             val.__name__ = key
+    ...             val.__parent__ = self
     ...         somefullmapping.__setitem__(self, key, val)
     ... 
     ...     __iter__ = somefullmapping.__iter__
@@ -690,8 +697,101 @@ Debug helper
 ``allow_non_node_childs``
 ::
 
+    >>> mynode.allow_non_node_childs
+    False
+    
+    >>> mynode['foo'] = object()
+    Traceback (most recent call last):
+      ...
+    ValueError: Non-node childs are not allowed.
+    
+    >>> mynode['foo'] = object
+    Traceback (most recent call last):
+      ...
+    ValueError: It isn't allowed to use classes as values.
+    
+    >>> mynode.allow_non_node_childs = True
+    >>> mynode['foo'] = object()
+    >>> mynode['foo']
+    <object object at ...>
+    
+    >>> del mynode['foo']
+    >>> mynode.allow_non_node_childs = False
+    
+    >>> basenode.allow_non_node_childs
+    False
+    
+    >>> basenode['foo'] = object()
+    Traceback (most recent call last):
+      ...
+    ValueError: Non-node childs are not allowed.
+    
+    >>> basenode['foo'] = object
+    Traceback (most recent call last):
+      ...
+    ValueError: It isn't allowed to use classes as values.
+    
+    >>> basenode.allow_non_node_childs = True
+    >>> basenode['foo'] = object()
+    >>> basenode['foo']
+    <object object at ...>
+    
+    >>> del basenode['foo']
+    >>> basenode.allow_non_node_childs = False
+    
+    >>> orderednode.allow_non_node_childs
+    False
+    
+    >>> orderednode['foo'] = object()
+    Traceback (most recent call last):
+      ...
+    ValueError: Non-node childs are not allowed.
+    
+    >>> orderednode['foo'] = object
+    Traceback (most recent call last):
+      ...
+    ValueError: It isn't allowed to use classes as values.
+    
+    >>> orderednode.allow_non_node_childs = True
+    >>> orderednode['foo'] = object()
+    >>> orderednode['foo']
+    <object object at ...>
+    
+    >>> del orderednode['foo']
+    >>> orderednode.allow_non_node_childs = False
+
 ``filteredvalues``
 ::
 
+    >>> from zope.interface import Interface, directlyProvides, noLongerProvides
+    >>> class IFilter(Interface):
+    ...     pass
+    
+    >>> directlyProvides(mynode['child-2'], IFilter)
+    >>> list(mynode.filteredvalues(IFilter))
+    [<MyNode object 'child-2' at ...>]
+    
+    >>> noLongerProvides(mynode['child-2'], IFilter)
+    >>> list(mynode.filteredvalues(IFilter))
+    []
+    
+    >>> directlyProvides(basenode['child-2'], IFilter)
+    >>> list(basenode.filteredvalues(IFilter))
+    [<BaseNode object 'child-2' at ...>]
+    
+    >>> noLongerProvides(basenode['child-2'], IFilter)
+    >>> list(basenode.filteredvalues(IFilter))
+    []
+    
+    >>> directlyProvides(orderednode['child-2'], IFilter)
+    >>> list(orderednode.filteredvalues(IFilter))
+    [<OrderedNode object 'child-2' at ...>]
+    
+    >>> noLongerProvides(orderednode['child-2'], IFilter)
+    >>> list(orderednode.filteredvalues(IFilter))
+    []
+
 ``as_attribute_access``
 ::
+
+    >>> 
