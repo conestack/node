@@ -112,33 +112,24 @@ BehavioralNode was wrapped.
     >>> BehaviorNode
     <class 'node.meta.NodeBehaviorWrapper'>
 
-Behavior classes.
+Behavior classes bound to node.
 ::
 
     >>> BehaviorNode.__behaviors_cls
     (<class 'SomeBehavior'>,)
 
-No instances yet.
-::
-
-    >>> BehaviorNode.__behaviors_ins
-    {}
-
-Instanciate.
+Instanciate wrapped node.
 ::
 
     >>> node = BehaviorNode()
     >>> node
     <BehaviorNode object 'None' at ...>
 
-Still no instances.
+No behavior instances yet. Are created on first attribute access.
 ::
     
     >>> node.__class__.__behaviors_ins
     {}
-
-Behavior instance is created on First access.
-::
 
     >>> node.do
     <bound method SomeBehavior.do of <SomeBehavior object at ...>>
@@ -146,7 +137,7 @@ Behavior instance is created on First access.
     >>> node.__class__.__behaviors_ins
     {'SomeBehavior': <SomeBehavior object at ...>}
 
-Use behavior functions and props directly on decorated node.
+Use behavior functions and properties directly on decorated node.
 ::
 
     >>> node.do()
@@ -159,7 +150,7 @@ Use behavior functions and props directly on decorated node.
     >>> node.rw
     '123'
 
-Define another behavior.
+Define second behavior. It implements ``do`` as well.
 ::
 
     >>> class OtherBehavior(object):
@@ -174,7 +165,7 @@ Define another behavior.
     ...     def do(self):
     ...         return 'do other on ' + str(self.context)
 
-Set both defined behaviors on node.
+Both behaviors using node.
 ::
 
     >>> @behavior(SomeBehavior, OtherBehavior)
@@ -185,14 +176,13 @@ Set both defined behaviors on node.
     >>> node.perform()
     "perform on <BehaviorNode object 'None' at ...>"
 
-``do`` is used from SomeBehavior, its prior to OtherBehavior in behavior
-chain.
+``do`` is used from SomeBehavior, its first in behavior hierarchy.
 ::
 
     >>> node.do()
     "do something on <BehaviorNode object 'None' at ...>"
 
-Test with reversed behavior order.
+Reversed behavior order.
 ::
 
     >>> @behavior(OtherBehavior, SomeBehavior)
