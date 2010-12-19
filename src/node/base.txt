@@ -607,7 +607,12 @@ used to define tree hierarchy.
 INode contract
 --------------
 
+XXX: decide wether ``aliases`` or ``aliaser`` (still dunno) should be kept in
+     base interface.
+
 ``printtree``
+
+Debug helper
 ::
 
     >>> mynode.printtree()
@@ -645,5 +650,48 @@ INode contract
       <class 'node.base.OrderedNode'>: child-2
         <class 'node.base.OrderedNode'>: subchild-0
         <class 'node.base.OrderedNode'>: subchild-1
+
+``path``
+::
+
+    >>> mynode.__name__ = 'root'
+    >>> mynode.path
+    ['root']
     
+    >>> mynode['child-1']['subchild-1'].path
+    ['root', 'child-1', 'subchild-1']
     
+    >>> basenode.__name__ = 'root'
+    >>> basenode.path
+    ['root']
+    
+    >>> basenode['child-1']['subchild-1'].path
+    ['root', 'child-1', 'subchild-1']
+    
+    >>> orderednode.__name__ = 'root'
+    >>> orderednode.path
+    ['root']
+    
+    >>> orderednode['child-1']['subchild-1'].path
+    ['root', 'child-1', 'subchild-1']
+
+``root``
+::
+
+    >>> mynode['child-1']['subchild-1'].root is mynode
+    True
+    
+    >>> basenode['child-1']['subchild-1'].root is basenode
+    True
+    
+    >>> orderednode['child-1']['subchild-1'].root is orderednode
+    True
+
+``allow_non_node_childs``
+::
+
+``filteredvalues``
+::
+
+``as_attribute_access``
+::
