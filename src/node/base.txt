@@ -841,3 +841,38 @@ Debug helper
     Traceback (most recent call last):
       ...
     ValueError: It isn't allowed to use classes as values.
+
+
+Tester Objects
+==============
+
+FullMappingTester
+-----------------
+::
+
+    >>> from node.testing import FullMappingTester
+    >>> tester = FullMappingTester(MyNode)
+    >>> tester.run()
+    >>> tester.combined_results()
+    ``__setitem__``: OK
+    ``__getitem__``: OK
+    ``get``: OK
+    ``__iter__``: OK
+    ``keys``: OK
+    ``iterkeys``: OK
+    ``values``: OK
+    ``itervalues``: OK
+
+
+LocationTester
+--------------
+::
+
+    >>> from node.testing import LocationTester
+
+
+NodeTester
+----------
+::
+
+    >>> from node.testing import NodeTester
