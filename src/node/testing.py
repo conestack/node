@@ -50,7 +50,8 @@ class BaseTester(object):
                 raise ContractError(msg)
             writer = self.writer(name)
             try:
-                func(writer)
+                func()
+                writer.success()
             except Exception, e:
                 writer.failed(str(e))
 
@@ -90,82 +91,73 @@ class FullMappingTester(BaseTester):
             return True
         return False
     
-    def test___setitem__(self, writer):
+    def test___setitem__(self):
         """Note if __name__ is set on added node, it gets overwritten by new key
         """
         self.context['foo'] = self.class_()
         self.context['bar'] = self.class_(name='xxx')
-        writer.success()
     
-    def test___getitem__(self, writer):
+    def test___getitem__(self):
         if not self._object_repr_valid(self.context['foo'], 'foo'):
-            writer.failed(self._object_repr('foo'))
-            return
+            raise Exception(self._object_repr('foo'))
         if self.context['bar'].__name__ != 'bar':
-            writer.failed('Child ``bar`` has wrong ``__name__``')
-            return
-        writer.success()
+            raise Exception('Child ``bar`` has wrong ``__name__``')
     
-    def test_get(self, writer):
+    def test_get(self):
         if not self._object_repr_valid(self.context['bar'], 'bar'):
-            writer.failed(self._object_repr('bar'))
-            return
+            raise Exception(self._object_repr('bar'))
         default = object()
         if not self.context.get('xxx', default) is default:
-            writer.failed('Does not return ``default`` as expected')
-            return
-        writer.success()
+            raise Exception('Does not return ``default`` as expected')
     
-    def _check_keys(self, writer, keys):
+    def _check_keys(self, keys, expected):
         """Used by
         - ``test__iter__``
         - ``test_keys``
         - ``test_iterkeys``
         """
-        if not 'foo' in keys or not 'bar' in keys:
-            msg = 'Expected ``foo`` and ``bar`` as keys. Got ``%s``' % str(keys)
-            writer.failed(msg)
-            return
-        writer.success()
+        for key in expected:
+            if not key in expected:
+                msg = 'Expected ``%s`` as keys. Got ``%s``'
+                msg = msg  % (str(keys), str(expected))
+                raise Exception(msg)
     
-    def test___iter__(self, writer):
+    def test___iter__(self):
         keys = [key for key in self.context]
-        self._check_keys(writer, keys)
+        self._check_keys(keys, ['foo', 'bar'])
     
-    def test_keys(self, writer):
+    def test_keys(self):
         keys = self.context.keys()
-        self._check_keys(writer, keys)
+        self._check_keys(keys, ['foo', 'bar'])
     
-    def test_iterkeys(self, writer):
+    def test_iterkeys(self):
         keys = [key for key in self.context.iterkeys()]
-        self._check_keys(writer, keys)
+        self._check_keys(keys, ['foo', 'bar'])
     
-    def _check_values(self, writer, values):
+    def _check_values(self, values, expected):
         """Used by:
         - ``test_values``
         - ``test_itervalues``
         """
-        if len(values) != 2:
-            writer.failed('Expected 2-length result. Got ``%i``' % len(values))
-            return
-        expected = ['foo', 'bar']
+        if len(values) != len(expected):
+            msg = 'Expected %i-length result. Got ``%i``'
+            msg = msg % (len(expected), len(values))
+            raise Exception(msg)
         for value in values:
             if not value.__name__ in expected:
                 msg = 'Expected values with __name__ foo and bar. Got ``%s``'
                 mgs = msg % value.__name__
-                writer.failed(msg)
-                return
-        writer.success()
+                raise Exception(msg)
     
-    def test_values(self, writer):
+    def test_values(self):
         values = self.context.values()
-        self._check_values(writer, values)
+        self._check_values(values, ['foo', 'bar'])
     
-    def test_itervalues(self, writer):
+    def test_itervalues(self):
         values = [val for val in self.context.itervalues()]
-        self._check_values(writer, values)
+        self._check_values(values, ['foo', 'bar'])
     
-    def _check_items(self, writer, items, expected=['foo', 'bar']):
+    def _check_items(self, items, expected):
         """Used by:
         - ``test_items``
         - ``test_iteritems``
@@ -174,91 +166,78 @@ class FullMappingTester(BaseTester):
         if len(items) != len(expected):
             msg = 'Expected %i-length result. Got ``%i``'
             msg = msg % (len(expected), len(items))
-            writer.failed(msg)
-            return False
+            raise Exception(msg)
         for key, value in items:
             if not key in expected:
                 msg = 'Expected keys ``%s``. Got ``%s``' % (str(expected), key)
-                writer.failed(msg)
-                return False
+                raise Exception(msg)
             if not key == value.__name__:
                 msg = 'Expected same value for ``key`` and  ``__name__``'
-                writer.failed(msg)
-                return False
+                raise Exception(msg)
             if not self._object_repr_valid(value, key):
-                writer.failed(self._object_repr(key))
-                return False
-        return True
+                raise Exception(self._object_repr(key))
     
-    def test_items(self, writer):
-        if not self._check_items(writer, self.context.items(), ['foo', 'bar']):
-            return
-        writer.success()
+    def test_items(self):
+        self._check_items(self.context.items(), ['foo', 'bar'])
     
-    def test_iteritems(self, writer):
+    def test_iteritems(self):
         items = [item for item in self.context.iteritems()]
-        if not self._check_items(writer, items, ['foo', 'bar']):
-            return
-        writer.success()
+        self._check_items(items, ['foo', 'bar'])
     
-    def test___contains__(self, writer):
+    def test___contains__(self):
         if not 'foo' in self.context or not 'bar' in self.context:
             msg = 'Expected ``foo`` and ``bar`` return ``True`` from ' + \
                   '``__contains__``'
-            writer.failed(msg)
-            return
-        writer.success()
+            raise Exception(msg)
     
-    def test_has_key(self, writer):
+    def test_has_key(self):
         if not self.context.has_key('foo') \
           or not self.context.has_key('bar'):
             msg = 'Expected ``foo`` and ``bar`` return ``True`` from ' + \
                   '``has_key``'
-            writer.failed(msg)
-            return
-        writer.success()
+            raise Exception(msg)
     
-    def test___len__(self, writer):
+    def test___len__(self):
         count = len(self.context)
         if count != 2:
-            writer.failed('Expected 2-length result. Got ``%i``' % count)
-            return
-        writer.success()
+            raise Exception('Expected 2-length result. Got ``%i``' % count)
     
-    def test_update(self, writer):
+    def test_update(self):
         self.context.update((('baz', self.class_()),))
         if not self._object_repr_valid(self.context['baz'], 'baz'):
-            writer.failed(self._object_repr('baz'))
-            return
-        writer.success()
+            raise Exception(self._object_repr('baz'))
     
-    def test___delitem__(self, writer):
+    def test___delitem__(self):
         del self.context['bar']
         keys = self.context.keys()
         keys.sort()
         if not str(keys) == "['baz', 'foo']":
-            writer.failed(str(keys))
-        writer.success()
+            raise Exception(str(keys))
     
-    def test_copy(self, writer):
+    def test_copy(self):
         copied = self.context.copy()
         if not self._object_repr_valid(copied, 'None'):
-            writer.failed(self._object_repr('None'))
-            return
+            raise Exception(self._object_repr('None'))
         if copied is self.context:
-            writer.failed('``copied`` is ``context``')
-            return
-        if not self._check_items(writer, self.context.items(), ['foo', 'baz']):
-            return
+            raise Exception('``copied`` is ``context``')
+        self._check_items(self.context.items(), ['foo', 'baz'])
         if not copied['foo'] is self.context['foo']:
-            writer.failed("``copied['foo']`` is not ``context['foo']``")
-            return
-        writer.success()
+            raise Exception("``copied['foo']`` is not ``context['foo']``")
     
-    def test_setdefault(self, writer):
+    def test_setdefault(self):
         """
+        >>> mynew = MyNode()
+        >>> mynode.setdefault('foo', mynew) is mynew
+        False
+        
+        >>> mynode.setdefault('bar', mynew) is mynew
+        True
+        
+        >>> mynode.items()
+        [('foo', <MyNode object 'foo' at ...>), 
+        ('baz', <MyNode object 'baz' at ...>), 
+        ('bar', <MyNode object 'bar' at ...>)]
         """
-        writer.success()
 
 class LocationTester(BaseTester):
     """Test object against ``zope.location.interfaces.ILocation`` interface.

@@ -870,6 +870,7 @@ FullMappingTester
     ``update``: OK
     ``__delitem__``: OK
     ``copy``: OK
+    ``setdefault``: OK
 
 
 LocationTester
