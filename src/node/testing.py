@@ -13,7 +13,13 @@ class Writer(object):
         self.result[self.name] = 'Failed: %s' % (message,)
 
 
+class ContractViolation(Exception):
+    pass
+
+
 class BaseTester(object):
+    
+    iface_contracts = list()
     
     def __init__(self, class_):
         self.class_ = class_
@@ -37,23 +43,29 @@ class BaseTester(object):
         return Writer(key, self.tested)
     
     def run(self):
-        raise NotImplementedError
+        for contract in self.iface_contracts:
+            func = getattr(self, 'test_%s' % contract, None)
+            if func is None:
+                msg = u"Given implementation does not provide ``%s``" % contract
+                raise ContractViolation(msg)
+            func()
 
 
 class FullMappingTester(BaseTester):
     """Test object against ``zope.interface.mapping.IFullMaping`` interface.
     """
     
-    def run(self):
-        self._test__setitem__()
-        self._test__getitem__()
-        self._test_get()
-        self._test__iter__()
-        self._test_keys()
-        self._test_iterkeys()
-        self._test_values()
-        self._test_itervalues()
-        self._test_items()
+    iface_contracts = [
+        '__setitem__',
+        '__getitem__',
+        'get',
+        '__iter__',
+        'keys',
+        'iterkeys',
+        'values',
+        'itervalues',
+        'items',
+    ]
     
     _object_repr_pattern = "<%s object '%s' at ...>"
     
@@ -66,7 +78,7 @@ class FullMappingTester(BaseTester):
             return True
         return False
     
-    def _test__setitem__(self):
+    def test___setitem__(self):
         """Note if __name__ is set on added node, it gets overwritten by new key
         """
         writer = self.writer('__setitem__')
@@ -77,7 +89,7 @@ class FullMappingTester(BaseTester):
         except Exception, e:
             writer.failed(str(e))
     
-    def _test__getitem__(self):
+    def test___getitem__(self):
         writer = self.writer('__getitem__')
         try:
             if not self._object_repr_valid(self.context['foo'], 'foo'):
@@ -90,7 +102,7 @@ class FullMappingTester(BaseTester):
         except Exception, e:
             writer.failed(str(e))
     
-    def _test_get(self):
+    def test_get(self):
         writer = self.writer('get')
         try:
             if not self._object_repr_valid(self.context['bar'], 'bar'):
@@ -104,7 +116,7 @@ class FullMappingTester(BaseTester):
         except Exception, e:
             writer.failed(str(e))
     
-    def __check_keys(self, writer, keys):
+    def _check_keys(self, writer, keys):
         """Used by
         - ``_test__iter__``
         - ``_test_keys``
@@ -115,31 +127,31 @@ class FullMappingTester(BaseTester):
             return
         writer.success()
     
-    def _test__iter__(self):
+    def test___iter__(self):
         writer = self.writer('__iter__')
         try:
             keys = [key for key in self.context]
-            self.__check_keys(writer, keys)
+            self._check_keys(writer, keys)
         except Exception, e:
             writer.failed(str(e))
     
-    def _test_keys(self):
+    def test_keys(self):
         writer = self.writer('keys')
         try:
             keys = self.context.keys()
-            self.__check_keys(writer, keys)
+            self._check_keys(writer, keys)
         except Exception, e:
             writer.failed(str(e))
     
-    def _test_iterkeys(self):
+    def test_iterkeys(self):
         writer = self.writer('iterkeys')
         try:
             keys = [key for key in self.context.iterkeys()]
-            self.__check_keys(writer, keys)
+            self._check_keys(writer, keys)
         except Exception, e:
             writer.failed(str(e))
     
-    def __check_values(self, writer, values):
+    def _check_values(self, writer, values):
         """Used by:
         - ``_test_values``
         - ``_test_itervalues``
@@ -156,24 +168,25 @@ class FullMappingTester(BaseTester):
                 return
         writer.success()
     
-    def _test_values(self):
+    def test_values(self):
         writer = self.writer('values')
         try:
             values = self.context.values()
-            self.__check_values(writer, values)
+            self._check_values(writer, values)
         except Exception, e:
             writer.failed(str(e))
     
-    def _test_itervalues(self):
+    def test_itervalues(self):
         writer = self.writer('itervalues')
         try:
             values = [val for val in self.context.itervalues()]
-            self.__check_values(writer, values)
+            self._check_values(writer, values)
         except Exception, e:
             writer.failed(str(e))
     
-    def _test_items(self):
-        """"""
+    def test_items(self):
+        """
+        """
 
 class LocationTester(BaseTester):
     """Test object against ``zope.location.interfaces.ILocation`` interface.
