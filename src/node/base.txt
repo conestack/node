@@ -538,12 +538,78 @@ Note if __name__ is set on added node, it gets overwritten by new key
       ...
     KeyError: "'popitem(): ordered dictionary is empty'"
 
-##################
+
+ILocation contract
+------------------
+
+``ILocations`` promises ``__name__`` and ``__parent__`` attributes. They are
+used to define tree hierarchy.
+::
 
     >>> mynode = create_tree(MyNode)
     >>> mynode
     <MyNode object 'None' at ...>
     
+    >>> mynode.__name__
+    >>> mynode.__parent__
+    
+    >>> mynode['child-1'].__name__
+    'child-1'
+    
+    >>> mynode['child-1'].__parent__ is mynode
+    True
+    
+    >>> mynode['child-1']['subchild-1'].__name__
+    'subchild-1'
+    
+    >>> mynode['child-1']['subchild-1'].__parent__.__parent__ is mynode
+    True
+    
+    >>> basenode = create_tree(BaseNode)
+    >>> basenode
+    <BaseNode object 'None' at ...>
+    
+    >>> basenode.__name__
+    >>> basenode.__parent__
+    
+    >>> basenode['child-1'].__name__
+    'child-1'
+    
+    >>> basenode['child-1'].__parent__ is basenode
+    True
+    
+    >>> basenode['child-1']['subchild-1'].__name__
+    'subchild-1'
+    
+    >>> basenode['child-1']['subchild-1'].__parent__.__parent__ is basenode
+    True
+    
+    >>> orderednode = create_tree(OrderedNode)
+    >>> orderednode
+    <OrderedNode object 'None' at ...>
+
+    >>> orderednode.__name__
+    >>> orderednode.__parent__
+    
+    >>> orderednode['child-1'].__name__
+    'child-1'
+    
+    >>> orderednode['child-1'].__parent__ is orderednode
+    True
+    
+    >>> orderednode['child-1']['subchild-1'].__name__
+    'subchild-1'
+    
+    >>> orderednode['child-1']['subchild-1'].__parent__.__parent__ is orderednode
+    True
+
+
+INode contract
+--------------
+
+``printtree``
+::
+
     >>> mynode.printtree()
     <class 'MyNode'>: None
       <class 'MyNode'>: child-0
@@ -555,10 +621,6 @@ Note if __name__ is set on added node, it gets overwritten by new key
       <class 'MyNode'>: child-2
         <class 'MyNode'>: subchild-0
         <class 'MyNode'>: subchild-1
-    
-    >>> basenode = create_tree(BaseNode)
-    >>> basenode
-    <BaseNode object 'None' at ...>
     
     >>> basenode.printtree()
     <class 'node.base.BaseNode'>: None
@@ -572,10 +634,6 @@ Note if __name__ is set on added node, it gets overwritten by new key
         <class 'node.base.BaseNode'>: subchild-...
         <class 'node.base.BaseNode'>: subchild-...
     
-    >>> orderednode = create_tree(OrderedNode)
-    >>> orderednode
-    <OrderedNode object 'None' at ...>
-    
     >>> orderednode.printtree()
     <class 'node.base.OrderedNode'>: None
       <class 'node.base.OrderedNode'>: child-0
@@ -587,12 +645,5 @@ Note if __name__ is set on added node, it gets overwritten by new key
       <class 'node.base.OrderedNode'>: child-2
         <class 'node.base.OrderedNode'>: subchild-0
         <class 'node.base.OrderedNode'>: subchild-1
-
-
-ILocation contract
-------------------
-::
-
-INode contract
---------------
-::
+    
+    
