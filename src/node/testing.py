@@ -91,6 +91,9 @@ class FullMappingTester(BaseTester):
         '__delitem__',
         'copy',
         'setdefault',
+        'pop',
+        'popitem',
+        'clear',
     ]
     
     _object_repr_pattern = "<%s object '%s' at ...>"
@@ -129,7 +132,11 @@ class FullMappingTester(BaseTester):
         - ``test_keys``
         - ``test_iterkeys``
         """
-        for key in expected:
+        if len(keys) != len(expected):
+            msg = 'Expected %i-length result. Got ``%i``'
+            msg = msg % (len(expected), len(keys))
+            raise Exception(msg)
+        for key in keys:
             if not key in expected:
                 msg = 'Expected ``%s`` as keys. Got ``%s``'
                 msg = msg  % (str(keys), str(expected))
@@ -238,19 +245,60 @@ class FullMappingTester(BaseTester):
             raise Exception("``copied['foo']`` is not ``context['foo']``")
     
     def test_setdefault(self):
+        new = self.class_()
+        if self.context.setdefault('foo', new) is new:
+            raise Exception('Replaced already existing item.')
+        if not self.context.setdefault('bar', new) is new:
+            raise Exception('Inserted item not same instance.')
+        self._check_items(self.context.items(), ['foo', 'bar', 'baz'])
+    
+    def test_pop(self):
+        try:
+            self.context.pop('xxx')
+            raise Exception('Excected ``KeyError`` for inexistent item.')
+        except KeyError:
+            pass
+        default = object()
+        if not self.context.pop('xxx', default) is default:
+            raise Exception('Returned default is not same instance')
+        popped = self.context.pop('foo')
+        if not self._object_repr_valid(popped, 'foo'):
+            raise Exception('Expected ``foo``, got ``%s``' % popped.__name__)
+        self._check_keys(self.context.keys(), ['baz', 'bar'])
+    
+    def test_popitem(self):
         """
-        >>> mynew = MyNode()
-        >>> mynode.setdefault('foo', mynew) is mynew
-        False
+        >>> mynode.popitem()
+        ('bar', <MyNode object 'bar' at ...>)
         
-        >>> mynode.setdefault('bar', mynew) is mynew
-        True
+        >>> mynode.keys()
+        ['baz']
         
-        >>> mynode.items()
-        [('foo', <MyNode object 'foo' at ...>), 
-        ('baz', <MyNode object 'baz' at ...>), 
-        ('bar', <MyNode object 'bar' at ...>)]
+        >>> mynode.clear()
+        >>> mynode.keys()
+        []
+        
+        >>> mynode.popitem()
+        Traceback (most recent call last):
+          ...
+        KeyError: "'popitem(): ordered dictionary is empty'"
         """
+        self._check_items((self.context.popitem(),), ['bar'])
+        self._check_keys(self.context.keys(), ['baz'])
+        self.context.popitem()
+        try:
+            self.context.popitem()
+            msg = 'Expected ``KeyError`` when called on empty mapping'
+            raise Exception(msg)
+        except KeyError:
+            pass
+    
+    def test_clear(self):
+        self.context['foo'] = self.class_()
+        self.context['bar'] = self.class_()
+        self._check_keys(self.context.keys(), ['foo', 'bar'])
+        self.context.clear()
+        self._check_keys(self.context.keys(), [])
 
 
 class LocationTester(BaseTester):

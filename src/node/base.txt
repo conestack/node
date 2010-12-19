@@ -871,6 +871,33 @@ FullMappingTester
     ``__delitem__``: OK
     ``copy``: OK
     ``setdefault``: OK
+    ``pop``: OK
+    ``popitem``: OK
+    ``clear``: OK
+    
+    >>> tester = FullMappingTester(BaseNode)
+    >>> tester.run()
+    >>> tester.combined
+    ``__setitem__``: OK
+    ``__getitem__``: OK
+    ``get``: OK
+    ``__iter__``: OK
+    ``keys``: OK
+    ``iterkeys``: OK
+    ``values``: OK
+    ``itervalues``: OK
+    ``items``: OK
+    ``iteritems``: OK
+    ``__contains__``: OK
+    ``has_key``: OK
+    ``__len__``: OK
+    ``update``: OK
+    ``__delitem__``: OK
+    ``copy``: OK
+    ``setdefault``: OK
+    ``pop``: OK
+    ``popitem``: OK
+    ``clear``: OK
 
 
 LocationTester
