@@ -1,16 +1,20 @@
 from odict import odict
 
-class Writer(object):
+class ResultWriter(object):
     
-    def __init__(self, name, result):
+    def __init__(self, results, name=None):
         self.name = name
-        self.result = result
+        self.results = results
     
     def success(self):
-        self.result[self.name] = 'OK'
+        self.results[self.name] = 'OK'
     
     def failed(self, msg):
-        self.result[self.name] = 'Failed: %s' % (msg,)
+        self.results[self.name] = 'Failed: %s' % (msg,)
+    
+    def combined_results(self):
+        for key, val in self.results.iteritems():
+            print '``%s``: %s' % (key, self.results[key])
 
 
 class ContractError(Exception):
@@ -19,12 +23,17 @@ class ContractError(Exception):
 
 class BaseTester(object):
     
+    # list of interface contract attributes to test.
+    # test functions always are named 'test_[contractname]'.
+    # execution is in order, so you might depend tests to prior happened
+    # context manipulation.
     iface_contract = []
     
     def __init__(self, class_):
+        self._results = odict()
         self.class_ = class_
         self.context = class_()
-        self.tested = odict()
+        self._results = odict()
     
     def create_tree(class_):
         class_ = self.class_
@@ -35,12 +44,12 @@ class BaseTester(object):
                 root['child_%i' % i]['subchild_%i' % j] = class_()
         return root
     
-    def combined_results(self):
-        for key, val in self.tested.iteritems():
-            print '``%s``: %s' % (key, self.tested[key])
+    def writer(self, key=None):
+        return ResultWriter(self._results, name=key)
     
-    def writer(self, key):
-        return Writer(key, self.tested)
+    @property
+    def results(self):
+        self.writer().combined_results()
     
     def run(self):
         for name in self.iface_contract:
