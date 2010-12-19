@@ -2,3 +2,6 @@ node.testing
 ============
 
 XXX Test ass edge cases for node testers
+
+XXX: tester dependencies of FullMappingTester to node __repr__ function and
+     __class__ name. get rid of!
