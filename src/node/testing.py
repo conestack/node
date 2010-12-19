@@ -70,7 +70,7 @@ class BaseTester(object):
 
 
 class FullMappingTester(BaseTester):
-    """Test object against ``zope.interface.mapping.IFullMaping`` interface.
+    """Test node against ``zope.interface.mapping.IFullMaping`` interface.
     """
     
     iface_contract = [
@@ -108,9 +108,9 @@ class FullMappingTester(BaseTester):
         return False
     
     def test___setitem__(self):
-        """Note if __name__ is set on added node, it gets overwritten by new key
-        """
         self.context['foo'] = self.class_()
+        # Note if ``__name__`` is set on added node, it gets overwritten by new
+        # name.
         self.context['bar'] = self.class_(name='xxx')
     
     def test___getitem__(self):
@@ -127,11 +127,6 @@ class FullMappingTester(BaseTester):
             raise Exception('Does not return ``default`` as expected')
     
     def _check_keys(self, keys, expected):
-        """Used by
-        - ``test__iter__``
-        - ``test_keys``
-        - ``test_iterkeys``
-        """
         if len(keys) != len(expected):
             msg = 'Expected %i-length result. Got ``%i``'
             msg = msg % (len(expected), len(keys))
@@ -155,10 +150,6 @@ class FullMappingTester(BaseTester):
         self._check_keys(keys, ['foo', 'bar'])
     
     def _check_values(self, values, expected):
-        """Used by:
-        - ``test_values``
-        - ``test_itervalues``
-        """
         if len(values) != len(expected):
             msg = 'Expected %i-length result. Got ``%i``'
             msg = msg % (len(expected), len(values))
@@ -178,11 +169,6 @@ class FullMappingTester(BaseTester):
         self._check_values(values, ['foo', 'bar'])
     
     def _check_items(self, items, expected):
-        """Used by:
-        - ``test_items``
-        - ``test_iteritems``
-        - ``test_copy``
-        """
         if len(items) != len(expected):
             msg = 'Expected %i-length result. Got ``%i``'
             msg = msg % (len(expected), len(items))
