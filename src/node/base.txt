@@ -164,26 +164,37 @@ IFullMapping contract
 ---------------------
 
 ``__setitem__``
+
+Note if __name__ is set on added node, it gets overwritten by new key
 ::
 
     >>> mynode['foo'] = MyNode()
-    >>> mynode['bar'] = MyNode()
+    >>> mynode['bar'] = MyNode(name='xxx')
     >>> basenode['foo'] = BaseNode()
-    >>> basenode['bar'] = BaseNode()
+    >>> basenode['bar'] = BaseNode(name='xxx')
     >>> orderednode['foo'] = OrderedNode()
-    >>> orderednode['bar'] = OrderedNode()
-    
+    >>> orderednode['bar'] = OrderedNode(name='xxx')
+
 ``__getitem__``
 ::
 
     >>> mynode['foo']
     <MyNode object 'foo' at ...>
     
+    >>> mynode['bar'].__name__
+    'bar'
+    
     >>> basenode['foo']
     <BaseNode object 'foo' at ...>
     
+    >>> basenode['bar'].__name__
+    'bar'
+    
     >>> orderednode['foo']
     <OrderedNode object 'foo' at ...>
+    
+    >>> orderednode['bar'].__name__
+    'bar'
 
 ``get``
 ::
@@ -407,26 +418,132 @@ IFullMapping contract
     >>> orderedcopied['foo'] is orderednode['foo']
     True
 
-
 ``setdefault``
 ::
 
-    XXX
+    >>> mynew = MyNode()
+    >>> mynode.setdefault('foo', mynew) is mynew
+    False
+    
+    >>> mynode.setdefault('bar', mynew) is mynew
+    True
+    
+    >>> mynode.items()
+    [('foo', <MyNode object 'foo' at ...>), 
+    ('baz', <MyNode object 'baz' at ...>), 
+    ('bar', <MyNode object 'bar' at ...>)]
+    
+    >>> basenew = BaseNode()
+    >>> basenode.setdefault('foo', basenew) is basenew
+    False
+    
+    >>> basenode.setdefault('bar', basenew) is basenew
+    True
+    
+    >>> basenode.items()
+    [('baz', <BaseNode object 'baz' at ...>), 
+    ('foo', <BaseNode object 'foo' at ...>), 
+    ('bar', <BaseNode object 'None' at ...>)]
+    
+    >>> orderednew = OrderedNode()
+    >>> orderednode.setdefault('foo', orderednew) is orderednew
+    False
+    
+    >>> orderednode.setdefault('bar', orderednew) is orderednew
+    True
 
 ``pop``
 ::
 
-    XXX
+    >>> mynode.pop('xxx')
+    Traceback (most recent call last):
+      ...
+    KeyError: 'xxx'
+    
+    >>> mynode.pop('xxx', 'default')
+    'default'
+    
+    >>> mynode.pop('foo')
+    <MyNode object 'foo' at ...>
+    
+    >>> mynode.keys()
+    ['baz', 'bar']
+    
+    >>> basenode.pop('xxx')
+    Traceback (most recent call last):
+      ...
+    KeyError: 'xxx'
+    
+    >>> basenode.pop('xxx', 'default')
+    'default'
+    
+    >>> basenode.pop('foo')
+    <BaseNode object 'foo' at ...>
+    
+    >>> basenode.keys()
+    ['baz', 'bar']
+    
+    >>> orderednode.pop('xxx')
+    Traceback (most recent call last):
+      ...
+    KeyError: 'xxx'
+    
+    >>> orderednode.pop('xxx', 'default')
+    'default'
+    
+    >>> orderednode.pop('foo')
+    <OrderedNode object 'foo' at ...>
+    
+    >>> orderednode.keys()
+    ['baz', 'bar']
 
-``popitem``
+``popitem`` and ``clear``
 ::
 
-    XXX
-
-``clear``
-::
-
-    XXX
+    >>> mynode.popitem()
+    ('bar', <MyNode object 'bar' at ...>)
+    
+    >>> mynode.keys()
+    ['baz']
+    
+    >>> mynode.clear()
+    >>> mynode.keys()
+    []
+    
+    >>> mynode.popitem()
+    Traceback (most recent call last):
+      ...
+    KeyError: "'popitem(): ordered dictionary is empty'"
+    
+    >>> basenode.popitem()
+    ('baz', <BaseNode object 'baz' at ...>)
+    
+    >>> basenode.keys()
+    ['bar']
+    
+    >>> basenode.clear()
+    >>> basenode.keys()
+    []
+    
+    >>> basenode.popitem()
+    Traceback (most recent call last):
+      ...
+    KeyError: 'popitem(): dictionary is empty'
+    
+    >>> orderednode.popitem()
+    ('bar', <OrderedNode object 'bar' at ...>)
+    
+    >>> orderednode.keys()
+    ['baz']
+    
+    >>> orderednode.clear()
+    >>> orderednode.keys()
+    []
+    
+    >>> orderednode.popitem()
+    Traceback (most recent call last):
+      ...
+    KeyError: "'popitem(): ordered dictionary is empty'"
 
 ##################
 

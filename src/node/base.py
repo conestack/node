@@ -292,7 +292,11 @@ class _NodeSpaceMixin(_NodeMixin, _ImplMixin):
     
     def __getitem__(self, key):
         # blend in our nodespaces as children, with name __<name>__
-        if key.startswith('__') and key.endswith('__'):
+        # isinstance check is required because odict tries to get item possibly
+        # with ``_nil`` key, which is actually an object
+        if isinstance(key, basestring) \
+          and key.startswith('__') \
+          and key.endswith('__'):
             # a reserved child key mapped to the nodespace behind
             # nodespaces[key], nodespaces is an odict
             return self.nodespaces[key]
@@ -335,6 +339,8 @@ class _NodeSpaceMixin(_NodeMixin, _ImplMixin):
         self._mapping_impl().__delitem__(self, key)
     
     def copy(self):
+        """XXX: maybe move to _NodeMixin.
+        """
         new = self.__class__()
         new.__name__ = self.__name__
         new.__parent__ = self.__parent__
