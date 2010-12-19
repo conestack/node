@@ -7,9 +7,9 @@ Helper function for creating identically tree structures from different classes.
     >>> def create_tree(class_):
     ...     root = class_()
     ...     for i in range(3):
-    ...         root['child-%i' % i] = class_()
+    ...         root['child_%i' % i] = class_()
     ...         for j in range(2):
-    ...             root['child-%i' % i]['subchild-%i' % j] = class_()
+    ...             root['child_%i' % i]['subchild_%i' % j] = class_()
     ...     return root
 
 
@@ -560,16 +560,16 @@ used to define tree hierarchy.
     >>> mynode.__name__
     >>> mynode.__parent__
     
-    >>> mynode['child-1'].__name__
-    'child-1'
+    >>> mynode['child_1'].__name__
+    'child_1'
     
-    >>> mynode['child-1'].__parent__ is mynode
+    >>> mynode['child_1'].__parent__ is mynode
     True
     
-    >>> mynode['child-1']['subchild-1'].__name__
-    'subchild-1'
+    >>> mynode['child_1']['subchild_1'].__name__
+    'subchild_1'
     
-    >>> mynode['child-1']['subchild-1'].__parent__.__parent__ is mynode
+    >>> mynode['child_1']['subchild_1'].__parent__.__parent__ is mynode
     True
     
     >>> basenode = create_tree(BaseNode)
@@ -579,16 +579,16 @@ used to define tree hierarchy.
     >>> basenode.__name__
     >>> basenode.__parent__
     
-    >>> basenode['child-1'].__name__
-    'child-1'
+    >>> basenode['child_1'].__name__
+    'child_1'
     
-    >>> basenode['child-1'].__parent__ is basenode
+    >>> basenode['child_1'].__parent__ is basenode
     True
     
-    >>> basenode['child-1']['subchild-1'].__name__
-    'subchild-1'
+    >>> basenode['child_1']['subchild_1'].__name__
+    'subchild_1'
     
-    >>> basenode['child-1']['subchild-1'].__parent__.__parent__ is basenode
+    >>> basenode['child_1']['subchild_1'].__parent__.__parent__ is basenode
     True
     
     >>> orderednode = create_tree(OrderedNode)
@@ -598,16 +598,16 @@ used to define tree hierarchy.
     >>> orderednode.__name__
     >>> orderednode.__parent__
     
-    >>> orderednode['child-1'].__name__
-    'child-1'
+    >>> orderednode['child_1'].__name__
+    'child_1'
     
-    >>> orderednode['child-1'].__parent__ is orderednode
+    >>> orderednode['child_1'].__parent__ is orderednode
     True
     
-    >>> orderednode['child-1']['subchild-1'].__name__
-    'subchild-1'
+    >>> orderednode['child_1']['subchild_1'].__name__
+    'subchild_1'
     
-    >>> orderednode['child-1']['subchild-1'].__parent__.__parent__ is orderednode
+    >>> orderednode['child_1']['subchild_1'].__parent__.__parent__ is orderednode
     True
 
 
@@ -624,39 +624,39 @@ Debug helper
 
     >>> mynode.printtree()
     <class 'MyNode'>: None
-      <class 'MyNode'>: child-0
-        <class 'MyNode'>: subchild-0
-        <class 'MyNode'>: subchild-1
-      <class 'MyNode'>: child-1
-        <class 'MyNode'>: subchild-0
-        <class 'MyNode'>: subchild-1
-      <class 'MyNode'>: child-2
-        <class 'MyNode'>: subchild-0
-        <class 'MyNode'>: subchild-1
+      <class 'MyNode'>: child_0
+        <class 'MyNode'>: subchild_0
+        <class 'MyNode'>: subchild_1
+      <class 'MyNode'>: child_1
+        <class 'MyNode'>: subchild_0
+        <class 'MyNode'>: subchild_1
+      <class 'MyNode'>: child_2
+        <class 'MyNode'>: subchild_0
+        <class 'MyNode'>: subchild_1
     
     >>> basenode.printtree()
     <class 'node.base.BaseNode'>: None
-      <class 'node.base.BaseNode'>: child-...
-        <class 'node.base.BaseNode'>: subchild-...
-        <class 'node.base.BaseNode'>: subchild-...
-      <class 'node.base.BaseNode'>: child-...
-        <class 'node.base.BaseNode'>: subchild-...
-        <class 'node.base.BaseNode'>: subchild-...
-      <class 'node.base.BaseNode'>: child-...
-        <class 'node.base.BaseNode'>: subchild-...
-        <class 'node.base.BaseNode'>: subchild-...
+      <class 'node.base.BaseNode'>: child_...
+        <class 'node.base.BaseNode'>: subchild_...
+        <class 'node.base.BaseNode'>: subchild_...
+      <class 'node.base.BaseNode'>: child_...
+        <class 'node.base.BaseNode'>: subchild_...
+        <class 'node.base.BaseNode'>: subchild_...
+      <class 'node.base.BaseNode'>: child_...
+        <class 'node.base.BaseNode'>: subchild_...
+        <class 'node.base.BaseNode'>: subchild_...
     
     >>> orderednode.printtree()
     <class 'node.base.OrderedNode'>: None
-      <class 'node.base.OrderedNode'>: child-0
-        <class 'node.base.OrderedNode'>: subchild-0
-        <class 'node.base.OrderedNode'>: subchild-1
-      <class 'node.base.OrderedNode'>: child-1
-        <class 'node.base.OrderedNode'>: subchild-0
-        <class 'node.base.OrderedNode'>: subchild-1
-      <class 'node.base.OrderedNode'>: child-2
-        <class 'node.base.OrderedNode'>: subchild-0
-        <class 'node.base.OrderedNode'>: subchild-1
+      <class 'node.base.OrderedNode'>: child_0
+        <class 'node.base.OrderedNode'>: subchild_0
+        <class 'node.base.OrderedNode'>: subchild_1
+      <class 'node.base.OrderedNode'>: child_1
+        <class 'node.base.OrderedNode'>: subchild_0
+        <class 'node.base.OrderedNode'>: subchild_1
+      <class 'node.base.OrderedNode'>: child_2
+        <class 'node.base.OrderedNode'>: subchild_0
+        <class 'node.base.OrderedNode'>: subchild_1
 
 ``path``
 ::
@@ -665,33 +665,33 @@ Debug helper
     >>> mynode.path
     ['root']
     
-    >>> mynode['child-1']['subchild-1'].path
-    ['root', 'child-1', 'subchild-1']
+    >>> mynode['child_1']['subchild_1'].path
+    ['root', 'child_1', 'subchild_1']
     
     >>> basenode.__name__ = 'root'
     >>> basenode.path
     ['root']
     
-    >>> basenode['child-1']['subchild-1'].path
-    ['root', 'child-1', 'subchild-1']
+    >>> basenode['child_1']['subchild_1'].path
+    ['root', 'child_1', 'subchild_1']
     
     >>> orderednode.__name__ = 'root'
     >>> orderednode.path
     ['root']
     
-    >>> orderednode['child-1']['subchild-1'].path
-    ['root', 'child-1', 'subchild-1']
+    >>> orderednode['child_1']['subchild_1'].path
+    ['root', 'child_1', 'subchild_1']
 
 ``root``
 ::
 
-    >>> mynode['child-1']['subchild-1'].root is mynode
+    >>> mynode['child_1']['subchild_1'].root is mynode
     True
     
-    >>> basenode['child-1']['subchild-1'].root is basenode
+    >>> basenode['child_1']['subchild_1'].root is basenode
     True
     
-    >>> orderednode['child-1']['subchild-1'].root is orderednode
+    >>> orderednode['child_1']['subchild_1'].root is orderednode
     True
 
 ``allow_non_node_childs``
@@ -767,31 +767,77 @@ Debug helper
     >>> class IFilter(Interface):
     ...     pass
     
-    >>> directlyProvides(mynode['child-2'], IFilter)
+    >>> directlyProvides(mynode['child_2'], IFilter)
     >>> list(mynode.filteredvalues(IFilter))
-    [<MyNode object 'child-2' at ...>]
+    [<MyNode object 'child_2' at ...>]
     
-    >>> noLongerProvides(mynode['child-2'], IFilter)
+    >>> noLongerProvides(mynode['child_2'], IFilter)
     >>> list(mynode.filteredvalues(IFilter))
     []
     
-    >>> directlyProvides(basenode['child-2'], IFilter)
+    >>> directlyProvides(basenode['child_2'], IFilter)
     >>> list(basenode.filteredvalues(IFilter))
-    [<BaseNode object 'child-2' at ...>]
+    [<BaseNode object 'child_2' at ...>]
     
-    >>> noLongerProvides(basenode['child-2'], IFilter)
+    >>> noLongerProvides(basenode['child_2'], IFilter)
     >>> list(basenode.filteredvalues(IFilter))
     []
     
-    >>> directlyProvides(orderednode['child-2'], IFilter)
+    >>> directlyProvides(orderednode['child_2'], IFilter)
     >>> list(orderednode.filteredvalues(IFilter))
-    [<OrderedNode object 'child-2' at ...>]
+    [<OrderedNode object 'child_2' at ...>]
     
-    >>> noLongerProvides(orderednode['child-2'], IFilter)
+    >>> noLongerProvides(orderednode['child_2'], IFilter)
     >>> list(orderednode.filteredvalues(IFilter))
     []
 
 ``as_attribute_access``
 ::
 
-    >>> 
+    >>> myattrs = mynode.as_attribute_access()
+    >>> myattrs
+    <node.utils.AttributeAccess object at ...>
+    
+    >>> myattrs.child_1
+    <MyNode object 'child_1' at ...>
+    
+    >>> myattrs.child_3 = MyNode()
+    >>> mynode['child_3']
+    <MyNode object 'child_3' at ...>
+    
+    >>> myattrs.child_4 = object
+    Traceback (most recent call last):
+      ...
+    ValueError: It isn't allowed to use classes as values.
+    
+    >>> baseattrs = basenode.as_attribute_access()
+    >>> baseattrs
+    <node.utils.AttributeAccess object at ...>
+    
+    >>> baseattrs.child_1
+    <BaseNode object 'child_1' at ...>
+    
+    >>> baseattrs.child_3 = BaseNode()
+    >>> basenode['child_3']
+    <BaseNode object 'child_3' at ...>
+    
+    >>> baseattrs.child_4 = object
+    Traceback (most recent call last):
+      ...
+    ValueError: It isn't allowed to use classes as values.
+    
+    >>> orderedattrs = orderednode.as_attribute_access()
+    >>> orderedattrs
+    <node.utils.AttributeAccess object at ...>
+    
+    >>> orderedattrs.child_1
+    <OrderedNode object 'child_1' at ...>
+    
+    >>> orderedattrs.child_3 = OrderedNode()
+    >>> orderednode['child_3']
+    <OrderedNode object 'child_3' at ...>
+    
+    >>> orderedattrs.child_4 = object
+    Traceback (most recent call last):
+      ...
+    ValueError: It isn't allowed to use classes as values.
