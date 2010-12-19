@@ -384,6 +384,13 @@ class BaseNode(_NodeSpaceMixin, dict):
             self[key] = value
         for key, value in kw.items():
             self[key] = value
+    
+    def setdefault(self, key, value=None):
+        try:
+            return self[key]
+        except KeyError:
+            self[key] = value
+            return value
 
 
 class OrderedNode(_NodeSpaceMixin, odict):

@@ -443,7 +443,7 @@ Note if __name__ is set on added node, it gets overwritten by new key
     >>> basenode.items()
     [('baz', <BaseNode object 'baz' at ...>), 
     ('foo', <BaseNode object 'foo' at ...>), 
-    ('bar', <BaseNode object 'None' at ...>)]
+    ('bar', <BaseNode object 'bar' at ...>)]
     
     >>> orderednew = OrderedNode()
     >>> orderednode.setdefault('foo', orderednew) is orderednew
@@ -876,6 +876,30 @@ FullMappingTester
     ``clear``: OK
     
     >>> tester = FullMappingTester(BaseNode)
+    >>> tester.run()
+    >>> tester.combined
+    ``__setitem__``: OK
+    ``__getitem__``: OK
+    ``get``: OK
+    ``__iter__``: OK
+    ``keys``: OK
+    ``iterkeys``: OK
+    ``values``: OK
+    ``itervalues``: OK
+    ``items``: OK
+    ``iteritems``: OK
+    ``__contains__``: OK
+    ``has_key``: OK
+    ``__len__``: OK
+    ``update``: OK
+    ``__delitem__``: OK
+    ``copy``: OK
+    ``setdefault``: OK
+    ``pop``: OK
+    ``popitem``: OK
+    ``clear``: OK
+    
+    >>> tester = FullMappingTester(OrderedNode)
     >>> tester.run()
     >>> tester.combined
     ``__setitem__``: OK

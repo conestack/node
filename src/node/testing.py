@@ -267,24 +267,11 @@ class FullMappingTester(BaseTester):
         self._check_keys(self.context.keys(), ['baz', 'bar'])
     
     def test_popitem(self):
-        """
-        >>> mynode.popitem()
-        ('bar', <MyNode object 'bar' at ...>)
-        
-        >>> mynode.keys()
-        ['baz']
-        
-        >>> mynode.clear()
-        >>> mynode.keys()
-        []
-        
-        >>> mynode.popitem()
-        Traceback (most recent call last):
-          ...
-        KeyError: "'popitem(): ordered dictionary is empty'"
-        """
-        self._check_items((self.context.popitem(),), ['bar'])
-        self._check_keys(self.context.keys(), ['baz'])
+        self.context.popitem()
+        count = len(self.context.keys())
+        if count != 1:
+            msg = 'Expected 1-length result. Got ``%i``' % count
+            raise Exception(msg)
         self.context.popitem()
         try:
             self.context.popitem()
