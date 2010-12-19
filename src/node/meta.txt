@@ -1,0 +1,35 @@
+node.meta
+=========
+
+    >>> from node.meta import behavior
+    >>> from node.base import OrderedNode
+    
+    >>> class SomeBehavior(object):
+    ...     def __init__(self, context):
+    ...         self.context = context
+    ...     def do(self):
+    ...         print 'do something on ' + str(self.context)
+    
+    >>> @behavior(SomeBehavior)
+    ... class BehaviorNode(object):
+    ...     pass
+    Traceback (most recent call last):
+      ...
+    TypeError: ``INode`` not implemented by ``BehaviorNode``
+    
+    >>> @behavior(SomeBehavior)
+    ... class BehaviorNode(OrderedNode):
+    ...     pass
+    >>> node = BehaviorNode()
+    
+    >>> node.__class__.__behaviors_cls
+    (<class 'SomeBehavior'>,)
+    
+    >>> node.__class__.__behaviors_impl
+    {}
+    
+    >>> node.do
+    <bound method SomeBehavior.do of <SomeBehavior object at ...>>
+    
+    >>> node.do()
+    do something on <NodeBehaviorWrapper object of 'BehaviorNode' at ...>
