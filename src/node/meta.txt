@@ -1,35 +1,123 @@
 node.meta
 =========
 
+Extending Nodes by different behaviors.
+
+Concepts:
+
+- Behavior related functionality is available and directly accessible on node.
+
+- This behavior is annotated to node implementation by a decorator.
+
+- The decorator works with metaclasses.
+
+- Node related functions, attributes and properties always rule, so we can
+  overwrite anything on the decorated node.
+
+- Behavior implementations do not have the enhanced node as base class.
+
+- We have handler hooks for node data structure writing related functions.
+
+Why using a decorator:
+
+- It is not possible to custom hook import statements from user pov.
+
+- beside an easy hooking point for manipulating class objects, they are elegant.
+
+Provide a behavior implementation.
+::
+
+    >>> from zope.interface import implements
+    >>> from node.interfaces import IBehavior
+    
+    >>> class SomeBehavior(object):
+    ...     implements(IBehavior)
+    ... 
+    ...     def __init__(self, context):
+    ...         self.context = context
+    ... 
+    ...     def do(self):
+    ...         print 'do something on ' + str(self.context)
+
+Decorator expects IBehavior implementations.
+::
+
     >>> from node.meta import behavior
     >>> from node.base import OrderedNode
     
-    >>> class SomeBehavior(object):
-    ...     def __init__(self, context):
-    ...         self.context = context
-    ...     def do(self):
-    ...         print 'do something on ' + str(self.context)
-    
+    >>> @behavior
+    ... class BehaviorNode(OrderedNode):
+    ...     pass
+    Traceback (most recent call last):
+      ...
+    TypeError: ``IBehavior`` not implemented by ``BehaviorNode``
+
+    >>> @behavior(dict)
+    ... class BehaviorNode(OrderedNode):
+    ...     pass
+    Traceback (most recent call last):
+      ...
+    TypeError: ``IBehavior`` not implemented by ``dict``
+
+Decorating none INode implementing classes fails.
+::
+
     >>> @behavior(SomeBehavior)
     ... class BehaviorNode(object):
     ...     pass
     Traceback (most recent call last):
       ...
     TypeError: ``INode`` not implemented by ``BehaviorNode``
-    
+
+Do the right thing.
+::
+
     >>> @behavior(SomeBehavior)
     ... class BehaviorNode(OrderedNode):
     ...     pass
-    >>> node = BehaviorNode()
+
+BehavioralNode was wrapped.
+::
     
-    >>> node.__class__.__behaviors_cls
+    >>> BehaviorNode
+    <class 'node.meta.NodeBehaviorWrapper'>
+
+Behavior classes.
+::
+
+    >>> BehaviorNode.__behaviors_cls
     (<class 'SomeBehavior'>,)
-    
-    >>> node.__class__.__behaviors_impl
+
+No instances yet.
+::
+
+    >>> BehaviorNode.__behaviors_ins
     {}
+
+Instanciate.
+::
+
+    >>> node = BehaviorNode()
+    >>> node
+    <NodeBehaviorWrapper object of 'BehaviorNode' at ...>
+
+Still no instances.
+::
     
+    >>> node.__class__.__behaviors_ins
+    {}
+
+Instance is created on Ffirst access.
+::
+
     >>> node.do
     <bound method SomeBehavior.do of <SomeBehavior object at ...>>
     
+    >>> node.__class__.__behaviors_ins
+    {'SomeBehavior': <SomeBehavior object at ...>}
+
+Call behavior function directly on decorated node.
+::
+
     >>> node.do()
     do something on <NodeBehaviorWrapper object of 'BehaviorNode' at ...>

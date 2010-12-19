@@ -178,7 +178,12 @@ class INodeAdapter(Interface):
     context = Attribute(u"The adapted node.")
 
 
-class IReferenced(INodeAdapter):
+class IBehavior(INodeAdapter):
+    """Mark an object as behavior
+    """
+
+
+class IReferenced(IBehavior):
     """Holding an internal index of all nodes contained in the tree.
     """
     uuid = Attribute(u"``uuid.UUID`` of this node.")
@@ -189,7 +194,7 @@ class IReferenced(INodeAdapter):
         """
 
 
-class IOrderable(INodeAdapter):
+class IOrderable(IBehavior):
     """Reordering support.
     """
     
@@ -218,7 +223,7 @@ class IOrderable(INodeAdapter):
         """
 
 
-class ICallable(INodeAdapter):
+class ICallable(IBehavior):
     """Callable behavior.
     """
 
@@ -227,7 +232,7 @@ class ICallable(INodeAdapter):
         """
 
 
-class ITimout(INodeAdapter):
+class ITimout(IBehavior):
     """Times out nodes.
     
     # XXX: use timer?
@@ -248,14 +253,14 @@ class ITimout(INodeAdapter):
         """
 
 
-class ILifecycle(INodeAdapter):
+class ILifecycle(IBehavior):
     """Takes care about lifecycle events.
     """
     events = Attribute(u"Dict with lifecycle event classes to use for "
                        u"notification.")
 
 
-class IAttributed(INodeAdapter):
+class IAttributed(IBehavior):
     """Provide attributes on node.
     """
     attrs = Attribute(u"``INodeAttributes`` implementation.")
