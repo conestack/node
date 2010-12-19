@@ -173,11 +173,17 @@ Both behaviors using node.
     ...     pass
     
     >>> node = BehaviorNode()
+    >>> node.perform
+    <bound method OtherBehavior.perform of <OtherBehavior object at ...>>
+    
     >>> node.perform()
     "perform on <BehaviorNode object 'None' at ...>"
 
 ``do`` is used from SomeBehavior, its first in behavior hierarchy.
 ::
+
+    >>> node.do
+    <bound method SomeBehavior.do of <SomeBehavior object at ...>>
 
     >>> node.do()
     "do something on <BehaviorNode object 'None' at ...>"
@@ -190,16 +196,34 @@ Reversed behavior order.
     ...     pass
     
     >>> node = BehaviorNode()
-    >>> node.perform()
-    "perform on <BehaviorNode object 'None' at ...>"
+    >>> node.do
+    <bound method OtherBehavior.do of <OtherBehavior object at ...>>
     
     >>> node.do()
     "do other on <BehaviorNode object 'None' at ...>"
+    
+    >>> node.perform()
+    "perform on <BehaviorNode object 'None' at ...>"
     
     >>> node.rw = 'foo'
     >>> node.rw
     'foo'
 
+Override ``do`` on decorated node.
+::
+
+    >>> @behavior(OtherBehavior, SomeBehavior)
+    ... class BehaviorNode(OrderedNode):
+    ... 
+    ...     def do(self):
+    ...         return 'do on node ' + str(self)
+    
+    >>> node = BehaviorNode()
+    >>> node.do
+    <bound method NodeBehaviorWrapper.do of <BehaviorNode object 'None' at ...>>
+    
+    >>> node.do()
+    "do on node <BehaviorNode object 'None' at ...>"
 
 Run FullMappingTester against wrapper.
 ::
