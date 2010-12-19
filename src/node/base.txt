@@ -853,7 +853,7 @@ FullMappingTester
     >>> from node.testing import FullMappingTester
     >>> tester = FullMappingTester(MyNode)
     >>> tester.run()
-    >>> tester.results
+    >>> tester.combined
     ``__setitem__``: OK
     ``__getitem__``: OK
     ``get``: OK

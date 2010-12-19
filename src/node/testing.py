@@ -12,7 +12,7 @@ class ResultWriter(object):
     def failed(self, msg):
         self.results[self.name] = 'Failed: %s' % (msg,)
     
-    def combined_results(self):
+    def print_combined(self):
         for key, val in self.results.iteritems():
             print '``%s``: %s' % (key, self.results[key])
 
@@ -35,21 +35,13 @@ class BaseTester(object):
         self.context = class_()
         self._results = odict()
     
-    def create_tree(class_):
-        class_ = self.class_
-        root = class_()
-        for i in range(3):
-            root['child_%i' % i] = class_()
-            for j in range(2):
-                root['child_%i' % i]['subchild_%i' % j] = class_()
-        return root
-    
-    def writer(self, key=None):
-        return ResultWriter(self._results, name=key)
-    
     @property
     def results(self):
-        self.writer().combined_results()
+        return self._results
+    
+    @property
+    def combined(self):
+        self.writer().print_combined()
     
     def run(self):
         for name in self.iface_contract:
@@ -63,6 +55,18 @@ class BaseTester(object):
                 writer.success()
             except Exception, e:
                 writer.failed(str(e))
+    
+    def writer(self, key=None):
+        return ResultWriter(self._results, name=key)
+        
+    def create_tree(class_):
+        class_ = self.class_
+        root = class_()
+        for i in range(3):
+            root['child_%i' % i] = class_()
+            for j in range(2):
+                root['child_%i' % i]['subchild_%i' % j] = class_()
+        return root
 
 
 class FullMappingTester(BaseTester):
@@ -248,9 +252,11 @@ class FullMappingTester(BaseTester):
         ('bar', <MyNode object 'bar' at ...>)]
         """
 
+
 class LocationTester(BaseTester):
     """Test object against ``zope.location.interfaces.ILocation`` interface.
     """
+
 
 class NodeTester(BaseTester):
     """Test object against ``node.interfaces.INode`` interface.
