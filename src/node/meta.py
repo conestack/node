@@ -20,7 +20,9 @@ class behavior(object):
             msg = '``INode`` not implemented by ``%s``' % obj.__name__
             raise TypeError(msg)
         
-        # define node wrapper metaclass
+        ###
+        # node wrapper metaclass.
+        
         class NodeBehaviorMeta(type):
             """Metaclass for NodeBehaviorWrapper.
             
@@ -30,27 +32,32 @@ class behavior(object):
             """
             
             def __init__(cls, name, bases, dct):
+                # tuple with provided behaviors
                 setattr(cls, '__behaviors_cls', self.behaviors)
+                # dict for behavior instances
                 setattr(cls, '__behaviors_ins', dict())
                 super(NodeBehaviorMeta, cls).__init__(name, bases, dct)
         
-        # define wrapper for decorated node
+        ###
+        # wrapper for decorated node.
+        
         class NodeBehaviorWrapper(obj):
             """Derives from given ``obj`` by decorator and wrap node behavior.
             """
-            
             __metaclass__ = NodeBehaviorMeta
             __default_marker = object()
             
-            implements(INode)
+            implements(INode) # after __metaclass__ definition.
             
             def __getattribute__(self, name):
-                # try to return requested attribute from self (the node)
                 # ``super`` is at such places confusing and seem to be buggy as
                 # well. address directly where we want to do something.
                 try:
+                    # try to return requested attribute from self (the node)
                     return obj.__getattribute__(self, name)
                 except AttributeError, e:
+                    # try to find requested attribute on behavior
+                    # create behavior instance if necessary
                     behaviors = obj.__getattribute__(self, '__behaviors_cls')
                     ins = obj.__getattribute__(self, '__behaviors_ins')
                     for behavior in behaviors:
@@ -78,4 +85,5 @@ class behavior(object):
                                                       obj.__name__,
                                                       hex(id(self))[:-1])
         
+        # return wrapped
         return NodeBehaviorWrapper

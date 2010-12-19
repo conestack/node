@@ -39,8 +39,8 @@ Why using a decorator
   objects, they are elegant.
 
 
-Behavior
---------
+Tests
+-----
 
 Provide a behavior implementation.
 ::
