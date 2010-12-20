@@ -218,26 +218,41 @@ class FullMappingTester(BaseTester):
             raise Exception('Expected 2-length result. Got ``%i``' % count)
     
     def test_update(self):
-        self.context.update((('baz', self.class_()),))
-        if not self._object_repr_valid(self.context['baz'], 'baz'):
-            raise Exception(self._object_repr('baz'))
+        baz = self.class_()
+        self.context.update((('baz', baz),))
+        try:
+            self.context['baz']
+        except KeyError:
+            raise Exception('KeyError, Expected ``baz`` after update')
+        if baz is not self.context['baz']:
+            raise Exception('Object at ``baz`` not expected one after update')
     
     def test___delitem__(self):
-        del self.context['bar']
-        keys = self.context.keys()
-        keys.sort()
-        if not str(keys) == "['baz', 'foo']":
-            raise Exception(str(keys))
+        try:
+            del self.context['bar']
+        except KeyError:
+            raise Exception('KeyError, expected ``bar``')
+        self._check_keys(self.context.keys(), ['baz', 'foo'])
     
     def test_copy(self):
+        PARENT_MARKER = object()
+        if self.include_node_checks:
+            old_name = self.context.__name__
+            old_parent = self.context.__parent__
+            self.context.__name__ = 'nametopcopy'
+            self.context.__parent__ = PARENT_MARKER
         copied = self.context.copy()
-        if not self._object_repr_valid(copied, 'None'):
-            raise Exception(self._object_repr('None'))
         if copied is self.context:
             raise Exception('``copied`` is ``context``')
-        self._check_items(self.context.items(), ['foo', 'baz'])
         if not copied['foo'] is self.context['foo']:
             raise Exception("``copied['foo']`` is not ``context['foo']``")
+        if self.include_node_checks:
+            if copied.__name__ != self.context.__name__:
+                raise Exception('__name__ of copied does not match')
+            if not copied.__parent__ is self.context.__parent__:
+                raise Exception('__parent__ of copied does not match')
+            self.context.__name__ = old_name
+            self.context.__parent__ = old_parent
     
     def test_setdefault(self):
         new = self.class_()
@@ -256,9 +271,14 @@ class FullMappingTester(BaseTester):
         default = object()
         if not self.context.pop('xxx', default) is default:
             raise Exception('Returned default is not same instance')
+        originlen = len(self.context)
+        topop = self.context['foo']
         popped = self.context.pop('foo')
-        if not self._object_repr_valid(popped, 'foo'):
-            raise Exception('Expected ``foo``, got ``%s``' % popped.__name__)
+        afterlen = len(self.context)
+        if topop is not popped:
+            raise Exception('Popped item not same instance')
+        if afterlen != originlen - 1:
+            raise Exception('Invalid mapping length after ``pop``')
         self._check_keys(self.context.keys(), ['baz', 'bar'])
     
     def test_popitem(self):

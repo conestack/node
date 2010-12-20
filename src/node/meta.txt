@@ -230,45 +230,27 @@ Override ``do`` on decorated node.
 Run FullMappingTester against wrapper.
 ::
 
-### - remove
-
-    >>> node['foo'] = BehaviorNode()
-    >>> node.keys()
-    ['foo']
-    
-    >>> node['bar'] = BehaviorNode(name='xxx')
-    >>> node['bar']
-    <BehaviorNode object 'bar' at ...>
-    
-    >>> node['bar'].__name__
-    'bar'
-
-/ ### - remove
-
     >>> from node.testing import FullMappingTester
     >>> tester = FullMappingTester(BehaviorNode)
     >>> tester.run()
-
-BehaviorNode is probably valid...
-
     >>> tester.combined
     ``__setitem__``: OK
-    ``__getitem__``: Failed: <NodeBehaviorWrapper object 'foo' at ...>
-    ``get``: Failed: <NodeBehaviorWrapper object 'bar' at ...>
+    ``__getitem__``: OK
+    ``get``: OK
     ``__iter__``: OK
     ``keys``: OK
     ``iterkeys``: OK
     ``values``: OK
     ``itervalues``: OK
-    ``items``: Failed: <NodeBehaviorWrapper object 'foo' at ...>
-    ``iteritems``: Failed: <NodeBehaviorWrapper object 'foo' at ...>
+    ``items``: OK
+    ``iteritems``: OK
     ``__contains__``: OK
     ``has_key``: OK
     ``__len__``: OK
-    ``update``: Failed: <NodeBehaviorWrapper object 'baz' at ...>
+    ``update``: OK
     ``__delitem__``: OK
-    ``copy``: Failed: <NodeBehaviorWrapper object 'None' at ...>
-    ``setdefault``: Failed: <NodeBehaviorWrapper object 'foo' at ...>
-    ``pop``: Failed: Expected ``foo``, got ``foo``
+    ``copy``: OK
+    ``setdefault``: OK
+    ``pop``: OK
     ``popitem``: OK
     ``clear``: OK

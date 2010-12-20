@@ -418,13 +418,408 @@ FullMappingTester
     ...                              include_node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.test___len__()
-    
 
-###
-    fmtester.test_update()
-    fmtester.test___delitem__()
-    fmtester.test_copy()
-    fmtester.test_setdefault()
-    fmtester.test_pop()
-    fmtester.test_popitem()
-    fmtester.test_clear()
+``update``
+::
+
+    >>> fmtester.test_update()
+    Traceback (most recent call last):
+      ...
+    AttributeError: 'TestMappingLen' object has no attribute 'update'
+    
+    >>> class TestMappingUpdate(TestMappingLen):
+    ...     def update(self, data=(), **kw):
+    ...         pass
+    
+    >>> fmtester = FullMappingTester(TestMappingUpdate)
+    >>> fmtester.test_update()
+    Traceback (most recent call last):
+      ...
+    Exception: KeyError, Expected ``baz`` after update
+    
+    >>> class TestMappingUpdate(TestMappingLen):
+    ...     def update(self, data=(), **kw):
+    ...         for key, value in data:
+    ...             self[key] = object()
+    
+    >>> fmtester = FullMappingTester(TestMappingUpdate)
+    >>> fmtester.test_update()
+    Traceback (most recent call last):
+      ...
+    Exception: Object at ``baz`` not expected one after update
+    
+    >>> class TestMappingUpdate(TestMappingLen):
+    ...     def update(self, data=(), **kw):
+    ...         for key, value in data:
+    ...             self[key] = value
+    
+    >>> fmtester = FullMappingTester(TestMappingUpdate)
+    >>> fmtester.test_update()
+
+``__delitem__``
+::
+
+    >>> fmtester.test___delitem__()
+    Traceback (most recent call last):
+      ...
+    AttributeError: __delitem__
+    
+    >>> class TestMappingDelItem(TestMappingUpdate):
+    ...     def __delitem__(self, key):
+    ...         del self.data[key]
+    
+    >>> fmtester = FullMappingTester(TestMappingDelItem,
+    ...                              include_node_checks=False)
+    >>> fmtester.test___delitem__()
+    Traceback (most recent call last):
+      ...
+    Exception: KeyError, expected ``bar``
+    
+    >>> fmtester.test___setitem__()
+    >>> fmtester.test___delitem__()
+    Traceback (most recent call last):
+      ...
+    Exception: Expected 2-length result. Got ``1``
+    
+    >>> fmtester.test___setitem__()
+    >>> fmtester.test_update()
+    >>> fmtester.test___delitem__()
+
+``copy``
+::
+
+    >>> fmtester.test_copy()
+    Traceback (most recent call last):
+      ...
+    AttributeError: 'TestMappingDelItem' object has no attribute 'copy'
+    
+    >>> class TestMappingCopy(TestMappingDelItem):
+    ...     def copy(self):
+    ...         return self
+    
+    >>> fmtester = FullMappingTester(TestMappingCopy,
+    ...                              include_node_checks=False)
+    >>> fmtester.test_copy()
+    Traceback (most recent call last):
+      ...
+    Exception: ``copied`` is ``context``
+    
+    >>> class TestMappingCopy(TestMappingDelItem):
+    ...     def copy(self):
+    ...         return self.__class__()
+    
+    >>> fmtester = FullMappingTester(TestMappingCopy,
+    ...                              include_node_checks=False)
+    >>> fmtester.test___setitem__()
+    >>> fmtester.test_copy()
+    Traceback (most recent call last):
+      ...
+    KeyError: 'foo'
+    
+    >>> class TestMappingCopy(TestMappingDelItem):
+    ...     def copy(self):
+    ...         new = self.__class__()
+    ...         new.update([('foo', object())])
+    ...         return new
+    
+    >>> fmtester = FullMappingTester(TestMappingCopy,
+    ...                              include_node_checks=False)
+    >>> fmtester.test___setitem__()
+    >>> fmtester.test_copy()
+    Traceback (most recent call last):
+      ...
+    Exception: ``copied['foo']`` is not ``context['foo']``
+    
+    >>> class TestMappingCopy(TestMappingDelItem):
+    ...     def copy(self):
+    ...         new = self.__class__()
+    ...         new.update(self.items())
+    ...         return new
+    
+    >>> fmtester = FullMappingTester(TestMappingCopy,
+    ...                              include_node_checks=False)
+    >>> fmtester.test___setitem__()
+    >>> fmtester.test_copy()
+    
+    >>> class TestNodeCopy(TestNodeSetItem, TestMappingCopy):
+    ...     pass
+    
+    >>> fmtester = FullMappingTester(TestNodeCopy)
+    >>> fmtester.test___setitem__()
+    >>> fmtester.test_copy()
+    Traceback (most recent call last):
+      ...
+    Exception: __name__ of copied does not match
+    
+    >>> class TestNodeCopy(TestNodeSetItem, TestMappingCopy):
+    ...     def copy(self):
+    ...         new = self.__class__()
+    ...         new.__name__ = self.__name__
+    ...         new.update(self.items())
+    ...         return new
+    
+    >>> fmtester = FullMappingTester(TestNodeCopy)
+    >>> fmtester.test___setitem__()
+    >>> fmtester.test_copy()
+    Traceback (most recent call last):
+      ...
+    Exception: __parent__ of copied does not match
+    
+    >>> class TestNodeCopy(TestNodeSetItem, TestMappingCopy):
+    ...     def copy(self):
+    ...         new = self.__class__()
+    ...         new.__name__ = self.__name__
+    ...         new.__parent__ = self.__parent__
+    ...         new.update(self.items())
+    ...         return new
+
+``setdefault``
+::
+
+    >>> fmtester.test_setdefault()
+    Traceback (most recent call last):
+      ...
+    AttributeError: 'TestNodeCopy' object has no attribute 'setdefault'
+    
+    >>> class TestMappingSetDefault(TestMappingCopy):
+    ...     def setdefault(self, key, value=None):
+    ...         return value
+    
+    >>> fmtester = FullMappingTester(TestMappingSetDefault,
+    ...                              include_node_checks=False)
+    >>> fmtester.test___setitem__()
+    >>> fmtester.test_setdefault()
+    Traceback (most recent call last):
+      ...
+    Exception: Replaced already existing item.
+    
+    >>> class TestMappingSetDefault(TestMappingCopy):
+    ...     def setdefault(self, key, value=None):
+    ...         self[key] = object()
+    ...         return self[key]
+    
+    >>> fmtester = FullMappingTester(TestMappingSetDefault,
+    ...                              include_node_checks=False)
+    >>> fmtester.test___setitem__()
+    >>> fmtester.test_setdefault()
+    Traceback (most recent call last):
+      ...
+    Exception: Inserted item not same instance.
+    
+    >>> class TestMappingSetDefault(TestMappingCopy):
+    ...     def setdefault(self, key, value=None):
+    ...         try:
+    ...             return self[key]
+    ...         except KeyError:
+    ...             self[key] = value
+    ...             return value
+    
+    >>> fmtester = FullMappingTester(TestMappingSetDefault,
+    ...                              include_node_checks=False)
+    >>> fmtester.context['foo'] = TestMappingSetDefault()
+    >>> fmtester.context['baz'] = TestMappingSetDefault()
+    >>> fmtester.test_setdefault()
+
+``pop``
+::
+
+    >>> fmtester.test_pop()
+    Traceback (most recent call last):
+      ...
+    AttributeError: 'TestMappingSetDefault' object has no attribute 'pop'
+    
+    >>> class TestMappingPop(TestMappingSetDefault):
+    ...     def pop(self, key, default=None):
+    ...         return object()
+    
+    >>> fmtester = FullMappingTester(TestMappingPop,
+    ...                              include_node_checks=False)
+    >>> fmtester.test_pop()
+    Traceback (most recent call last):
+      ...
+    Exception: Excected ``KeyError`` for inexistent item.
+    
+    >>> class TestMappingPop(TestMappingSetDefault):
+    ...     def pop(self, key, default=None):
+    ...         if default is not None:
+    ...             return object()
+    ...         raise KeyError
+    
+    >>> fmtester = FullMappingTester(TestMappingPop,
+    ...                              include_node_checks=False)
+    >>> fmtester.test_pop()
+    Traceback (most recent call last):
+      ...
+    Exception: Returned default is not same instance
+    
+    >>> class TestMappingPop(TestMappingSetDefault):
+    ...     def pop(self, key, default=None):
+    ...         if key == 'foo':
+    ...             return object()
+    ...         if default is not None:
+    ...             return default
+    ...         raise KeyError
+    
+    >>> fmtester = FullMappingTester(TestMappingPop,
+    ...                              include_node_checks=False)
+    >>> fmtester.test___setitem__()
+    >>> fmtester.test_pop()
+    Traceback (most recent call last):
+      ...
+    Exception: Popped item not same instance
+    
+    >>> class TestMappingPop(TestMappingSetDefault):
+    ...     def pop(self, key, default=None):
+    ...         if key == 'foo':
+    ...             return self.data['foo']
+    ...         if default is not None:
+    ...             return default
+    ...         raise KeyError
+    
+    >>> fmtester = FullMappingTester(TestMappingPop,
+    ...                              include_node_checks=False)
+    >>> fmtester.test___setitem__()
+    >>> fmtester.test_pop()
+    Traceback (most recent call last):
+      ...
+    Exception: Invalid mapping length after ``pop``
+    
+    >>> class TestMappingPop(TestMappingSetDefault):
+    ...     def pop(self, key, default=None):
+    ...         if default is not None:
+    ...             return self.data.pop(key, default)
+    ...         return self.data.pop(key)
+    
+    >>> fmtester = FullMappingTester(TestMappingPop,
+    ...                              include_node_checks=False)
+    >>> fmtester.test___setitem__()
+    >>> fmtester.context['baz'] = TestMappingSetDefault()
+    >>> fmtester.test_pop()
+
+``popitem``
+::
+
+    >>> fmtester.test_popitem()
+    Traceback (most recent call last):
+      ...
+    AttributeError: 'TestMappingPop' object has no attribute 'popitem'
+    
+    >>> class TestMappingPopItem(TestMappingPop):
+    ...     def popitem(self):
+    ...          return
+    
+    >>> fmtester = FullMappingTester(TestMappingPopItem,
+    ...                              include_node_checks=False)
+    >>> fmtester.test___setitem__()
+    >>> fmtester.test_popitem()
+    Traceback (most recent call last):
+      ...
+    Exception: Expected 1-length result. Got ``2``
+    
+    >>> class TestMappingPopItem(TestMappingPop):
+    ...     def popitem(self):
+    ...          try:
+    ...              return self.data.popitem()
+    ...          except Exception:
+    ...              pass
+    
+    >>> fmtester = FullMappingTester(TestMappingPopItem,
+    ...                              include_node_checks=False)
+    >>> fmtester.test___setitem__()
+    >>> fmtester.test_popitem()
+    Traceback (most recent call last):
+      ...
+    Exception: Expected ``KeyError`` when called on empty mapping
+    
+    >>> class TestMappingPopItem(TestMappingPop):
+    ...     def popitem(self):
+    ...          return self.data.popitem()
+    
+    >>> fmtester = FullMappingTester(TestMappingPopItem,
+    ...                              include_node_checks=False)
+    >>> fmtester.test___setitem__()
+    >>> fmtester.test_popitem()
+
+``clear``
+::
+
+    >>> fmtester.test_clear()
+    Traceback (most recent call last):
+      ...
+    AttributeError: 'TestMappingPopItem' object has no attribute 'clear'
+    
+    >>> class TestMappingClear(TestMappingPopItem):
+    ...     def clear(self):
+    ...          pass
+    
+    >>> fmtester = FullMappingTester(TestMappingClear,
+    ...                              include_node_checks=False)
+    >>> fmtester.test_clear()
+    Traceback (most recent call last):
+      ...
+    Exception: Expected 0-length result. Got ``2``
+    
+    >>> class TestMappingClear(TestMappingPopItem):
+    ...     def clear(self):
+    ...          self.data.clear()
+    
+    >>> fmtester = FullMappingTester(TestMappingClear,
+    ...                              include_node_checks=False)
+    >>> fmtester.test_clear()
+
+Run tester on mapping.
+::
+
+    >>> class TestMappingAll(TestMappingClear): pass
+    >>> fmtester = FullMappingTester(TestMappingAll,
+    ...                              include_node_checks=False)
+    >>> fmtester.run()
+    >>> fmtester.combined
+    ``__setitem__``: OK
+    ``__getitem__``: OK
+    ``get``: OK
+    ``__iter__``: OK
+    ``keys``: OK
+    ``iterkeys``: OK
+    ``values``: OK
+    ``itervalues``: OK
+    ``items``: OK
+    ``iteritems``: OK
+    ``__contains__``: OK
+    ``has_key``: OK
+    ``__len__``: OK
+    ``update``: OK
+    ``__delitem__``: OK
+    ``copy``: OK
+    ``setdefault``: OK
+    ``pop``: OK
+    ``popitem``: OK
+    ``clear``: OK
+
+Run tester on node.
+::
+
+    >>> class TestNodeAll(TestNodeCopy, TestMappingAll): pass
+    >>> fmtester = FullMappingTester(TestNodeAll)
+    >>> fmtester.run()
+    >>> fmtester.combined
+    ``__setitem__``: OK
+    ``__getitem__``: OK
+    ``get``: OK
+    ``__iter__``: OK
+    ``keys``: OK
+    ``iterkeys``: OK
+    ``values``: OK
+    ``itervalues``: OK
+    ``items``: OK
+    ``iteritems``: OK
+    ``__contains__``: OK
+    ``has_key``: OK
+    ``__len__``: OK
+    ``update``: OK
+    ``__delitem__``: OK
+    ``copy``: OK
+    ``setdefault``: OK
+    ``pop``: OK
+    ``popitem``: OK
+    ``clear``: OK
