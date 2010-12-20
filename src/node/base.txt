@@ -1,22 +1,14 @@
 node.base
 =========
 
-Helper function for creating identically tree structures from different classes.
-::
-
-    >>> def create_tree(class_):
-    ...     root = class_()
-    ...     for i in range(3):
-    ...         root['child_%i' % i] = class_()
-    ...         for j in range(2):
-    ...             root['child_%i' % i]['subchild_%i' % j] = class_()
-    ...     return root
+    >>> from node.testing import FullMappingTester
+    >>> from node.testing import LocationTester
+    >>> from node.testing import NodeTester
 
 
 AbstractNode
 ------------
 ::
-
     >>> from node.base import AbstractNode
     >>> AbstractNode
     <class 'node.base.AbstractNode'>
@@ -30,7 +22,6 @@ AbstractNode
 
 Storage related operations of AbstractNode raise ``NotImplementedError``.
 ::
-
     >>> abstract['foo']
     Traceback (most recent call last):
       ...
@@ -84,17 +75,39 @@ Storage related operations of AbstractNode raise ``NotImplementedError``.
 ``node.tests.env`` contains a base node implementation inheriting from
 ``AbstractNode`` for illustration purposes.
 ::
-
     >>> from node.tests.env import MyNode
     >>> mynode = MyNode()
     >>> mynode
     <MyNode object 'None' at ...>
+    
+    >>> tester = FullMappingTester(MyNode)
+    >>> tester.run()
+    >>> tester.combined
+    ``__setitem__``: OK
+    ``__getitem__``: OK
+    ``get``: OK
+    ``__iter__``: OK
+    ``keys``: OK
+    ``iterkeys``: OK
+    ``values``: OK
+    ``itervalues``: OK
+    ``items``: OK
+    ``iteritems``: OK
+    ``__contains__``: OK
+    ``has_key``: OK
+    ``__len__``: OK
+    ``update``: OK
+    ``__delitem__``: OK
+    ``copy``: OK
+    ``setdefault``: OK
+    ``pop``: OK
+    ``popitem``: OK
+    ``clear``: OK
 
 
 BaseNode
 --------
 ::
-
     >>> from node.base import BaseNode
     >>> BaseNode
     <class 'node.base.BaseNode'>
@@ -105,12 +118,35 @@ BaseNode
     >>> basenode = BaseNode()
     >>> basenode
     <BaseNode object 'None' at ...>
+    
+    >>> tester = FullMappingTester(BaseNode)
+    >>> tester.run()
+    >>> tester.combined
+    ``__setitem__``: OK
+    ``__getitem__``: OK
+    ``get``: OK
+    ``__iter__``: OK
+    ``keys``: OK
+    ``iterkeys``: OK
+    ``values``: OK
+    ``itervalues``: OK
+    ``items``: OK
+    ``iteritems``: OK
+    ``__contains__``: OK
+    ``has_key``: OK
+    ``__len__``: OK
+    ``update``: OK
+    ``__delitem__``: OK
+    ``copy``: OK
+    ``setdefault``: OK
+    ``pop``: OK
+    ``popitem``: OK
+    ``clear``: OK
 
 
 OrderedNode
 -----------
 ::
-
     >>> from node.base import OrderedNode
     >>> OrderedNode
     <class 'node.base.OrderedNode'>
@@ -121,401 +157,41 @@ OrderedNode
     >>> orderednode = OrderedNode()
     >>> orderednode
     <OrderedNode object 'None' at ...>
-
-
-IFullMapping contract
----------------------
-
-``__setitem__``
-
-Note if __name__ is set on added node, it gets overwritten by new key
-::
-
-    >>> mynode['foo'] = MyNode()
-    >>> mynode['bar'] = MyNode(name='xxx')
-    >>> basenode['foo'] = BaseNode()
-    >>> basenode['bar'] = BaseNode(name='xxx')
-    >>> orderednode['foo'] = OrderedNode()
-    >>> orderednode['bar'] = OrderedNode(name='xxx')
-
-``__getitem__``
-::
-
-    >>> mynode['foo']
-    <MyNode object 'foo' at ...>
     
-    >>> mynode['bar'].__name__
-    'bar'
-    
-    >>> basenode['foo']
-    <BaseNode object 'foo' at ...>
-    
-    >>> basenode['bar'].__name__
-    'bar'
-    
-    >>> orderednode['foo']
-    <OrderedNode object 'foo' at ...>
-    
-    >>> orderednode['bar'].__name__
-    'bar'
-
-``get``
-::
-
-    >>> mynode.get('bar')
-    <MyNode object 'bar' at ...>
-    
-    >>> mynode.get('xxx', 'default')
-    'default'
-    
-    >>> basenode.get('bar')
-    <BaseNode object 'bar' at ...>
-    
-    >>> basenode.get('xxx', 'default')
-    'default'
-    
-    >>> orderednode.get('bar')
-    <OrderedNode object 'bar' at ...>
-    
-    >>> orderednode.get('xxx', 'default')
-    'default'
-
-``__iter__``
-::
-
-    >>> [key for key in mynode]
-    ['foo', 'bar']
-    
-    >>> [key for key in basenode]
-    ['foo', 'bar']
-    
-    >>> [key for key in orderednode]
-    ['foo', 'bar']
-
-``keys``
-::
-
-    >>> mynode.keys()
-    ['foo', 'bar']
-    
-    >>> basenode.keys()
-    ['foo', 'bar']
-    
-    >>> orderednode.keys()
-    ['foo', 'bar']
-
-``iterkeys``
-::
-
-    >>> [key for key in mynode.iterkeys()]
-    ['foo', 'bar']
-    
-    >>> [key for key in basenode.iterkeys()]
-    ['foo', 'bar']
-    
-    >>> [key for key in orderednode.iterkeys()]
-    ['foo', 'bar']
-
-``values``
-::
-
-    >>> mynode.values()
-    [<MyNode object 'foo' at ...>, <MyNode object 'bar' at ...>]
-    
-    >>> basenode.values()
-    [<BaseNode object 'foo' at ...>, <BaseNode object 'bar' at ...>]
-    
-    >>> orderednode.values()
-    [<OrderedNode object 'foo' at ...>, <OrderedNode object 'bar' at ...>]
-
-``itervalues``
-::
-
-    >>> [val for val in mynode.itervalues()]
-    [<MyNode object 'foo' at ...>, <MyNode object 'bar' at ...>]
-    
-    >>> [val for val in basenode.itervalues()]
-    [<BaseNode object 'foo' at ...>, <BaseNode object 'bar' at ...>]
-    
-    >>> [val for val in orderednode.itervalues()]
-    [<OrderedNode object 'foo' at ...>, <OrderedNode object 'bar' at ...>]
-
-``items``
-::
-    
-    >>> mynode.items()
-    [('foo', <MyNode object 'foo' at ...>), 
-    ('bar', <MyNode object 'bar' at ...>)]
-    
-    >>> basenode.items()
-    [('foo', <BaseNode object 'foo' at ...>), 
-    ('bar', <BaseNode object 'bar' at ...>)]
-    
-    >>> orderednode.items()
-    [('foo', <OrderedNode object 'foo' at ...>), 
-    ('bar', <OrderedNode object 'bar' at ...>)]
-
-``iteritems``
-::
-
-    >>> [item for item in mynode.iteritems()]
-    [('foo', <MyNode object 'foo' at ...>), 
-    ('bar', <MyNode object 'bar' at ...>)]
-    
-    >>> [item for item in basenode.iteritems()]
-    [('foo', <BaseNode object 'foo' at ...>), 
-    ('bar', <BaseNode object 'bar' at ...>)]
-    
-    >>> [item for item in orderednode.iteritems()]
-    [('foo', <OrderedNode object 'foo' at ...>), 
-    ('bar', <OrderedNode object 'bar' at ...>)]
-
-``__contains__``
-::
-
-    >>> 'bar' in mynode
-    True
-    
-    >>> 'bar' in basenode
-    True
-    
-    >>> 'bar' in orderednode
-    True
-
-``has_key``
-::
-
-    >>> mynode.has_key('foo')
-    True
-    
-    >>> basenode.has_key('foo')
-    True
-    
-    >>> orderednode.has_key('foo')
-    True
-
-``__len__``
-::
-
-    >>> len(mynode)
-    2
-    
-    >>> len(basenode)
-    2
-    
-    >>> len(orderednode)
-    2
-
-``update``
-::
-
-    >>> mynode.update((('baz', MyNode()),))
-    >>> mynode['baz']
-    <MyNode object 'baz' at ...>
-    
-    >>> basenode.update((('baz', BaseNode()),))
-    >>> basenode['baz']
-    <BaseNode object 'baz' at ...>
-    
-    >>> orderednode.update((('baz', OrderedNode()),))
-    >>> orderednode['baz']
-    <OrderedNode object 'baz' at ...>
-
-``__delitem__``
-::
-
-    >>> del mynode['bar']
-    >>> mynode.keys()
-    ['foo', 'baz']
-    
-    >>> del basenode['bar']
-    >>> basenode.keys()
-    ['baz', 'foo']
-    
-    >>> del orderednode['bar']
-    >>> orderednode.keys()
-    ['foo', 'baz']
-
-``copy``
-::
-
-    >>> mycopied = mynode.copy()
-    >>> mycopied
-    <MyNode object 'None' at ...>
-    
-    >>> mycopied is mynode
-    False
-    
-    >>> mycopied.items()
-    [('foo', <MyNode object 'foo' at ...>), 
-    ('baz', <MyNode object 'baz' at ...>)]
-    
-    >>> mycopied['foo'] is mynode['foo']
-    True
-    
-    >>> basecopied = basenode.copy()
-    >>> basecopied
-    <BaseNode object 'None' at ...>
-    
-    >>> basecopied is basenode
-    False
-    
-    >>> basecopied.items()
-    [('foo', <BaseNode object 'foo' at ...>), 
-    ('baz', <BaseNode object 'baz' at ...>)]
-    
-    >>> basecopied['foo'] is basenode['foo']
-    True
-    
-    >>> orderedcopied = orderednode.copy()
-    >>> orderedcopied
-    <OrderedNode object 'None' at ...>
-    
-    >>> orderedcopied is orderednode
-    False
-    
-    >>> orderedcopied.items()
-    [('foo', <OrderedNode object 'foo' at ...>), 
-    ('baz', <OrderedNode object 'baz' at ...>)]
-    
-    >>> orderedcopied['foo'] is orderednode['foo']
-    True
-
-``setdefault``
-::
-
-    >>> mynew = MyNode()
-    >>> mynode.setdefault('foo', mynew) is mynew
-    False
-    
-    >>> mynode.setdefault('bar', mynew) is mynew
-    True
-    
-    >>> mynode.items()
-    [('foo', <MyNode object 'foo' at ...>), 
-    ('baz', <MyNode object 'baz' at ...>), 
-    ('bar', <MyNode object 'bar' at ...>)]
-    
-    >>> basenew = BaseNode()
-    >>> basenode.setdefault('foo', basenew) is basenew
-    False
-    
-    >>> basenode.setdefault('bar', basenew) is basenew
-    True
-    
-    >>> basenode.items()
-    [('baz', <BaseNode object 'baz' at ...>), 
-    ('foo', <BaseNode object 'foo' at ...>), 
-    ('bar', <BaseNode object 'bar' at ...>)]
-    
-    >>> orderednew = OrderedNode()
-    >>> orderednode.setdefault('foo', orderednew) is orderednew
-    False
-    
-    >>> orderednode.setdefault('bar', orderednew) is orderednew
-    True
-
-``pop``
-::
-
-    >>> mynode.pop('xxx')
-    Traceback (most recent call last):
-      ...
-    KeyError: 'xxx'
-    
-    >>> mynode.pop('xxx', 'default')
-    'default'
-    
-    >>> mynode.pop('foo')
-    <MyNode object 'foo' at ...>
-    
-    >>> mynode.keys()
-    ['baz', 'bar']
-    
-    >>> basenode.pop('xxx')
-    Traceback (most recent call last):
-      ...
-    KeyError: 'xxx'
-    
-    >>> basenode.pop('xxx', 'default')
-    'default'
-    
-    >>> basenode.pop('foo')
-    <BaseNode object 'foo' at ...>
-    
-    >>> basenode.keys()
-    ['baz', 'bar']
-    
-    >>> orderednode.pop('xxx')
-    Traceback (most recent call last):
-      ...
-    KeyError: 'xxx'
-    
-    >>> orderednode.pop('xxx', 'default')
-    'default'
-    
-    >>> orderednode.pop('foo')
-    <OrderedNode object 'foo' at ...>
-    
-    >>> orderednode.keys()
-    ['baz', 'bar']
-
-``popitem`` and ``clear``
-::
-
-    >>> mynode.popitem()
-    ('bar', <MyNode object 'bar' at ...>)
-    
-    >>> mynode.keys()
-    ['baz']
-    
-    >>> mynode.clear()
-    >>> mynode.keys()
-    []
-    
-    >>> mynode.popitem()
-    Traceback (most recent call last):
-      ...
-    KeyError: "'popitem(): ordered dictionary is empty'"
-    
-    >>> basenode.popitem()
-    ('baz', <BaseNode object 'baz' at ...>)
-    
-    >>> basenode.keys()
-    ['bar']
-    
-    >>> basenode.clear()
-    >>> basenode.keys()
-    []
-    
-    >>> basenode.popitem()
-    Traceback (most recent call last):
-      ...
-    KeyError: 'popitem(): dictionary is empty'
-    
-    >>> orderednode.popitem()
-    ('bar', <OrderedNode object 'bar' at ...>)
-    
-    >>> orderednode.keys()
-    ['baz']
-    
-    >>> orderednode.clear()
-    >>> orderednode.keys()
-    []
-    
-    >>> orderednode.popitem()
-    Traceback (most recent call last):
-      ...
-    KeyError: "'popitem(): ordered dictionary is empty'"
+    >>> tester = FullMappingTester(OrderedNode)
+    >>> tester.run()
+    >>> tester.combined
+    ``__setitem__``: OK
+    ``__getitem__``: OK
+    ``get``: OK
+    ``__iter__``: OK
+    ``keys``: OK
+    ``iterkeys``: OK
+    ``values``: OK
+    ``itervalues``: OK
+    ``items``: OK
+    ``iteritems``: OK
+    ``__contains__``: OK
+    ``has_key``: OK
+    ``__len__``: OK
+    ``update``: OK
+    ``__delitem__``: OK
+    ``copy``: OK
+    ``setdefault``: OK
+    ``pop``: OK
+    ``popitem``: OK
+    ``clear``: OK
 
 
 ILocation contract
 ------------------
 
+XXX: make tester object for ILocation contract
+
 ``ILocations`` promises ``__name__`` and ``__parent__`` attributes. They are
 used to define tree hierarchy.
 ::
-
+    >>> from node.testing.base import create_tree
     >>> mynode = create_tree(MyNode)
     >>> mynode
     <MyNode object 'None' at ...>
@@ -577,14 +253,13 @@ used to define tree hierarchy.
 INode contract
 --------------
 
+XXX: make tester object for INode contract
+
 XXX: decide wether ``aliases`` or ``aliaser`` (still dunno) should be kept in
      base interface.
 
 ``printtree``
-
-Debug helper
 ::
-
     >>> mynode.printtree()
     <class 'node.tests.env.MyNode'>: None
       <class 'node.tests.env.MyNode'>: child_0
@@ -623,7 +298,6 @@ Debug helper
 
 ``path``
 ::
-
     >>> mynode.__name__ = 'root'
     >>> mynode.path
     ['root']
@@ -647,7 +321,6 @@ Debug helper
 
 ``root``
 ::
-
     >>> mynode['child_1']['subchild_1'].root is mynode
     True
     
@@ -659,7 +332,6 @@ Debug helper
 
 ``allow_non_node_childs``
 ::
-
     >>> mynode.allow_non_node_childs
     False
     
@@ -725,7 +397,6 @@ Debug helper
 
 ``filteredvalues``
 ::
-
     >>> from zope.interface import Interface, directlyProvides, noLongerProvides
     >>> class IFilter(Interface):
     ...     pass
@@ -756,7 +427,6 @@ Debug helper
 
 ``as_attribute_access``
 ::
-
     >>> myattrs = mynode.as_attribute_access()
     >>> myattrs
     <node.utils.AttributeAccess object at ...>
@@ -804,98 +474,3 @@ Debug helper
     Traceback (most recent call last):
       ...
     ValueError: It isn't allowed to use classes as values.
-
-
-Tester Objects
-==============
-
-FullMappingTester
------------------
-::
-
-    >>> from node.testing import FullMappingTester
-    >>> tester = FullMappingTester(MyNode)
-    >>> tester.run()
-    >>> tester.combined
-    ``__setitem__``: OK
-    ``__getitem__``: OK
-    ``get``: OK
-    ``__iter__``: OK
-    ``keys``: OK
-    ``iterkeys``: OK
-    ``values``: OK
-    ``itervalues``: OK
-    ``items``: OK
-    ``iteritems``: OK
-    ``__contains__``: OK
-    ``has_key``: OK
-    ``__len__``: OK
-    ``update``: OK
-    ``__delitem__``: OK
-    ``copy``: OK
-    ``setdefault``: OK
-    ``pop``: OK
-    ``popitem``: OK
-    ``clear``: OK
-    
-    >>> tester = FullMappingTester(BaseNode)
-    >>> tester.run()
-    >>> tester.combined
-    ``__setitem__``: OK
-    ``__getitem__``: OK
-    ``get``: OK
-    ``__iter__``: OK
-    ``keys``: OK
-    ``iterkeys``: OK
-    ``values``: OK
-    ``itervalues``: OK
-    ``items``: OK
-    ``iteritems``: OK
-    ``__contains__``: OK
-    ``has_key``: OK
-    ``__len__``: OK
-    ``update``: OK
-    ``__delitem__``: OK
-    ``copy``: OK
-    ``setdefault``: OK
-    ``pop``: OK
-    ``popitem``: OK
-    ``clear``: OK
-    
-    >>> tester = FullMappingTester(OrderedNode)
-    >>> tester.run()
-    >>> tester.combined
-    ``__setitem__``: OK
-    ``__getitem__``: OK
-    ``get``: OK
-    ``__iter__``: OK
-    ``keys``: OK
-    ``iterkeys``: OK
-    ``values``: OK
-    ``itervalues``: OK
-    ``items``: OK
-    ``iteritems``: OK
-    ``__contains__``: OK
-    ``has_key``: OK
-    ``__len__``: OK
-    ``update``: OK
-    ``__delitem__``: OK
-    ``copy``: OK
-    ``setdefault``: OK
-    ``pop``: OK
-    ``popitem``: OK
-    ``clear``: OK
-
-
-LocationTester
---------------
-::
-
-    >>> from node.testing import LocationTester
-
-
-NodeTester
-----------
-::
-
-    >>> from node.testing import NodeTester
