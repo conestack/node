@@ -234,16 +234,193 @@ FullMappingTester
     >>> fmtester.test___setitem__()
     >>> fmtester.test_values()
 
+``itervalues``
+::
+
+    >>> fmtester.test_itervalues()
+    Traceback (most recent call last):
+      ...
+    AttributeError: 'TestNodeValues' object has no attribute 'itervalues'
+    
+    >>> class TestMappingIterValues(TestMappingValues):
+    ...     def itervalues(self):
+    ...         return iter(self.data.values())
+    
+    >>> fmtester = FullMappingTester(TestMappingIterValues,
+    ...                              include_node_checks=False)
+    >>> fmtester.test___setitem__()
+    >>> fmtester.test_itervalues()
+
+``items``
+::
+
+    >>> fmtester.test_items()
+    Traceback (most recent call last):
+      ...
+    AttributeError: 'TestMappingIterValues' object has no attribute 'items'
+    
+    >>> class TestMappingItems(TestMappingIterValues):
+    ...     def items(self):
+    ...         return list()
+    
+    >>> fmtester = FullMappingTester(TestMappingItems,
+    ...                              include_node_checks=False)
+    >>> fmtester.test_items()
+    Traceback (most recent call last):
+      ...
+    Exception: Expected 2-length result. Got ``0``
+    
+    >>> class TestMappingItems(TestMappingIterValues):
+    ...     def items(self):
+    ...         return [('foo', object()), ('b', object())]
+    
+    >>> fmtester = FullMappingTester(TestMappingItems,
+    ...                              include_node_checks=False)
+    >>> fmtester.test___setitem__()
+    >>> fmtester.test_items()
+    Traceback (most recent call last):
+      ...
+    Exception: Expected keys ``['foo', 'bar']``. Got ``b``
+    
+    >>> class TestMappingItems(TestMappingIterValues):
+    ...     def items(self):
+    ...         return [('foo', object()), ('bar', object())]
+    
+    >>> fmtester = FullMappingTester(TestMappingItems,
+    ...                              include_node_checks=False)
+    >>> fmtester.test___setitem__()
+    >>> fmtester.test_items()
+    Traceback (most recent call last):
+      ...
+    Exception: Expected <object object at ...>, got <TestMappingItems object at ...>
+    
+    >>> class TestMappingItems(TestMappingIterValues):
+    ...     def items(self):
+    ...         return self.data.items()
+    
+    >>> fmtester = FullMappingTester(TestMappingItems,
+    ...                              include_node_checks=False)
+    >>> fmtester.test___setitem__()
+    >>> fmtester.test_items()
+    
+    >>> class TestNodeItems(TestNode, TestMappingItems):
+    ...     pass
+    
+    >>> fmtester = FullMappingTester(TestNodeItems)
+    >>> fmtester.test___setitem__()
+    >>> fmtester.test_items()
+    Traceback (most recent call last):
+      ...
+    Exception: Expected same value for ``key`` and  ``__name__``
+    
+    >>> class TestNodeItems(TestNodeSetItem, TestMappingItems):
+    ...     pass
+    
+    >>> fmtester = FullMappingTester(TestNodeItems)
+    >>> fmtester.test___setitem__()
+    >>> fmtester.test_items()
+
+``iteritems``
+::
+
+    >>> fmtester.test_iteritems()
+    Traceback (most recent call last):
+      ...
+    AttributeError: 'TestNodeItems' object has no attribute 'iteritems'
+    
+    >>> class TestMappingIterItems(TestMappingItems):
+    ...     def iteritems(self):
+    ...         return iter(self.data.items())
+    
+    >>> fmtester = FullMappingTester(TestMappingIterItems,
+    ...                              include_node_checks=False)
+    >>> fmtester.test___setitem__()
+    >>> fmtester.test_iteritems()
+
+``__contains__``
+::
+
+    >>> class TestMappingContains(TestMappingIterItems):
+    ...     def __contains__(self, key):
+    ...         return False
+    
+    >>> fmtester = FullMappingTester(TestMappingContains,
+    ...                              include_node_checks=False)
+    >>> fmtester.test___setitem__()
+    >>> fmtester.test___contains__()
+    Traceback (most recent call last):
+      ...
+    Exception: Expected ``foo`` and ``bar`` return ``True`` by ``__contains__``
+    
+    >>> class TestMappingContains(TestMappingIterItems):
+    ...     def __contains__(self, key):
+    ...         return key in self.data
+    
+    >>> fmtester = FullMappingTester(TestMappingContains,
+    ...                              include_node_checks=False)
+    >>> fmtester.test___setitem__()
+    >>> fmtester.test___contains__()
+
+``has_key``
+::
+
+    >>> fmtester.test_has_key()
+    Traceback (most recent call last):
+      ...
+    AttributeError: 'TestMappingContains' object has no attribute 'has_key'
+    
+    >>> class TestMappingHasKey(TestMappingContains):
+    ...     def has_key(self, key):
+    ...         return False
+    
+    >>> fmtester = FullMappingTester(TestMappingHasKey,
+    ...                              include_node_checks=False)
+    >>> fmtester.test___setitem__()
+    >>> fmtester.test_has_key()
+    Traceback (most recent call last):
+      ...
+    Exception: Expected ``foo`` and ``bar`` return ``True`` by ``has_key``
+    
+    >>> class TestMappingHasKey(TestMappingContains):
+    ...     def has_key(self, key):
+    ...         return self.data.has_key(key)
+    
+    >>> fmtester = FullMappingTester(TestMappingHasKey,
+    ...                              include_node_checks=False)
+    >>> fmtester.test___setitem__()
+    >>> fmtester.test_has_key()
+
+``__len__``
+::
+
+    >>> fmtester.test___len__()
+    Traceback (most recent call last):
+      ...
+    TypeError: object of type 'TestMappingHasKey' has no len()
+    
+    >>> class TestMappingLen(TestMappingHasKey):
+    ...     def __len__(self):
+    ...         return 0
+    
+    >>> fmtester = FullMappingTester(TestMappingLen,
+    ...                              include_node_checks=False)
+    >>> fmtester.test___setitem__()
+    >>> fmtester.test___len__()
+    Traceback (most recent call last):
+      ...
+    Exception: Expected 2-length result. Got ``0``
+    
+    >>> class TestMappingLen(TestMappingHasKey):
+    ...     def __len__(self):
+    ...         return len(self.data)
+    
+    >>> fmtester = FullMappingTester(TestMappingLen,
+    ...                              include_node_checks=False)
+    >>> fmtester.test___setitem__()
+    >>> fmtester.test___len__()
+    
+
 ###
-    
-    
-    
-    fmtester.test_itervalues()
-    fmtester.test_items()
-    fmtester.test_iteritems()
-    fmtester.test___contains__()
-    fmtester.test_has_key()
-    fmtester.test___len__()
     fmtester.test_update()
     fmtester.test___delitem__()
     fmtester.test_copy()

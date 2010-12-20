@@ -183,11 +183,14 @@ class FullMappingTester(BaseTester):
             if not key in expected:
                 msg = 'Expected keys ``%s``. Got ``%s``' % (str(expected), key)
                 raise Exception(msg)
-            if not key == value.__name__:
-                msg = 'Expected same value for ``key`` and  ``__name__``'
+            if self.include_node_checks:
+                if key != value.__name__:
+                    msg = 'Expected same value for ``key`` and  ``__name__``'
+                    raise Exception(msg)
+        for key, value in items:
+            if not value is self.context[key]:
+                msg = 'Expected %s, got %s' % (str(value), str(self.context[key]))
                 raise Exception(msg)
-            if not self._object_repr_valid(value, key):
-                raise Exception(self._object_repr(key))
     
     def test_items(self):
         self._check_items(self.context.items(), ['foo', 'bar'])
@@ -198,14 +201,14 @@ class FullMappingTester(BaseTester):
     
     def test___contains__(self):
         if not 'foo' in self.context or not 'bar' in self.context:
-            msg = 'Expected ``foo`` and ``bar`` return ``True`` from ' + \
+            msg = 'Expected ``foo`` and ``bar`` return ``True`` by ' + \
                   '``__contains__``'
             raise Exception(msg)
     
     def test_has_key(self):
         if not self.context.has_key('foo') \
           or not self.context.has_key('bar'):
-            msg = 'Expected ``foo`` and ``bar`` return ``True`` from ' + \
+            msg = 'Expected ``foo`` and ``bar`` return ``True`` by ' + \
                   '``has_key``'
             raise Exception(msg)
     
