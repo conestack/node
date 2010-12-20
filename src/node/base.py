@@ -67,6 +67,8 @@ class _NodeMixin(object):
             root = parent
         return root
     
+    # XXX: inconsistent naming, filteredvalues() as values() should return a
+    # list, not an iterator
     def filteredvalues(self, interface):
         """Uses ``values``.
         """
@@ -318,6 +320,7 @@ class _NodeSpaceMixin(_NodeMixin, _ImplMixin):
         try:
             return self._mapping_impl().__getitem__(self, key)
         except KeyError:
+            # XXX: do we really want to relocate this exception?
             raise KeyError(key)
     
     def __setitem__(self, key, val):
@@ -327,6 +330,8 @@ class _NodeSpaceMixin(_NodeMixin, _ImplMixin):
         #is_node = isinstance(val, _NodeMixin)
         is_node = INode.providedBy(val)
         if is_node:
+            # XXX: do we really want to adopt nodespaces or move below next if
+            # I think so far we did, but not sure
             val.__name__ = key
             val.__parent__ = self
         # blend in our nodespaces as children, with name __<name>__
@@ -350,6 +355,8 @@ class _NodeSpaceMixin(_NodeMixin, _ImplMixin):
             del self.nodespaces[key]
             return
         # fail immediately if key does not exist
+        # XXX: do we need this check for lazynodes?
+        # XXX: it feels like calling next __delitem__ could be enough
         self[key]
         self._mapping_impl().__delitem__(self, key)
 
@@ -404,6 +411,8 @@ class OrderedNode(_NodeSpaceMixin, odict):
     
     def _mapping_impl(self):
         return odict
+
+    # XXX: update and setdefault also for this node?
 
 
 ###############################################################################
