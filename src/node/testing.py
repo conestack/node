@@ -1,4 +1,15 @@
 from odict import odict
+from node.interfaces import INode
+
+
+def create_tree(class_):
+        root = class_()
+        for i in range(3):
+            root['child_%i' % i] = class_()
+            for j in range(2):
+                root['child_%i' % i]['subchild_%i' % j] = class_()
+        return root
+
 
 class ResultWriter(object):
     
@@ -29,10 +40,19 @@ class BaseTester(object):
     # context manipulation.
     iface_contract = []
     
-    def __init__(self, class_):
+    def __init__(self, class_, context=None):
+        """
+        ``class_``
+            class object for creating children in test.
+        ``context``
+            an optional root context to test against, If None, an instance of 
+            class_ is created as root.
+        """
         self._results = odict()
         self.class_ = class_
-        self.context = class_()
+        self.context = context
+        if self.context is None:
+            self.context = class_()
         self._results = odict()
     
     @property
@@ -58,15 +78,6 @@ class BaseTester(object):
     
     def writer(self, key=None):
         return ResultWriter(self._results, name=key)
-        
-    def create_tree(class_):
-        class_ = self.class_
-        root = class_()
-        for i in range(3):
-            root['child_%i' % i] = class_()
-            for j in range(2):
-                root['child_%i' % i]['subchild_%i' % j] = class_()
-        return root
 
 
 class FullMappingTester(BaseTester):
@@ -96,35 +107,30 @@ class FullMappingTester(BaseTester):
         'clear',
     ]
     
-    _object_repr_pattern = "<%s object '%s' at ...>"
-    
-    def _object_repr(self, key):
-        return self._object_repr_pattern % (self.class_.__name__, key)
-    
-    def _object_repr_valid(self, context, key):
-        search = self._object_repr(key).strip('...>')
-        if str(context).startswith(search):
-            return True
-        return False
+    def __init__(self, class_, context=None, include_node_checks=True):
+        super(FullMappingTester, self).__init__(class_, context=context)
+        self.include_node_checks = include_node_checks
     
     def test___setitem__(self):
         self.context['foo'] = self.class_()
-        # Note if ``__name__`` is set on added node, it gets overwritten by new
-        # name.
-        self.context['bar'] = self.class_(name='xxx')
+        if self.include_node_checks:
+            self.context['bar'] = self.class_(name='xxx')
+        else:
+            self.context['bar'] = self.class_()
     
     def test___getitem__(self):
-        if not self._object_repr_valid(self.context['foo'], 'foo'):
-            raise Exception(self._object_repr('foo'))
-        if self.context['bar'].__name__ != 'bar':
-            raise Exception('Child ``bar`` has wrong ``__name__``')
+        child = self.context['foo']
+        if self.include_node_checks:
+            if self.context['bar'].__name__ != 'bar':
+                raise Exception('Child ``bar`` has wrong ``__name__``')
     
     def test_get(self):
-        if not self._object_repr_valid(self.context['bar'], 'bar'):
-            raise Exception(self._object_repr('bar'))
         default = object()
-        if not self.context.get('xxx', default) is default:
-            raise Exception('Does not return ``default`` as expected')
+        if self.context.get('foo', default) is default:
+            raise Exception('Expected value, got default')
+        value = self.context.get('xxx', default)
+        if not value is default:
+            raise Exception('Expected default, got %s' % str(value))
     
     def _check_keys(self, keys, expected):
         if len(keys) != len(expected):
@@ -154,11 +160,11 @@ class FullMappingTester(BaseTester):
             msg = 'Expected %i-length result. Got ``%i``'
             msg = msg % (len(expected), len(values))
             raise Exception(msg)
-        for value in values:
-            if not value.__name__ in expected:
-                msg = 'Expected values with __name__ foo and bar. Got ``%s``'
-                mgs = msg % value.__name__
-                raise Exception(msg)
+        if self.include_node_checks:
+            for value in values:
+                if not value.__name__ in expected:
+                    msg = 'Expected __name__ of value invalid. Got ``%s``'
+                    raise Exception(msg % value.__name__)
     
     def test_values(self):
         values = self.context.values()

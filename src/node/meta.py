@@ -32,10 +32,7 @@ class behavior(object):
             """
             
             def __init__(cls, name, bases, dct):
-                # tuple with provided behaviors
                 setattr(cls, '__behaviors_cls', self.behaviors)
-                # dict for behavior instances
-                setattr(cls, '__behaviors_ins', dict())
                 super(NodeBehaviorMeta, cls).__init__(name, bases, dct)
         
         ###
@@ -59,7 +56,11 @@ class behavior(object):
                     # try to find requested attribute on behavior
                     # create behavior instance if necessary
                     behaviors = obj.__getattribute__(self, '__behaviors_cls')
-                    ins = obj.__getattribute__(self, '__behaviors_ins')
+                    try:
+                        ins = obj.__getattribute__(self, '__behaviors_ins')
+                    except AttributeError:
+                        obj.__setattr__(self, '__behaviors_ins', dict())
+                        ins = obj.__getattribute__(self, '__behaviors_ins')
                     for behavior in behaviors:
                         unbound = getattr(behavior, name, self.__default_marker)
                         if unbound is self.__default_marker:

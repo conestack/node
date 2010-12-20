@@ -128,13 +128,15 @@ Instanciate wrapped node.
 No behavior instances yet. Are created on first attribute access.
 ::
     
-    >>> node.__class__.__behaviors_ins
-    {}
+    >>> node.__behaviors_ins
+    Traceback (most recent call last):
+      ...
+    AttributeError: __behaviors_ins
 
     >>> node.do
     <bound method SomeBehavior.do of <SomeBehavior object at ...>>
     
-    >>> node.__class__.__behaviors_ins
+    >>> node.__behaviors_ins
     {'SomeBehavior': <SomeBehavior object at ...>}
 
 Use behavior functions and properties directly on decorated node.

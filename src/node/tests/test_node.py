@@ -9,10 +9,10 @@ optionflags = doctest.NORMALIZE_WHITESPACE | \
 
 TESTFILES = [
     '../testing.txt',
-    '../meta.txt',
-    '../utils.txt',
-    '../base.txt',
-    '../aliasing.txt'
+    #'../meta.txt',
+    #'../utils.txt',
+    #'../base.txt',
+    #'../aliasing.txt'
 ]
 
 def test_suite():
