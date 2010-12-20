@@ -39,8 +39,8 @@ Why using a decorator
   objects, they are elegant.
 
 
-Tests
------
+Behaviors and the behavior decorator
+------------------------------------
 
 Provide a behavior implementation.
 ::
@@ -227,7 +227,48 @@ Override ``do`` on decorated node.
     >>> node.do()
     "do on node <BehaviorNode object 'None' at ...>"
 
-Run FullMappingTester against wrapper.
+
+Before and after hooks for behaviors
+------------------------------------
+
+    >>> from node.meta import before, after
+    
+Use hooks in behaviors. signature must be same as hooked function from node
+    
+    >>> class HookingBehavior(object):
+    ...     implements(IBehavior)
+    ... 
+    ...     def __init__(self, context):
+    ...         self.context = context
+    ... 
+    ...     @before('get')
+    ...     def before_get(self, key, default=None):
+    ...         print 'before __getitem__ on ' + \
+    ...               str(self.context) + \
+    ...               ' with ' + \
+    ...               key
+    
+    >>> @behavior(HookingBehavior)
+    ... class BehaviorNode(OrderedNode):
+    ... 
+    ...     pass
+    
+    >>> from node.meta import BEFORE_HOOKS
+    >>> from node.meta import AFTER_HOOKS
+    
+    >>> BEFORE_HOOKS
+    {'get': [<function before_get at ...>]}
+    
+    
+    >>> node = BehaviorNode()
+    
+    >>> node.get('foo', None)
+    
+
+Run Testers against wrapper
+---------------------------
+
+FullMappingTester.
 ::
 
     >>> from node.testing import FullMappingTester

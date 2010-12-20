@@ -12,9 +12,9 @@ TESTFILES = [
     '../testing/fullmapping.txt',
     '../testing/location.txt',
     '../testing/node.txt',
+    '../base.txt',
     '../meta.txt',
     '../utils.txt',
-    '../base.txt',
     '../aliasing.txt'
 ]
 
