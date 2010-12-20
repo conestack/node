@@ -4,6 +4,14 @@ from node.interfaces import (
     IBehavior,
 )
 
+def before():
+    """Behavior before hook decorator.
+    """
+
+def after():
+    """Behavior before hook decorator.
+    """
+
 class behavior(object):
     """Decorator for extending nodes by behaviors.
     """
