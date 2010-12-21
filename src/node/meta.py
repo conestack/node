@@ -9,17 +9,44 @@ _BEFORE_HOOKS = dict()
 _AFTER_HOOKS = dict()
 _default_marker = object()
 
+# XXX: what to wrap on class creation time, and what on
+#      __getattribute__ of instance ???
+_private_hook_whitelist = ['__delitem__', '__getitem__', '__setitem__']
+    
+
+class BaseBehavior(object):
+    """Base behavior class.
+    """
+    implements(IBehavior)
+    
+    def __init__(self, context):
+        self._context = context
+    
+    def _get_context(self):
+        return self._context
+    
+    def _set_context(self, val):
+        raise RuntimeError('Overriding ``context`` forbidden')
+    
+    context = property(_get_context, _set_context)
+    
+    def _debug(self, decorator, hooked, *args, **kw):
+        print '* ' + decorator + ' ``' + hooked + '`` of ' + \
+              str(self) + ' \n  on ' + str(self.context) + \
+              ' \n  with args ``' + str(args) + \
+              '`` \n  and kw ``' + str(kw) + '`` ---'
+
 
 class _BehaviorHook(object):
     """Abstract hook decorator.
     """
-    
     def __init__(self, hooks, func_name):
         self.hooks = hooks
         self.func_name = func_name
     
     def __call__(self, func):
         # no way here to determine class func is member of, just register
+        
         # XXX: check if hook was already added? should not happen that hook
         #      gets registered twice???
         func.hook_name = self.func_name
@@ -57,9 +84,39 @@ def _behavior_get(instance, ins, behavior):
     name = behavior.__name__
     ret = ins.get(name, _default_marker)
     if ret is _default_marker:
-        # XXX: unwrap (or rewrap?) __getattribute__ of instance first
-        #      we dont want hooks to be called from within bahavior.
-        ret = ins[name] = behavior(instance)
+        class_ = instance.__class__._wrapped
+        
+        class UnwrappedContextProxy(object):
+            """Class to unwrap calls on behavior extended node.
+            
+            This is needed to acess self.context.whatever in behavior
+            implementation without computing before and after hooks bound
+            to ``whatever``.
+            """
+            def __init__(self, context):
+                self.context = context
+            
+            def __getattribute__(self, name):
+                try:
+                    return object.__getattribute__(self, name)
+                except AttributeError:
+                    pass
+                context = object.__getattribute__(self, 'context')
+                return class_.__getattribute__(context, name)
+            
+            def __repr__(self):
+                name = unicode(self.__name__).encode('ascii', 'replace')
+                return "<%s object '%s' at %s>" % (class_.__name__,
+                                                   name,
+                                                   hex(id(self))[:-1])
+        
+        for func_name in _private_hook_whitelist:
+            def unwrapped(self, *args, **kw):
+                context = object.__getattribute__(self, 'context')
+                func = getattr(class_, context, func_name)
+                return func(self, *args, **kw)
+            setattr(UnwrappedContextProxy, func_name, unwrapped)
+        ret = ins[name] = behavior(UnwrappedContextProxy(instance))
     return ret
 
 
@@ -157,9 +214,6 @@ class behavior(object):
             msg = '``INode`` not implemented by ``%s``' % obj.__name__
             raise TypeError(msg)
         
-        ###
-        # node wrapper metaclass.
-        
         class NodeBehaviorMeta(type):
             """Metaclass for NodeBehaviorWrapper.
             
@@ -167,32 +221,25 @@ class behavior(object):
             empty dict cls.__behaviors_ins, which later contains the bahavior
             class instances.
             """
-            
             def __init__(cls, name, bases, dct):
                 # wrap class attribues.
-                
-                # XXX: what to wrap on class creation time, and what on
-                #      __getattribute__ of instance ???
-                private_whitelist = [
-                    '__delitem__', '__getitem__', '__setitem__']
                 for name in dir(cls):
-                    if name not in private_whitelist:
+                    if name not in _private_hook_whitelist:
                             continue
                     attr = getattr(cls, name)
                     setattr(cls, name, _wrap_class_method(attr, name))
                 setattr(cls, '__behaviors_cls', self.behaviors)
                 super(NodeBehaviorMeta, cls).__init__(name, bases, dct)
         
-        ###
-        # wrapper for decorated node.
-        
         class NodeBehaviorWrapper(obj):
-            """Derives from given ``obj`` by decorator and wrap node behavior.
+            """Wrapper for decorated node.
+            
+            Derives from given ``obj`` by decorator and wrap node behavior.
             """
             __metaclass__ = NodeBehaviorMeta
             _wrapped = obj
             
-            implements(INode) # after __metaclass__ definition.
+            implements(INode) # after __metaclass__ definition!
             
             def __getattribute__(self, name):
                 # XXX: what to wrap on class creation time, and what on

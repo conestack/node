@@ -43,18 +43,22 @@ Provide a behavior implementation.
 ::
     >>> from zope.interface import implements
     >>> from node.interfaces import IBehavior
+    >>> from node.meta import BaseBehavior
     
-    >>> class BaseBehavior(object):
-    ...     implements(IBehavior)
-    ... 
-    ...     def __init__(self, context):
-    ...         self.context = context
-    ... 
-    ...     def _print_hook_info(self, decorator, hooked, *args, **kw):
-    ...         print '* ' + decorator + ' ``' + hooked + '`` of ' + \
-    ...               str(self) + ' \n  on ' + str(self.context) + \
-    ...               ' \n  with args ``' + str(args) + \
-    ...               '`` \n  and kw ``' + str(kw) + '`` ---'
+Behaviors are normally not instanciated by the user. This is done by the
+behavioral extended Node
+::
+    
+    >>> behavior = BaseBehavior(object())
+    >>> behavior.context
+    <object object at ...>
+
+Overriding ``context`` on behavior is forbidden.
+
+    >>> behavior.context = 'foo'
+    Traceback (most recent call last):
+      ...
+    RuntimeError: Overriding ``context`` forbidden
     
     >>> class SomeBehavior(BaseBehavior):
     ... 
@@ -231,7 +235,7 @@ Provide Behavior which hooks before ``node.get``.
     ... 
     ...     @before('get')
     ...     def before_get(self, key, default=None):
-    ...         self._print_hook_info('before', 'get', key, default=default)
+    ...         self._debug('before', 'get', key, default=default)
 
 Decorate a node with hook defining behavior.
 ::
@@ -264,7 +268,7 @@ Second behavior with after get hook.
     ... 
     ...     @after('get')
     ...     def after_get(self, key, default=None):
-    ...         self._print_hook_info('after', 'get', key, default=default)
+    ...         self._debug('after', 'get', key, default=default)
     
     >>> @behavior(HookingBehavior, OtherHookingBehavior)
     ... class BehaviorNode(OrderedNode): pass
@@ -295,21 +299,21 @@ Two behaviors both defining before and after get hooks.
     ... 
     ...     @before('get')
     ...     def before_get(self, key, default=None):
-    ...         self._print_hook_info('before', 'get', key, default=default)
+    ...         self._debug('before', 'get', key, default=default)
     ... 
     ...     @after('get')
     ...     def after_get(self, key, default=None):
-    ...         self._print_hook_info('after', 'get', key, default=default)
+    ...         self._debug('after', 'get', key, default=default)
     
     >>> class OtherHookBeforeAfterGet(BaseBehavior):
     ... 
     ...     @before('get')
     ...     def before_get(self, key, default=None):
-    ...         self._print_hook_info('before', 'get', key, default=default)
+    ...         self._debug('before', 'get', key, default=default)
     ... 
     ...     @after('get')
     ...     def after_get(self, key, default=None):
-    ...         self._print_hook_info('after', 'get', key, default=default)
+    ...         self._debug('after', 'get', key, default=default)
 
 If hook for function is defined in more than one behavior, they are called in
 order of behavior registration.
@@ -336,25 +340,27 @@ order of behavior registration.
       with args ``('foo',)`` 
       and kw ``{'default': None}`` ---
 
+Hook data structure related private functions.
+::
     >>> class HookBeforeAfterGetItem(BaseBehavior):
     ... 
     ...     @before('__getitem__')
     ...     def before_getitem(self, key):
-    ...         self._print_hook_info('before', '__getitem__', key)
+    ...         self._debug('before', '__getitem__', key)
     ... 
     ...     @after('__getitem__')
     ...     def after_getitem(self, key):
-    ...         self._print_hook_info('after', '__getitem__', key)
+    ...         self._debug('after', '__getitem__', key)
     
     >>> class HookBeforeAfterSetItem(BaseBehavior):
     ... 
     ...     @before('__setitem__')
     ...     def before_setitem(self, key, value):
-    ...         self._print_hook_info('before', '__setitem__', key, value)
+    ...         self._debug('before', '__setitem__', key, value)
     ... 
     ...     @after('__setitem__')
     ...     def after_setitem(self, key, value):
-    ...         self._print_hook_info('after', '__setitem__', key, value)
+    ...         self._debug('after', '__setitem__', key, value)
     
     >>> @behavior(HookBeforeAfterGetItem, HookBeforeAfterSetItem)
     ... class BehaviorNode(OrderedNode): pass
@@ -396,7 +402,7 @@ FullMappingTester.
     >>> from node.testing import FullMappingTester
     >>> tester = FullMappingTester(BehaviorNode)
     >>> tester.run()
-    >>> #tester.combined
+    >>> tester.combined
     ``__setitem__``: OK
     ``__getitem__``: OK
     ``get``: OK
