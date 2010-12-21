@@ -32,7 +32,7 @@ Why using a decorator
 
 - It is not possible to custom hook import statements from user pov.
 
-- beside the fact they provide an easy hooking point for manipulating class 
+- Beside the fact they provide an easy hooking point for manipulating class 
   objects, they are elegant.
 
 
@@ -41,7 +41,6 @@ Behaviors and the behavior decorator
 
 Provide a behavior implementation.
 ::
-
     >>> from zope.interface import implements
     >>> from node.interfaces import IBehavior
     
@@ -74,9 +73,8 @@ Provide a behavior implementation.
     ... 
     ...     rw = property(_get_rw, _set_rw)
 
-Decorator expects IBehavior implementations.
+Decorator expects ``IBehavior`` implementations.
 ::
-
     >>> from node.meta import behavior
     >>> from node.base import OrderedNode
     
@@ -94,9 +92,8 @@ Decorator expects IBehavior implementations.
       ...
     TypeError: ``IBehavior`` not implemented by ``dict``
 
-Decorating none INode implementing classes fails.
+Decorating classes not providing ``INode`` with ``behavior`` will fail.
 ::
-
     >>> @behavior(SomeBehavior)
     ... class BehaviorNode(object):
     ...     pass
@@ -106,33 +103,28 @@ Decorating none INode implementing classes fails.
 
 Do the right thing.
 ::
-
     >>> @behavior(SomeBehavior)
     ... class BehaviorNode(OrderedNode):
     ...     pass
 
-BehavioralNode was wrapped.
+``BehavioralNode`` was wrapped.
 ::
-    
     >>> BehaviorNode
     <class 'node.meta.NodeBehaviorWrapper'>
 
 Behavior classes bound to node.
 ::
-
     >>> BehaviorNode.__behaviors_cls
     (<class 'SomeBehavior'>,)
 
 Instanciate wrapped node.
 ::
-
     >>> node = BehaviorNode()
     >>> node
     <BehaviorNode object 'None' at ...>
 
 No behavior instances yet. Are created on first attribute access.
 ::
-    
     >>> node.__behaviors_ins
     Traceback (most recent call last):
       ...
@@ -146,7 +138,6 @@ No behavior instances yet. Are created on first attribute access.
 
 Use behavior functions and properties directly on decorated node.
 ::
-
     >>> node.do()
     "do something on <BehaviorNode object 'None' at ...>"
     
@@ -159,7 +150,6 @@ Use behavior functions and properties directly on decorated node.
 
 Define second behavior. It implements ``do`` as well.
 ::
-
     >>> class OtherBehavior(BaseBehavior):
     ... 
     ...     def perform(self):
@@ -170,7 +160,6 @@ Define second behavior. It implements ``do`` as well.
 
 Both behaviors using node.
 ::
-
     >>> @behavior(SomeBehavior, OtherBehavior)
     ... class BehaviorNode(OrderedNode):
     ...     pass
@@ -182,9 +171,8 @@ Both behaviors using node.
     >>> node.perform()
     "perform on <BehaviorNode object 'None' at ...>"
 
-``do`` is used from SomeBehavior, its first in behavior hierarchy.
+``do`` is used from ``SomeBehavior``, its first in behavior hierarchy.
 ::
-
     >>> node.do
     <bound method SomeBehavior.do of <SomeBehavior object at ...>>
 
@@ -193,7 +181,6 @@ Both behaviors using node.
 
 Reversed behavior order.
 ::
-
     >>> @behavior(OtherBehavior, SomeBehavior)
     ... class BehaviorNode(OrderedNode):
     ...     pass
@@ -214,7 +201,6 @@ Reversed behavior order.
 
 Override ``do`` on decorated node.
 ::
-
     >>> @behavior(OtherBehavior, SomeBehavior)
     ... class BehaviorNode(OrderedNode):
     ... 
@@ -232,19 +218,28 @@ Override ``do`` on decorated node.
 Before and after hooks for behaviors
 ------------------------------------
 
+Use function hooks in behaviors. Signature of hook function must be same as
+of hooked function from node.
+
+Import hook decorators.
+::
     >>> from node.meta import before, after
-    
-Use hooks in behaviors. signature must be same as hooked function from node
-    
+
+Provide Behavior which hooks before ``node.get``.
+::
     >>> class HookingBehavior(BaseBehavior):
     ... 
     ...     @before('get')
     ...     def before_get(self, key, default=None):
     ...         self._print_hook_info('before', 'get', key, default=default)
-    
+
+Decorate a node with hook defining behavior.
+::
     >>> @behavior(HookingBehavior)
     ... class BehaviorNode(OrderedNode): pass
-    
+
+Hooks are stored in registries.
+::
     >>> from node.meta import _BEFORE_HOOKS
     >>> from node.meta import _AFTER_HOOKS
     
@@ -253,14 +248,18 @@ Use hooks in behaviors. signature must be same as hooked function from node
     
     >>> _AFTER_HOOKS
     {}
-    
+
+Instanciate and check wether hook gets called.
+::
     >>> node = BehaviorNode('hooked')
     >>> node.get('foo', None)
     * before ``get`` of <HookingBehavior object at ...> 
       on <BehaviorNode object 'hooked' at ...> 
       with args ``('foo',)`` 
       and kw ``{'default': None}`` ---
-    
+
+Second behavior with after get hook.
+::
     >>> class OtherHookingBehavior(BaseBehavior):
     ... 
     ...     @after('get')
@@ -275,7 +274,10 @@ Use hooks in behaviors. signature must be same as hooked function from node
     
     >>> _AFTER_HOOKS
     {'get': [<function after_get at ...>]}
-    
+
+Now before hook is called of ``HookingBehavior``, and after hook is called of
+``OtherHookingBehavior``.
+::
     >>> node = BehaviorNode('hooked')
     >>> node.get('foo', None)
     * before ``get`` of <HookingBehavior object at ...> 
@@ -286,13 +288,53 @@ Use hooks in behaviors. signature must be same as hooked function from node
       on <BehaviorNode object 'hooked' at ...> 
       with args ``('foo',)`` 
       and kw ``{'default': None}`` ---
-    
+
+Two behaviors both defining before and after get hooks.
+::
     >>> class HookBeforeAfterGet(BaseBehavior):
+    ... 
+    ...     @before('get')
+    ...     def before_get(self, key, default=None):
+    ...         self._print_hook_info('before', 'get', key, default=default)
     ... 
     ...     @after('get')
     ...     def after_get(self, key, default=None):
-    ...         print 'after ``get`` of ' + str(self) + ' on ' + \
-    ...               str(self.context) + ' with ' + key
+    ...         self._print_hook_info('after', 'get', key, default=default)
+    
+    >>> class OtherHookBeforeAfterGet(BaseBehavior):
+    ... 
+    ...     @before('get')
+    ...     def before_get(self, key, default=None):
+    ...         self._print_hook_info('before', 'get', key, default=default)
+    ... 
+    ...     @after('get')
+    ...     def after_get(self, key, default=None):
+    ...         self._print_hook_info('after', 'get', key, default=default)
+
+If hook for function is defined in more than one behavior, they are called in
+order of behavior registration.
+::
+    >>> @behavior(HookBeforeAfterGet, OtherHookBeforeAfterGet)
+    ... class BehaviorNode(OrderedNode): pass
+    
+    >>> node = BehaviorNode('hooked')
+    >>> node.get('foo', None)
+    * before ``get`` of <HookBeforeAfterGet object at ...> 
+      on <BehaviorNode object 'hooked' at ...> 
+      with args ``('foo',)`` 
+      and kw ``{'default': None}`` ---
+    * before ``get`` of <OtherHookBeforeAfterGet object at ...> 
+      on <BehaviorNode object 'hooked' at ...> 
+      with args ``('foo',)`` 
+      and kw ``{'default': None}`` ---
+    * after ``get`` of <HookBeforeAfterGet object at ...> 
+      on <BehaviorNode object 'hooked' at ...> 
+      with args ``('foo',)`` 
+      and kw ``{'default': None}`` ---
+    * after ``get`` of <OtherHookBeforeAfterGet object at ...> 
+      on <BehaviorNode object 'hooked' at ...> 
+      with args ``('foo',)`` 
+      and kw ``{'default': None}`` ---
 
 
 Run Testers against wrapper
