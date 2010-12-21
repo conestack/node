@@ -4,35 +4,83 @@ from node.interfaces import (
     IBehavior,
 )
 
-BEFORE_HOOKS = dict()
-AFTER_HOOKS = dict()
+_BEFORE_HOOKS = dict()
+_AFTER_HOOKS = dict()
+_default_marker = object()
 
 
-class before(object):
-    """Behavior before hook decorator.
+class _hook(object):
+    """Abstract hook decorator.
     """
-    
-    def __init__(self, func_name):
+    def __init__(self, hooks, func_name):
+        self.hooks = hooks
         self.func_name = func_name
     
     def __call__(self, func):
+        # no way here to determine class func is member of, just register
         func.hook_name = self.func_name
-        BEFORE_HOOKS.setdefault(self.func_name, list()).append(func)
+        self.hooks.setdefault(self.func_name, list()).append(func)
         return func
 
 
-class after(object):
+class before(_hook):
+    """Before hook decorator.
+    """
+    def __init__(self, func_name):
+        super(before, self).__init__(_BEFORE_HOOKS, func_name)
+
+
+class after(_hook):
     """Behavior before hook decorator.
     """
-    
     def __init__(self, func_name):
-        self.func_name = func_name
-    
-    def __call__(self, func):
-        func.hook_name = self.func_name
-        AFTER_HOOKS.setdefault(self.func_name, list()).append(func)
-        return func
+        super(after, self).__init__(_AFTER_HOOKS, func_name)
 
+
+def _behavior_ins(class_, instance):
+    """Return behaviors instances container of instance by
+    class_.__getattribute__.
+    """
+    try:
+        ins = class_.__getattribute__(instance, '__behaviors_ins')
+    except AttributeError:
+        class_.__setattr__(instance, '__behaviors_ins', dict())
+        ins = class_.__getattribute__(instance, '__behaviors_ins')
+    return ins
+
+
+def _behavior_get(instance, ins, behavior):
+    
+    name = behavior.__name__
+    ret = ins.get(name, _default_marker)
+    if ret is _default_marker:
+        ret = ins[name] = behavior(instance)
+    return ret
+
+
+def _collect_hooks(class_, instance, hooks, name):
+    ret = list()
+    # requested attr in hooks ?
+    if name in hooks:
+        # get own behavior classes
+        behaviors = class_.__getattribute__(instance, '__behaviors_cls')
+        # iterate all registered hooks by requested attribute name
+        for hook in hooks[name]:
+            # iterate instance behavior classes
+            for behavior in behaviors:
+                # try to get hook function from hook
+                try:
+                    func = getattr(behavior, hook.__name__)
+                # behavior does not provide hook, ignore
+                except:
+                    continue
+                # check is hook func is behavior func
+                if not func.func_code is hook.func_code:
+                    continue
+                # hook func found on behavior, add to 
+                # before_hooks
+                ret.append((behavior, func))
+    return ret
 
 class behavior(object):
     """Decorator for extending nodes by behaviors.
@@ -72,7 +120,6 @@ class behavior(object):
             """Derives from given ``obj`` by decorator and wrap node behavior.
             """
             __metaclass__ = NodeBehaviorMeta
-            __default_marker = object()
             
             implements(INode) # after __metaclass__ definition.
             
@@ -82,97 +129,45 @@ class behavior(object):
                 try:
                     # try to get requested attribute from self (the node)
                     attr = obj.__getattribute__(self, name)
-                    
-                    # we've found attribute, consider before and after hooks
-                    
-                    # before hooks
-                    before_hooks = list()
-                    
-                    # after hooks, later
-                    after_hooks = list()
-                    
-                    # requested attr in before hooks ?
-                    if name in BEFORE_HOOKS:
-                        
-                        # get own behavior classes
-                        behaviors = obj.__getattribute__(self, '__behaviors_cls')
-                        
-                        # iterate all registered before hooks by requested 
-                        # attribute name
-                        for hook in BEFORE_HOOKS[name]:
-                            
-                            # iterate own behavior classes
-                            for behavior in behaviors:
-                                
-                                # try to get hook function from hook
-                                try:
-                                    func = getattr(behavior, hook.__name__)
-                                # behavior does not provide hook, ignore
-                                except:
-                                    continue
-                            
-                                # hook func is behavior func. ??
-                                # XXX: not sure if this test is valid
-                                if not func.__code__ is hook.__code__:
-                                    continue
-                                
-                                # hook func found on behavior, add to 
-                                # before_hooks
-                                before_hooks.append((behavior, func))
-                    
-                    # wrap if hook is found
-                    if before_hooks or after_hooks:
-                        
-                        node = self
-                        
-                        # wrap. Currently expected as function
+                    # attribute found, collect before and after hooks
+                    before = _collect_hooks(obj, self, _BEFORE_HOOKS, name)
+                    after = _collect_hooks(obj, self, _AFTER_HOOKS, name)
+                    # wrap attribute if hooks are found
+                    if before or after:
+                        node = self # write self to node for access in wrapper
                         def wrapper(*args, **kw):
-                            
+                            ins = _behavior_ins(obj, node)
                             # execute before hooks
-                            for hook in before_hooks:
-                                pass
-                                
-                                # self does not work here 
-                                #print node
-                                #import pdb;pdb.set_trace()
-                                
-                                #try:
-                                #    ins = obj.__getattribute__(self, '__behaviors_ins')
-                                #except AttributeError:
-                                #    obj.__setattr__(self, '__behaviors_ins', dict())
-                                #    ins = obj.__getattribute__(self, '__behaviors_ins')
-                                
-                                #b_name = behavior.__name__
-                            
-                            # XXX: execute after hooks
-                            #for hook in after_hooks:
-                            #    pass
-                            return attr(*args, **kw)
-                        
+                            for behavior, hook in before:
+                                instance = _behavior_get(node, ins, behavior)
+                                getattr(instance, hook.func_name)(*args, **kw)
+                            # get return value of requested attr
+                            try:
+                                ret = attr(*args, **kw)
+                            except Exception, e:
+                                # XXX: raise directly or call after hooks first?
+                                #      i suppose raise...
+                                raise e
+                            # execute after hooks
+                            for behavior, hook in after:
+                                instance = _behavior_get(node, ins, behavior)
+                                getattr(instance, hook.func_name)(*args, **kw)
+                            return ret
                         wrapper.func_name = attr.func_name
                         wrapper.__doc__ = attr.__doc__
                         wrapper.wrapped = attr
                         return wrapper
-                    
                     return attr
-                    
                 except AttributeError, e:
                     # try to find requested attribute on behavior
                     # create behavior instance if necessary
                     behaviors = obj.__getattribute__(self, '__behaviors_cls')
-                    try:
-                        ins = obj.__getattribute__(self, '__behaviors_ins')
-                    except AttributeError:
-                        obj.__setattr__(self, '__behaviors_ins', dict())
-                        ins = obj.__getattribute__(self, '__behaviors_ins')
+                    ins = _behavior_ins(obj, self)
                     for behavior in behaviors:
-                        unbound = getattr(behavior, name, self.__default_marker)
-                        if unbound is self.__default_marker:
+                        unbound = getattr(behavior, name, _default_marker)
+                        if unbound is _default_marker:
                             continue
-                        b_name = behavior.__name__
-                        instance = ins.get(b_name, self.__default_marker)
-                        if instance is self.__default_marker:
-                            instance = ins[b_name] = behavior(self)
+                        instance = _behavior_get(self, ins, behavior)
                         return getattr(instance, name)
                     raise AttributeError(name)
             

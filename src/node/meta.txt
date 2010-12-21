@@ -253,16 +253,19 @@ Use hooks in behaviors. signature must be same as hooked function from node
     ... 
     ...     pass
     
-    >>> from node.meta import BEFORE_HOOKS
-    >>> from node.meta import AFTER_HOOKS
+    >>> from node.meta import _BEFORE_HOOKS
+    >>> from node.meta import _AFTER_HOOKS
     
-    >>> BEFORE_HOOKS
+    >>> _BEFORE_HOOKS
     {'get': [<function before_get at ...>]}
     
+    >>> _AFTER_HOOKS
+    {}
     
     >>> node = BehaviorNode()
     
     >>> node.get('foo', None)
+    before __getitem__ on <BehaviorNode object 'None' at ...> with foo
     
 
 Run Testers against wrapper
@@ -271,6 +274,12 @@ Run Testers against wrapper
 FullMappingTester.
 ::
 
+    >>> @behavior(OtherBehavior, SomeBehavior)
+    ... class BehaviorNode(OrderedNode):
+    ... 
+    ...     def do(self):
+    ...         return 'do on node ' + str(self)
+    
     >>> from node.testing import FullMappingTester
     >>> tester = FullMappingTester(BehaviorNode)
     >>> tester.run()
