@@ -15,7 +15,8 @@ TESTFILES = [
     '../base.txt',
     '../meta.txt',
     '../utils.txt',
-    '../aliasing.txt'
+    '../aliasing.txt',
+    '../behavior/attributed.txt',
 ]
 
 def test_suite():

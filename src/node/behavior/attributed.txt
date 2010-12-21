@@ -1,0 +1,10 @@
+node.behavior.attributed
+========================
+
+    >>> from node.base import OrderedNode
+    >>> from node.behavior import behavior
+    >>> from node.behavior import Attributed
+    
+    >>> @behavior(Attributed)
+    ... class AttributedNode(OrderedNode): pass
+    

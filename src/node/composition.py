@@ -4,7 +4,7 @@
 from zope.interface import implements
 from odict import odict
 from interfaces import IComposition
-from base import Node
+from bbb import Node
 
 class Composition(Node):
     """
