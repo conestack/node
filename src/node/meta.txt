@@ -125,7 +125,7 @@ Instanciate wrapped node.
 
 No behavior instances yet. Are created on first attribute access.
 ::
-    >>> node.__behaviors_ins
+    >>> #node.__behaviors_ins
     Traceback (most recent call last):
       ...
     AttributeError: __behaviors_ins
@@ -336,6 +336,50 @@ order of behavior registration.
       with args ``('foo',)`` 
       and kw ``{'default': None}`` ---
 
+    >>> class HookBeforeAfterGetItem(BaseBehavior):
+    ... 
+    ...     @before('__getitem__')
+    ...     def before_getitem(self, key):
+    ...         self._print_hook_info('before', '__getitem__', key)
+    ... 
+    ...     @after('__getitem__')
+    ...     def after_getitem(self, key):
+    ...         self._print_hook_info('after', '__getitem__', key)
+    
+    >>> class HookBeforeAfterSetItem(BaseBehavior):
+    ... 
+    ...     @before('__setitem__')
+    ...     def before_setitem(self, key, value):
+    ...         self._print_hook_info('before', '__setitem__', key, value)
+    ... 
+    ...     @after('__setitem__')
+    ...     def after_setitem(self, key, value):
+    ...         self._print_hook_info('after', '__setitem__', key, value)
+    
+    >>> @behavior(HookBeforeAfterGetItem, HookBeforeAfterSetItem)
+    ... class BehaviorNode(OrderedNode): pass
+    
+    >>> node = BehaviorNode('hooked')
+    >>> node['foo'] = OrderedNode()
+    * before ``__setitem__`` of <HookBeforeAfterSetItem object at ...> 
+      on <BehaviorNode object 'hooked' at ...> 
+      with args ``('foo', <OrderedNode object 'None' at ...>)`` 
+      and kw ``{}`` ---
+    * after ``__setitem__`` of <HookBeforeAfterSetItem object at ...> 
+      on <BehaviorNode object 'hooked' at ...> 
+      with args ``('foo', <OrderedNode object 'foo' at ...>)`` 
+      and kw ``{}`` ---
+    
+    >>> node['foo']
+    * before ``__getitem__`` of <HookBeforeAfterGetItem object at ...> 
+      on <BehaviorNode object 'hooked' at ...> 
+      with args ``('foo',)`` 
+      and kw ``{}`` ---
+    * after ``__getitem__`` of <HookBeforeAfterGetItem object at ...> 
+      on <BehaviorNode object 'hooked' at ...> 
+      with args ``('foo',)`` 
+      and kw ``{}`` ---
+    <OrderedNode object 'foo' at ...>
 
 Run Testers against wrapper
 ---------------------------
@@ -352,7 +396,7 @@ FullMappingTester.
     >>> from node.testing import FullMappingTester
     >>> tester = FullMappingTester(BehaviorNode)
     >>> tester.run()
-    >>> tester.combined
+    >>> #tester.combined
     ``__setitem__``: OK
     ``__getitem__``: OK
     ``get``: OK

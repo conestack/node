@@ -1,3 +1,4 @@
+import types
 from zope.interface import implements
 from node.interfaces import (
     INode,
@@ -9,9 +10,10 @@ _AFTER_HOOKS = dict()
 _default_marker = object()
 
 
-class _hook(object):
+class _BehaviorHook(object):
     """Abstract hook decorator.
     """
+    
     def __init__(self, hooks, func_name):
         self.hooks = hooks
         self.func_name = func_name
@@ -25,14 +27,14 @@ class _hook(object):
         return func
 
 
-class before(_hook):
+class before(_BehaviorHook):
     """Before hook decorator.
     """
     def __init__(self, func_name):
         super(before, self).__init__(_BEFORE_HOOKS, func_name)
 
 
-class after(_hook):
+class after(_BehaviorHook):
     """Behavior before hook decorator.
     """
     def __init__(self, func_name):
@@ -52,8 +54,6 @@ def _behavior_ins(class_, instance):
 
 
 def _behavior_get(instance, ins, behavior):
-    """
-    """
     name = behavior.__name__
     ret = ins.get(name, _default_marker)
     if ret is _default_marker:
@@ -87,6 +87,60 @@ def _collect_hooks(class_, instance, hooks, name):
                 ret.append((behavior, func))
     return ret
 
+
+def _wrapfunc(old, new):
+    new.func_name = old.func_name
+    new.__doc__ = old.__doc__
+    new.wrapped = old
+    return new
+
+
+def _wrap_class_method(attr, name):
+    def wrapper(obj, *args, **kw):
+        cla = obj._wrapped
+        # collect before and after hooks
+        before = _collect_hooks(cla, obj, _BEFORE_HOOKS, name)
+        after = _collect_hooks(cla, obj, _AFTER_HOOKS, name)
+        ins = _behavior_ins(cla, obj)
+        # execute before hooks
+        for behavior, hook in before:
+            instance = _behavior_get(obj, ins, behavior)
+            getattr(instance, hook.func_name)(*args, **kw)
+        # get return value of requested attr
+        ret = attr(obj, *args, **kw)
+        # execute after hooks
+        for behavior, hook in after:
+            instance = _behavior_get(obj, ins, behavior)
+            getattr(instance, hook.func_name)(*args, **kw)
+        # return ret value from requested attr
+        return ret
+    return _wrapfunc(attr, wrapper)
+
+
+def _wrap_instance_method(cla, obj, attr, name):
+    # collect before and after hooks
+    before = _collect_hooks(cla, obj, _BEFORE_HOOKS, name)
+    after = _collect_hooks(cla, obj, _AFTER_HOOKS, name)
+    # wrap attribute if hooks are found
+    if before or after:
+        def wrapper(*args, **kw):
+            ins = _behavior_ins(cla, obj)
+            # execute before hooks
+            for behavior, hook in before:
+                instance = _behavior_get(obj, ins, behavior)
+                getattr(instance, hook.func_name)(*args, **kw)
+            # get return value of requested attr
+            ret = attr(*args, **kw)
+            # execute after hooks
+            for behavior, hook in after:
+                instance = _behavior_get(obj, ins, behavior)
+                getattr(instance, hook.func_name)(*args, **kw)
+            # return ret value from requested attr
+            return ret
+        return _wrapfunc(attr, wrapper)
+    return attr
+
+
 class behavior(object):
     """Decorator for extending nodes by behaviors.
     """
@@ -115,6 +169,17 @@ class behavior(object):
             """
             
             def __init__(cls, name, bases, dct):
+                # wrap class attribues.
+                
+                # XXX: what to wrap on class creation time, and what on
+                #      __getattribute__ of instance ???
+                private_whitelist = [
+                    '__delitem__', '__getitem__', '__setitem__']
+                for name in dir(cls):
+                    if name not in private_whitelist:
+                            continue
+                    attr = getattr(cls, name)
+                    setattr(cls, name, _wrap_class_method(attr, name))
                 setattr(cls, '__behaviors_cls', self.behaviors)
                 super(NodeBehaviorMeta, cls).__init__(name, bases, dct)
         
@@ -125,44 +190,20 @@ class behavior(object):
             """Derives from given ``obj`` by decorator and wrap node behavior.
             """
             __metaclass__ = NodeBehaviorMeta
+            _wrapped = obj
             
             implements(INode) # after __metaclass__ definition.
             
             def __getattribute__(self, name):
+                # XXX: what to wrap on class creation time, and what on
+                #      __getattribute__ of instance ???
+                
                 # ``super`` is at such places confusing and seem to be buggy as
                 # well. address directly where we want to do something.
                 try:
                     # try to get requested attribute from self (the node)
                     attr = obj.__getattribute__(self, name)
-                    # attribute found, collect before and after hooks
-                    before = _collect_hooks(obj, self, _BEFORE_HOOKS, name)
-                    after = _collect_hooks(obj, self, _AFTER_HOOKS, name)
-                    # wrap attribute if hooks are found
-                    if before or after:
-                        node = self # write self to node for access in wrapper
-                        def wrapper(*args, **kw):
-                            ins = _behavior_ins(obj, node)
-                            # execute before hooks
-                            for behavior, hook in before:
-                                instance = _behavior_get(node, ins, behavior)
-                                getattr(instance, hook.func_name)(*args, **kw)
-                            # get return value of requested attr
-                            try:
-                                ret = attr(*args, **kw)
-                            except Exception, e:
-                                # XXX: raise directly or call after hooks first?
-                                #      i suppose raise...
-                                raise e
-                            # execute after hooks
-                            for behavior, hook in after:
-                                instance = _behavior_get(node, ins, behavior)
-                                getattr(instance, hook.func_name)(*args, **kw)
-                            return ret
-                        wrapper.func_name = attr.func_name
-                        wrapper.__doc__ = attr.__doc__
-                        wrapper.wrapped = attr
-                        return wrapper
-                    return attr
+                    return _wrap_instance_method(obj, self, attr, name)
                 except AttributeError, e:
                     # try to find requested attribute on behavior
                     # create behavior instance if necessary
