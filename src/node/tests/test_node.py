@@ -16,6 +16,7 @@ TESTFILES = [
     '../meta.txt',
     '../utils.txt',
     '../aliasing.txt',
+    '../locking.txt',
     '../behavior/attributed.txt',
 ]
 

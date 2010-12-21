@@ -390,5 +390,3 @@ class OrderedNode(_NodeSpaceMixin, odict):
     
     def _mapping_impl(self):
         return odict
-
-    # XXX: update and setdefault also for this node?
