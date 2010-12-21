@@ -80,6 +80,14 @@ def _behavior_ins(class_, instance):
     return ins
 
 
+def _wrap_proxy_method(class_, func_name):
+    def wrapper(obj, *args, **kw):
+        context = object.__getattribute__(obj, 'context')
+        func = class_.__getattribute__(context, func_name)
+        return func(__hooks=False, *args, **kw)
+    return wrapper
+
+
 def _behavior_get(instance, ins, behavior):
     name = behavior.__name__
     ret = ins.get(name, _default_marker)
@@ -111,11 +119,9 @@ def _behavior_get(instance, ins, behavior):
                                                    hex(id(self))[:-1])
         
         for func_name in _private_hook_whitelist:
-            def unwrapped(self, *args, **kw):
-                context = object.__getattribute__(self, 'context')
-                func = getattr(class_, context, func_name)
-                return func(self, *args, **kw)
-            setattr(UnwrappedContextProxy, func_name, unwrapped)
+            proxy = _wrap_proxy_method(class_, func_name)
+            setattr(UnwrappedContextProxy, func_name, proxy)
+        
         ret = ins[name] = behavior(UnwrappedContextProxy(instance))
     return ret
 
@@ -155,20 +161,27 @@ def _wrapfunc(old, new):
 def _wrap_class_method(attr, name):
     def wrapper(obj, *args, **kw):
         cla = obj._wrapped
-        # collect before and after hooks
-        before = _collect_hooks(cla, obj, _BEFORE_HOOKS, name)
-        after = _collect_hooks(cla, obj, _AFTER_HOOKS, name)
-        ins = _behavior_ins(cla, obj)
-        # execute before hooks
-        for behavior, hook in before:
-            instance = _behavior_get(obj, ins, behavior)
-            getattr(instance, hook.func_name)(*args, **kw)
+        if kw.get('__hooks') is not None:
+            hooks = kw['__hooks']
+            del kw['__hooks']
+        else:
+            hooks = True
+        if hooks:
+            # collect before and after hooks
+            before = _collect_hooks(cla, obj, _BEFORE_HOOKS, name)
+            after = _collect_hooks(cla, obj, _AFTER_HOOKS, name)
+            ins = _behavior_ins(cla, obj)
+            # execute before hooks
+            for behavior, hook in before:
+                instance = _behavior_get(obj, ins, behavior)
+                getattr(instance, hook.func_name)(*args, **kw)
         # get return value of requested attr
         ret = attr(obj, *args, **kw)
-        # execute after hooks
-        for behavior, hook in after:
-            instance = _behavior_get(obj, ins, behavior)
-            getattr(instance, hook.func_name)(*args, **kw)
+        if hooks:
+            # execute after hooks
+            for behavior, hook in after:
+                instance = _behavior_get(obj, ins, behavior)
+                getattr(instance, hook.func_name)(*args, **kw)
         # return ret value from requested attr
         return ret
     return _wrapfunc(attr, wrapper)

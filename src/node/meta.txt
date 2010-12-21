@@ -387,6 +387,57 @@ Hook data structure related private functions.
       and kw ``{}`` ---
     <OrderedNode object 'foo' at ...>
 
+Remember. The context object on behavior implementation is the behavior 
+enhanced node. Test if context access on behavior does not trigger before and 
+after handler from within.
+
+Hooked via ``__getattribute__``.
+::
+    >>> class HookAccessFromWithin(BaseBehavior):
+    ... 
+    ...     @before('get')
+    ...     def before_get(self, key, default=None):
+    ...         print 'call ``get`` on ' + str(self.context.get(key)) + \
+    ...         ' within behavior hook'
+    ...         self._debug('before', 'get', key, default=default)
+    
+    >>> @behavior(HookAccessFromWithin)
+    ... class BehaviorNode(OrderedNode): pass
+    
+    >>> node = BehaviorNode('hooked')
+    >>> node['foo'] = BehaviorNode()
+    >>> node.get('foo')
+    call ``get`` on <BehaviorNode object 'foo' at ...> within behavior hook
+    * before ``get`` of <HookAccessFromWithin object at ...> 
+      on <BehaviorNode object 'hooked' at ...> 
+      with args ``('foo',)`` 
+      and kw ``{'default': None}`` ---
+    <BehaviorNode object 'foo' at ...>
+
+Hooked via metaclass constructor.
+::
+    >>> class OtherHookAccessFromWithin(BaseBehavior):
+    ... 
+    ...     @before('__getitem__')
+    ...     def before_getitem(self, key):
+    ...         print 'call ``__getitem__`` on ' + str(self.context[key]) + \
+    ...         ' within behavior hook'
+    ...         self._debug('before', '__getitem__', key)
+    
+    >>> @behavior(OtherHookAccessFromWithin)
+    ... class BehaviorNode(OrderedNode): pass
+    
+    >>> node = BehaviorNode('hooked')
+    >>> node['foo'] = BehaviorNode()
+    >>> node['foo']
+    call ``__getitem__`` on <BehaviorNode object 'foo' at ...> within behavior hook
+    * before ``__getitem__`` of <OtherHookAccessFromWithin object at ...> 
+      on <BehaviorNode object 'hooked' at ...> 
+      with args ``('foo',)`` 
+      and kw ``{}`` ---
+    <BehaviorNode object 'foo' at ...>
+
+
 Run Testers against wrapper
 ---------------------------
 
