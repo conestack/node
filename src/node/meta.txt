@@ -243,15 +243,11 @@ Use hooks in behaviors. signature must be same as hooked function from node
     ... 
     ...     @before('get')
     ...     def before_get(self, key, default=None):
-    ...         print 'before __getitem__ on ' + \
-    ...               str(self.context) + \
-    ...               ' with ' + \
-    ...               key
+    ...         print 'before ``get`` on ' + str(self.context) + \
+    ...               ' with ' + key
     
     >>> @behavior(HookingBehavior)
-    ... class BehaviorNode(OrderedNode):
-    ... 
-    ...     pass
+    ... class BehaviorNode(OrderedNode): pass
     
     >>> from node.meta import _BEFORE_HOOKS
     >>> from node.meta import _AFTER_HOOKS
@@ -262,11 +258,35 @@ Use hooks in behaviors. signature must be same as hooked function from node
     >>> _AFTER_HOOKS
     {}
     
-    >>> node = BehaviorNode()
-    
+    >>> node = BehaviorNode('hooked')
     >>> node.get('foo', None)
-    before __getitem__ on <BehaviorNode object 'None' at ...> with foo
+    before ``get`` on <BehaviorNode object 'hooked' at ...> with foo
     
+    >>> class OtherHookingBehavior(object):
+    ...     implements(IBehavior)
+    ... 
+    ...     def __init__(self, context):
+    ...         self.context = context
+    ... 
+    ...     @after('get')
+    ...     def after_get(self, key, default=None):
+    ...         print 'after ``get`` on ' + str(self.context) + \
+    ...               ' with ' + key
+    
+    >>> @behavior(HookingBehavior, OtherHookingBehavior)
+    ... class BehaviorNode(OrderedNode): pass
+    
+    >>> _BEFORE_HOOKS
+    {'get': [<function before_get at ...>]}
+    
+    >>> _AFTER_HOOKS
+    {'get': [<function after_get at ...>]}
+    
+    >>> node = BehaviorNode('hooked')
+    >>> node.get('foo', None)
+    before ``get`` on <BehaviorNode object 'hooked' at ...> with foo
+    after ``get`` on <BehaviorNode object 'hooked' at ...> with foo
+
 
 Run Testers against wrapper
 ---------------------------

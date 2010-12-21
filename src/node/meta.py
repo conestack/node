@@ -50,10 +50,13 @@ def _behavior_ins(class_, instance):
 
 
 def _behavior_get(instance, ins, behavior):
-    
+    """
+    """
     name = behavior.__name__
     ret = ins.get(name, _default_marker)
     if ret is _default_marker:
+        # XXX: unwrap (or rewrap?) __getattribute__ of instance first
+        #      we dont want hooks to be called from within bahavior.
         ret = ins[name] = behavior(instance)
     return ret
 
