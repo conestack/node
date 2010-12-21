@@ -513,6 +513,74 @@ Test hook on property. Fails! Hooks can only be set on functions.
       ...
     AttributeError: someprop
 
+Hooking to behavior proxied function does not work either.
+::
+    >>> class HookBeforeProxiedDoFunc(BaseBehavior):
+    ... 
+    ...     def do(self):
+    ...         print 'behavior do called'
+    ... 
+    ...     @before('do')
+    ...     def before_do(self):
+    ...         self._debug('before', 'do')
+    
+    >>> @behavior(HookBeforeProxiedDoFunc)
+    ... class BeforeProxiedDoFuncHookedNode(OrderedNode): pass 
+    
+    >>> node = BeforeProxiedDoFuncHookedNode('hooked')
+    >>> node.do()
+    behavior do called
+
+When providing ``do`` on node as well, the hook will be called. Always check
+used behavior interfaces for it's contracts and avoid such magic.
+::
+    >>> @behavior(HookBeforeProxiedDoFunc)
+    ... class BeforeInheritedDoFuncHookedNode(OrderedNode):
+    ... 
+    ...     def do(self):
+    ...         print 'node do called'
+    
+    >>> node = BeforeInheritedDoFuncHookedNode('hooked')
+    >>> node.do()
+    * before ``do`` of <HookBeforeProxiedDoFunc object at ...> 
+      on <BeforeInheritedDoFuncHookedNode object 'hooked' at ...> 
+      with args ``()`` 
+      and kw ``{}`` ---
+    node do called
+
+Inheriting from a behavior and override hook function.
+
+Does not work without the ``before`` decorator.
+::
+    >>> class HookOverridingHookIgnored(HookBeforValues):
+    ... 
+    ...     def before_values(self):
+    ...         print 'derived before values'
+    
+    >>> @behavior(HookOverridingHookIgnored)
+    ... class BeforeHookOverridingHookedIgnoredNode(OrderedNode): pass
+    
+    >>> node = BeforeHookOverridingHookedIgnoredNode('hooked')
+    >>> node.values()
+    []
+    
+With decorator.
+::
+    
+    >>> class HookOverridingHook(HookBeforValues):
+    ... 
+    ...     @before('values')
+    ...     def before_values(self):
+    ...         print 'derived before values'
+    
+    >>> @behavior(HookOverridingHook)
+    ... class BeforeHookOverridingHookedNode(OrderedNode): pass
+    
+    >>> node = BeforeHookOverridingHookedNode('hooked')
+    >>> node.values()
+    derived before values
+    []
+
 
 Run Testers against wrapper
 ---------------------------
