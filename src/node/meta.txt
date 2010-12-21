@@ -22,12 +22,9 @@ Concepts
 - If more than one behavior defines the same attribute or function, return
   first one, analog to the behavior of object inheritance.
 
-### XXX ???
-
-- There are handler hooks for node data structure writing related functions,
-  like ``_before___getitem__`` and so on. This way it is possible to overwrite
-  data structure modifying functions on wrapper node and hook behaviors, best
-  in order of it's definition.
+- Behaviors can hook before and after attribute access of nodes. This is done
+  with ``befor`` and ``after`` decorator, which expects name of attribute or
+  function to get hooked.
 
 
 Why using a decorator
@@ -48,11 +45,13 @@ Provide a behavior implementation.
     >>> from zope.interface import implements
     >>> from node.interfaces import IBehavior
     
-    >>> class SomeBehavior(object):
+    >>> class BaseBehavior(object):
     ...     implements(IBehavior)
     ... 
     ...     def __init__(self, context):
     ...         self.context = context
+    
+    >>> class SomeBehavior(BaseBehavior):
     ... 
     ...     def do(self):
     ...         return 'do something on ' + str(self.context)
@@ -155,11 +154,7 @@ Use behavior functions and properties directly on decorated node.
 Define second behavior. It implements ``do`` as well.
 ::
 
-    >>> class OtherBehavior(object):
-    ...     implements(IBehavior)
-    ... 
-    ...     def __init__(self, context):
-    ...         self.context = context
+    >>> class OtherBehavior(BaseBehavior):
     ... 
     ...     def perform(self):
     ...         return 'perform on ' + str(self.context)
@@ -235,16 +230,12 @@ Before and after hooks for behaviors
     
 Use hooks in behaviors. signature must be same as hooked function from node
     
-    >>> class HookingBehavior(object):
-    ...     implements(IBehavior)
-    ... 
-    ...     def __init__(self, context):
-    ...         self.context = context
+    >>> class HookingBehavior(BaseBehavior):
     ... 
     ...     @before('get')
     ...     def before_get(self, key, default=None):
-    ...         print 'before ``get`` on ' + str(self.context) + \
-    ...               ' with ' + key
+    ...         print 'before ``get`` of ' + str(self) + ' on ' + \
+    ...               str(self.context) + ' with ' + key
     
     >>> @behavior(HookingBehavior)
     ... class BehaviorNode(OrderedNode): pass
@@ -260,18 +251,15 @@ Use hooks in behaviors. signature must be same as hooked function from node
     
     >>> node = BehaviorNode('hooked')
     >>> node.get('foo', None)
-    before ``get`` on <BehaviorNode object 'hooked' at ...> with foo
+    before ``get`` of <HookingBehavior object at ...> 
+    on <BehaviorNode object 'hooked' at ...> with foo
     
-    >>> class OtherHookingBehavior(object):
-    ...     implements(IBehavior)
-    ... 
-    ...     def __init__(self, context):
-    ...         self.context = context
+    >>> class OtherHookingBehavior(BaseBehavior):
     ... 
     ...     @after('get')
     ...     def after_get(self, key, default=None):
-    ...         print 'after ``get`` on ' + str(self.context) + \
-    ...               ' with ' + key
+    ...         print 'after ``get`` of ' + str(self) + ' on ' + \
+    ...               str(self.context) + ' with ' + key
     
     >>> @behavior(HookingBehavior, OtherHookingBehavior)
     ... class BehaviorNode(OrderedNode): pass
@@ -284,8 +272,10 @@ Use hooks in behaviors. signature must be same as hooked function from node
     
     >>> node = BehaviorNode('hooked')
     >>> node.get('foo', None)
-    before ``get`` on <BehaviorNode object 'hooked' at ...> with foo
-    after ``get`` on <BehaviorNode object 'hooked' at ...> with foo
+    before ``get`` of <HookingBehavior object at ...> 
+    on <BehaviorNode object 'hooked' at ...> with foo
+    after ``get`` of <OtherHookingBehavior object at ...> 
+    on <BehaviorNode object 'hooked' at ...> with foo
 
 
 Run Testers against wrapper

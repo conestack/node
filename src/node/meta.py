@@ -18,6 +18,8 @@ class _hook(object):
     
     def __call__(self, func):
         # no way here to determine class func is member of, just register
+        # XXX: check if hook was already added? should not happen that hook
+        #      gets registered twice???
         func.hook_name = self.func_name
         self.hooks.setdefault(self.func_name, list()).append(func)
         return func
