@@ -12,7 +12,7 @@ _default_marker = object()
 # XXX: what to wrap on class creation time, and what on
 #      __getattribute__ of instance ???
 _private_hook_whitelist = ['__delitem__', '__getitem__', '__setitem__']
-    
+
 
 class BaseBehavior(object):
     """Base behavior class.
