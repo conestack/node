@@ -183,6 +183,13 @@ class IBehavior(INodeAdapter):
     """
 
 
+class IAttributed(IBehavior):
+    """Provide attributes on node.
+    """
+    attrs = Attribute(u"``INodeAttributes`` implementation.")
+    attrs_factory = Attribute(u"``INodeAttributes`` implementation class")
+
+
 class IReferenced(IBehavior):
     """Holding an internal index of all nodes contained in the tree.
     """
@@ -223,15 +230,6 @@ class IOrderable(IBehavior):
         """
 
 
-class ICallable(IBehavior):
-    """Callable behavior.
-    """
-
-    def __call__():
-        """Expose the tree contents to an output channel.
-        """
-
-
 class ITimout(IBehavior):
     """Times out nodes.
     
@@ -258,13 +256,6 @@ class ILifecycle(IBehavior):
     """
     events = Attribute(u"Dict with lifecycle event classes to use for "
                        u"notification.")
-
-
-class IAttributed(IBehavior):
-    """Provide attributes on node.
-    """
-    attrs = Attribute(u"``INodeAttributes`` implementation.")
-    attrs_factory = Attribute(u"``INodeAttributes`` implementation class")
 
 
 ###############################################################################

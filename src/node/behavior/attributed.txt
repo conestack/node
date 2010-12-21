@@ -7,4 +7,36 @@ node.behavior.attributed
     
     >>> @behavior(Attributed)
     ... class AttributedNode(OrderedNode): pass
+
+    >>> node = AttributedNode('attributed')
+    >>> node.attribute_access_for_attrs
+    
+
+XXX: bug, wrapper must override __setattr__ as well
+
+    >>> #node.attribute_access_for_attrs = True
+    
+    >>> #node.attribute_access_for_attrs
+    True
+    
+    
+    
+    >>> #node.attrs
+    <node.utils.AttributeAccess object at ...>
+
+    >>> #node.attrs.foo = 'bar'
+    >>> #node.attrs['foo']
+    'bar'
+
+    >>> #node.attrs['bar'] = 'baz'
+    >>> #node.attrs.bar
+    'baz'
+
+    >>> #node.attrs['oof'] = 'abc'
+    >>> #node.attrs.oof
+    'abc'
+
+    >>> #node.attribute_access_for_attrs = False
+    >>> #node.attrs
+    
     

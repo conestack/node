@@ -244,6 +244,8 @@ class behavior(object):
                 setattr(cls, '__behaviors_cls', self.behaviors)
                 super(NodeBehaviorMeta, cls).__init__(name, bases, dct)
         
+        #bahavior_classes = self.behaviors
+        
         class NodeBehaviorWrapper(obj):
             """Wrapper for decorated node.
             
@@ -253,6 +255,22 @@ class behavior(object):
             _wrapped = obj
             
             implements(INode) # after __metaclass__ definition!
+            
+#            def __init__(self, name=None, parent=None):
+#                obj.__init__(self, name=name, parent=parent)
+#                for behavior in bahavior_classes:
+#                    print behavior
+#                    _behavior_get(, self, behavior)
+#            
+#            def __setattr__(self, name, val):
+#                behaviors = obj.__getattribute__(self, '__behaviors_cls')
+#                ins = _behavior_ins(obj, self)
+#                for behavior in behaviors:
+#                    unbound = getattr(behavior, name, _default_marker)
+#                    if unbound is _default_marker:
+#                        continue
+#                    instance = _behavior_get(self, ins, behavior)
+#                    return getattr(instance, name)
             
             def __getattribute__(self, name):
                 # XXX: what to wrap on class creation time, and what on
