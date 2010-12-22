@@ -69,8 +69,12 @@ class _NodeMixin(object):
         we need while ``__repr__`` is an enhanced standard object
         representation, also used as ``__str__`` on nodes.
         """
+        if hasattr(self.__class__, '_wrapped'):
+            class_ = self.__class__._wrapped__
+        else:
+            class_ = self.__class__
         name = unicode(self.__name__).encode('ascii', 'replace')
-        return str(self.__class__) + ': ' + name[name.find(':') + 1:]
+        return str(class_) + ': ' + name[name.find(':') + 1:]
     
     def printtree(self, indent=0):
         """Uses ``values``.
