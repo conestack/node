@@ -282,12 +282,6 @@ class behavior(object):
                 return self.__class__._wrapped.__repr__(self)
             
             __str__ = __repr__
-            
-            @property
-            def noderepr(self):
-                return "<%s object of '%s' at %s>" % (self.__class__.__name__,
-                                                      obj.__name__,
-                                                      hex(id(self))[:-1])
-        
+                    
         # return wrapped
         return NodeBehaviorWrapper
