@@ -279,7 +279,6 @@ class behavior(object):
 
             @property
             def noderepr(self):
-                import pdb;pdb.set_trace()
                 return self.__class__._wrapped.noderepr.fget(self)            
             
             __str__ = __repr__
