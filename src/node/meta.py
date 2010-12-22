@@ -1,5 +1,9 @@
 import types
-from zope.interface import implements
+from odict import odict
+from zope.interface import (
+    implements,
+    implementedBy,
+)
 from node.interfaces import (
     INode,
     IBehavior,
@@ -8,9 +12,6 @@ from node.interfaces import (
 _BEFORE_HOOKS = dict()
 _AFTER_HOOKS = dict()
 _default_marker = object()
-
-# XXX: what to wrap on class creation time, and what on
-#      __getattribute__ of instance ???
 _private_hook_whitelist = ['__delitem__', '__getitem__', '__setitem__']
 
 
@@ -18,6 +19,8 @@ class BaseBehavior(object):
     """Base behavior class.
     """
     implements(IBehavior)
+    
+    expose_write_access_for = list()
     
     def __init__(self, context):
         self._context = context
@@ -75,7 +78,7 @@ def _behavior_ins(class_, instance):
     try:
         ins = class_.__getattribute__(instance, '__behaviors_ins')
     except AttributeError:
-        class_.__setattr__(instance, '__behaviors_ins', dict())
+        class_.__setattr__(instance, '__behaviors_ins', odict())
         ins = class_.__getattribute__(instance, '__behaviors_ins')
     return ins
 
@@ -244,8 +247,6 @@ class behavior(object):
                 setattr(cls, '__behaviors_cls', self.behaviors)
                 super(NodeBehaviorMeta, cls).__init__(name, bases, dct)
         
-        #bahavior_classes = self.behaviors
-        
         class NodeBehaviorWrapper(obj):
             """Wrapper for decorated node.
             
@@ -255,27 +256,22 @@ class behavior(object):
             _wrapped = obj
             
             implements(INode) # after __metaclass__ definition!
-            
-#            def __init__(self, name=None, parent=None):
-#                obj.__init__(self, name=name, parent=parent)
-#                for behavior in bahavior_classes:
-#                    print behavior
-#                    _behavior_get(, self, behavior)
-#            
-#            def __setattr__(self, name, val):
-#                behaviors = obj.__getattribute__(self, '__behaviors_cls')
-#                ins = _behavior_ins(obj, self)
-#                for behavior in behaviors:
-#                    unbound = getattr(behavior, name, _default_marker)
-#                    if unbound is _default_marker:
-#                        continue
-#                    instance = _behavior_get(self, ins, behavior)
-#                    return getattr(instance, name)
+
+            def __setattr__(self, name, val):
+                try:
+                    # XXX: after node creation there are no behavior instances
+                    #      yet. we need a mechanism to instanciate all behaviors
+                    #      of wrapped node at init time...
+                    instances = obj.__getattribute__(self, '__behaviors_ins')
+                except AttributeError:
+                    instances = dict()
+                for instance in instances.values():
+                    if name in instance.expose_write_access_for:
+                        setattr(instance, name, val)
+                        return
+                obj.__setattr__(self, name, val)
             
             def __getattribute__(self, name):
-                # XXX: what to wrap on class creation time, and what on
-                #      __getattribute__ of instance ???
-                
                 # ``super`` is at such places confusing and seem to be buggy as
                 # well. address directly where we want to do something.
                 try:

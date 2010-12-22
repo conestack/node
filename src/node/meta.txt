@@ -61,6 +61,8 @@ Overriding ``context`` on behavior is forbidden.
     RuntimeError: Overriding ``context`` forbidden
     
     >>> class SomeBehavior(BaseBehavior):
+    ...
+    ...     _val = 'from behavior'
     ... 
     ...     def do(self):
     ...         return 'do something on ' + str(self.context)
@@ -129,7 +131,6 @@ Instanciate wrapped node.
 
 No behavior instances yet. Are created on first attribute access.
 ::
-
     >>> node.__behaviors_ins
     Traceback (most recent call last):
       ...
@@ -139,7 +140,7 @@ No behavior instances yet. Are created on first attribute access.
     <bound method SomeBehavior.do of <SomeBehavior object at ...>>
     
     >>> node.__behaviors_ins
-    {'SomeBehavior': <SomeBehavior object at ...>}
+    odict([('SomeBehavior', <SomeBehavior object at ...>)])
 
 Use behavior functions and properties directly on decorated node.
 ::
@@ -148,9 +149,44 @@ Use behavior functions and properties directly on decorated node.
     
     >>> node.prop
     'prop'
+
+``rw`` was implemented as getter/setter propery. Since we have not exposed
+this property for write access due to node yet, setting rw to node will write to
+node, and return the one from node on next access.
+::
+    >>> node.rw
+    'from behavior'
+
+    >>> node.rw = '123'
+    >>> node.rw
+    '123'
+    
+    >>> node.__behaviors_ins['SomeBehavior'].rw
+    'from behavior'
+    
+Now expose ``rw`` for writing. Note that a write exposed attribute must be
+implemented as getter/setter property.
+::
+    >>> class BehaviorWriteExposed(SomeBehavior):
+    ...     expose_write_access_for = ['rw']
+    
+    >>> @behavior(BehaviorWriteExposed)
+    ... class WriteExposedBehaviorNode(OrderedNode):
+    ...     pass
+    
+    >>> node = WriteExposedBehaviorNode()
+
+XXX: after node creation there are no behavior instances yet. we need a
+      mechanism to instanciate all behaviors of wrapped node at init time.
+
+    >>> node.rw
+    'from behavior'
     
     >>> node.rw = '123'
     >>> node.rw
+    '123'
+    
+    >>> node.__behaviors_ins['BehaviorWriteExposed'].rw
     '123'
 
 Define second behavior. It implements ``do`` as well.

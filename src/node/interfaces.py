@@ -181,7 +181,9 @@ class INodeAdapter(Interface):
 class IBehavior(INodeAdapter):
     """Mark an object as behavior
     """
-
+    expose_write_access_for = Attribute(u"List of attributes which should be "
+                                        u"writeable due to behavioral extended "
+                                        u"node.")
 
 class IAttributed(IBehavior):
     """Provide attributes on node.

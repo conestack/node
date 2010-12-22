@@ -9,21 +9,27 @@ from node.meta import (
 )
 from node.utils import AttributeAccess
 
-
 class NodeAttributes(OrderedNode):
-    """Semantic object.
-    """
+    
     def __init__(self, context):
         OrderedNode.__init__(self)
         self.allow_non_node_childs = True
         self.context = context
         # BBB
         self._node = context
+    
+    def __repr__(self):
+        name = unicode(self.__parent__.__name__).encode('ascii', 'replace')
+        return "<%s object '%s' at %s>" % (self.__class__.__name__,
+                                           name,
+                                           hex(id(self))[:-1])
 
 
 class Attributed(BaseBehavior):
     
     implements(IAttributed)
+    
+    expose_write_access_for = ['attribute_access_for_attrs']
 
     attributes_factory = NodeAttributes
     attribute_aliases = None
@@ -33,14 +39,10 @@ class Attributed(BaseBehavior):
         self.attribute_access_for_attrs = False
     
     def _get_attribute_access_for_attrs(self):
-        #import pdb;pdb.set_trace()
-        val = object.__getattribute__(self, '_attribute_access_for_attrs')
-        #print 'get ' + str(val)
+        return self._attribute_access_for_attrs
     
     def _set_attribute_access_for_attrs(self, val):
-        #import pdb;pdb.set_trace()
-        #print 'set ' + str(val)
-        object.__setattr__(self, '_attribute_access_for_attrs', val)
+        self._attribute_access_for_attrs = val
     
     attribute_access_for_attrs = property(_get_attribute_access_for_attrs,
                                           _set_attribute_access_for_attrs)
@@ -54,10 +56,9 @@ class Attributed(BaseBehavior):
                 self.attributes_factory(self)
             attrs.__name__ = '__attrs__'
             attrs.__parent__ = self.context
-        if object.__getattribute__(self, '_attribute_access_for_attrs'):
-            import pdb;pdb.set_trace()
+        if self.attribute_access_for_attrs:
             return AttributeAccess(attrs)
         return attrs
-
+    
     # BBB
     attributes = attrs
