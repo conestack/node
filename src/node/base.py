@@ -70,7 +70,7 @@ class _NodeMixin(object):
         representation, also used as ``__str__`` on nodes.
         """
         if hasattr(self.__class__, '_wrapped'):
-            class_ = self.__class__._wrapped__
+            class_ = self.__class__._wrapped
         else:
             class_ = self.__class__
         name = unicode(self.__name__).encode('ascii', 'replace')

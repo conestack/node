@@ -143,30 +143,26 @@ def _wrapfunc(old, new):
 
 
 def _wrap_class_method(attr, name):
-    def wrapper(obj, *args, **kw):
+    def wrapper(obj, *pargs, **kw):
         cla = obj._wrapped
-        if kw.get('__hooks') is not None:
-            hooks = kw['__hooks']
-            del kw['__hooks']
-        else:
-            hooks = True
+        hooks = kw.pop('__hooks', True)
         if hooks:
             # collect before and after hooks
             before = _collect_hooks(cla, obj, _BEFORE_HOOKS, name)
             after = _collect_hooks(cla, obj, _AFTER_HOOKS, name)
             if before or after:
                 behavior_instances = obj._behavior_instances
-            # execute before hooks
-            for behavior, hook in before:
-                instance = behavior_instances[behavior.__name__]
-                getattr(instance, hook.func_name)(*args, **kw)
+                # execute before hooks
+                for behavior, hook in before:
+                    instance = behavior_instances[behavior.__name__]
+                    getattr(instance, hook.func_name)(*pargs, **kw)
         # get return value of requested attr
-        ret = attr(obj, *args, **kw)
-        if hooks:
+        ret = attr(obj, *pargs, **kw)
+        if hooks and after:
             # execute after hooks
             for behavior, hook in after:
                 instance = behavior_instances[behavior.__name__]
-                getattr(instance, hook.func_name)(*args, **kw)
+                getattr(instance, hook.func_name)(*pargs, **kw)
         # return ret value from requested attr
         return ret
     return _wrapfunc(attr, wrapper)
@@ -223,7 +219,7 @@ class behavior(object):
                 # wrap class attribues.
                 for name in dir(cls):
                     if name not in _private_hook_whitelist:
-                            continue
+                        continue
                     attr = getattr(cls, name)
                     setattr(cls, name, _wrap_class_method(attr, name))
                 setattr(cls, '__behaviors_cls', self.behaviors)
@@ -280,6 +276,11 @@ class behavior(object):
             
             def __repr__(self):
                 return self.__class__._wrapped.__repr__(self)
+
+            @property
+            def noderepr(self):
+                import pdb;pdb.set_trace()
+                return self.__class__._wrapped.noderepr.fget(self)            
             
             __str__ = __repr__
                     

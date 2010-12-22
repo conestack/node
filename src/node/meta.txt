@@ -605,7 +605,7 @@ With decorator.
 Check ``noderepr``.
 ::
     >>> node.noderepr
-    "<NodeBehaviorWrapper object of 'BeforeHookOverridingHookedNode' at ...>"
+    "<class 'BeforeHookOverridingHookedNode'>: hooked"
 
 The registered hooks.
 ::
