@@ -129,17 +129,10 @@ Instanciate wrapped node.
     >>> node
     <SomeBehaviorNode object 'None' at ...>
 
-No behavior instances yet. Are created on first attribute access.
-::
-    >>> node.__behaviors_ins
-    Traceback (most recent call last):
-      ...
-    AttributeError: __behaviors_ins
-    
     >>> node.do
     <bound method SomeBehavior.do of <SomeBehavior object at ...>>
     
-    >>> node.__behaviors_ins
+    >>> node._behavior_instances
     odict([('SomeBehavior', <SomeBehavior object at ...>)])
 
 Use behavior functions and properties directly on decorated node.
@@ -175,18 +168,11 @@ implemented as getter/setter property.
     ...     pass
     
     >>> node = WriteExposedBehaviorNode()
-
-XXX: after node creation there are no behavior instances yet. we need a
-      mechanism to instanciate all behaviors of wrapped node at init time.
-
-    >>> node.rw
-    'from behavior'
-    
     >>> node.rw = '123'
     >>> node.rw
     '123'
     
-    >>> node.__behaviors_ins['BehaviorWriteExposed'].rw
+    >>> node._behavior_instances['BehaviorWriteExposed'].rw
     '123'
 
 Define second behavior. It implements ``do`` as well.

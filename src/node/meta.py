@@ -71,18 +71,6 @@ class after(_BehaviorHook):
         super(after, self).__init__(_AFTER_HOOKS, func_name)
 
 
-def _behavior_ins(class_, instance):
-    """Return behaviors instances container of instance by
-    class_.__getattribute__.
-    """
-    try:
-        ins = class_.__getattribute__(instance, '__behaviors_ins')
-    except AttributeError:
-        class_.__setattr__(instance, '__behaviors_ins', odict())
-        ins = class_.__getattribute__(instance, '__behaviors_ins')
-    return ins
-
-
 def _wrap_proxy_method(class_, func_name):
     def wrapper(obj, *args, **kw):
         context = object.__getattribute__(obj, 'context')
@@ -91,42 +79,38 @@ def _wrap_proxy_method(class_, func_name):
     return wrapper
 
 
-def _behavior_get(instance, ins, behavior):
-    name = behavior.__name__
-    ret = ins.get(name, _default_marker)
-    if ret is _default_marker:
-        class_ = instance.__class__._wrapped
+def _create_behavior(instance, behavior_class):
+    class_ = instance.__class__._wrapped
+    name = behavior_class.__name__
+    
+    class UnwrappedContextProxy(object):
+        """Class to unwrap calls on behavior extended node.
         
-        class UnwrappedContextProxy(object):
-            """Class to unwrap calls on behavior extended node.
-            
-            This is needed to acess self.context.whatever in behavior
-            implementation without computing before and after hooks bound
-            to ``whatever``.
-            """
-            def __init__(self, context):
-                self.context = context
-            
-            def __getattribute__(self, name):
-                try:
-                    return object.__getattribute__(self, name)
-                except AttributeError:
-                    pass
-                context = object.__getattribute__(self, 'context')
-                return class_.__getattribute__(context, name)
-            
-            def __repr__(self):
-                name = unicode(self.__name__).encode('ascii', 'replace')
-                return "<%s object '%s' at %s>" % (class_.__name__,
-                                                   name,
-                                                   hex(id(self))[:-1])
+        This is needed to acess self.context.whatever in behavior
+        implementation without computing before and after hooks bound
+        to ``whatever``.
+        """
+        def __init__(self, context):
+            self.context = context
         
-        for func_name in _private_hook_whitelist:
-            proxy = _wrap_proxy_method(class_, func_name)
-            setattr(UnwrappedContextProxy, func_name, proxy)
+        def __getattribute__(self, name):
+            try:
+                return object.__getattribute__(self, name)
+            except AttributeError:
+                pass
+            context = object.__getattribute__(self, 'context')
+            return class_.__getattribute__(context, name)
         
-        ret = ins[name] = behavior(UnwrappedContextProxy(instance))
-    return ret
+        def __repr__(self):
+            name = unicode(self.__name__).encode('ascii', 'replace')
+            return "<%s object '%s' at %s>" % (class_.__name__,
+                                               name,
+                                               hex(id(self))[:-1])
+    
+    for func_name in _private_hook_whitelist:
+        proxy = _wrap_proxy_method(class_, func_name)
+        setattr(UnwrappedContextProxy, func_name, proxy)
+    return behavior_class(UnwrappedContextProxy(instance))
 
 
 def _collect_hooks(class_, instance, hooks, name):
@@ -173,17 +157,18 @@ def _wrap_class_method(attr, name):
             # collect before and after hooks
             before = _collect_hooks(cla, obj, _BEFORE_HOOKS, name)
             after = _collect_hooks(cla, obj, _AFTER_HOOKS, name)
-            ins = _behavior_ins(cla, obj)
+            if before or after:
+                behavior_instances = obj._behavior_instances
             # execute before hooks
             for behavior, hook in before:
-                instance = _behavior_get(obj, ins, behavior)
+                instance = behavior_instances[behavior.__name__]
                 getattr(instance, hook.func_name)(*args, **kw)
         # get return value of requested attr
         ret = attr(obj, *args, **kw)
         if hooks:
             # execute after hooks
             for behavior, hook in after:
-                instance = _behavior_get(obj, ins, behavior)
+                instance = behavior_instances[behavior.__name__]
                 getattr(instance, hook.func_name)(*args, **kw)
         # return ret value from requested attr
         return ret
@@ -196,17 +181,17 @@ def _wrap_instance_method(cla, obj, attr, name):
     after = _collect_hooks(cla, obj, _AFTER_HOOKS, name)
     # wrap attribute if hooks are found
     if before or after:
+        behavior_instances = obj._behavior_instances
         def wrapper(*args, **kw):
-            ins = _behavior_ins(cla, obj)
             # execute before hooks
             for behavior, hook in before:
-                instance = _behavior_get(obj, ins, behavior)
+                instance = behavior_instances[behavior.__name__]
                 getattr(instance, hook.func_name)(*args, **kw)
             # get return value of requested attr
             ret = attr(*args, **kw)
             # execute after hooks
             for behavior, hook in after:
-                instance = _behavior_get(obj, ins, behavior)
+                instance = behavior_instances[behavior.__name__]
                 getattr(instance, hook.func_name)(*args, **kw)
             # return ret value from requested attr
             return ret
@@ -257,17 +242,23 @@ class behavior(object):
             
             implements(INode) # after __metaclass__ definition!
 
-            def __setattr__(self, name, val):
+            @property
+            def _behavior_instances(self):
                 try:
-                    # XXX: after node creation there are no behavior instances
-                    #      yet. we need a mechanism to instanciate all behaviors
-                    #      of wrapped node at init time...
-                    instances = obj.__getattribute__(self, '__behaviors_ins')
+                    behaviors = obj.__getattribute__(self, '__behaviors_ins')
                 except AttributeError:
-                    instances = dict()
-                for instance in instances.values():
-                    if name in instance.expose_write_access_for:
-                        setattr(instance, name, val)
+                    obj.__setattr__(self, '__behaviors_ins', odict())
+                    behaviors = obj.__getattribute__(self, '__behaviors_ins')
+                    classes = obj.__getattribute__(self, '__behaviors_cls')
+                    for class_ in classes:
+                        name = class_.__name__
+                        behaviors[name] = _create_behavior(self, class_)
+                return behaviors
+            
+            def __setattr__(self, name, val):
+                for behavior in self._behavior_instances.values():
+                    if name in behavior.expose_write_access_for:
+                        setattr(behavior, name, val)
                         return
                 obj.__setattr__(self, name, val)
             
@@ -281,14 +272,13 @@ class behavior(object):
                 except AttributeError, e:
                     # try to find requested attribute on behavior
                     # create behavior instance if necessary
-                    behaviors = obj.__getattribute__(self, '__behaviors_cls')
-                    ins = _behavior_ins(obj, self)
-                    for behavior in behaviors:
-                        unbound = getattr(behavior, name, _default_marker)
+                    classes = obj.__getattribute__(self, '__behaviors_cls')
+                    for class_ in classes:
+                        unbound = getattr(class_, name, _default_marker)
                         if unbound is _default_marker:
                             continue
-                        instance = _behavior_get(self, ins, behavior)
-                        return getattr(instance, name)
+                        behavior = self._behavior_instances[class_.__name__]
+                        return getattr(behavior, name)
                     raise AttributeError(name)
             
             def __repr__(self):
