@@ -102,7 +102,7 @@ def _create_behavior(instance, behavior_class):
             return class_.__getattribute__(context, name)
         
         def __repr__(self):
-            return self.context.__repr__()
+            return self.context.__class__._wrapped.__repr__(self.context)
     
     for func_name in _private_hook_whitelist:
         proxy = _wrap_proxy_method(class_, func_name)
@@ -279,10 +279,7 @@ class behavior(object):
                     raise AttributeError(name)
             
             def __repr__(self):
-                name = unicode(self.__name__).encode('ascii', 'replace')
-                return "<%s object '%s' at %s>" % (obj.__name__,
-                                                   name,
-                                                   hex(id(self))[:-1])
+                return self.__class__._wrapped.__repr__(self)
             
             __str__ = __repr__
             

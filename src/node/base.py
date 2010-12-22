@@ -84,10 +84,14 @@ class _NodeMixin(object):
                 print "%s%s" % (indent * ' ', node)
 
     def __repr__(self):
+        if hasattr(self.__class__, '_wrapped'):
+            class_name = self.__class__._wrapped.__name__
+        else:
+            class_name = self.__class__.__name__
         # XXX: This is mainly used in doctest, I think
         #      doctest fails if we output utf-8
         name = unicode(self.__name__).encode('ascii', 'replace')
-        return "<%s object '%s' at %s>" % (self.__class__.__name__,
+        return "<%s object '%s' at %s>" % (class_name,
                                            name,
                                            hex(id(self))[:-1])
 
