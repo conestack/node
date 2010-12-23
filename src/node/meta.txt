@@ -84,6 +84,8 @@ Decorator expects ``IBehavior`` implementations.
     >>> from node.meta import behavior
     >>> from node.base import OrderedNode
     
+XXX: this should probably be @behavior()
+
     >>> @behavior
     ... class SomeBehaviorNode(OrderedNode):
     ...     pass
