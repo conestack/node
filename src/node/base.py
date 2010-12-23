@@ -61,6 +61,9 @@ class _NodeMixin(object):
         Thus, we can overwrite it in subclass and return any debug information
         we need while ``__repr__`` is an enhanced standard object
         representation, also used as ``__str__`` on nodes.
+
+        XXX: do we really need the difference or can we just override __repr__
+        in subclasses and use __repr__ in printtree?
         """
         if hasattr(self.__class__, '_wrapped'):
             class_ = self.__class__._wrapped
@@ -99,6 +102,9 @@ class _NodeMixin(object):
     
     def copy(self):
         new = self.__class__()
+        # XXX: that looks bad, would actually mean that the parent should now
+        # the copy under the same name as us. What do you think about not
+        # setting __name__ and __parent__, it should be a parents job to do so.
         new.__name__ = self.__name__
         new.__parent__ = self.__parent__
         new.update(self.items())
