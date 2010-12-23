@@ -18,6 +18,7 @@ TESTFILES = [
     '../aliasing.txt',
     '../locking.txt',
     '../behavior/attributed.txt',
+    '../behavior/referenced.txt',
 ]
 
 def test_suite():

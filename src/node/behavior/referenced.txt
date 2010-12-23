@@ -1,0 +1,11 @@
+node.behavior.referenced
+========================
+
+    >>> from node.base import OrderedNode
+    >>> from node.behavior import behavior
+    >>> from node.behavior import Referenced
+    
+    >>> @behavior(Referenced)
+    ... class ReferencedNode(OrderedNode): pass
+    
+    >>> node = ReferencedNode('referenced')

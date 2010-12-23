@@ -5,3 +5,4 @@ from node.meta import (
     BaseBehavior,
 )
 from attributed import Attributed
+from referenced import Referenced

@@ -24,6 +24,9 @@ class _NodeMixin(object):
         # XXX: do we really need to throw error if a child is not a node
         # should we not just treat values as values and nodes as nodes and
         # don't care?
+        # a: the design decision for this was due to first implementation
+        # of node index, so this could probably be removed in future, lets keep
+        # until node extension has been adopted to new node infrastructure.
         self.allow_non_node_childs = False
     
     @property

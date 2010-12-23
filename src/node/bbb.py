@@ -346,6 +346,7 @@ class _Node(object):
         dict.__setitem__(self, nodekey, newnode)
         self[nodekey] = newnode[1]
 
+    # orderable related
     def _index_nodes(self):
         for node in self.values():
             try:

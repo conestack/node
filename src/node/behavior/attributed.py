@@ -3,8 +3,6 @@ from node.interfaces import IAttributed
 from node.base import OrderedNode
 from node.meta import (
     behavior,
-    before,
-    after,
     BaseBehavior,
 )
 from node.utils import AttributeAccess
@@ -29,10 +27,12 @@ class Attributed(BaseBehavior):
     
     implements(IAttributed)
     
-    expose_write_access_for = ['attribute_access_for_attrs']
+    expose_write_access_for = [
+        'attribute_access_for_attrs',
+    ]
 
     attributes_factory = NodeAttributes
-
+    
     def __init__(self, context):
         super(Attributed, self).__init__(context)
         self.attribute_access_for_attrs = False
