@@ -21,6 +21,9 @@ class _NodeMixin(object):
     def __init__(self, name=None, parent=None):
         self.__name__ = name
         self.__parent__ = parent
+        # XXX: do we really need to throw error if a child is not a node
+        # should we not just treat values as values and nodes as nodes and
+        # don't care?
         self.allow_non_node_childs = False
     
     @property
