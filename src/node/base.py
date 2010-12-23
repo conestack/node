@@ -28,9 +28,6 @@ class _NodeMixin(object):
     
     @property
     def path(self):
-        # we don't want to get an iterator returned, which ``reversed``
-        # actually does.
-        #return reversed([parent.__name__ for parent in LocationIterator(self)])
         path = [parent.__name__ for parent in LocationIterator(self)]
         path.reverse()
         return path
