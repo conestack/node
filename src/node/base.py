@@ -40,12 +40,16 @@ class _NodeMixin(object):
         return root
     
     def filtereditervalues(self, interface):
+        """Uses ``itervalues``.
+        """
+        for val in self.itervalues():
+            if interface.providedBy(val):
+                yield val
+    
+    def filteredvalues(self, interface):
         """Uses ``values``.
         """
-        # XXX: should use itervalues, do we have that everywhere?
-        for node in self.values():
-            if interface.providedBy(node):
-                yield node
+        return [val for val in self.values() if interface.providedBy(val)]
     
     # BBB 2010-12-23
     filtereditems = filtereditervalues

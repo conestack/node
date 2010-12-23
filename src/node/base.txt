@@ -402,27 +402,45 @@ XXX: decide wether ``aliases`` or ``aliaser`` (still dunno) should be kept in
     ...     pass
     
     >>> directlyProvides(mynode['child_2'], IFilter)
-    >>> list(mynode.filteredvalues(IFilter))
+    >>> list(mynode.filtereditervalues(IFilter))
+    [<MyNode object 'child_2' at ...>]
+    
+    >>> mynode.filteredvalues(IFilter)
     [<MyNode object 'child_2' at ...>]
     
     >>> noLongerProvides(mynode['child_2'], IFilter)
-    >>> list(mynode.filteredvalues(IFilter))
+    >>> list(mynode.filtereditervalues(IFilter))
+    []
+    
+    >>> mynode.filteredvalues(IFilter)
     []
     
     >>> directlyProvides(basenode['child_2'], IFilter)
-    >>> list(basenode.filteredvalues(IFilter))
+    >>> list(basenode.filtereditervalues(IFilter))
+    [<BaseNode object 'child_2' at ...>]
+    
+    >>> basenode.filteredvalues(IFilter)
     [<BaseNode object 'child_2' at ...>]
     
     >>> noLongerProvides(basenode['child_2'], IFilter)
-    >>> list(basenode.filteredvalues(IFilter))
+    >>> list(basenode.filtereditervalues(IFilter))
+    []
+    
+    >>> basenode.filteredvalues(IFilter)
     []
     
     >>> directlyProvides(orderednode['child_2'], IFilter)
-    >>> list(orderednode.filteredvalues(IFilter))
+    >>> list(orderednode.filtereditervalues(IFilter))
+    [<OrderedNode object 'child_2' at ...>]
+    
+    >>> orderednode.filteredvalues(IFilter)
     [<OrderedNode object 'child_2' at ...>]
     
     >>> noLongerProvides(orderednode['child_2'], IFilter)
-    >>> list(orderednode.filteredvalues(IFilter))
+    >>> list(orderednode.filtereditervalues(IFilter))
+    []
+    
+    >>> orderednode.filteredvalues(IFilter)
     []
 
 ``as_attribute_access``

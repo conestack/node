@@ -146,6 +146,10 @@ class INode(ILocation, IFullMapping):
     allow_non_node_childs = Attribute(u"Flag wether this node may contain non "
                                       u"node based children.")
     
+    def filtereditervalues(interface):
+        """Yield filtered child nodes by interface.
+        """
+    
     def filteredvalues(interface):
         """Return filtered child nodes by interface.
         """
