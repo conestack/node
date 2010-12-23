@@ -7,6 +7,7 @@ from node.meta import (
 )
 from node.utils import AttributeAccess
 
+
 class NodeAttributes(OrderedNode):
     
     def __init__(self, context):
@@ -24,13 +25,9 @@ class NodeAttributes(OrderedNode):
 
 
 class Attributed(BaseBehavior):
-    
     implements(IAttributed)
     
-    expose_write_access_for = [
-        'attribute_access_for_attrs',
-    ]
-
+    expose_write_access_for = ['attribute_access_for_attrs']
     attributes_factory = NodeAttributes
     
     def __init__(self, context):

@@ -270,14 +270,15 @@ Decorate a node with hook defining behavior.
 
 Hooks are stored in registries.
 ::
+
     >>> from node.meta import _BEFORE_HOOKS
     >>> from node.meta import _AFTER_HOOKS
     
     >>> _BEFORE_HOOKS
-    {'get': [<function before_get at ...>]}
+    {...}
     
     >>> _AFTER_HOOKS
-    {}
+    {...}
 
 Instanciate and check wether hook gets called.
 ::
@@ -286,6 +287,12 @@ Instanciate and check wether hook gets called.
     * before ``get`` of <HookBeforeGet object at ...> 
       on <BeforeGetHookedNode object 'hooked' at ...> 
       with args ``('foo',)`` 
+      and kw ``{'default': None}`` ---
+
+    >>> node.get('bar', None)
+    * before ``get`` of <HookBeforeGet object at ...> 
+      on <BeforeGetHookedNode object 'hooked' at ...> 
+      with args ``('bar',)`` 
       and kw ``{'default': None}`` ---
 
 Second behavior with after get hook.
@@ -298,12 +305,6 @@ Second behavior with after get hook.
     
     >>> @behavior(HookBeforeGet, HookAfterGet)
     ... class BeforeAfterGetHookedNode(OrderedNode): pass
-    
-    >>> _BEFORE_HOOKS
-    {'get': [<function before_get at ...>]}
-    
-    >>> _AFTER_HOOKS
-    {'get': [<function after_get at ...>]}
 
 Now before hook is called of ``HookBeforeGet``, and after hook is called of
 ``HookAfterGet``.
@@ -400,6 +401,16 @@ Hook data structure related private functions.
     * after ``__setitem__`` of <HookBeforeAfterSetItem object at ...> 
       on <BeforeAfterGetItemHookedNode object 'hooked' at ...> 
       with args ``('foo', <BeforeAfterGetItemHookedNode object 'foo' at ...>)`` 
+      and kw ``{}`` ---
+    
+    >>> node['bar'] = BeforeAfterGetItemHookedNode()
+    * before ``__setitem__`` of <HookBeforeAfterSetItem object at ...> 
+      on <BeforeAfterGetItemHookedNode object 'hooked' at ...> 
+      with args ``('bar', <BeforeAfterGetItemHookedNode object 'None' at ...>)`` 
+      and kw ``{}`` ---
+    * after ``__setitem__`` of <HookBeforeAfterSetItem object at ...> 
+      on <BeforeAfterGetItemHookedNode object 'hooked' at ...> 
+      with args ``('bar', <BeforeAfterGetItemHookedNode object 'bar' at ...>)`` 
       and kw ``{}`` ---
     
     >>> node['foo']
@@ -608,28 +619,6 @@ Check ``noderepr``.
 ::
     >>> node.noderepr
     "<class 'BeforeHookOverridingHookedNode'>: hooked"
-
-The registered hooks.
-::
-    >>> _BEFORE_HOOKS
-    {'do': [<function before_do at ...>], 
-    '__getitem__': [<function before_getitem at ...>, 
-    <function before_getitem at ...>], 
-    'get': [<function before_get at ...>, 
-    <function before_get at ...>, 
-    <function before_get at ...>, 
-    <function before_get at ...>], 
-    'someprop': [<function before_seomprop at ...>], 
-    '__setitem__': [<function before_setitem at ...>], 
-    'values': [<function before_values at ...>, 
-    <function before_values at ...>]}
-    
-    >>> _AFTER_HOOKS
-    {'__setitem__': [<function after_setitem at ...>], 
-    '__getitem__': [<function after_getitem at ...>], 
-    'get': [<function after_get at ...>, 
-    <function after_get at ...>, 
-    <function after_get at ...>]}
 
 
 Run Testers against wrapper

@@ -9,6 +9,7 @@ from node.meta import (
     BaseBehavior,
 )
 
+
 class NodeIndex(object):
     implements(IReadMapping)
 
@@ -16,10 +17,13 @@ class NodeIndex(object):
         self._index = index
 
     def __getitem__(self, key):
-        return self._index[int(key)]
+        return self._index[int(key)].context
 
     def get(self, key, default=None):
-        return self._index.get(int(key), default)
+        ref = self._index.get(int(key), default)
+        if ref is default:
+            return default
+        return ref.context
 
     def __contains__(self, key):
         return int(key) in self._index
@@ -27,6 +31,8 @@ class NodeIndex(object):
 
 class Referenced(BaseBehavior):
     implements(IReferenced)
+    
+    expose_write_access_for = ['uuid']
     
     def __init__(self, context):
         super(Referenced, self).__init__(context)
@@ -57,7 +63,9 @@ class Referenced(BaseBehavior):
         return NodeIndex(self._index)
     
     def node(self, uuid):
-        return self._index.get(int(uuid))
+        ref = self._index.get(int(uuid))
+        if ref:
+            return ref.context
     
     @before('__setitem__')
     def before_setitem(self, key, val):
@@ -78,11 +86,11 @@ class Referenced(BaseBehavior):
             break
         if has_children:
             keys = set(self._index.keys())
-            if keys.intersection(val._index.keys()):
+            if keys.intersection(val._raw_node_index().keys()):
                 val.__name__ = old__name__
                 val.__parent__ = old__parent__
                 raise ValueError, u"Node with uuid already exists"
-        self._index.update(val._index)
+        self._index.update(val._raw_node_index())
         val._alter_node_index(self._index)
     
     @before('__delitem__')
@@ -90,12 +98,15 @@ class Referenced(BaseBehavior):
         for iuuid in self.context[key]._to_delete():
             del self._index[iuuid]
     
+    def _raw_node_index(self):
+        return self._index
+    
     def _alter_node_index(self, index):
         self._index = index
     
     def _to_delete(self):
         todel = [int(self.uuid)]
-        for childkey in self.context:
+        for childkey in self.context.keys(): # XXX: __iter__ fails here
             try:
                 todel += self.context[childkey]._to_delete()
             except AttributeError:
