@@ -50,6 +50,7 @@ class _NodeMixin(object):
     # BBB 2010-12-23
     filtereditems = filtereditervalues
     
+    # XXX: should be implemented by a wrapper like AliasedNodespace -cfl
     def as_attribute_access(self):
         return AttributeAccess(self)
     
@@ -153,6 +154,9 @@ class _FullMappingMixin(object):
         """Uses ``__getitem__``.
 
         This should be overriden by nodes, where ``__getitem__`` is expensive.
+
+        XXX: also catching the exception is expensive, so this should be
+        overriden probably always.
         """
         try:
             self[key]
@@ -192,6 +196,8 @@ class _FullMappingMixin(object):
 
     def __len__(self):
         """Uses ``keys``.
+
+        XXX: there could also be faster approaches depending on implementation
         """
         return len(self.keys())
     
