@@ -32,7 +32,6 @@ class Attributed(BaseBehavior):
     expose_write_access_for = ['attribute_access_for_attrs']
 
     attributes_factory = NodeAttributes
-    attribute_aliases = None
 
     def __init__(self, context):
         super(Attributed, self).__init__(context)

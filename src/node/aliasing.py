@@ -116,6 +116,7 @@ class NamedAliasers(dict):
     """
 
 
+# XXX: might become a behavior, but works pretty well like that
 class AliasedNodespace(AbstractNode):
     """Performs aliasing/unaliasing for node children.
 

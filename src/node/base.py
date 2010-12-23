@@ -16,19 +16,12 @@ class _NodeMixin(object):
     
     Implements contracts of ``zope.location.interfaces.ILocation`` and the one
     directly defined in ``node.intefaces.INode``.
-    
-    XXX: ``INode`` defines ``aliases``. Get rid in node interface?
-         Wrong name? Interface defines ``aliases`` while implementation
-         provides ``aliaser``?
     """
     
     def __init__(self, name=None, parent=None):
         self.__name__ = name
         self.__parent__ = parent
         self.allow_non_node_childs = False
-        # XXX: should aliaser be part of this basic thing?
-        #      ``aliaser`` or ``aliases``? See above.
-        self.aliaser = None
     
     @property
     def path(self):

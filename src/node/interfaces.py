@@ -146,15 +146,6 @@ class INode(ILocation, IFullMapping):
     allow_non_node_childs = Attribute(u"Flag wether this node may contain non "
                                       u"node based children.")
     
-    # XXX: should this be in base node interface ?
-    #      in _NodeMixin there's no ``aliases`` attribute, only ``aliaser``
-    #      both are not used in ``base.py``.
-    # XXX: should also be behavior.
-    aliases = Attribute(u"zope.interface.common.mapping.IEnumerableMapping "
-                        u"implementation defining key aliases or callable "
-                        u"accepting Node as argument. If aliases is None, "
-                        u"this feature is disables.")
-
     def filteredvalues(interface):
         """Return filtered child nodes by interface.
         """
@@ -276,11 +267,6 @@ class INodeAttributes(IEnumerableMapping, IWriteMapping):
     ``LifecycleNode.attributes_factory``.
     """
     changed = Attribute(u"Flag indicating if attributes were changed or not.")
-    aliases = Attribute(u"zope.interface.common.mapping.IEnumerableMapping "
-                        u"implementation defining attr name aliases or "
-                        u"callable accepting NodeAttributes as argument. If "
-                        u"aliases is None, this feature is disables. "
-                        u"Serves as Whitelist.")
 
     def __init__(node):
         """Initialize object.
