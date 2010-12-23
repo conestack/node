@@ -39,17 +39,16 @@ class _NodeMixin(object):
             root = parent
         return root
     
-    # XXX: inconsistent naming, filteredvalues() as values() should return a
-    # list, not an iterator
-    def filteredvalues(self, interface):
+    def filtereditervalues(self, interface):
         """Uses ``values``.
         """
+        # XXX: should use itervalues, do we have that everywhere?
         for node in self.values():
             if interface.providedBy(node):
                 yield node
     
-    # BBB
-    filtereditems = filteredvalues
+    # BBB 2010-12-23
+    filtereditems = filtereditervalues
     
     def as_attribute_access(self):
         return AttributeAccess(self)
