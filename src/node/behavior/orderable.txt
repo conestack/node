@@ -97,74 +97,68 @@ detached node or subtree to a complete different tree.
     >>> node.insertbefore(detached, node['child1'])
     
     >>> node.keys()
-    ['child1', 'child3', 'child2', 'child5']
+    ['child4', 'child1', 'child3', 'child2', 'child5']
     
-    >>> from odict import odict
-    >>> odict.keys(node)
-    ['child1', 'child3', 'child2', 'child5']
-    
-    >>> dict.keys(node)
-    ['child1', 'child2', 'child3', 'child4', 'child5']
-    
-    >>> #node.printtree()
-    <class 'node.bbb.Node'>: root
-      <class 'node.bbb.Node'>: child4
-      <class 'node.bbb.Node'>: child1
-      <class 'node.bbb.Node'>: child3
-      <class 'node.bbb.Node'>: child2
-      <class 'node.bbb.Node'>: child5
+    >>> node.printtree()
+    <class 'OrderableNode'>: orderable
+      <class 'OrderableNode'>: child4
+      <class 'OrderableNode'>: child1
+      <class 'OrderableNode'>: child3
+      <class 'OrderableNode'>: child2
+      <class 'OrderableNode'>: child5
 
 Merge 2 Node Trees.
+
+XXX: this goes to referencable (before and after handler for orderable)
 ::
-    >>> #tree1 = Node()
-    >>> #tree1['a'] = Node()
-    >>> #tree1['b'] = Node()
-    >>> #tree2 = Node()
-    >>> #tree2['d'] = Node()
-    >>> #tree2['e'] = Node()
+    >>> tree1 = OrderableNode()
+    >>> tree1['a'] = OrderableNode()
+    >>> tree1['b'] = OrderableNode()
+    >>> tree2 = OrderableNode()
+    >>> tree2['d'] = OrderableNode()
+    >>> tree2['e'] = OrderableNode()
+    
     >>> #tree1._index is tree2._index
     False
 
     >>> #len(tree1._index.keys())
     3
 
-    >>> #tree1.printtree()
-    <class 'node.bbb.Node'>: None
-      <class 'node.bbb.Node'>: a
-      <class 'node.bbb.Node'>: b
+    >>> tree1.printtree()
+    <class 'OrderableNode'>: None
+      <class 'OrderableNode'>: a
+      <class 'OrderableNode'>: b
 
     >>> #len(tree2._index.keys())
     3
 
-    >>> #tree2.printtree()
-    <class 'node.bbb.Node'>: None
-      <class 'node.bbb.Node'>: d
-      <class 'node.bbb.Node'>: e
+    >>> tree2.printtree()
+    <class 'OrderableNode'>: None
+      <class 'OrderableNode'>: d
+      <class 'OrderableNode'>: e
 
-    >>> #tree1['c'] = tree2
+    >>> tree1['c'] = tree2
     >>> #len(tree1._index.keys())
     6
-
-    >> sorted(tree1._index.values(), key=lambda x: x.__name__)
 
     >>> #tree1._index is tree2._index
     True
 
-    >>> #tree1.printtree()
-    <class 'node.bbb.Node'>: None
-      <class 'node.bbb.Node'>: a
-      <class 'node.bbb.Node'>: b
-      <class 'node.bbb.Node'>: c
-        <class 'node.bbb.Node'>: d
-        <class 'node.bbb.Node'>: e
+    >>> tree1.printtree()
+    <class 'OrderableNode'>: None
+      <class 'OrderableNode'>: a
+      <class 'OrderableNode'>: b
+      <class 'OrderableNode'>: c
+        <class 'OrderableNode'>: d
+        <class 'OrderableNode'>: e
 
 Detach subtree and insert elsewhere.
 ::
-    >>> #sub = tree1.detach('c')
-    >>> #sub.printtree()
-    <class 'node.bbb.Node'>: c
-      <class 'node.bbb.Node'>: d
-      <class 'node.bbb.Node'>: e
+    >>> sub = tree1.detach('c')
+    >>> sub.printtree()
+    <class 'OrderableNode'>: c
+      <class 'OrderableNode'>: d
+      <class 'OrderableNode'>: e
 
     >>> #tree1._index is sub._index
     False
@@ -175,23 +169,23 @@ Detach subtree and insert elsewhere.
     >>> #len(sub._index.keys())
     3
 
-    >>> #tree1.printtree()
-    <class 'node.bbb.Node'>: None
-      <class 'node.bbb.Node'>: a
-      <class 'node.bbb.Node'>: b
+    >>> tree1.printtree()
+     <class 'OrderableNode'>: None
+      <class 'OrderableNode'>: a
+      <class 'OrderableNode'>: b
 
     >>> #len(tree1._index.keys())
     3
 
-    >>> #sub.__name__ = 'x'
-    >>> #tree1.insertbefore(sub, tree1['a'])
-    >>> #tree1.printtree()
-    <class 'node.bbb.Node'>: None
-      <class 'node.bbb.Node'>: x
-        <class 'node.bbb.Node'>: d
-        <class 'node.bbb.Node'>: e
-      <class 'node.bbb.Node'>: a
-      <class 'node.bbb.Node'>: b
+    >>> sub.__name__ = 'x'
+    >>> tree1.insertbefore(sub, tree1['a'])
+    >>> tree1.printtree()
+    <class 'OrderableNode'>: None
+      <class 'OrderableNode'>: x
+        <class 'OrderableNode'>: d
+        <class 'OrderableNode'>: e
+      <class 'OrderableNode'>: a
+      <class 'OrderableNode'>: b
 
     >>> #tree1._index is sub._index
     True

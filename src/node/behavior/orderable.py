@@ -19,10 +19,6 @@ class Orderable(BaseBehavior):
         self._validateinsertion(newnode, refnode)
         nodekey = newnode.__name__
         refkey = refnode.__name__
-        
-        #if nodekey == 'child4':
-        #    import pdb;pdb.set_trace()
-        
         index = self._nodeindex(refnode)
         prevnode = None
         prevkey = None
@@ -34,15 +30,12 @@ class Orderable(BaseBehavior):
             dict_impl.__getitem__(self.context.context, prevkey)[2] = nodekey
             newnode = [prevkey, newnode, refkey]
         else:
-            self.context.lh = nodekey
+            # XXX: something strange with wrapper? 
+            # self.context.lh = nodekey
+            self.context.context.lh = nodekey
             newnode = [_nil, newnode, refkey]
         dict_impl.__getitem__(self.context.context, refkey)[0] = nodekey
         dict_impl.__setitem__(self.context.context, nodekey, newnode)
-        
-        # XXX: fails??
-        #setitem = self.context.context.__class__._wrapped.__setitem__
-        #setitem = self.context.context.__class__.__setitem__
-        #setitem(self.context.context, nodekey, newnode[1])
         self.context[nodekey] = newnode[1]
     
     def insertafter(self, newnode, refnode):
@@ -61,7 +54,9 @@ class Orderable(BaseBehavior):
             dict_impl.__getitem__(self.context.context, nextkey)[0] = nodekey
             newnode = [refkey, newnode, nextkey]
         else:
-            self.context.lt = nodekey
+            # XXX: something strange with wrapper? 
+            # self.context.lh = nodekey
+            self.context.context.lt = nodekey
             newnode = [refkey, newnode, _nil]
         dict_impl.__getitem__(self.context.context, refkey)[2] = nodekey
         dict_impl.__setitem__(self.context.context, nodekey, newnode)
