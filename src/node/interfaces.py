@@ -180,6 +180,7 @@ class IBehavior(INodeAdapter):
                                         u"writeable due to behavioral extended "
                                         u"node.")
 
+
 class IAttributed(IBehavior):
     """Provide attributes on node.
     """

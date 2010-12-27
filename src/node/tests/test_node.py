@@ -19,6 +19,7 @@ TESTFILES = [
     '../locking.txt',
     '../behavior/attributed.txt',
     '../behavior/referenced.txt',
+    '../behavior/orderable.txt',
 ]
 
 def test_suite():
