@@ -287,3 +287,60 @@ class behavior(object):
                     
         # return wrapped
         return NodeBehaviorWrapper
+
+#        for name in dir(node_cls):
+#            if name not in _explicit_hooks:
+#                continue
+#            method = getattr(node_cls, name)
+#            setattr(node_cls, name, _wrap_class_method(node_cls, method, name))
+#        setattr(node_cls, _cls_attr, self.behaviors)
+#        
+#        __setattr__orgin = node_cls.__setattr__
+#        
+#        __getattribute__orgin = node_cls.__getattribute__
+#        
+#        def _behavior_instances(self):
+#            """Return behavior instances in odict. If not existent create.
+#            """
+#            try:
+#                behaviors = node_cls.__getattribute__(self, _ins_attr)
+#            except AttributeError:
+#                __setattr__orgin(self, _ins_attr, odict())
+#                behaviors = node_cls.__getattribute__(self, _ins_attr)
+#                classes = node_cls.__getattribute__(self, _cls_attr)
+#                for cls in classes:
+#                    name = cls.__name__
+#                    behaviors[name] = _create_behavior(self, node_cls, cls)
+#            return behaviors
+#        
+#        node_cls._behavior_instances = property(_behavior_instances)
+#        
+#        def __setattr__(self, name, val):
+#            for behavior in self._behavior_instances.values():
+#                if name in behavior.expose_write_access_for:
+#                    setattr(behavior, name, val)
+#                    return
+#            __setattr__orgin(self, name, val)
+#        
+#        node_cls.__setattr__ = __setattr__
+#        
+#        def __getattribute__(self, name):
+#            try:
+#                # try to get requested attribute from self (the node)
+#                member = __getattribute__orgin(self, name)
+#                return _wrap_instance_member(node_cls, self, member, name)
+#            except AttributeError, e:
+#                # try to find requested attribute on behavior
+#                # create behavior instance if necessary
+#                classes = __getattribute__orgin(self, _cls_attr)
+#                for class_ in classes:
+#                    unbound = getattr(class_, name, _default_marker)
+#                    if unbound is _default_marker:
+#                        continue
+#                    behavior = self._behavior_instances[class_.__name__]
+#                    return getattr(behavior, name)
+#                raise AttributeError(name)
+#        
+#        node_cls.__getattribute__ = __getattribute__
+#        
+#        return node_cls
