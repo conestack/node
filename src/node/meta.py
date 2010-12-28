@@ -85,7 +85,6 @@ def _wrap_proxy_method(cls, func_name):
 
 
 def _create_behavior(instance, node_cls, behavior_cls):
-    name = behavior_cls.__name__
     
     class UnwrappedContextProxy(object):
         """Class to unwrap calls on behavior extended node.
@@ -226,7 +225,7 @@ class behavior(object):
                         continue
                     method = getattr(cls, name)
                     setattr(cls, name, _wrap_class_method(cls, method, name))
-                setattr(cls, '__behaviors_cls', self.behaviors)
+                setattr(cls, _cls_attr, self.behaviors)
         
         class NodeBehaviorWrapper(node_cls):
             """Wrapper for decorated node.
@@ -237,7 +236,7 @@ class behavior(object):
             _wrapped = node_cls
             
             implements(INode) # after __metaclass__ definition!
-
+            
             @property
             def _behavior_instances(self):
                 """Return behavior instances in odict. If not existent create.
