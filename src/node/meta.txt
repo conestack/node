@@ -4,38 +4,6 @@ node.meta
 Extending Nodes by different behaviors.
 
 
-Concepts
---------
-
-- Behavior related functionality is available and directly accessible on node.
-
-- Behavior implementations do not have the behavioral enhanced node as base
-  class, but act as an adapter on the node.
-
-- Behaviors are bound to a node by decorator.
-
-- The decorator implementation works with metaclasses.
-
-- Node related functions, attributes and properties always rule, so we can
-  overwrite anything on the decorated node, even behavior contract.
-
-- If more than one behavior defines the same attribute or function, return
-  first one, analog to the behavior of object inheritance.
-
-- Behaviors can hook before and after attribute access of nodes. This is done
-  with ``befor`` and ``after`` decorator, which expects name of attribute or
-  function to get hooked.
-
-
-Why using a decorator
----------------------
-
-- It is not possible to custom hook import statements from user pov.
-
-- Beside the fact they provide an easy hooking point for manipulating class 
-  objects, they are elegant.
-
-
 Behaviors and the behavior decorator
 ------------------------------------
 

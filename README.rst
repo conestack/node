@@ -23,8 +23,11 @@ contract of ``zope.location.interfaces.ILocation`` is used.
 Having data structures as such trees has some advantages:
 
 - Unified data access API to different data models and/or sources
+
 - Trees are traversable in both directions
+
 - Once in memory, node trees are fast to compute with
+
 - Software working on node trees may not need to know about internal data
   structures, as long as the node tree implementation provides the correct
   interface contracts
@@ -73,16 +76,75 @@ internal reference index for cross access, provide attributes, et cetera.
 Behaviors have a common ground:
 
 - They are orthogonal to nodes.
+
 - They might react on data structure changes.
+
 - Their API is available on the node.
 
 Someone might argue that too heavy multiple inheritance just causes headache,
 and an approach to implement such behaviors in a way that they can be mixed
 together arbitrarily by subclassing would probably be a dead end.
 
-We agree on this, so here is how it works:
+We agree on this, so here are the design principles:
 
-XXX
+- Behavior related functionality is available and directly accessible on node.
+
+- Behavior implementations do not have the behavioral enhanced node as base
+  class, but act as an adapter on the node.
+
+- Behaviors are bound to a node by a decorator.
+
+- Node related functions, attributes and properties always rule, so we can
+  overwrite anything on the decorated node, even behavior contract.
+
+- If more than one behavior defines the same attribute or function, return
+  first one, analog to the behavior of object inheritance.
+
+- Behaviors can hook before and after attribute access or function calls of
+  nodes. This is done with the ``befor`` and ``after`` decorators, expecting
+  name of attribute or function to get hooked.
+
+Why using a decorator?
+
+- It is not possible to custom hook import statements from user point of view.
+
+- Beside the fact they provide an easy hooking point for manipulating class 
+  objects, they are elegant.
+
+Using behaviors. Import required objects.
+::
+    >>> from node.base import OrderedNode
+    >>> from node.behavior import Attributed
+    >>> from node.behavior import behavior
+
+Provide class and decorate it with behavior.
+::
+    >>> @behavior(Attributed)
+    ... class AttributedNode(OrderedNode): pass
+
+Now contract of ``node.interfaces.IAttributed`` is available on node.
+::
+    >>> node = AttributedNode()
+    >>> node.attrs
+    <NodeAttributes object 'None' at ...>
+
+A node can be decorated with multiple behaviors. Additionally to Attributed add
+behavior described by ``node.interfaces.IReferenced`` to another node
+::
+    >>> from node.behavior import Referenced
+    
+    >>> @behavior(Attributed, Referenced)
+    ... class AttributedReferencedNode(OrderedNode): pass
+    
+    >>> root = AttributedReferencedNode()
+    >>> root['foo'] = AttributedReferencedNode()
+    >>> bar = root['bar'] = AttributedReferencedNode()
+    
+    >>> root.node(bar.uuid)
+    <AttributedReferencedNode object 'bar' at ...>
+    
+    >>> bar.attrs
+    <NodeAttributes object 'bar' at ...>
 
 
 Nodespaces
