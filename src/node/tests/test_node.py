@@ -20,6 +20,7 @@ TESTFILES = [
     '../behavior/attributed.txt',
     '../behavior/referenced.txt',
     '../behavior/orderable.txt',
+    '../../../README.rst',
 ]
 
 def test_suite():
