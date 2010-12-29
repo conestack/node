@@ -26,7 +26,7 @@ Having data structures as such trees has some advantages:
 
 - Trees are traversable in both directions
 
-- Once in memory, node trees are fast to compute with
+- Once in memory, node trees are fast to deal with
 
 - Software working on node trees may not need to know about internal data
   structures, as long as the node tree implementation provides the correct
@@ -64,8 +64,10 @@ An ordered node. Order of items is preserved.
 ``BaseNode`` and ``OrderedNode`` inherit from dict respective `odict 
 <http://pypi.python.org/pypi/odict>`_ by default (this could be changed). If
 someone wants a more basic implementation for some reason, an ``AbstractNode``
-is provided as well (See tests and sources of ``base`` module).
+is provided as well (See tests and sources of ``node.base``).
 
+A full API desctiption of the node interface can be found at
+``node.iterfaces.INode``.
 
 Behaviors
 ---------
@@ -95,18 +97,22 @@ We agree on this, so here are the design principles:
 - Behaviors are bound to a node by a decorator.
 
 - Node related functions, attributes and properties always rule, so we can
-  overwrite anything on the decorated node, even behavior contract.
+  overwrite anything on the decorated node, even behavior contract (don't do
+  this unless you have good reasons).
 
 - If more than one behavior defines the same attribute or function, return
-  first one, analog to the behavior of object inheritance.
+  first one, analog to the behavior of object inheritance (try to avoid
+  namespace conflicts when providing behaviors, shipped implementations
+  do not conflict at all).
 
-- Behaviors can hook before and after attribute access or function calls of
+- Behaviors can hook before and after property access or function calls of
   nodes. This is done with the ``befor`` and ``after`` decorators, expecting
-  name of attribute or function to get hooked.
+  name of property or function to get hooked.
 
 Why using a decorator?
 
-- It is not possible to custom hook import statements from user point of view.
+- It is not possible to custom hook import statements from user point of view
+  (which was another idea how to do it).
 
 - Beside the fact they provide an easy hooking point for manipulating class 
   objects, they are elegant.
@@ -145,6 +151,20 @@ behavior described by ``node.interfaces.IReferenced`` to another node
     
     >>> bar.attrs
     <NodeAttributes object 'bar' at ...>
+
+Behavior implementations shipped with this package:
+
+- Attributed (see ``node.interfaces.IAttributed``)
+
+- Referenced (see ``node.interfaces.IReferenced``)
+
+- Orderable (see ``node.interfaces.IOrderable``)
+
+- to be continued... (see ``node.interfaces`` :) )
+
+I you need to provide your own behaviors, look a tests of ``node.meta`` for a 
+deeper understanding of the implementation and already existent
+``node.behavior.*`` stuff.
 
 
 Nodespaces
