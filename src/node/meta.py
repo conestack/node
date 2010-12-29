@@ -114,7 +114,14 @@ def _create_behavior(instance, node_cls, behavior_cls):
             except AttributeError:
                 pass
             context = object.__getattribute__(self, 'context')
-            return node_cls.__getattribute__(context, name)
+            attribute = node_cls.__getattribute__(context, name)
+            if hasattr(attribute, 'wrapped'):
+                return attribute.wrapped
+            return attribute
+        
+        #def __setattr__(self, name, value):
+        #    context = object.__getattribute__(self, 'context')
+        #    node_cls.__setattr__(context, name, value)
         
         def __repr__(self):
             return node_cls.__repr__(self.context)
@@ -240,15 +247,14 @@ def _hook_behaviored_functions(node_cls, behavior_classes):
 # new meta
 def _alter_node___setattr__(node_cls):
     # XXX remove when funcdef.wrapped is used
-    __setattr__orgin = node_cls.__setattr__
     def __setattr__(self, name, val):
         for behavior in self._behavior_instances.values():
             if name in behavior.expose_write_access_for:
                 setattr(behavior, name, val)
                 return
         # XXX use funcdef.wrapped here
-        __setattr__orgin(self, name, val)
-    node_cls.__setattr__ = _wrapfunc(__setattr__orgin, __setattr__)
+        self.__setattr__.wrapped(self, name, val)
+    node_cls.__setattr__ = _wrapfunc(node_cls.__setattr__, __setattr__)
 
 
 ###

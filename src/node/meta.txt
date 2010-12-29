@@ -147,9 +147,12 @@ Wrap functions and attributes for which hooks are provided by behaviors.
       and kw ``{}`` ---
     <BehaviorNode object 'foo' at ...>
 
-XXX: alter __setattr__
+    >>> from node.meta import _alter_node___setattr__
+    >>> #_alter_node___setattr__(BehaviorNode)
 
-XXX: alter __getattribute__
+    >>> from node.meta import _alter_node___getattribute__
+    >>> #_alter_node___getattribute__(BehaviorNode)
+
 
 XXX: test unwrapped proxy
 
