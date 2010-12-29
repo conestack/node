@@ -1,7 +1,139 @@
 node.meta
 =========
 
-Extending Nodes by different behaviors.
+Node class modification done in ``behaviors.__call__``.
+
+Inherit from some base node implementation.
+::
+    >>> from node.base import OrderedNode
+    
+    >>> class BehaviorNode(OrderedNode):
+    ...     pass
+
+Provide dummy behaviors.
+::
+
+    >>> from node.meta import BaseBehavior
+    >>> from node.meta import before
+    >>> from node.meta import after
+    
+    >>> class BehaviorA(BaseBehavior):
+    ...     expose_write_access_for = ['attr_a']
+    ...     
+    ...     attr_a = None
+    ...     
+    ...     @before('__getitem__')
+    ...     def before_getitem(self, key):
+    ...         pass
+    
+    >>> class BehaviorB(BaseBehavior):
+    ...     
+    ...     @before('__getitem__')
+    ...     def before_getitem(self, key):
+    ...         pass
+    ...     
+    ...     @after('values')
+    ...     def after_values(self):
+    ...         pass
+    
+    >>> class BehaviorC(BaseBehavior):
+    ...     expose_write_access_for = ['items']
+    ...     items = None
+    
+__getattribute__ and __setattr__ are prohibited to get hooked.
+::
+    >>> class BehaviorD(BaseBehavior):
+    ...     
+    ...     @after('__setattr__')
+    ...     def after_setattr(self):
+    ...         pass
+    Traceback (most recent call last):
+      ...
+    RuntimeError: Hooking forbidden for ``__setattr__`` and ``__getattribute__``
+
+Try to find namespace conflicts. They could still appear if node sets an
+attribute i.e. during __init__ time. 
+::
+    >>> from node.meta import _check_write_exposed_ns_conflict
+    >>> behavior_classes = [BehaviorA, BehaviorB, BehaviorC]
+    >>> _check_write_exposed_ns_conflict(BehaviorNode, behavior_classes)
+    Traceback (most recent call last):
+      ...
+    RuntimeError: <class 'BehaviorC'> exposes "items", which is already 
+    provided by <class 'BehaviorNode'>
+
+Write behavior classes to node class.
+::
+    >>> behavior_classes = [BehaviorA, BehaviorB]
+    >>> from node.meta import _CLS_ATTR
+    >>> setattr(BehaviorNode, _CLS_ATTR, behavior_classes)
+    >>> getattr(BehaviorNode, _CLS_ATTR)
+    [<class 'BehaviorA'>, <class 'BehaviorB'>]
+
+Test ``add__behavior_instances_property``.
+::
+    >>> from node.meta import _add__behavior_instances_property
+    >>> _add__behavior_instances_property(BehaviorNode)
+    >>> BehaviorNode._behavior_instances
+    <property object at ...>
+
+When _behavior_instances is accessed the first time, the behavior classes are
+instanciated.
+::
+    >>> from node.meta import _INS_ATTR
+    >>> node = BehaviorNode()
+    >>> getattr(node, _INS_ATTR)
+    Traceback (most recent call last):
+      ...
+    AttributeError: 'BehaviorNode' object has no attribute '__behaviors_ins'
+    
+    >>> node._behavior_instances
+    odict([('BehaviorA', <BehaviorA object at ...>), 
+    ('BehaviorB', <BehaviorB object at ...>)])
+    
+    >>> getattr(node, _INS_ATTR)
+    odict([('BehaviorA', <BehaviorA object at ...>), 
+    ('BehaviorB', <BehaviorB object at ...>)])
+
+Back to class manipulation.
+
+Test ``collect_hooks_for``.
+::
+    >>> from node.meta import _collect_hooks_for
+    >>> _collect_hooks_for(behavior_classes, 'nohooks')
+    ([], [])
+    
+    >>> _collect_hooks_for(behavior_classes, 'values')
+    ([], [(<class 'BehaviorB'>, <unbound method BehaviorB.after_values>)])
+    
+    >>> _collect_hooks_for(behavior_classes, '__getitem__')
+    ([(<class 'BehaviorA'>, <unbound method BehaviorA.before_getitem>), 
+    (<class 'BehaviorB'>, <unbound method BehaviorB.before_getitem>)], [])
+
+Test ``_hook_names``.
+::
+    >>> from node.meta import _hook_names
+    >>> _hook_names(behavior_classes)
+    ['values', '__getitem__']
+
+Wrap functions and attributes for which hooks are provided by behaviors.
+::
+    >>> from node.meta import _hook_behaviored_functions
+    >>> _hook_behaviored_functions(BehaviorNode, behavior_classes)
+
+XXX: _hook_behaviored_functions
+
+XXX: alter __setattr__
+
+XXX: alter __getattribute__
+
+XXX: test unwrapped proxy
+
+XXX: test super calls in behaviored nodes
+
+
+###
+# orgin below
 
 
 Behaviors and the behavior decorator
