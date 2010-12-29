@@ -96,11 +96,50 @@ def _check_write_exposed_ns_conflict(node_cls, behavior_classes):
                 raise RuntimeError(msg)
 
 
-def _wrapfunc(orgin, wrapped):
-    wrapped.func_name = orgin.func_name
-    wrapped.__doc__ = orgin.__doc__
-    wrapped.wrapped = orgin
-    return wrapped
+def _create_behavior(instance, node_cls, behavior_cls):
+    
+    class UnwrappedContextProxy(object):
+        """Class to unwrap calls on behavior extended node.
+        
+        This is needed to acess self.context.whatever in behavior
+        implementation without computing before and after hooks bound
+        to ``whatever``.
+        """
+        def __init__(self, context):
+            self.context = context
+        
+        def __getattribute__(self, name):
+            try:
+                return object.__getattribute__(self, name)
+            except AttributeError:
+                pass
+            context = object.__getattribute__(self, 'context')
+            return node_cls.__getattribute__(context, name)
+        
+        def __repr__(self):
+            return node_cls.__repr__(self.context)
+    
+    for func_name in _explicit_hooks:
+        proxy = _wrap_proxy_method(node_cls, func_name)
+        setattr(UnwrappedContextProxy, func_name, proxy)
+    return behavior_cls(UnwrappedContextProxy(instance))
+
+
+###
+# new meta
+def _add__behavior_instances_property(node_cls):
+    def _behavior_instances(self):
+        try:
+            behaviors = node_cls.__getattribute__(self, _INS_ATTR)
+        except AttributeError:
+            node_cls.__setattr__(self, _INS_ATTR, odict())
+            behaviors = node_cls.__getattribute__(self, _INS_ATTR)
+            classes = node_cls.__getattribute__(self, _CLS_ATTR)
+            for cls in classes:
+                name = cls.__name__
+                behaviors[name] = _create_behavior(self, node_cls, cls)
+        return behaviors
+    node_cls._behavior_instances = property(_behavior_instances)
 
 
 ###
@@ -157,56 +196,44 @@ def _collect_hooks_for(classes, name):
     return before, after
 
 
+def _wrapfunc(orgin, wrapped):
+    wrapped.func_name = orgin.func_name
+    wrapped.__doc__ = orgin.__doc__
+    wrapped.wrapped = orgin
+    return wrapped
+
+
 ###
 # new meta
-def _hook_behaviored_functions(node_cls, behavior_classes):
-    pass
-
-
-def _create_behavior(instance, node_cls, behavior_cls):
-    
-    class UnwrappedContextProxy(object):
-        """Class to unwrap calls on behavior extended node.
-        
-        This is needed to acess self.context.whatever in behavior
-        implementation without computing before and after hooks bound
-        to ``whatever``.
-        """
-        def __init__(self, context):
-            self.context = context
-        
-        def __getattribute__(self, name):
-            try:
-                return object.__getattribute__(self, name)
-            except AttributeError:
-                pass
-            context = object.__getattribute__(self, 'context')
-            return node_cls.__getattribute__(context, name)
-        
-        def __repr__(self):
-            return node_cls.__repr__(self.context)
-    
-    for func_name in _explicit_hooks:
-        proxy = _wrap_proxy_method(node_cls, func_name)
-        setattr(UnwrappedContextProxy, func_name, proxy)
-    return behavior_cls(UnwrappedContextProxy(instance))
+def _wrap_hooked(node_cls, behavior_classes, towrap, name):
+    unwrapped = towrap
+    before, after = _collect_hooks_for(behavior_classes, name)
+    def hooked(self, *pargs, **kw):
+        behavior_instances = self._behavior_instances
+        # execute before hooks
+        for behavior, hook in before:
+            instance = behavior_instances[behavior.__name__]
+            getattr(instance, hook.func_name)(*pargs, **kw)
+        # get return value of requested
+        ret = unwrapped(self, *pargs, **kw)
+        # execute after hooks
+        for behavior, hook in after:
+            instance = behavior_instances[behavior.__name__]
+            getattr(instance, hook.func_name)(*pargs, **kw)
+        # return ret value from requested method
+        return ret
+    setattr(node_cls, name, _wrapfunc(towrap, hooked))
 
 
 ###
 # new meta
-def _add__behavior_instances_property(node_cls):
-    def _behavior_instances(self):
+def _hook_behaviored_functions(node_cls, behavior_classes):
+    for name in _hook_names(behavior_classes):
         try:
-            behaviors = node_cls.__getattribute__(self, _INS_ATTR)
-        except AttributeError:
-            node_cls.__setattr__(self, _INS_ATTR, odict())
-            behaviors = node_cls.__getattribute__(self, _INS_ATTR)
-            classes = node_cls.__getattribute__(self, _CLS_ATTR)
-            for cls in classes:
-                name = cls.__name__
-                behaviors[name] = _create_behavior(self, node_cls, cls)
-        return behaviors
-    node_cls._behavior_instances = property(_behavior_instances)
+            towrap = getattr(node_cls, name)
+        except AttributeError, e:
+            continue
+        _wrap_hooked(node_cls, behavior_classes, towrap, name)
 
 
 ###

@@ -24,17 +24,17 @@ Provide dummy behaviors.
     ...     
     ...     @before('__getitem__')
     ...     def before_getitem(self, key):
-    ...         pass
+    ...         self._debug('before', '__getitem__', key)
     
     >>> class BehaviorB(BaseBehavior):
     ...     
     ...     @before('__getitem__')
     ...     def before_getitem(self, key):
-    ...         pass
+    ...         self._debug('before', '__getitem__', key)
     ...     
     ...     @after('values')
     ...     def after_values(self):
-    ...         pass
+    ...         self._debug('after', 'values')
     
     >>> class BehaviorC(BaseBehavior):
     ...     expose_write_access_for = ['items']
@@ -97,6 +97,12 @@ instanciated.
 
 Back to class manipulation.
 
+Test ``_hook_names``.
+::
+    >>> from node.meta import _hook_names
+    >>> _hook_names(behavior_classes)
+    ['values', '__getitem__']
+
 Test ``collect_hooks_for``.
 ::
     >>> from node.meta import _collect_hooks_for
@@ -110,18 +116,36 @@ Test ``collect_hooks_for``.
     ([(<class 'BehaviorA'>, <unbound method BehaviorA.before_getitem>), 
     (<class 'BehaviorB'>, <unbound method BehaviorB.before_getitem>)], [])
 
-Test ``_hook_names``.
-::
-    >>> from node.meta import _hook_names
-    >>> _hook_names(behavior_classes)
-    ['values', '__getitem__']
-
 Wrap functions and attributes for which hooks are provided by behaviors.
 ::
     >>> from node.meta import _hook_behaviored_functions
     >>> _hook_behaviored_functions(BehaviorNode, behavior_classes)
-
-XXX: _hook_behaviored_functions
+    
+    >>> BehaviorNode.values
+    <unbound method BehaviorNode.values>
+    
+    >>> BehaviorNode.values.wrapped
+    <unbound method BehaviorNode.values>
+    
+    >>> node = BehaviorNode()
+    >>> node['foo'] = BehaviorNode()
+    >>> node.values()
+    * after ``values`` of <BehaviorB object at ...> 
+      on <BehaviorNode object 'None' at ...> 
+      with args ``()`` 
+      and kw ``{}`` ---
+    [<BehaviorNode object 'foo' at ...>]
+    
+    >>> node['foo']
+    * before ``__getitem__`` of <BehaviorA object at ...> 
+      on <BehaviorNode object 'None' at ...> 
+      with args ``('foo',)`` 
+      and kw ``{}`` ---
+    * before ``__getitem__`` of <BehaviorB object at ...> 
+      on <BehaviorNode object 'None' at ...> 
+      with args ``('foo',)`` 
+      and kw ``{}`` ---
+    <BehaviorNode object 'foo' at ...>
 
 XXX: alter __setattr__
 
