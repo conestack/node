@@ -116,7 +116,9 @@ def _create_behavior(instance, node_cls, behavior_cls):
             context = object.__getattribute__(self, 'context')
             attribute = node_cls.__getattribute__(context, name)
             if hasattr(attribute, 'wrapped'):
-                return attribute.wrapped
+                attribute = attribute.wrapped
+            #if hasattr(attribute, '__get__'):
+            #    return attribute.__get__(self)
             return attribute
         
         #def __setattr__(self, name, value):
@@ -204,7 +206,8 @@ def _collect_hooks_for(classes, name):
 
 
 def _wrapfunc(orgin, wrapped):
-    wrapped.func_name = orgin.func_name
+    if hasattr(orgin, 'func_name'):
+        wrapped.func_name = orgin.func_name
     wrapped.__doc__ = orgin.__doc__
     wrapped.wrapped = orgin
     return wrapped
@@ -246,27 +249,32 @@ def _hook_behaviored_functions(node_cls, behavior_classes):
 ###
 # new meta
 def _alter_node___setattr__(node_cls):
-    # XXX remove when funcdef.wrapped is used
+    orgin = node_cls.__setattr__
     def __setattr__(self, name, val):
-        for behavior in self._behavior_instances.values():
-            if name in behavior.expose_write_access_for:
-                setattr(behavior, name, val)
-                return
-        # XXX use funcdef.wrapped here
-        self.__setattr__.wrapped(self, name, val)
+        classes = getattr(node_cls, _CLS_ATTR)
+        for cls in classes:
+            if not name in cls.expose_write_access_for:
+                continue
+            unbound = getattr(cls, name, _default_marker)
+            if unbound is _default_marker:
+                continue
+            unbound(self, name, val)
+            return
+        orgin(self, name, val)
     node_cls.__setattr__ = _wrapfunc(node_cls.__setattr__, __setattr__)
 
 
 ###
 # new meta
 def _alter_node___getattribute__(node_cls):
+    orgin = node_cls.__getattribute__
     def __getattribute__(self, name):
         try:
             # try to get requested attribute from self (the node)
-            return self.__getattribute__.wrapped(self, name)
+            return orgin(self, name)
         except AttributeError, e:
             # try to find requested attribute on behavior
-            classes = self.__getattribute__.wrapped(self, _CLS_ATTR)
+            classes = getattr(node_cls, _CLS_ATTR)
             for cls in classes:
                 unbound = getattr(cls, name, _default_marker)
                 if unbound is _default_marker:

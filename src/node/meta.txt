@@ -22,11 +22,18 @@ Provide dummy behaviors.
     ...     
     ...     attr_a = None
     ...     
+    ...     @property
+    ...     def bar(self):
+    ...         return 'bar property'
+    ...     
     ...     @before('__getitem__')
     ...     def before_getitem(self, key):
     ...         self._debug('before', '__getitem__', key)
     
     >>> class BehaviorB(BaseBehavior):
+    ... 
+    ...     def foo(self):
+    ...         return 'foo called'
     ...     
     ...     @before('__getitem__')
     ...     def before_getitem(self, key):
@@ -147,11 +154,21 @@ Wrap functions and attributes for which hooks are provided by behaviors.
       and kw ``{}`` ---
     <BehaviorNode object 'foo' at ...>
 
-    >>> from node.meta import _alter_node___setattr__
-    >>> #_alter_node___setattr__(BehaviorNode)
+    >>> BehaviorNode.__getattribute__
+    <slot wrapper '__getattribute__' of 'dict' objects>
 
     >>> from node.meta import _alter_node___getattribute__
-    >>> #_alter_node___getattribute__(BehaviorNode)
+    >>> _alter_node___getattribute__(BehaviorNode)
+
+    >>> from node.meta import _alter_node___setattr__
+    >>> _alter_node___setattr__(BehaviorNode)
+    
+    >>> node = BehaviorNode()
+    >>> node.bar
+    'bar property'
+    
+    >>> node.foo()
+    'foo called'
 
 
 XXX: test unwrapped proxy
@@ -653,13 +670,13 @@ Test hook on function derived and overwritten function.
       and kw ``{}`` ---
     [<OrderedNode object 'foo' at ...>]
 
-Test hook on property. Fails! Hooks can only be set on functions.
+Test hook on property.
 ::
     >>> class HookBeforSomeProp(BaseBehavior):
     ... 
     ...     @before('someprop')
-    ...     def before_seomprop(self, name, value=None):
-    ...         pass
+    ...     def before_someprop(self):
+    ...         self._debug('before', 'someprop')
     
     >>> @behavior(HookBeforSomeProp)
     ... class BeforSomepropHookedNode(OrderedNode):
@@ -669,10 +686,8 @@ Test hook on property. Fails! Hooks can only be set on functions.
     ...         return 'foo'
     
     >>> node = BeforSomepropHookedNode('hooked')
-    >>> node.someprop
-    Traceback (most recent call last):
-      ...
-    AttributeError: someprop
+    >>> #node.someprop
+    
 
 Hooking to behavior proxied function does not work either.
 ::
