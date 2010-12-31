@@ -42,6 +42,11 @@ class _NodeMixin(object):
             root = parent
         return root
     
+    def detach(self, key):
+        node = self.context[key]
+        del self.context[key]
+        return node
+    
     def filtereditervalues(self, interface):
         """Uses ``itervalues``.
         """

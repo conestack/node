@@ -98,6 +98,23 @@ class Referenced(BaseBehavior):
         for iuuid in self.context[key]._to_delete():
             del self._index[iuuid]
     
+    @before('detach')
+    def before_detach(self, key):
+        node = self.context
+        node[key]._alter_node_index({int(node.uuid): node})
+        node._index_nodes()
+    
+    def _index_nodes(self):
+        for node in self.context.values():
+            try:
+                uuid = int(node.uuid)
+            except AttributeError:
+                # non-Node values are a dead end, no magic for them
+                continue
+            self._index[uuid] = node
+            node._alter_node_index(self._index)
+            node._index_nodes()
+    
     def _raw_node_index(self):
         return self._index
     

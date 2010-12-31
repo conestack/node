@@ -26,14 +26,10 @@ Node insertion. There exist an ``insertbefore`` and ``insertafter`` function.
       ...
     ValueError: Given node has no __name__ set.
 
-###
-
     >>> #node.insertbefore(node['child2'], node['child1'])
-    #Traceback (most recent call last):
-    #  ...
-    #KeyError: u'Given node already contained in tree.'
-
-###
+    Traceback (most recent call last):
+      ...
+    KeyError: u'Given node already contained in tree.'
 
     >>> new.__name__ = 'child3'
     >>> node.insertbefore(new, node['child2'])
@@ -66,8 +62,8 @@ Move a node. Therefor we first need to detach the node we want to move from
 tree. Then insert the detached node elsewhere. In general, you can insert the
 detached node or subtree to a complete different tree.
 ::
-    >>> #len(node._index.keys())
-    #6
+    >>> #len(node._raw_node_index().keys())
+    6
 
     >>> detached = node.detach('child4')
     >>> detached

@@ -47,36 +47,27 @@ class Orderable(BaseBehavior):
         nextkey = None
         keys = self.context.keys()
         dict_impl = self.context._dict_impl()
+        orgin_context = self.context.context
         if index < len(keys) - 1:
             nextkey = self.context.keys()[index + 1]
-            nextnode = dict_impl.__getitem__(self.context.context, nextkey)
+            nextnode = dict_impl.__getitem__(orgin_context, nextkey)
         if nextnode is not None:
-            dict_impl.__getitem__(self.context.context, nextkey)[0] = nodekey
+            dict_impl.__getitem__(orgin_context, nextkey)[0] = nodekey
             newnode = [refkey, newnode, nextkey]
         else:
             # XXX: something strange with wrapper? 
             # self.context.lh = nodekey
-            self.context.context.lt = nodekey
+            orgin_context.lt = nodekey
             newnode = [refkey, newnode, _nil]
-        dict_impl.__getitem__(self.context.context, refkey)[2] = nodekey
-        dict_impl.__setitem__(self.context.context, nodekey, newnode)
+        dict_impl.__getitem__(orgin_context, refkey)[2] = nodekey
+        dict_impl.__setitem__(orgin_context, nodekey, newnode)
         self.context[nodekey] = newnode[1]
-    
-    def detach(self, key):
-        node = self.context[key]
-        del self.context[key]
-        #if self._index is not None:
-        #    # XXX: before handler in IReferenced
-        #    node._index = { int(node.uuid): node }
-        #    node._index_nodes()
-        return node
     
     def _validateinsertion(self, newnode, refnode):
         nodekey = newnode.__name__
         if nodekey is None:
             raise ValueError, u"Given node has no __name__ set."
-        #if self.node(newnode.uuid) is not None:
-        #    raise KeyError, u"Given node already contained in tree."
+        
         index = self._nodeindex(refnode)
         if index is None:
             raise ValueError, u"Given reference node not child of self."
@@ -88,15 +79,3 @@ class Orderable(BaseBehavior):
                 return index
             index += 1
         return None
-    
-    #def _index_nodes(self):
-    #    # XXX: before handler in IReferenced
-    #    for node in self.values():
-    #        try:
-    #            uuid = int(node.uuid)
-    #        except AttributeError:
-    #            # non-Node values are a dead end, no magic for them
-    #            continue
-    #        self._index[uuid] = node
-    #        node._index = self._index
-    #        node._index_nodes()

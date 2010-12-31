@@ -146,6 +146,10 @@ class INode(ILocation, IFullMapping):
     allow_non_node_childs = Attribute(u"Flag wether this node may contain non "
                                       u"node based children.")
     
+    def detach(key):
+        """Detach child Node.
+        """
+    
     def filtereditervalues(interface):
         """Yield filtered child nodes by interface.
         """
@@ -221,10 +225,6 @@ class IOrderable(IBehavior):
         This function only supports adding of new nodes after the given
         refnode. If you want to move nodes you have to detach them from the
         tree first.
-        """
-
-    def detach(key):
-        """Detach child Node. needed for Node movement.
         """
 
 
