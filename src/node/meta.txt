@@ -157,18 +157,30 @@ Wrap functions and attributes for which hooks are provided by behaviors.
     >>> BehaviorNode.__getattribute__
     <slot wrapper '__getattribute__' of 'dict' objects>
 
+Alter node __getattribute__.
+::
     >>> from node.meta import _alter_node___getattribute__
     >>> _alter_node___getattribute__(BehaviorNode)
 
+Alter node __setattr__.
+::
     >>> from node.meta import _alter_node___setattr__
     >>> _alter_node___setattr__(BehaviorNode)
-    
+
+Test altered __getattribute__.
+::
     >>> node = BehaviorNode()
     >>> node.bar
     'bar property'
     
     >>> node.foo()
     'foo called'
+
+Test altered __setattr__.
+::
+    >>> node.attr_a = 'foo'
+    >>> node._behavior_instances['BehaviorA'].attr_a
+    'foo'
 
 
 XXX: test unwrapped proxy
@@ -227,8 +239,6 @@ Decorator expects ``IBehavior`` implementations.
 ::
     >>> from node.meta import behavior
     >>> from node.base import OrderedNode
-    
-XXX: this should probably be @behavior()
 
     >>> @behavior
     ... class SomeBehaviorNode(OrderedNode):
@@ -259,17 +269,12 @@ Do the right thing.
     ... class SomeBehaviorNode(OrderedNode):
     ...     pass
 
-Behavioral extended node was wrapped.
-::
-    >>> SomeBehaviorNode
-    <class 'node.meta.NodeBehaviorWrapper'>
-
 Behavior classes bound to node.
 ::
     >>> SomeBehaviorNode.__behaviors_cls
     (<class 'SomeBehavior'>,)
 
-Instanciate wrapped node.
+Instanciate extended node.
 ::
     >>> node = SomeBehaviorNode()
     >>> node
@@ -382,7 +387,7 @@ Override ``do`` on decorated node.
     
     >>> node = OverridesBehaviorNode()
     >>> node.do
-    <bound method NodeBehaviorWrapper.do of 
+    <bound method OverridesBehaviorNode.do of 
     <OverridesBehaviorNode object 'None' at ...>>
     
     >>> node.do()
