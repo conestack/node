@@ -108,7 +108,6 @@ def _wrapfunc(orgin, wrapped):
     wrapped.wrapped = orgin
     return wrapped
 
-
 def _check_write_exposed_ns_conflict(node_cls, behavior_classes):
     provided = dir(node_cls)
     for behavior in behavior_classes:
@@ -117,7 +116,6 @@ def _check_write_exposed_ns_conflict(node_cls, behavior_classes):
                 msg = '%s exposes "%s", which is already provided by %s' % (
                     str(behavior), exposed, str(node_cls))
                 raise RuntimeError(msg)
-
 
 def _hook_names(classes):
     def collect_hooks(ret, classes, hooks):
@@ -138,7 +136,6 @@ def _hook_names(classes):
     before = collect_hooks(ret, classes, _BEFORE_HOOKS)
     after = collect_hooks(ret, classes, _AFTER_HOOKS)
     return list(ret)
-
 
 def _collect_hooks_for(classes, name):
     def collect_hooks(classes, name, hooks):
@@ -164,9 +161,10 @@ def _collect_hooks_for(classes, name):
     after = collect_hooks(classes, name, _AFTER_HOOKS)
     return before, after
 
-
 def _wrap_hooked(node_cls, behavior_classes, towrap, name):
     unwrapped = towrap
+    if type(towrap) is property:
+        raise RuntimeError(u'Properties could not be hooked.')
     before, after = _collect_hooks_for(behavior_classes, name)
     def hooked(self, *pargs, **kw):
         behavior_instances = self._behavior_instances
@@ -184,7 +182,6 @@ def _wrap_hooked(node_cls, behavior_classes, towrap, name):
         return ret
     setattr(node_cls, name, _wrapfunc(towrap, hooked))
 
-
 def _wrap_hooked_unwrapper(wrapper_cls, wrapped, name):
     orgin = wrapped.wrapped
     def unwrapped(self, *pargs, **kw):
@@ -192,9 +189,7 @@ def _wrap_hooked_unwrapper(wrapper_cls, wrapped, name):
         return orgin(context, *pargs, **kw)
     setattr(wrapper_cls, name, unwrapped)
 
-
 def _create_behavior(instance, node_cls, behavior_cls):
-    
     class UnwrappedContextProxy(object):
         """Class to unwrap calls on behavior extended node.
         
@@ -213,7 +208,9 @@ def _create_behavior(instance, node_cls, behavior_cls):
             context = object.__getattribute__(self, 'context')
             attribute = node_cls.__getattribute__(context, name)
             if hasattr(attribute, 'wrapped'):
-                attribute = types.MethodType(attribute.wrapped, context, node_cls)
+                attribute = types.MethodType(attribute.wrapped,
+                                             context,
+                                             node_cls)
             return attribute
         
         def __setattr__(self, name, value):
@@ -242,7 +239,6 @@ def _create_behavior(instance, node_cls, behavior_cls):
         _wrap_hooked_unwrapper(UnwrappedContextProxy, wrapped, name)
     return behavior_cls(UnwrappedContextProxy(instance))
 
-
 def _add__behavior_instances_property(node_cls):
     def _behavior_instances(self):
         try:
@@ -257,7 +253,6 @@ def _add__behavior_instances_property(node_cls):
         return behaviors
     node_cls._behavior_instances = property(_behavior_instances)
 
-
 def _hook_behaviored_functions(node_cls, behavior_classes):
     for name in _hook_names(behavior_classes):
         try:
@@ -265,7 +260,6 @@ def _hook_behaviored_functions(node_cls, behavior_classes):
         except AttributeError, e:
             continue
         _wrap_hooked(node_cls, behavior_classes, towrap, name)
-
 
 def _alter_node___setattr__(node_cls):
     orgin = node_cls.__setattr__
@@ -282,7 +276,6 @@ def _alter_node___setattr__(node_cls):
             return
         orgin(self, name, val)
     node_cls.__setattr__ = _wrapfunc(node_cls.__setattr__, __setattr__)
-
 
 def _alter_node___getattribute__(node_cls):
     orgin = node_cls.__getattribute__

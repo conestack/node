@@ -1,56 +1,50 @@
 node.meta
 =========
 
-Node class modification done in ``behaviors.__call__``.
+Enhancing nodes with behavior.
 
-Inherit from some base node implementation.
+
+Manipulation steps
+------------------
+
+Necessary node class modification.
+
+Inherit from some base node implementation and provide dummy behaviors.
 ::
-    >>> from node.base import OrderedNode
-    
+    >>> from node.base import OrderedNode    
     >>> class BehaviorNode(OrderedNode):
     ...     pass
-
-Provide dummy behaviors.
-::
 
     >>> from node.meta import BaseBehavior
     >>> from node.meta import before
     >>> from node.meta import after
-    
     >>> class BehaviorA(BaseBehavior):
     ...     expose_write_access_for = ['attr_a']
-    ...     
     ...     attr_a = None
-    ...     
     ...     @property
     ...     def bar(self):
     ...         return 'bar property'
-    ...     
     ...     @before('__getitem__')
     ...     def before_getitem(self, key):
-    ...         self._debug('before', '__getitem__', key)
+    ...         pass
     
     >>> class BehaviorB(BaseBehavior):
-    ... 
     ...     def foo(self):
     ...         return 'foo called'
-    ...     
     ...     @before('__getitem__')
     ...     def before_getitem(self, key):
-    ...         self._debug('before', '__getitem__', key)
-    ...     
+    ...         pass
     ...     @after('values')
     ...     def after_values(self):
-    ...         self._debug('after', 'values')
+    ...         pass
     
     >>> class BehaviorC(BaseBehavior):
     ...     expose_write_access_for = ['items']
     ...     items = None
     
-__getattribute__ and __setattr__ are prohibited to get hooked.
+``__getattribute__`` and ``__setattr__`` are prohibited to get hooked.
 ::
     >>> class BehaviorD(BaseBehavior):
-    ...     
     ...     @after('__setattr__')
     ...     def after_setattr(self):
     ...         pass
@@ -59,7 +53,7 @@ __getattribute__ and __setattr__ are prohibited to get hooked.
     RuntimeError: Hooking forbidden for ``__setattr__`` and ``__getattribute__``
 
 Try to find namespace conflicts. They could still appear if node sets an
-attribute i.e. during __init__ time. 
+attribute i.e. during ``__init__`` time. 
 ::
     >>> from node.meta import _check_write_exposed_ns_conflict
     >>> behavior_classes = [BehaviorA, BehaviorB, BehaviorC]
@@ -84,8 +78,8 @@ Test ``add__behavior_instances_property``.
     >>> BehaviorNode._behavior_instances
     <property object at ...>
 
-When _behavior_instances is accessed the first time, the behavior classes are
-instanciated.
+When ``_behavior_instances`` is accessed the first time, the behavior classes
+are instanciated.
 ::
     >>> from node.meta import _INS_ATTR
     >>> node = BehaviorNode()
@@ -102,9 +96,7 @@ instanciated.
     odict([('BehaviorA', <BehaviorA object at ...>), 
     ('BehaviorB', <BehaviorB object at ...>)])
 
-Back to class manipulation.
-
-Test ``_hook_names``.
+Back to class manipulation. Test ``_hook_names``.
 ::
     >>> from node.meta import _hook_names
     >>> _hook_names(behavior_classes)
@@ -127,48 +119,14 @@ Wrap functions and attributes for which hooks are provided by behaviors.
 ::
     >>> from node.meta import _hook_behaviored_functions
     >>> _hook_behaviored_functions(BehaviorNode, behavior_classes)
-    
-    >>> BehaviorNode.values
-    <unbound method BehaviorNode.values>
-    
-    >>> BehaviorNode.values.wrapped
-    <unbound method BehaviorNode.values>
-    
-    >>> node = BehaviorNode()
-    >>> node['foo'] = BehaviorNode()
-    >>> node.values()
-    * after ``values`` of <BehaviorB object at ...> 
-      on <BehaviorNode object 'None' at ...> 
-      with args ``()`` 
-      and kw ``{}`` ---
-    [<BehaviorNode object 'foo' at ...>]
-    
-    >>> node['foo']
-    * before ``__getitem__`` of <BehaviorA object at ...> 
-      on <BehaviorNode object 'None' at ...> 
-      with args ``('foo',)`` 
-      and kw ``{}`` ---
-    * before ``__getitem__`` of <BehaviorB object at ...> 
-      on <BehaviorNode object 'None' at ...> 
-      with args ``('foo',)`` 
-      and kw ``{}`` ---
-    <BehaviorNode object 'foo' at ...>
 
-    >>> BehaviorNode.__getattribute__
-    <slot wrapper '__getattribute__' of 'dict' objects>
-
-Alter node __getattribute__.
+Alter node ``__getattribute__`` and ``__setattr__``.
 ::
     >>> from node.meta import _alter_node___getattribute__
-    >>> _alter_node___getattribute__(BehaviorNode)
-
-Alter node __setattr__.
-::
     >>> from node.meta import _alter_node___setattr__
+    >>> _alter_node___getattribute__(BehaviorNode)
     >>> _alter_node___setattr__(BehaviorNode)
 
-Test altered __getattribute__.
-::
     >>> node = BehaviorNode()
     >>> node.bar
     'bar property'
@@ -176,20 +134,9 @@ Test altered __getattribute__.
     >>> node.foo()
     'foo called'
 
-Test altered __setattr__.
-::
     >>> node.attr_a = 'foo'
     >>> node._behavior_instances['BehaviorA'].attr_a
     'foo'
-
-
-XXX: test unwrapped proxy
-
-XXX: test super calls in behaviored nodes
-
-
-###
-# orgin below
 
 
 Behaviors and the behavior decorator
@@ -199,12 +146,9 @@ Provide a behavior implementation.
 ::
     >>> from zope.interface import implements
     >>> from node.interfaces import IBehavior
-    >>> from node.meta import BaseBehavior
     
-Behaviors are normally not instanciated by the user. This is done by the
-behavioral extended Node
+Behaviors are not instanciated by the user. This is done by the extended Node.
 ::
-    
     >>> behavior = BaseBehavior(object())
     >>> behavior.context
     <object object at ...>
@@ -217,28 +161,21 @@ Overriding ``context`` on behavior is forbidden.
     RuntimeError: Overriding ``context`` forbidden
     
     >>> class SomeBehavior(BaseBehavior):
-    ...
     ...     _val = 'from behavior'
-    ... 
     ...     def do(self):
     ...         return 'do something on ' + str(self.context)
-    ... 
     ...     @property
     ...     def prop(self):
     ...         return 'prop'
-    ... 
     ...     def _set_rw(self, val):
     ...         self._val = val
-    ... 
     ...     def _get_rw(self):
     ...         return self._val
-    ... 
     ...     rw = property(_get_rw, _set_rw)
 
 Decorator expects ``IBehavior`` implementations.
 ::
     >>> from node.meta import behavior
-    >>> from node.base import OrderedNode
 
     >>> @behavior
     ... class SomeBehaviorNode(OrderedNode):
@@ -329,10 +266,8 @@ implemented as getter/setter property.
 Define second behavior. It implements ``do`` as well.
 ::
     >>> class OtherBehavior(BaseBehavior):
-    ... 
     ...     def perform(self):
     ...         return 'perform on ' + str(self.context)
-    ... 
     ...     def do(self):
     ...         return 'do other on ' + str(self.context)
 
@@ -381,7 +316,6 @@ Override ``do`` on decorated node.
 ::
     >>> @behavior(OtherBehavior, SomeBehavior)
     ... class OverridesBehaviorNode(OrderedNode):
-    ... 
     ...     def do(self):
     ...         return 'do on node ' + str(self)
     
@@ -397,17 +331,12 @@ Override ``do`` on decorated node.
 Before and after hooks for behaviors
 ------------------------------------
 
-Use function hooks in behaviors. Signature of hook function must be same as
-of hooked function from node.
-
-Import hook decorators.
-::
-    >>> from node.meta import before, after
+Use function hooks in behaviors to react on node structure changes.
+Signature of hook function must be same as of the hooked one from node.
 
 Provide Behavior which hooks before ``node.get``.
 ::
     >>> class HookBeforeGet(BaseBehavior):
-    ... 
     ...     @before('get')
     ...     def before_get(self, key, default=None):
     ...         self._debug('before', 'get', key, default=default)
@@ -447,7 +376,6 @@ Instanciate and check wether hook gets called.
 Second behavior with after get hook.
 ::
     >>> class HookAfterGet(BaseBehavior):
-    ... 
     ...     @after('get')
     ...     def after_get(self, key, default=None):
     ...         self._debug('after', 'get', key, default=default)
@@ -472,21 +400,17 @@ Now before hook is called of ``HookBeforeGet``, and after hook is called of
 Two behaviors both defining before and after get hooks.
 ::
     >>> class HookBeforeAfterGet(BaseBehavior):
-    ... 
     ...     @before('get')
     ...     def before_get(self, key, default=None):
     ...         self._debug('before', 'get', key, default=default)
-    ... 
     ...     @after('get')
     ...     def after_get(self, key, default=None):
     ...         self._debug('after', 'get', key, default=default)
     
     >>> class OtherHookBeforeAfterGet(BaseBehavior):
-    ... 
     ...     @before('get')
     ...     def before_get(self, key, default=None):
     ...         self._debug('before', 'get', key, default=default)
-    ... 
     ...     @after('get')
     ...     def after_get(self, key, default=None):
     ...         self._debug('after', 'get', key, default=default)
@@ -516,24 +440,20 @@ order of behavior registration.
       with args ``('foo',)`` 
       and kw ``{'default': None}`` ---
 
-Hook data structure related private functions.
+More hooks.
 ::
     >>> class HookBeforeAfterGetItem(BaseBehavior):
-    ... 
     ...     @before('__getitem__')
     ...     def before_getitem(self, key):
     ...         self._debug('before', '__getitem__', key)
-    ... 
     ...     @after('__getitem__')
     ...     def after_getitem(self, key):
     ...         self._debug('after', '__getitem__', key)
     
     >>> class HookBeforeAfterSetItem(BaseBehavior):
-    ... 
     ...     @before('__setitem__')
     ...     def before_setitem(self, key, value):
     ...         self._debug('before', '__setitem__', key, value)
-    ... 
     ...     @after('__setitem__')
     ...     def after_setitem(self, key, value):
     ...         self._debug('after', '__setitem__', key, value)
@@ -591,19 +511,20 @@ Hook data structure related private functions.
       with args ``('bar', <OrderedNode object 'bar' at ...>)`` 
       and kw ``{}`` ---
 
-Remember. The context object on behavior implementation is the behavior 
-enhanced node. Test if context access on behavior does not trigger before and 
-after handler from within.
-
-Hooked via ``__getattribute__``.
+Test if context access on behavior does not trigger before and after handler 
+from within.
 ::
     >>> class HookGetAccessFromWithin(BaseBehavior):
-    ... 
     ...     @before('get')
     ...     def before_get(self, key, default=None):
     ...         print 'call ``get`` on ' + str(self.context.get(key)) + \
     ...         ' within behavior hook'
     ...         self._debug('before', 'get', key, default=default)
+    ...     @before('__getitem__')
+    ...     def before_getitem(self, key):
+    ...         print 'call ``__getitem__`` on ' + str(self.context[key]) + \
+    ...         ' within behavior hook'
+    ...         self._debug('before', '__getitem__', key)
     
     >>> @behavior(HookGetAccessFromWithin)
     ... class AccessedGetFromWithinNode(OrderedNode): pass
@@ -617,26 +538,29 @@ Hooked via ``__getattribute__``.
       with args ``('foo',)`` 
       and kw ``{'default': None}`` ---
     <OrderedNode object 'foo' at ...>
-
-Hooked via metaclass constructor.
-::
-    >>> class HookGetItemAccessFromWithin(BaseBehavior):
-    ... 
-    ...     @before('__getitem__')
-    ...     def before_getitem(self, key):
-    ...         print 'call ``__getitem__`` on ' + str(self.context[key]) + \
-    ...         ' within behavior hook'
-    ...         self._debug('before', '__getitem__', key)
     
-    >>> @behavior(HookGetItemAccessFromWithin)
-    ... class AccessedGetItemFromWithinNode(OrderedNode): pass
-    
-    >>> node = AccessedGetItemFromWithinNode('hooked')
-    >>> node['foo'] = OrderedNode()
     >>> node['foo']
     call ``__getitem__`` on <OrderedNode object 'foo' at ...> within behavior hook
-    * before ``__getitem__`` of <HookGetItemAccessFromWithin object at ...> 
-      on <AccessedGetItemFromWithinNode object 'hooked' at ...> 
+    * before ``__getitem__`` of <HookGetAccessFromWithin object at ...> 
+      on <AccessedGetFromWithinNode object 'hooked' at ...> 
+      with args ``('foo',)`` 
+      and kw ``{}`` ---
+    <OrderedNode object 'foo' at ...>
+
+Test again, node func wrapping is sane.
+::
+    >>> node.get('foo')
+    call ``get`` on <OrderedNode object 'foo' at ...> within behavior hook
+    * before ``get`` of <HookGetAccessFromWithin object at ...> 
+      on <AccessedGetFromWithinNode object 'hooked' at ...> 
+      with args ``('foo',)`` 
+      and kw ``{'default': None}`` ---
+    <OrderedNode object 'foo' at ...>
+    
+    >>> node['foo']
+    call ``__getitem__`` on <OrderedNode object 'foo' at ...> within behavior hook
+    * before ``__getitem__`` of <HookGetAccessFromWithin object at ...> 
+      on <AccessedGetFromWithinNode object 'hooked' at ...> 
       with args ``('foo',)`` 
       and kw ``{}`` ---
     <OrderedNode object 'foo' at ...>
@@ -644,7 +568,6 @@ Hooked via metaclass constructor.
 Test hook on function derived and overwritten function.
 ::
     >>> class HookBeforValues(BaseBehavior):
-    ...
     ...     @before('values')
     ...     def before_values(self):
     ...         self._debug('before', 'values')
@@ -662,7 +585,6 @@ Test hook on function derived and overwritten function.
     
     >>> @behavior(HookBeforValues)
     ... class BeforValuesOverrideHookedNode(OrderedNode):
-    ... 
     ...     def values(self):
     ...         return OrderedNode.values(self)
     
@@ -675,32 +597,27 @@ Test hook on function derived and overwritten function.
       and kw ``{}`` ---
     [<OrderedNode object 'foo' at ...>]
 
-Test hook on property.
+Test hook on property, not allowed.
 ::
     >>> class HookBeforSomeProp(BaseBehavior):
-    ... 
     ...     @before('someprop')
     ...     def before_someprop(self):
     ...         self._debug('before', 'someprop')
     
     >>> @behavior(HookBeforSomeProp)
     ... class BeforSomepropHookedNode(OrderedNode):
-    ... 
     ...     @property
     ...     def someprop(self):
     ...         return 'foo'
-    
-    >>> node = BeforSomepropHookedNode('hooked')
-    >>> #node.someprop
-    
+    Traceback (most recent call last):
+      ...
+    RuntimeError: Properties could not be hooked.
 
 Hooking to behavior proxied function does not work either.
 ::
     >>> class HookBeforeProxiedDoFunc(BaseBehavior):
-    ... 
     ...     def do(self):
     ...         print 'behavior do called'
-    ... 
     ...     @before('do')
     ...     def before_do(self):
     ...         self._debug('before', 'do')
@@ -717,7 +634,6 @@ used behavior interfaces for it's contracts and avoid such magic.
 ::
     >>> @behavior(HookBeforeProxiedDoFunc)
     ... class BeforeInheritedDoFuncHookedNode(OrderedNode):
-    ... 
     ...     def do(self):
     ...         print 'node do called'
     
@@ -734,7 +650,6 @@ Inheriting from a behavior and override hook function.
 Does not work without the ``before`` decorator.
 ::
     >>> class HookOverridingHookIgnored(HookBeforValues):
-    ... 
     ...     def before_values(self):
     ...         print 'derived before values'
     
@@ -749,7 +664,6 @@ With decorator.
 ::
     
     >>> class HookOverridingHook(HookBeforValues):
-    ... 
     ...     @before('values')
     ...     def before_values(self):
     ...         print 'derived before values'
@@ -768,14 +682,13 @@ Check ``noderepr``.
     "<class 'BeforeHookOverridingHookedNode'>: hooked"
 
 
-Run Testers against wrapper
----------------------------
+Run Testers against enhanced node
+---------------------------------
 
 FullMappingTester.
 ::
     >>> @behavior(OtherBehavior, SomeBehavior)
     ... class BehaviorNode(OrderedNode):
-    ... 
     ...     def do(self):
     ...         return 'do on node ' + str(self)
     
