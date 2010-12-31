@@ -27,21 +27,17 @@ class NodeAttributes(OrderedNode):
 class Attributed(BaseBehavior):
     implements(IAttributed)
     
-    expose_write_access_for = ['attribute_access_for_attrs']
+    attribute_access_for_attrs = False
+    
     attributes_factory = NodeAttributes
+    
+    expose_write_access_for = [
+        'attribute_access_for_attrs',
+        'attributes_factory',
+    ]
     
     def __init__(self, context):
         super(Attributed, self).__init__(context)
-        self.attribute_access_for_attrs = False
-    
-    def _get_attribute_access_for_attrs(self):
-        return self._attribute_access_for_attrs
-    
-    def _set_attribute_access_for_attrs(self, val):
-        self._attribute_access_for_attrs = val
-    
-    attribute_access_for_attrs = property(_get_attribute_access_for_attrs,
-                                          _set_attribute_access_for_attrs)
     
     @property
     def attrs(self):

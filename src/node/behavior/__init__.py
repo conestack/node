@@ -4,6 +4,9 @@ from node.meta import (
     after,
     BaseBehavior,
 )
-from attributed import Attributed
+from attributed import (
+    Attributed,
+    NodeAttributes,
+)
 from referenced import Referenced
 from orderable import Orderable
