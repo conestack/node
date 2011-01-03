@@ -117,6 +117,7 @@ class NamedAliasers(dict):
 
 
 # XXX: might become a behavior, but works pretty well like that
+# a plumbing implementation is in plumbing.py
 class AliasedNodespace(AbstractNode):
     """Performs aliasing/unaliasing for node children.
 

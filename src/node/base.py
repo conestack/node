@@ -414,3 +414,25 @@ class OrderedNode(_NodeSpaceMixin, odict):
     
     def _mapping_impl(self):
         return odict
+
+
+
+#################################
+# Even more experimental down here -cfl
+
+
+import plumber
+
+class DictNode(_NodeMixin, dict):
+    """A node using a dict
+    """
+    __metaclass__ = plumber.Plumber
+    __pipeline__ = (dict,)
+
+
+class ODictNode(_NodeMixin, odict):
+    """A node using an odict, thus being ordered
+    """
+    __metaclass__ = plumber.Plumber
+    __pipeline__ = (odict,)
+
