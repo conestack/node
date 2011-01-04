@@ -1,0 +1,81 @@
+Generally needed things
+::
+    >>> from plumber import Plumber
+
+A mockup node and normal class used to test things only performed on nodes.
+::
+    >>> from node.interfaces import INode
+    >>> from zope.interface import implements
+    >>> class MockupNode(object):
+    ...     implements(INode)
+    ...     __name__ = None
+    ...     __parent__ = None
+
+    >>> class NoNode(object):
+    ...     pass
+
+Adopt plumbing
+--------------
+
+A dictionary is used as end point 
+::
+    >>> from node.plumbing import Adopt
+    >>> class AdoptingDict(dict):
+    ...     __metaclass__ = Plumber
+    ...     __pipeline__ = (Adopt, dict)
+
+    >>> ad = AdoptingDict()
+
+The mockup node is adopted
+::
+    >>> node = MockupNode()
+    >>> ad['foo'] = node
+    >>> ad['foo'] is node
+    True
+    >>> node.__name__
+    'foo'
+    >>> node.__parent__ is ad
+    True
+
+The non-node object is not adopted
+::
+    >>> nonode = NoNode()
+    >>> ad['bar'] = nonode
+    >>> ad['bar'] is nonode
+    True
+    >>> hasattr(nonode, '__name__')
+    False
+    >>> hasattr(nonode, '__parent__')
+    False
+
+If something goes wrong, the adoption does not happen.  See plumbing.Adopt for
+exceptions that are handled.
+
+XXX: In case this should be configurable, it would be nice if a plumbing
+element could be instatiated which is currently not possible. It would be
+possible by defining the plumbing __init__ method with a different name.
+Maybe it is also possible to have two __init__ one decorated one not, if the
+plumbing decorator could influence that all plumbing functions are stored under
+a different name. If the decorator cannot do that a Plumbing metaclass will
+work for sure, however, it is questionable whether it justifies a metaclass
+instead of just naming the plumbing init eg plumbing__init__.
+::
+
+    >>> class FakeDict(object):
+    ...     def __setitem__(self, key, val):
+    ...         raise KeyError(key)
+
+    >>> class FailingAD(FakeDict):
+    ...     __metaclass__ = Plumber
+    ...     __pipeline__ = (Adopt, FakeDict)
+
+    >>> fail = FailingAD()
+    >>> node = MockupNode()
+    >>> fail['foo'] = node
+    Traceback (most recent call last):
+    ...
+    KeyError: 'foo'
+    >>> node.__name__ is None
+    True
+    >>> node.__parent__ is None
+    True
