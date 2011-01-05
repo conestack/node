@@ -29,6 +29,7 @@ setup(name='node',
       install_requires=[
           'setuptools',
           'odict',
+          'plumber',
           'zope.lifecycleevent',
           'zope.deprecation', # can be removed soon
       ],
