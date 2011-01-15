@@ -22,7 +22,7 @@ A dictionary is used as end point
     >>> from node.plumbing import Adopt
     >>> class AdoptingDict(dict):
     ...     __metaclass__ = Plumber
-    ...     __pipeline__ = (Adopt, dict)
+    ...     __pipeline__ = (Adopt,)
 
     >>> ad = AdoptingDict()
 
@@ -67,7 +67,7 @@ instead of just naming the plumbing init eg plumbing__init__.
 
     >>> class FailingAD(FakeDict):
     ...     __metaclass__ = Plumber
-    ...     __pipeline__ = (Adopt, FakeDict)
+    ...     __pipeline__ = (Adopt,)
 
     >>> fail = FailingAD()
     >>> node = MockupNode()
