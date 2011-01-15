@@ -1,4 +1,5 @@
 from plumber import plumbing
+from zope.interface.common.mapping import IEnumerableMapping
 
 from node.interfaces import INode
 
@@ -54,7 +55,10 @@ class Alias(object):
 
     @plumbing
     def __delitem__(cls, _next, self, key):
-        unaliased_key = self.aliaser and self.aliaser.unalias(key) or key
+        if self.aliaser:
+            unaliased_key = self.aliaser.unalias(key)
+        else:
+            unaliased_key = key
         try:
             _next(self, unaliased_key)
         except KeyError:
@@ -62,7 +66,10 @@ class Alias(object):
 
     @plumbing
     def __getitem__(cls, _next, self, key):
-        unaliased_key = self.aliaser and self.aliaser.unalias(key) or key
+        if self.aliaser:
+            unaliased_key = self.aliaser.unalias(key)
+        else:
+            unaliased_key = key
         try:
             return _next(self, unaliased_key)
         except KeyError:
@@ -72,7 +79,10 @@ class Alias(object):
     def __iter__(cls, _next, self):
         for key in _next(self):
             try:
-                yield self.aliaser and self.aliaser.alias(key) or key
+                if self.aliaser:
+                    yield self.aliaser.alias(key)
+                else:
+                    yield key
             except KeyError:
                 if IEnumerableMapping.providedBy(self.aliaser):
                     # an enumerable aliaser whitelists, we skip non-listed keys
@@ -81,9 +91,12 @@ class Alias(object):
 
     @plumbing
     def __setitem__(cls, _next, self, key, val):
-        unaliased_key = self.aliaser and self.aliaser.unalias(key) or key
+        if self.aliaser:
+            unaliased_key = self.aliaser.unalias(key)
+        else:
+            unaliased_key = key
         try:
-            self.context[unaliased_key] = val
+            _next(self, unaliased_key, val)
         except KeyError:
             raise KeyError(key)
 
