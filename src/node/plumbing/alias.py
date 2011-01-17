@@ -1,32 +1,6 @@
 from plumber import plumbing
 from zope.interface.common.mapping import IEnumerableMapping
 
-from node.interfaces import INode
-
-
-class Adopt(object):
-    """Plumbing element that provides adoption of children
-    """
-    @plumbing
-    def __setitem__(cls, _next, self, key, val):
-        # only care about adopting if we have a node
-        if not INode.providedBy(val):
-            _next(self, key, val)
-            return
-
-        # save old __parent__ and __name__ to restore if something goes wrong
-        old_name = val.__name__
-        old_parent = val.__parent__
-        val.__name__ = key
-        val.__parent__ = self
-        try:
-            _next(self, key, val)
-        except (AttributeError, KeyError, ValueError):
-            # XXX: In what other cases do we want to revert adoption?
-            val.__name__ = old_name
-            val.__parent__ = old_parent
-            raise
-
 
 class Alias(object):
     """Plumbing element that provides aliasing of child names/keys
@@ -128,50 +102,3 @@ class Alias(object):
 #   late -> back of the chain
 #   early -> front of the chain
 #
-
-
-
-
-# XXX: currently won't work, as the decode function is missing
-# check the one in bda.ldap.strcodec
-# XXX: It feels here it would be nice to be able to get an instance of a
-# plumbing to configure the codec.
-class Unicode(object):
-    """Plumbing element to ensure unicode for keys and string values
-    """
-    @plumbing
-    def __delitem__(cls, _next, self, key):
-        if isinstance(key, str):
-            key = decode(key)
-        _next(key)
-
-    @plumbing
-    def __getitem__(cls, _next, self, key):
-        if isinstance(key, str):
-            key = decode(key)
-        return _next(key)
-
-    @plumbing
-    def __setitem__(cls, _next, self, key, val):
-        if isinstance(key, str):
-            key = decode(key)
-        if isinstance(val, str):
-            val = decode(val)
-        return _next(key, val)
-
-
-class Wrap(object):
-    """Plumbing element that wraps nodes coming from deeper levels in a NodeNode
-    """
-    @plumbing
-    def __getitem__(cls, _next, self, key):
-        val = _next(self, key)
-        if INode.providedBy(val):
-            val = NodeNode(val)
-        return val
-
-    @plumbing
-    def __setitem__(cls, _next, self, key, val):
-        if INode.providedBy(val):
-            val = val.context
-        _next(self, key, val)

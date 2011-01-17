@@ -1,18 +1,9 @@
 Generally needed things
 ::
     >>> from plumber import Plumber
+    >>> from node.tests.env import MockupNode
+    >>> from node.tests.env import NoNode
 
-A mockup node and normal class used to test things only performed on nodes.
-::
-    >>> from node.interfaces import INode
-    >>> from zope.interface import implements
-    >>> class MockupNode(object):
-    ...     implements(INode)
-    ...     __name__ = None
-    ...     __parent__ = None
-
-    >>> class NoNode(object):
-    ...     pass
 
 Adopt plumbing
 --------------

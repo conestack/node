@@ -1,7 +1,18 @@
 import inspect
+from zope.interface import implements
 from odict import odict as somefullmapping
 from node.interfaces import INode
 from node.base import AbstractNode
+
+
+class MockupNode(object):
+    implements(INode)
+    __name__ = None
+    __parent__ = None
+
+
+class NoNode(object):
+    pass
 
 
 class MyNode(AbstractNode, somefullmapping):
