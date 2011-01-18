@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-import sys, os
+import os
 
 version = '0.1'
 shortdesc = "The node"
