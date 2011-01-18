@@ -67,7 +67,7 @@ someone wants a more basic implementation for some reason, an ``AbstractNode``
 is provided as well (See tests and sources of ``node.base``).
 
 A full API desctiption of the node interface can be found at
-``node.iterfaces.INode``.
+``node.interfaces.INode``.
 
 Behaviors
 ---------
