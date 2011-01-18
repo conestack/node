@@ -72,14 +72,15 @@ A full API desctiption of the node interface can be found at
 Behaviors
 ---------
 
-A node might provide additional behaviors, like being orderable, hold a tree
-internal reference index for cross access, provide attributes, et cetera.
+A node might provide additional behaviors, like being orderable, holding a
+internal treeish reference index for cross access, provide attributes, et
+cetera.
 
 Behaviors have a common ground:
 
 - They are orthogonal to nodes.
 
-- They might react on data structure changes.
+- They might respond on data structure changes.
 
 - Their API is available on the node.
 
@@ -96,26 +97,26 @@ We agree on this, so here are the design principles:
 
 - Behaviors are bound to a node by a decorator.
 
-- Node related functions, attributes and properties always rule, so we can
-  overwrite anything on the decorated node, even behavior contract (don't do
-  this unless you have good reasons).
+- Node related functions, attributes and properties always have precedence to
+  behaviors. This way, we can overwrite behavior contracts (don't do this
+  unless you have good reasons).
 
-- If more than one behavior defines the same attribute or function, return
-  first one, analog to the behavior of object inheritance (try to avoid
-  namespace conflicts when providing behaviors, shipped implementations
-  do not conflict at all).
+- If more than one behavior defines the same attribute or function, return the
+  first one. This is analog to new-class style object inheritance. This avoids
+  namespace conflicts when providing behaviors. Shipped implementations do not
+  conflict at all.
 
 - Behaviors can hook before and after property access or function calls of
-  nodes. This is done with the ``befor`` and ``after`` decorators, expecting
-  name of property or function to get hooked.
+  nodes. This is done with the ``before`` and ``after`` decorators, which
+  expect the name of a property or function beeing hooked.
 
 Why using a decorator?
 
-- It is not possible to custom hook import statements from user point of view
+- It is not possible to hook import statements from the users point of view
   (which was another idea how to do it).
 
-- Beside the fact they provide an easy hooking point for manipulating class 
-  objects, they are elegant.
+- Beside the fact that they provide an easy hooking point for manipulating
+  class objects, they are elegant.
 
 Using behaviors. Import required objects.
 ::
@@ -123,19 +124,19 @@ Using behaviors. Import required objects.
     >>> from node.behavior import Attributed
     >>> from node.behavior import behavior
 
-Provide class and decorate it with behavior.
+Provide a class and decorate it with an behavior.
 ::
     >>> @behavior(Attributed)
     ... class AttributedNode(OrderedNode): pass
 
-Now contract of ``node.interfaces.IAttributed`` is available on node.
+Now the contract of ``node.interfaces.IAttributed`` is available on the node.
 ::
     >>> node = AttributedNode()
     >>> node.attrs
     <NodeAttributes object 'None' at ...>
 
-A node can be decorated with multiple behaviors. Additionally to Attributed add
-behavior described by ``node.interfaces.IReferenced`` to another node
+A node can be decorated with multiple behaviors. Additionally to ``Attributed``
+add the behavior described by ``node.interfaces.IReferenced`` to another node
 ::
     >>> from node.behavior import Referenced
     
@@ -152,7 +153,7 @@ behavior described by ``node.interfaces.IReferenced`` to another node
     >>> bar.attrs
     <NodeAttributes object 'bar' at ...>
 
-Behavior implementations shipped with this package:
+The behavior implementations shipped with this package are:
 
 - Attributed (see ``node.interfaces.IAttributed``)
 
@@ -162,7 +163,7 @@ Behavior implementations shipped with this package:
 
 - to be continued... (see ``node.interfaces`` :) )
 
-I you need to provide your own behaviors, look a tests of ``node.meta`` for a 
+If you need to provide your own behaviors, look a tests of ``node.meta`` for a 
 deeper understanding of the implementation and already existent
 ``node.behavior.*`` stuff.
 
