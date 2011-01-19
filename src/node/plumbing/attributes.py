@@ -24,7 +24,7 @@ class NodeAttributes(OrderedNode):
                                            hex(id(self))[:-1])
 
 
-class Attributed(object):
+class Attributes(object):
     
     implements(IAttributed)
     
@@ -37,7 +37,6 @@ class Attributed(object):
         try:
             attrs = self.nodespaces['__attrs__']
         except KeyError:
-            attributes_factory
             attrs = self.nodespaces['__attrs__'] = \
                 self.attributes_factory(self)
             attrs.__name__ = '__attrs__'
@@ -47,4 +46,4 @@ class Attributed(object):
         return attrs
     
     # BBB
-    attributes = extends(attrs)
+    attributes = extend(attrs)

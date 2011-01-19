@@ -16,11 +16,22 @@ TESTFILES = [
     '../meta.txt',
     '../utils.txt',
     '../aliasing.txt',
-    '../plumbing.txt',
     '../locking.txt',
-    '../behavior/attributed.txt',
-    '../behavior/referenced.txt',
-    '../behavior/orderable.txt',
+    
+    '../plumbing.txt',
+    
+    '../plumbing/adopt.txt',
+    '../plumbing/alias.txt',
+    '../plumbing/attributes.txt',
+    '../plumbing/nodespace.txt',
+    '../plumbing/order.txt',
+    '../plumbing/reference.txt',
+    '../plumbing/unicode.txt',
+    '../plumbing/wrap.txt',
+    
+    '../behavior/attributed.txt', # XXX: remove
+    '../behavior/referenced.txt', # XXX: remove
+    '../behavior/orderable.txt', # XXX: remove
     '../../../README.rst',
 ]
 
