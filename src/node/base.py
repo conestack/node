@@ -1,8 +1,11 @@
 import inspect
 from odict import odict
+from plumber import Plumber
 from zope.interface import implements
-from interfaces import INode
-from utils import (
+from node.interfaces import INode
+from node.plumbing.adopt import Adopt
+from node.plumbing.validate import NodeChildValidate
+from node.utils import (
     AttributeAccess,
     LocationIterator)
 
@@ -281,89 +284,6 @@ class _ImplMixin(object):
         raise NotImplementedError
 
 
-class _NodeSpaceMixin(_NodeMixin, _ImplMixin):
-    """Base nodespace support.
-    
-    Still an abstract implementation.
-    
-    Subclass must inherit from this object and an ``IFullMapping`` implementing
-    object and return its class in ``self._mapping_impl()``.
-    """
-    
-    def __init__(self, name=None, parent=None):
-        """
-        ``name``
-            Optional name used for ``__name__`` declared by ``ILocation``.
-        """
-        self._mapping_impl().__init__(self)
-        _NodeMixin.__init__(self, name, parent)
-        self._nodespaces = None
-    
-    @property
-    def nodespaces(self):
-        """A storage and general way to access our nodespaces.
-        
-        An ``AttributedNode`` uses this to store the ``attrs`` nodespace i.e.
-        """
-        if self._nodespaces is None:
-            self._nodespaces = odict()
-            self._nodespaces['__children__'] = self
-        return self._nodespaces
-    
-    def __getitem__(self, key):
-        # blend in our nodespaces as children, with name __<name>__
-        # isinstance check is required because odict tries to get item possibly
-        # with ``_nil`` key, which is actually an object
-        if isinstance(key, basestring) \
-          and key.startswith('__') \
-          and key.endswith('__'):
-            # a reserved child key mapped to the nodespace behind
-            # nodespaces[key], nodespaces is an odict
-            return self.nodespaces[key]
-        try:
-            return self._mapping_impl().__getitem__(self, key)
-        except KeyError:
-            # XXX: do we really want to relocate this exception?
-            raise KeyError(key)
-    
-    def __setitem__(self, key, val):
-        # XXX: checking against ``_NodeMixin`` instance requires all node
-        #      implementations to inherit from it. Check wether
-        #      ``INode.providedBy`` is slower than ``isinstance``.
-        #is_node = isinstance(val, _NodeMixin)
-        is_node = INode.providedBy(val)
-        if is_node:
-            # XXX: do we really want to adopt nodespaces or move below next if
-            # I think so far we did, but not sure
-            val.__name__ = key
-            val.__parent__ = self
-        # blend in our nodespaces as children, with name __<name>__
-        if key.startswith('__') and key.endswith('__'):
-            # a reserved child key mapped to the nodespace behind
-            # nodespaces[key], nodespaces is an odict
-            self.nodespaces[key] = val
-            # index checks below must not happen for other nodespace.
-            return
-        if not self.allow_non_node_childs and inspect.isclass(val):
-            raise ValueError, u"It isn't allowed to use classes as values."
-        if not self.allow_non_node_childs and not is_node:
-            raise ValueError("Non-node childs are not allowed.")
-        self._mapping_impl().__setitem__(self, key, val)
-    
-    def __delitem__(self, key):
-        # blend in our nodespaces as children, with name __<name>__
-        if key.startswith('__') and key.endswith('__'):
-            # a reserved child key mapped to the nodespace behind
-            # nodespaces[key], nodespaces is an odict
-            del self.nodespaces[key]
-            return
-        # fail immediately if key does not exist
-        # XXX: do we need this check for lazynodes?
-        # XXX: it feels like calling next __delitem__ could be enough
-        self[key]
-        self._mapping_impl().__delitem__(self, key)
-
-
 ###############################################################################
 # base nodes
 ###############################################################################
@@ -374,16 +294,22 @@ class AbstractNode(_NodeMixin, _FullMappingMixin):
     Derive this if you like to implement all storage related functions on your
     own.
     """
+    __metaclass__ = Plumber
+    __pipeline__ = NodeChildValidate, Adopt
+    
     implements(INode)
 
 
-class BaseNode(_NodeSpaceMixin, dict):
+class BaseNode(_NodeMixin, _ImplMixin, dict):
     """Base node, not ordered.
     
     Uses ``dict`` as ``IFullMapping`` implementation.
     
     Derive this for unordered trees.
     """
+    __metaclass__ = Plumber
+    __pipeline__ = NodeChildValidate, Adopt
+    
     implements(INode)
     
     def _mapping_impl(self):
@@ -403,36 +329,17 @@ class BaseNode(_NodeSpaceMixin, dict):
             return value
 
 
-class OrderedNode(_NodeSpaceMixin, odict):
+class OrderedNode(_NodeMixin, _ImplMixin, odict):
     """Ordered node.
     
     Uses ``odict`` as ``IFullMapping`` implementation.
     
     Derive this for ordered trees.
     """
+    __metaclass__ = Plumber
+    __pipeline__ = NodeChildValidate, Adopt
+    
     implements(INode)
     
     def _mapping_impl(self):
         return odict
-
-
-
-#################################
-# Even more experimental down here -cfl
-
-
-import plumber
-
-class DictNode(_NodeMixin, dict):
-    """A node using a dict
-    """
-    __metaclass__ = plumber.Plumber
-    __pipeline__ = (dict,)
-
-
-class ODictNode(_NodeMixin, odict):
-    """A node using an odict, thus being ordered
-    """
-    __metaclass__ = plumber.Plumber
-    __pipeline__ = (odict,)
-

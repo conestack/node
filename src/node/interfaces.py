@@ -143,8 +143,6 @@ class INode(ILocation, IFullMapping):
     path = Attribute(u"Path of node as list")
     root = Attribute(u"Root node. Normally wither the node with no more "
                      u"parent or a node implementing ``node.interfaces.IRoot``")
-    allow_non_node_childs = Attribute(u"Flag wether this node may contain non "
-                                      u"node based children.")
     
     def detach(key):
         """Detach child Node.
@@ -171,12 +169,14 @@ class INode(ILocation, IFullMapping):
 # behaviors
 ###############################################################################
 
+#XXX. remove
 class INodeAdapter(Interface):
     """Adapter for nodes. Usually used to implement node behavior.
     """
     context = Attribute(u"The adapted node.")
 
 
+# XXX: remove
 class IBehavior(INodeAdapter):
     """Mark an object as behavior
     """
@@ -185,11 +185,26 @@ class IBehavior(INodeAdapter):
                                         u"node.")
 
 
+class INodeChildValidate(Interface):
+    """XXX
+    """
+    allow_non_node_childs = Attribute(u"Flag wether this node may contain non "
+                                      u"node based children.")
+
+
+class INodeSpace(Interface):
+    """XXX
+    """
+    nodespaces = Attribute(u"Nodespaces.")
+
+
 class IAttributed(IBehavior):
     """Provide attributes on node.
     """
     attrs = Attribute(u"``INodeAttributes`` implementation.")
     attrs_factory = Attribute(u"``INodeAttributes`` implementation class")
+
+IAttributes = IAttributed # XXX: rename above
 
 
 class IReferenced(IBehavior):

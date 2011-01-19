@@ -1,0 +1,57 @@
+node.plumbing.nodespace
+=======================
+
+    >>> from plumber import Plumber
+    >>> from node.base import OrderedNode
+    >>> from node.plumbing import NodeSpace
+    
+    >>> class NodeSpaceNode(OrderedNode):
+    ...     __metaclass__ = Plumber
+    ...     __pipeline__ = NodeSpace,
+    
+    >>> node = NodeSpaceNode()
+    >>> node.nodespaces
+    odict([('__children__', <NodeSpaceNode object 'None' at ...>)])
+    
+    >>> node['__children__']['child'] = OrderedNode()
+    >>> node['child']
+    <OrderedNode object 'child' at ...>
+    
+    >>> node['__children__']['child'] is node['child']
+    True
+    
+    >>> node['__foo__'] = OrderedNode()
+    >>> node['__foo__']
+    <OrderedNode object '__foo__' at ...>
+    
+    >>> node['__foo__']['child'] = OrderedNode()
+    >>> node['__foo__']['child']
+    <OrderedNode object 'child' at ...>
+    
+    >>> node['__foo__']['child'] is node['child']
+    False
+    
+    >>> node.nodespaces
+    odict([('__children__', <NodeSpaceNode object 'None' at ...>), 
+    ('__foo__', <OrderedNode object '__foo__' at ...>)])
+    
+    >>> node['__inexistent__']
+    Traceback (most recent call last):
+      ...
+    KeyError: '__inexistent__'
+    
+    >>> node['inexistent']
+    Traceback (most recent call last):
+      ...
+    KeyError: 'inexistent'
+    
+    >>> del node['child']
+    >>> node.keys()
+    []
+    
+    >>> node['__foo__'].keys()
+    ['child']
+    
+    >>> del node['__foo__']
+    >>> node.nodespaces
+    odict([('__children__', <NodeSpaceNode object 'None' at ...>)])

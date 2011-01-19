@@ -29,10 +29,10 @@ TESTFILES = [
     '../plumbing/unicode.txt',
     '../plumbing/wrap.txt',
     
-    '../behavior/attributed.txt', # XXX: remove
-    '../behavior/referenced.txt', # XXX: remove
-    '../behavior/orderable.txt', # XXX: remove
-    '../../../README.rst',
+    #'../behavior/attributed.txt', # XXX: remove
+    #'../behavior/referenced.txt', # XXX: remove
+    #'../behavior/orderable.txt', # XXX: remove
+    #'../../../README.rst',
 ]
 
 def test_suite():

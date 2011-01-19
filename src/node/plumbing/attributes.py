@@ -4,7 +4,7 @@ from plumber import (
     default,
 )
 from zope.interface import implements
-from node.interfaces import IAttributed
+from node.interfaces import IAttributes
 from node.base import OrderedNode
 from node.utils import AttributeAccess
 
@@ -26,7 +26,7 @@ class NodeAttributes(OrderedNode):
 
 class Attributes(object):
     
-    implements(IAttributed)
+    implements(IAttributes)
     
     attribute_access_for_attrs = default(False)
     attributes_factory = default(NodeAttributes)

@@ -4,11 +4,11 @@ node.plumbing.attributes
 ::
     >>> from plumber import Plumber
     >>> from node.base import OrderedNode
-    >>> from node.plumbing import Attributes
+    >>> from node.plumbing import NodeSpace, Attributes
     
     >>> class AttributedNode(OrderedNode):
     ...     __metaclass__ = Plumber
-    ...     __pipeline__ = (Attributes,)
+    ...     __pipeline__ = NodeSpace, Attributes
 
     >>> node = AttributedNode('attributed')
     >>> node.attribute_access_for_attrs
