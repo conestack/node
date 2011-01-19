@@ -7,12 +7,12 @@ from plumber import (
 from zope.interface import implements
 from node.interfaces import (
     INode,
-    INodespace,
+    INodespaces,
 )
 
-class Nodespace(object):
+class Nodespaces(object):
     
-    implements(INodespace)
+    implements(INodespaces)
     
     _nodespaces = default(None)
     

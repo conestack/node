@@ -192,7 +192,7 @@ class INodeChildValidate(Interface):
                                       u"node based children.")
 
 
-class INodespace(Interface):
+class INodespaces(Interface):
     """XXX
     """
     nodespaces = Attribute(u"Nodespaces.")
