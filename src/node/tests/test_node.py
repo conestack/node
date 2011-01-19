@@ -18,7 +18,7 @@ TESTFILES = [
     '../locking.txt',
     
     '../plumbing/adopt.txt',
-    #'../plumbing/validate.txt',
+    '../plumbing/validate.txt',
     '../plumbing/alias.txt',
     '../plumbing/attributes.txt',
     '../plumbing/nodespace.txt',
