@@ -3,15 +3,15 @@ node.plumbing.nodespace
 
     >>> from plumber import Plumber
     >>> from node.base import OrderedNode
-    >>> from node.plumbing.nodespace import NodeSpace
+    >>> from node.plumbing.nodespace import Nodespace
     
-    >>> class NodeSpaceNode(OrderedNode):
+    >>> class NodespaceNode(OrderedNode):
     ...     __metaclass__ = Plumber
-    ...     __pipeline__ = NodeSpace,
+    ...     __pipeline__ = Nodespace,
     
-    >>> node = NodeSpaceNode()
+    >>> node = NodespaceNode()
     >>> node.nodespaces
-    odict([('__children__', <NodeSpaceNode object 'None' at ...>)])
+    odict([('__children__', <NodespaceNode object 'None' at ...>)])
     
     >>> node['__children__']['child'] = OrderedNode()
     >>> node['child']
@@ -32,7 +32,7 @@ node.plumbing.nodespace
     False
     
     >>> node.nodespaces
-    odict([('__children__', <NodeSpaceNode object 'None' at ...>), 
+    odict([('__children__', <NodespaceNode object 'None' at ...>), 
     ('__foo__', <OrderedNode object '__foo__' at ...>)])
     
     >>> node['__inexistent__']
@@ -54,4 +54,4 @@ node.plumbing.nodespace
     
     >>> del node['__foo__']
     >>> node.nodespaces
-    odict([('__children__', <NodeSpaceNode object 'None' at ...>)])
+    odict([('__children__', <NodespaceNode object 'None' at ...>)])
