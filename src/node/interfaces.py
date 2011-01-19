@@ -164,26 +164,9 @@ class INode(ILocation, IFullMapping):
         """Debugging helper.
         """
 
-
 ###############################################################################
-# behaviors
+# plumbing
 ###############################################################################
-
-#XXX. remove
-class INodeAdapter(Interface):
-    """Adapter for nodes. Usually used to implement node behavior.
-    """
-    context = Attribute(u"The adapted node.")
-
-
-# XXX: remove
-class IBehavior(INodeAdapter):
-    """Mark an object as behavior
-    """
-    expose_write_access_for = Attribute(u"List of attributes which should be "
-                                        u"writeable due to behavioral extended "
-                                        u"node.")
-
 
 class INodeChildValidate(Interface):
     """XXX
@@ -198,7 +181,7 @@ class INodeSpace(Interface):
     nodespaces = Attribute(u"Nodespaces.")
 
 
-class IAttributed(IBehavior):
+class IAttributed(Interface):
     """Provide attributes on node.
     """
     attrs = Attribute(u"``INodeAttributes`` implementation.")
@@ -207,7 +190,7 @@ class IAttributed(IBehavior):
 IAttributes = IAttributed # XXX: rename above
 
 
-class IReferenced(IBehavior):
+class IReferenced(Interface):
     """Holding an internal index of all nodes contained in the tree.
     """
     uuid = Attribute(u"``uuid.UUID`` of this node.")
@@ -217,8 +200,10 @@ class IReferenced(IBehavior):
         """Return node by uuid located anywhere in this nodetree.
         """
 
+IReference = IReferenced # XXX: rename above
 
-class IOrderable(IBehavior):
+
+class IOrderable(Interface):
     """Reordering support.
     """
     
@@ -243,7 +228,7 @@ class IOrderable(IBehavior):
         """
 
 
-class ITimout(IBehavior):
+class ITimout(Interface):
     """Times out nodes.
     
     # XXX: use timer?
@@ -264,7 +249,7 @@ class ITimout(IBehavior):
         """
 
 
-class ILifecycle(IBehavior):
+class ILifecycle(Interface):
     """Takes care about lifecycle events.
     """
     events = Attribute(u"Dict with lifecycle event classes to use for "
