@@ -18,8 +18,6 @@ TESTFILES = [
     '../aliasing.txt',
     '../locking.txt',
     
-    '../plumbing.txt',
-    
     '../plumbing/adopt.txt',
     '../plumbing/alias.txt',
     '../plumbing/attributes.txt',
