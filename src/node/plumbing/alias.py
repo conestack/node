@@ -1,4 +1,4 @@
-from plumber import plumbing
+from plumber import plumb
 from zope.interface.common.mapping import IEnumerableMapping
 
 
@@ -21,14 +21,15 @@ class Alias(object):
     necessary - however, it's tedious, e.g. for iteritems.
 
     For rerouting we would needs entrance methods, see below in commented
-    iteritems
+    iteritems.
     """
-    @plumbing
-    def __init__(cls, _next, self, aliaser=None):
+    
+    @plumb
+    def __init__(plb, _next, self, aliaser=None):
         self.aliaser = aliaser
 
-    @plumbing
-    def __delitem__(cls, _next, self, key):
+    @plumb
+    def __delitem__(plb, _next, self, key):
         if self.aliaser:
             unaliased_key = self.aliaser.unalias(key)
         else:
@@ -38,8 +39,8 @@ class Alias(object):
         except KeyError:
             raise KeyError(key)
 
-    @plumbing
-    def __getitem__(cls, _next, self, key):
+    @plumb
+    def __getitem__(plb, _next, self, key):
         if self.aliaser:
             unaliased_key = self.aliaser.unalias(key)
         else:
@@ -49,8 +50,8 @@ class Alias(object):
         except KeyError:
             raise KeyError(key)
 
-    @plumbing
-    def __iter__(cls, _next, self):
+    @plumb
+    def __iter__(plb, _next, self):
         for key in _next(self):
             try:
                 if self.aliaser:
@@ -63,8 +64,8 @@ class Alias(object):
                     continue
                 raise
 
-    @plumbing
-    def __setitem__(cls, _next, self, key, val):
+    @plumb
+    def __setitem__(plb, _next, self, key, val):
         if self.aliaser:
             unaliased_key = self.aliaser.unalias(key)
         else:
@@ -74,8 +75,8 @@ class Alias(object):
         except KeyError:
             raise KeyError(key)
 
-#    @plumbing
-#    def iteritems(cls, _next, self):
+#    @plumb
+#    def iteritems(plb, _next, self):
 #        """XXX non-functional
 #
 #        idea is to ignore _next, but instead reroute to other functions here

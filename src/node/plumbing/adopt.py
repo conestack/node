@@ -1,12 +1,13 @@
-from plumber import plumbing
+from plumber import plumb
 from node.interfaces import INode
 
 
 class Adopt(object):
-    """Plumbing element that provides adoption of children
+    """Plumbing element that provides adoption of children.
     """
-    @plumbing
-    def __setitem__(cls, _next, self, key, val):
+    
+    @plumb
+    def __setitem__(plb, _next, self, key, val):
         # only care about adopting if we have a node
         if not INode.providedBy(val):
             _next(self, key, val)
