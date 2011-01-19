@@ -3,7 +3,7 @@ node.plumbing.nodespace
 
     >>> from plumber import Plumber
     >>> from node.base import OrderedNode
-    >>> from node.plumbing import NodeSpace
+    >>> from node.plumbing.nodespace import NodeSpace
     
     >>> class NodeSpaceNode(OrderedNode):
     ...     __metaclass__ = Plumber

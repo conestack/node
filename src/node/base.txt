@@ -14,7 +14,7 @@ AbstractNode
     <class 'node.base.AbstractNode'>
     
     >>> AbstractNode.__bases__
-    (<class 'node.base._NodeMixin'>, <class 'node.base._FullMappingMixin'>)
+    (<class 'node.mixin._NodeMixin'>, <class 'node.mixin._FullMappingMixin'>)
     
     >>> abstract = AbstractNode()
     >>> abstract
@@ -113,7 +113,9 @@ BaseNode
     <class 'node.base.BaseNode'>
     
     >>> BaseNode.__bases__
-    (<class 'node.base._NodeSpaceMixin'>, <type 'dict'>)
+    (<class 'node.mixin._NodeMixin'>, 
+    <class 'node.mixin._ImplMixin'>, 
+    <type 'dict'>)
     
     >>> basenode = BaseNode()
     >>> basenode
@@ -152,7 +154,9 @@ OrderedNode
     <class 'node.base.OrderedNode'>
     
     >>> OrderedNode.__bases__
-    (<class 'node.base._NodeSpaceMixin'>, <class 'odict.pyodict.odict'>)
+    (<class 'node.mixin._NodeMixin'>, 
+    <class 'node.mixin._ImplMixin'>, 
+    <class 'odict.pyodict.odict'>)
     
     >>> orderednode = OrderedNode()
     >>> orderednode
