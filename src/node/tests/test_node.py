@@ -22,8 +22,8 @@ TESTFILES = [
     '../plumbing/alias.txt',
     '../plumbing/attributes.txt',
     '../plumbing/nodespace.txt',
+    '../plumbing/reference.txt',
     #'../plumbing/order.txt',
-    #'../plumbing/reference.txt',
     '../plumbing/unicode.txt',
     '../plumbing/wrap.txt',
     

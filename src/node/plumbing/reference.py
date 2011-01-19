@@ -1,10 +1,15 @@
+import uuid
 from plumber import (
     plumb,
     extend,
     default,
 )
 from zope.interface import implements
-from node.interfaces import IReference
+from zope.interface.common.mapping import IReadMapping
+from node.interfaces import (
+    INode,
+    IReference,
+)
 
 class NodeIndex(object):
     implements(IReadMapping)
@@ -23,36 +28,35 @@ class NodeIndex(object):
 
 class Reference(object):
 
-    def __init__(self, name=None, index=True):
+    @plumb
+    def __init__(plb, _next, self, *args, **kw):
         self._index = dict()
         self._uuid = None
         self.uuid = uuid.uuid4()
+        _next(self, *args, **kw)
     
-    def _adopt(self, key, val):
-        """Adopting happens eg during ``__setitem__``.
-        """
-        has_children = False
-        for valkey in val.iterkeys():
-            has_children = True
-            break
-        if has_children:
-            keys = set(self._index.keys())
-            if keys.intersection(val._index.keys()):
-                raise ValueError, u"Node with uuid already exists"
-        self._index.update(val._index)
-        val._index = self._index
+    @plumb
+    def __setitem__(plb, _next, self, key, val):
+        if INode.providedBy(val):
+            has_children = False
+            for valkey in val.iterkeys():
+                has_children = True
+                break
+            if has_children:
+                keys = set(self._index.keys())
+                if keys.intersection(val._index.keys()):
+                    raise ValueError, u"Node with uuid already exists"
+            self._index.update(val._index)
+            val._index = self._index
+        _next(self, key, val)
     
-    def __setitem__(self, key, val):
-        if isinstance(val, _Node):
-            self._adopt(key, val)
-        self._node_impl().__setitem__(self, key, val)
-    
-    def __delitem__(self, key):
+    @plumb
+    def __delitem__(plb, _next, self, key):
         # fail immediately if key does not exist
         self[key]
         for iuuid in self[key]._to_delete():
             del self._index[iuuid]
-        self._node_impl().__delitem__(self, key)
+        _next(self, key)
     
     def _get_uuid(self):
         return self._uuid
@@ -68,11 +72,25 @@ class Reference(object):
         self._index[iuuid] = self
         self._uuid = uuid
 
-    uuid = property(_get_uuid, _set_uuid)
+    uuid = extend(property(_get_uuid, _set_uuid))
     
+    @extend
     @property
     def index(self):
         return NodeIndex(self._index)
 
+    @extend
     def node(self, uuid):
         return self._index.get(int(uuid))
+    
+    @default
+    def _to_delete(self):
+        todel = [int(self.uuid)]
+        for childkey in self:
+            try:
+                todel += self[childkey]._to_delete()
+            except AttributeError:
+                # Non-Node values or non referencing children are not told
+                # about deletion.
+                continue
+        return todel
