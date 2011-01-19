@@ -1,0 +1,165 @@
+
+    Node insertion. There exist an ``insertbefore`` and ``insertafter`` function.
+::
+    >>> root['child1'] = Node()
+    >>> root['child2'] = Node()
+    >>> root.printtree()
+    <class 'node.bbb.Node'>: root
+      <class 'node.bbb.Node'>: child1
+      <class 'node.bbb.Node'>: child2
+
+    >>> node = Node()
+    >>> root.insertbefore(node, root['child1'])
+    Traceback (most recent call last):
+      ...
+    ValueError: Given node has no __name__ set.
+
+    >>> root.insertbefore(root['child2'], root['child1'])
+    Traceback (most recent call last):
+      ...
+    KeyError: u'Given node already contained in tree.'
+
+    >>> node.__name__ = 'child3'
+    >>> root.insertbefore(node, root['child2'])
+    >>> root.printtree()
+    <class 'node.bbb.Node'>: root
+      <class 'node.bbb.Node'>: child1
+      <class 'node.bbb.Node'>: child3
+      <class 'node.bbb.Node'>: child2
+
+    >>> node = Node('child4')
+    >>> root.insertafter(node, root['child3'])
+    >>> root.printtree()
+    <class 'node.bbb.Node'>: root
+      <class 'node.bbb.Node'>: child1
+      <class 'node.bbb.Node'>: child3
+      <class 'node.bbb.Node'>: child4
+      <class 'node.bbb.Node'>: child2
+
+    >>> node = Node('child5')
+    >>> root.insertafter(node, root['child2'])
+    >>> root.printtree()
+    <class 'node.bbb.Node'>: root
+      <class 'node.bbb.Node'>: child1
+      <class 'node.bbb.Node'>: child3
+      <class 'node.bbb.Node'>: child4
+      <class 'node.bbb.Node'>: child2
+      <class 'node.bbb.Node'>: child5
+      
+   Move a node. Therefor we first need to detach the node we want to move from
+tree. Then insert the detached node elsewhere. In general, you can insert the
+detached node or subtree to a complete different tree.
+::
+    >>> len(root._index.keys())
+    6
+
+    >>> node = root.detach('child4')
+    >>> node
+    <Node object 'child4' at ...>
+
+    >>> len(node._index.keys())
+    1
+    >>> len(root._index.keys())
+    5
+
+    >>> len(root.values())
+    4
+
+    >>> root.insertbefore(node, root['child1'])
+    >>> root.printtree()
+    <class 'node.bbb.Node'>: root
+      <class 'node.bbb.Node'>: child4
+      <class 'node.bbb.Node'>: child1
+      <class 'node.bbb.Node'>: child3
+      <class 'node.bbb.Node'>: child2
+      <class 'node.bbb.Node'>: child5
+
+Merge 2 Node Trees.
+::
+    >>> tree1 = Node()
+    >>> tree1['a'] = Node()
+    >>> tree1['b'] = Node()
+    >>> tree2 = Node()
+    >>> tree2['d'] = Node()
+    >>> tree2['e'] = Node()
+    >>> tree1._index is tree2._index
+    False
+
+    >>> len(tree1._index.keys())
+    3
+
+    >>> tree1.printtree()
+    <class 'node.bbb.Node'>: None
+      <class 'node.bbb.Node'>: a
+      <class 'node.bbb.Node'>: b
+
+    >>> len(tree2._index.keys())
+    3
+
+    >>> tree2.printtree()
+    <class 'node.bbb.Node'>: None
+      <class 'node.bbb.Node'>: d
+      <class 'node.bbb.Node'>: e
+
+    >>> tree1['c'] = tree2
+    >>> len(tree1._index.keys())
+    6
+
+    >> sorted(tree1._index.values(), key=lambda x: x.__name__)
+
+    >>> tree1._index is tree2._index
+    True
+
+    >>> tree1.printtree()
+    <class 'node.bbb.Node'>: None
+      <class 'node.bbb.Node'>: a
+      <class 'node.bbb.Node'>: b
+      <class 'node.bbb.Node'>: c
+        <class 'node.bbb.Node'>: d
+        <class 'node.bbb.Node'>: e
+
+Detach subtree and insert elsewhere.
+::
+    >>> sub = tree1.detach('c')
+    >>> sub.printtree()
+    <class 'node.bbb.Node'>: c
+      <class 'node.bbb.Node'>: d
+      <class 'node.bbb.Node'>: e
+
+    >>> tree1._index is sub._index
+    False
+
+    >>> sub._index is sub['d']._index is sub['e']._index
+    True
+
+    >>> len(sub._index.keys())
+    3
+
+    >>> tree1.printtree()
+    <class 'node.bbb.Node'>: None
+      <class 'node.bbb.Node'>: a
+      <class 'node.bbb.Node'>: b
+
+    >>> len(tree1._index.keys())
+    3
+
+    >>> sub.__name__ = 'x'
+    >>> tree1.insertbefore(sub, tree1['a'])
+    >>> tree1.printtree()
+    <class 'node.bbb.Node'>: None
+      <class 'node.bbb.Node'>: x
+        <class 'node.bbb.Node'>: d
+        <class 'node.bbb.Node'>: e
+      <class 'node.bbb.Node'>: a
+      <class 'node.bbb.Node'>: b
+
+    >>> tree1._index is sub._index
+    True
+
+    >>> len(tree1._index.keys())
+    6
+
+    >>> tree1.insertbefore(sub, tree1['a'])
+    Traceback (most recent call last):
+      ...
+    KeyError: u'Given node already contained in tree.'
