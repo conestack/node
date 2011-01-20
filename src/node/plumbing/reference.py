@@ -54,9 +54,10 @@ class Reference(Part):
     @plumb
     def __delitem__(plb, _next, self, key):
         # fail immediately if key does not exist
-        self[key]
-        for iuuid in self[key]._to_delete():
-            del self._index[iuuid]
+        todel = self[key]
+        if hasattr(todel, '_to_delete'):
+            for iuuid in todel._to_delete():
+                del self._index[iuuid]
         _next(self, key)
     
     def _get_uuid(self):

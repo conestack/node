@@ -1,87 +1,133 @@
+node.plumbing.order
+===================
 
-    Node insertion. There exist an ``insertbefore`` and ``insertafter`` function.
-::
-    >>> root['child1'] = Node()
-    >>> root['child2'] = Node()
-    >>> root.printtree()
-    <class 'node.bbb.Node'>: root
-      <class 'node.bbb.Node'>: child1
-      <class 'node.bbb.Node'>: child2
+Order without References
+------------------------
 
-    >>> node = Node()
-    >>> root.insertbefore(node, root['child1'])
+Node insertion. There exist ``insertbefore`` and ``insertafter`` functions::
+
+    >>> from plumber import Plumber
+    >>> from node.base import OrderedNode
+    >>> from node.plumbing.order import Order
+    
+    >>> class OrderableNode(OrderedNode):
+    ...     __metaclass__ = Plumber
+    ...     __pipeline__ = Order
+    
+    >>> node = OrderableNode('root')
+    
+    >>> node['child1'] = OrderableNode()
+    >>> node['child2'] = OrderableNode()
+    >>> node.printtree()
+    <class 'OrderableNode'>: root
+      <class 'OrderableNode'>: child1
+      <class 'OrderableNode'>: child2
+
+    >>> new = OrderableNode()
+    >>> node.insertbefore(new, node['child1'])
     Traceback (most recent call last):
       ...
     ValueError: Given node has no __name__ set.
+    
+    >>> new.__name__ = 'child3'
+    >>> node.insertbefore(new, OrderableNode(name='fromelsewhere'))
+    Traceback (most recent call last):
+      ...
+    ValueError: Given reference node not child of self.
 
-    >>> root.insertbefore(root['child2'], root['child1'])
+    >>> node.insertbefore(new, node['child2'])
+    >>> node.printtree()
+    <class 'OrderableNode'>: root
+      <class 'OrderableNode'>: child1
+      <class 'OrderableNode'>: child3
+      <class 'OrderableNode'>: child2
+
+    >>> new = OrderableNode('child4')
+    >>> node.insertafter(new, node['child3'])
+    >>> node.printtree()
+    <class 'OrderableNode'>: root
+      <class 'OrderableNode'>: child1
+      <class 'OrderableNode'>: child3
+      <class 'OrderableNode'>: child4
+      <class 'OrderableNode'>: child2
+
+    >>> new = OrderableNode('child5')
+    >>> node.insertafter(new, node['child2'])
+    >>> node.printtree()
+    <class 'OrderableNode'>: root
+      <class 'OrderableNode'>: child1
+      <class 'OrderableNode'>: child3
+      <class 'OrderableNode'>: child4
+      <class 'OrderableNode'>: child2
+      <class 'OrderableNode'>: child5
+   
+Move a node. Therefor we first need to detach the node we want to move from
+tree. Then insert the detached node elsewhere. In general, you can insert the
+detached node or subtree to a complete different tree::
+    
+    >>> detached = node.detach('child4')
+    >>> node.insertbefore(detached, node['child1'])
+    >>> node.printtree()
+    <class 'OrderableNode'>: root
+      <class 'OrderableNode'>: child4
+      <class 'OrderableNode'>: child1
+      <class 'OrderableNode'>: child3
+      <class 'OrderableNode'>: child2
+      <class 'OrderableNode'>: child5
+
+
+Order with References
+---------------------
+
+    >>> from node.plumbing.reference import Reference
+    
+    >>> class OrderReferenceNode(OrderedNode):
+    ...     __metaclass__ = Plumber
+    ...     __pipeline__ = Order, Reference
+    
+    >>> node = OrderReferenceNode('root')
+    >>> node['child1'] = OrderReferenceNode()
+    >>> node['child3'] = OrderReferenceNode()
+    >>> node['child4'] = OrderReferenceNode()
+    >>> node['child2'] = OrderReferenceNode()
+    >>> node['child5'] = OrderReferenceNode()
+    
+    >>> node.insertbefore(node['child2'], node['child1'])
     Traceback (most recent call last):
       ...
     KeyError: u'Given node already contained in tree.'
-
-    >>> node.__name__ = 'child3'
-    >>> root.insertbefore(node, root['child2'])
-    >>> root.printtree()
-    <class 'node.bbb.Node'>: root
-      <class 'node.bbb.Node'>: child1
-      <class 'node.bbb.Node'>: child3
-      <class 'node.bbb.Node'>: child2
-
-    >>> node = Node('child4')
-    >>> root.insertafter(node, root['child3'])
-    >>> root.printtree()
-    <class 'node.bbb.Node'>: root
-      <class 'node.bbb.Node'>: child1
-      <class 'node.bbb.Node'>: child3
-      <class 'node.bbb.Node'>: child4
-      <class 'node.bbb.Node'>: child2
-
-    >>> node = Node('child5')
-    >>> root.insertafter(node, root['child2'])
-    >>> root.printtree()
-    <class 'node.bbb.Node'>: root
-      <class 'node.bbb.Node'>: child1
-      <class 'node.bbb.Node'>: child3
-      <class 'node.bbb.Node'>: child4
-      <class 'node.bbb.Node'>: child2
-      <class 'node.bbb.Node'>: child5
-      
-   Move a node. Therefor we first need to detach the node we want to move from
-tree. Then insert the detached node elsewhere. In general, you can insert the
-detached node or subtree to a complete different tree.
-::
-    >>> len(root._index.keys())
+    
+    >>> len(node._index.keys())
     6
 
-    >>> node = root.detach('child4')
-    >>> node
-    <Node object 'child4' at ...>
+    >>> detached = node.detach('child4')
+    >>> detached
+    <OrderReferenceNode object 'child4' at ...>
 
-    >>> len(node._index.keys())
+    >>> len(detached._index.keys())
     1
-    >>> len(root._index.keys())
+    >>> len(node._index.keys())
     5
-
-    >>> len(root.values())
+    >>> len(node.values())
     4
 
-    >>> root.insertbefore(node, root['child1'])
-    >>> root.printtree()
-    <class 'node.bbb.Node'>: root
-      <class 'node.bbb.Node'>: child4
-      <class 'node.bbb.Node'>: child1
-      <class 'node.bbb.Node'>: child3
-      <class 'node.bbb.Node'>: child2
-      <class 'node.bbb.Node'>: child5
+    >>> node.insertbefore(detached, node['child1'])
+    >>> node.printtree()
+    <class 'OrderReferenceNode'>: root
+      <class 'OrderReferenceNode'>: child4
+      <class 'OrderReferenceNode'>: child1
+      <class 'OrderReferenceNode'>: child3
+      <class 'OrderReferenceNode'>: child2
+      <class 'OrderReferenceNode'>: child5
 
-Merge 2 Node Trees.
-::
-    >>> tree1 = Node()
-    >>> tree1['a'] = Node()
-    >>> tree1['b'] = Node()
-    >>> tree2 = Node()
-    >>> tree2['d'] = Node()
-    >>> tree2['e'] = Node()
+Merge 2 Node Trees::
+
+    >>> tree1 = OrderReferenceNode()
+    >>> tree1['a'] = OrderReferenceNode()
+    >>> tree1['b'] = OrderReferenceNode()
+    >>> tree2 = OrderReferenceNode()
+    >>> tree2['d'] = OrderReferenceNode()
+    >>> tree2['e'] = OrderReferenceNode()
     >>> tree1._index is tree2._index
     False
 
@@ -89,17 +135,17 @@ Merge 2 Node Trees.
     3
 
     >>> tree1.printtree()
-    <class 'node.bbb.Node'>: None
-      <class 'node.bbb.Node'>: a
-      <class 'node.bbb.Node'>: b
+    <class 'OrderReferenceNode'>: None
+      <class 'OrderReferenceNode'>: a
+      <class 'OrderReferenceNode'>: b
 
     >>> len(tree2._index.keys())
     3
 
     >>> tree2.printtree()
-    <class 'node.bbb.Node'>: None
-      <class 'node.bbb.Node'>: d
-      <class 'node.bbb.Node'>: e
+    <class 'OrderReferenceNode'>: None
+      <class 'OrderReferenceNode'>: d
+      <class 'OrderReferenceNode'>: e
 
     >>> tree1['c'] = tree2
     >>> len(tree1._index.keys())
@@ -111,20 +157,20 @@ Merge 2 Node Trees.
     True
 
     >>> tree1.printtree()
-    <class 'node.bbb.Node'>: None
-      <class 'node.bbb.Node'>: a
-      <class 'node.bbb.Node'>: b
-      <class 'node.bbb.Node'>: c
-        <class 'node.bbb.Node'>: d
-        <class 'node.bbb.Node'>: e
+    <class 'OrderReferenceNode'>: None
+      <class 'OrderReferenceNode'>: a
+      <class 'OrderReferenceNode'>: b
+      <class 'OrderReferenceNode'>: c
+        <class 'OrderReferenceNode'>: d
+        <class 'OrderReferenceNode'>: e
 
-Detach subtree and insert elsewhere.
-::
+Detach subtree and insert elsewhere::
+
     >>> sub = tree1.detach('c')
     >>> sub.printtree()
-    <class 'node.bbb.Node'>: c
-      <class 'node.bbb.Node'>: d
-      <class 'node.bbb.Node'>: e
+    <class 'OrderReferenceNode'>: c
+      <class 'OrderReferenceNode'>: d
+      <class 'OrderReferenceNode'>: e
 
     >>> tree1._index is sub._index
     False
@@ -136,9 +182,9 @@ Detach subtree and insert elsewhere.
     3
 
     >>> tree1.printtree()
-    <class 'node.bbb.Node'>: None
-      <class 'node.bbb.Node'>: a
-      <class 'node.bbb.Node'>: b
+    <class 'OrderReferenceNode'>: None
+      <class 'OrderReferenceNode'>: a
+      <class 'OrderReferenceNode'>: b
 
     >>> len(tree1._index.keys())
     3
@@ -146,12 +192,12 @@ Detach subtree and insert elsewhere.
     >>> sub.__name__ = 'x'
     >>> tree1.insertbefore(sub, tree1['a'])
     >>> tree1.printtree()
-    <class 'node.bbb.Node'>: None
-      <class 'node.bbb.Node'>: x
-        <class 'node.bbb.Node'>: d
-        <class 'node.bbb.Node'>: e
-      <class 'node.bbb.Node'>: a
-      <class 'node.bbb.Node'>: b
+    <class 'OrderReferenceNode'>: None
+      <class 'OrderReferenceNode'>: x
+        <class 'OrderReferenceNode'>: d
+        <class 'OrderReferenceNode'>: e
+      <class 'OrderReferenceNode'>: a
+      <class 'OrderReferenceNode'>: b
 
     >>> tree1._index is sub._index
     True
@@ -163,3 +209,23 @@ Detach subtree and insert elsewhere.
     Traceback (most recent call last):
       ...
     KeyError: u'Given node already contained in tree.'
+    
+    >>> tree2.printtree()
+    <class 'OrderReferenceNode'>: x
+      <class 'OrderReferenceNode'>: d
+      <class 'OrderReferenceNode'>: e
+   
+    >>> tree2['d'].allow_non_node_childs = True
+    >>> tree2['d']['a'] = object() 
+    >>> tree2.printtree()
+    <class 'OrderReferenceNode'>: x
+      <class 'OrderReferenceNode'>: d
+      <object object at ...>
+      <class 'OrderReferenceNode'>: e
+    
+    >>> tree2.detach('d')
+    <OrderReferenceNode object 'd' at ...>
+    
+    >>> tree2.printtree()
+    <class 'OrderReferenceNode'>: x
+      <class 'OrderReferenceNode'>: e

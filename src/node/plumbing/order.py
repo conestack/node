@@ -1,3 +1,4 @@
+from odict.pyodict import _nil
 from plumber import (
     extend,
     default,
@@ -27,7 +28,7 @@ class Order(Part):
             self._dict_impl().__getitem__(self, prevkey)[2] = nodekey
             newnode = [prevkey, newnode, refkey]
         else:
-            self._dict_impl().lh = nodekey
+            self.lh = nodekey
             newnode = [_nil, newnode, refkey]
         self._dict_impl().__getitem__(self, refkey)[0] = nodekey
         self._dict_impl().__setitem__(self, nodekey, newnode)
@@ -49,7 +50,7 @@ class Order(Part):
             self._dict_impl().__getitem__(self, nextkey)[0] = nodekey
             newnode = [refkey, newnode, nextkey]
         else:
-            self._dict_impl().lt = nodekey
+            self.lt = nodekey
             newnode = [refkey, newnode, _nil]
         self._dict_impl().__getitem__(self, refkey)[2] = nodekey
         self._dict_impl().__setitem__(self, nodekey, newnode)
@@ -59,6 +60,8 @@ class Order(Part):
     def detach(self, key):
         node = self[key]
         del self[key]
+        # case if Reference Part is mixed in
+        # XXX: move out of here
         if hasattr(self, '_index') and self._index is not None:
             node._index = { int(node.uuid): node }
             node._index_nodes()
@@ -69,8 +72,11 @@ class Order(Part):
         nodekey = newnode.__name__
         if nodekey is None:
             raise ValueError, u"Given node has no __name__ set."
-        if self.node(newnode.uuid) is not None:
-            raise KeyError, u"Given node already contained in tree."
+        # case if Reference Part is mixed in
+        # XXX: move out of here
+        if hasattr(self, 'node'):
+            if self.node(newnode.uuid) is not None:
+                raise KeyError, u"Given node already contained in tree."
         index = self._nodeindex(refnode)
         if index is None:
             raise ValueError, u"Given reference node not child of self."
@@ -85,6 +91,8 @@ class Order(Part):
         return None
 
     # orderable related
+    # used if Reference Part is mixed in
+    # XXX: move out of here
     @default
     def _index_nodes(self):
         for node in self.values():

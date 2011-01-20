@@ -23,7 +23,7 @@ TESTFILES = [
     '../plumbing/attributes.txt',
     '../plumbing/nodespace.txt',
     '../plumbing/reference.txt',
-    #'../plumbing/order.txt',
+    '../plumbing/order.txt',
     '../plumbing/unicode.txt',
     '../plumbing/wrap.txt',
     

@@ -1,8 +1,7 @@
 node.plumbing.reference
 =======================
 
-Tree node index.
-::
+Tree node index::
 
     >>> from plumber import Plumber
     >>> from node.base import OrderedNode
@@ -32,8 +31,8 @@ Tree node index.
     >>> len(node.index._index)
     1
 
-Add some children and check node containment stuff.
-::
+Add some children and check node containment stuff::
+
     
     >>> node.__name__ = 'root'
     >>> node['child'] = ReferenceNode()
@@ -60,16 +59,16 @@ Add some children and check node containment stuff.
         <class 'ReferenceNode'>: subchild
         <class 'ReferenceNode'>: subchild2
 
-Adding in indexed Node with same uuid or the same node twice fails.
-::
+Adding in indexed Node with same uuid or the same node twice fails::
+
     >>> child = node['child']
     >>> node['child2'] = child
     Traceback (most recent call last):
       ...
     ValueError: Node with uuid already exists
 
-Check UUID stuff.
-::
+Check UUID stuff::
+
     >>> uuid = node['child']['subchild'].uuid
     >>> uuid
     UUID('...')
@@ -93,16 +92,16 @@ Check UUID stuff.
     4
 
 Store the uuids of the nodes which are expected to be deleted from index if
-child is deleted.
-::
+child is deleted::
+
     >>> delindexes = [
     ...     int(node['child'].uuid),
     ...     int(node['child']['subchild'].uuid),
     ...     int(node['child']['subchild2'].uuid),
     ... ]
 
-Read the uuid index and check containment in index.
-::
+Read the uuid index and check containment in index::
+
     >>> iuuids = node._index.keys()
     >>> len(iuuids)
     4
@@ -116,8 +115,8 @@ Read the uuid index and check containment in index.
     >>> delindexes[2] in iuuids
     True
 
-Delete child. All checked uuids above must be deleted from index.
-::
+Delete child. All checked uuids above must be deleted from index::
+
     >>> del node['child']
     >>> node.keys()
     []
@@ -141,4 +140,9 @@ Delete child. All checked uuids above must be deleted from index.
     >>> node.printtree()
     <class 'ReferenceNode'>: root
 
-    >>> #node['foo'] = OrderedNode()
+    >>> node['child'] = ReferenceNode()
+    
+    >>> node['child'].allow_non_node_childs = True
+    >>> node['child']['foo'] = 1
+    
+    >>> del node['child']
