@@ -12,7 +12,6 @@ from node.interfaces import (
 )
 
 class Nodespaces(Part):
-    
     implements(INodespaces)
     
     _nodespaces = default(None)

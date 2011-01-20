@@ -26,7 +26,6 @@ class NodeAttributes(OrderedNode):
 
 
 class Attributes(Part):
-    
     implements(IAttributes)
     
     attribute_access_for_attrs = default(False)

@@ -9,9 +9,11 @@ from zope.interface.common.mapping import IReadMapping
 from node.interfaces import (
     INode,
     IReference,
+    IOrder,
 )
 
 class Order(Part):
+    implements(IOrder)
 
     @extend
     def insertbefore(self, newnode, refnode):
@@ -56,17 +58,6 @@ class Order(Part):
         self._dict_impl().__setitem__(self, nodekey, newnode)
         self[nodekey] = newnode[1]
     
-    @extend
-    def detach(self, key):
-        node = self[key]
-        del self[key]
-        # case if Reference Part is mixed in
-        # XXX: move out of here
-        if hasattr(self, '_index') and self._index is not None:
-            node._index = { int(node.uuid): node }
-            node._index_nodes()
-        return node
-    
     @default
     def _validateinsertion(self, newnode, refnode):
         nodekey = newnode.__name__
@@ -89,18 +80,3 @@ class Order(Part):
                 return index
             index += 1
         return None
-
-    # orderable related
-    # used if Reference Part is mixed in
-    # XXX: move out of here
-    @default
-    def _index_nodes(self):
-        for node in self.values():
-            try:
-                uuid = int(node.uuid)
-            except AttributeError:
-                # non-Node values are a dead end, no magic for them
-                continue
-            self._index[uuid] = node
-            node._index = self._index
-            node._index_nodes()

@@ -11,7 +11,6 @@ from node.interfaces import (
 )
 
 class NodeChildValidate(Part):
-    
     implements(INodeChildValidate)
     
     allow_non_node_childs = default(False)

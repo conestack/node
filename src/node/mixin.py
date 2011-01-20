@@ -36,8 +36,8 @@ class _NodeMixin(object):
         return root
     
     def detach(self, key):
-        node = self.context[key]
-        del self.context[key]
+        node = self[key]
+        del self[key]
         return node
     
     def filtereditervalues(self, interface):

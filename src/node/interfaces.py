@@ -107,10 +107,6 @@ class IAttributeAccess(Interface):
         """
 
 
-# XXX: should we split this up into node.aliasing.interfaces?
-# Benefit: the structure would be the same as for modules provided by separate
-#          distributions
-# rnix: should we really create tons of subpackages?
 class IAliaser(Interface):
     """Generic Aliasing Interface.
     """
@@ -181,16 +177,14 @@ class INodespaces(Interface):
     nodespaces = Attribute(u"Nodespaces.")
 
 
-class IAttributed(Interface):
+class IAttributes(Interface):
     """Provide attributes on node.
     """
     attrs = Attribute(u"``INodeAttributes`` implementation.")
     attrs_factory = Attribute(u"``INodeAttributes`` implementation class")
 
-IAttributes = IAttributed # XXX: rename above
 
-
-class IReferenced(Interface):
+class IReference(Interface):
     """Holding an internal index of all nodes contained in the tree.
     """
     uuid = Attribute(u"``uuid.UUID`` of this node.")
@@ -200,10 +194,8 @@ class IReferenced(Interface):
         """Return node by uuid located anywhere in this nodetree.
         """
 
-IReference = IReferenced # XXX: rename above
 
-
-class IOrderable(Interface):
+class IOrder(Interface):
     """Reordering support.
     """
     
@@ -228,6 +220,13 @@ class IOrderable(Interface):
         """
 
 
+class ILifecycle(Interface):
+    """Takes care about lifecycle events.
+    """
+    events = Attribute(u"Dict with lifecycle event classes to use for "
+                       u"notification.")
+
+
 class ITimout(Interface):
     """Times out nodes.
     
@@ -248,13 +247,7 @@ class ITimout(Interface):
         """Invalidate child with key or all childs of this node.
         """
 
-
-class ILifecycle(Interface):
-    """Takes care about lifecycle events.
-    """
-    events = Attribute(u"Dict with lifecycle event classes to use for "
-                       u"notification.")
-
+# BBB
 
 ###############################################################################
 # node attributes

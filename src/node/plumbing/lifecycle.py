@@ -53,19 +53,12 @@ class Lifecycle(Part):
             return
         objectEventNotify(self.events['removed'](delnode, oldParent=self,
                                                  oldName=key))
-
-    # XXX: other detach function in Order, make detach standalone part, and
-    #      react with plumbings to it
-    #@plumb
-    #def detach(prt, _next, self, key):
-    @extend
-    def detach(self, key):
+    
+    @plumb
+    def detach(prt, _next, self, key):
         notify_before = self._notify_suppress
         self._notify_suppress = True
-        node = self[key]
-        del self[key]
-        # XXX: looks like bug, notify_before, however, I do not understand why
-        # we enforce notify_suppress before calling super
+        node = _next(self, key)
         self._notify_suppress = False
         objectEventNotify(self.events['detached'](node, oldParent=self,
                                                   oldName=key))
