@@ -2,6 +2,7 @@ import inspect
 from plumber import (
     plumb,
     default,
+    Part,
 )
 from zope.interface import implements
 from node.interfaces import (
@@ -9,7 +10,7 @@ from node.interfaces import (
     INodeChildValidate,
 )
 
-class NodeChildValidate(object):
+class NodeChildValidate(Part):
     
     implements(INodeChildValidate)
     

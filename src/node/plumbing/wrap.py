@@ -1,8 +1,11 @@
-from plumber import plumb
+from plumber import (
+    plumb,
+    Part,
+)
 from node.interfaces import INode
 
 
-class Wrap(object):
+class Wrap(Part):
     """Plumbing element that wraps nodes coming from deeper levels in a 
     NodeNode.
     """

@@ -141,3 +141,4 @@ Delete child. All checked uuids above must be deleted from index.
     >>> node.printtree()
     <class 'ReferenceNode'>: root
 
+    >>> #node['foo'] = OrderedNode()

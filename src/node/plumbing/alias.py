@@ -1,8 +1,11 @@
-from plumber import plumb
+from plumber import (
+    plumb,
+    Part,
+)
 from zope.interface.common.mapping import IEnumerableMapping
 
 
-class Alias(object):
+class Alias(Part):
     """Plumbing element that provides aliasing of child names/keys
 
     KeyErrors are caught and reraised with the aliased key.

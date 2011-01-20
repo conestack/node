@@ -9,5 +9,8 @@ class Cache(object):
         # - fetch new item from _next
         # - put item in cache
         # - return item
+        pass
+    
     def invalidate(self, key=None):
+        pass
 

@@ -3,6 +3,7 @@ from plumber import (
     plumb,
     extend,
     default,
+    Part,
 )
 from zope.interface import implements
 from zope.interface.common.mapping import IReadMapping
@@ -26,7 +27,7 @@ class NodeIndex(object):
     def __contains__(self, key):
         return int(key) in self._index
 
-class Reference(object):
+class Reference(Part):
 
     @plumb
     def __init__(plb, _next, self, *args, **kw):
