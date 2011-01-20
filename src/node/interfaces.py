@@ -289,6 +289,14 @@ class ILifecycleNodeAttributes(INodeAttributes):
 # unchanged from zodict below
 ###############################################################################
 
+class ICallable(INode):
+    """Node which implements the ``__call__`` function.
+    """
+
+    def __call__():
+        """Expose the tree contents to an output channel.
+        """
+
 # XXX: get rid of. use ICallable instead.
 class ICallableNode(INode):
     """Node which implements the ``__call__`` function.
