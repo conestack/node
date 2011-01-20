@@ -2,6 +2,7 @@ from plumber import (
     plumb,
     extend,
     default,
+    Part,
 )
 from zope.interface import implements
 from node.interfaces import IAttributes
@@ -24,7 +25,7 @@ class NodeAttributes(OrderedNode):
                                            hex(id(self))[:-1])
 
 
-class Attributes(object):
+class Attributes(Part):
     
     implements(IAttributes)
     

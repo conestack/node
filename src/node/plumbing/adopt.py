@@ -1,8 +1,11 @@
-from plumber import plumb
+from plumber import (
+    plumb,
+    Part,
+)
 from node.interfaces import INode
 
 
-class Adopt(object):
+class Adopt(Part):
     """Plumbing element that provides adoption of children.
     """
     

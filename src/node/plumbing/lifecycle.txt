@@ -1,0 +1,98 @@
+node.plumbing.lifecycle
+=======================
+
+Check NodeCreation::
+
+    >>> import zope.component
+    >>> from node.interfaces import INode
+    >>> from node.interfaces import INodeCreatedEvent
+    >>> from node.interfaces import INodeAddedEvent
+    >>> from node.interfaces import INodeModifiedEvent
+    >>> from node.interfaces import INodeRemovedEvent
+    >>> from node.interfaces import INodeDetachedEvent
+    
+    >>> handled_events = []
+    >>> def handler(obj, event):
+    ...     handled_events.append(event) 
+    
+    >>> zope.component.provideHandler(handler, [INode, INodeCreatedEvent])
+    >>> zope.component.provideHandler(handler, [INode, INodeAddedEvent])
+    >>> zope.component.provideHandler(handler, [INode, INodeModifiedEvent])
+    >>> zope.component.provideHandler(handler, [INode, INodeRemovedEvent])
+    >>> zope.component.provideHandler(handler, [INode, INodeDetachedEvent])
+    
+    >>> from node.base import OrderedNode
+    >>> from node.plumbing.lifecycle import Lifecycle, AttributesLifecycle
+    >>> from node.plumbing.attributes import Attributes, NodeAttributes
+    >>> from node.plumbing.nodespace import Nodespaces
+    
+    >>> root = OrderedNode('no_notify')
+    >>> handled_events
+    []
+    
+    >>> from plumber import Plumber
+    
+    >>> class LifecycleNodeAttributes(NodeAttributes):
+    ...     __metaclass__ = Plumber
+    ...     __pipeline__ = AttributesLifecycle
+    
+    >>> class LifecycleNode(OrderedNode):
+    ...     __metaclass__ = Plumber
+    ...     __pipeline__ = Nodespaces, Attributes, Lifecycle
+    ...     attributes_factory = LifecycleNodeAttributes
+
+    >>> root = LifecycleNode('root')
+    >>> handled_events
+    [<node.events.NodeCreatedEvent object at ...>]
+
+Check Node adding.
+::
+    
+    >>> del handled_events[0]
+    >>> child1 = LifecycleNode()
+    >>> root['child1'] = child1
+    >>> handled_events
+    [<node.events.NodeCreatedEvent object at ...>, 
+    <node.events.NodeAddedEvent object at ...>]
+
+Check Node modification.
+::
+
+    >>> del handled_events[0]
+    >>> del handled_events[0]
+
+    >>> ignore = child1.attrs
+    
+No event, despite the node creation for the attributes nodespace
+
+    >>> handled_events
+    []
+    
+Node modified events if the attributes nodespace is changed
+
+    >>> child1.attrs['foo'] = 1
+    >>> handled_events
+    [<node.events.NodeModifiedEvent object at ...>]
+    
+    >>> del handled_events[0]
+    >>> del child1.attrs['foo']  
+    >>> handled_events
+    [<node.events.NodeModifiedEvent object at ...>]
+
+Check Node Deletion.
+:: 
+
+    >>> handled_events = []
+    >>> del root['child1']
+    >>> handled_events
+    [<node.events.NodeRemovedEvent object at ...>]
+
+Check Node Detach.
+:: 
+
+    >>> child2 = LifecycleNode()
+    >>> root['child2'] = child2
+    >>> handled_events = []
+    >>> detached = root.detach('child2')    
+    >>> handled_events
+    [<node.events.NodeDetachedEvent object at ...>]

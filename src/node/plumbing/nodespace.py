@@ -3,6 +3,7 @@ from plumber import (
     plumb,
     extend,
     default,
+    Part,
 )
 from zope.interface import implements
 from node.interfaces import (
@@ -10,7 +11,7 @@ from node.interfaces import (
     INodespaces,
 )
 
-class Nodespaces(object):
+class Nodespaces(Part):
     
     implements(INodespaces)
     

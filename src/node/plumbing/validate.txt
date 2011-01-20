@@ -1,19 +1,34 @@
+node.plumbing.validate
+======================
 
+::
 
-    # Non-Node "child" is not indexed
-    >>> root['child']['subchild3'] = 1
+    >>> from plumber import Plumber
+    >>> from node.base import OrderedNode
+    >>> from node.plumbing.validate import NodeChildValidate
+    
+    >>> class NodeChildValidateNode(OrderedNode):
+    ...     __metaclass__ = Plumber
+    ...     __pipeline__ = NodeChildValidate
+    
+    >>> node = NodeChildValidateNode()
+    >>> node.allow_non_node_childs
+    False
+    
+    >>> node['child'] = 1
     Traceback (most recent call last):
-    ...
-    ValueError: Non-node childs are not allowed
+      ...
+    ValueError: Non-node childs are not allowed.
     
-    >>> root['child'].allow_non_node_childs = True
-    >>> root['child']['subchild3'] = 1
-    >>> root['child']['subchild3']
-    1
+    >>> class SomeClass(object): pass
     
-    >>> class SomeClass(Node):
-    ...     """for testing"""
-    >>> root['aclasshere'] = SomeClass
+    >>> node['aclasshere'] = SomeClass
     Traceback (most recent call last):
       ...
     ValueError: It isn't allowed to use classes as values.
+    
+    >>> node.allow_non_node_childs = True
+    
+    >>> node['child'] = 1
+    >>> node['child']
+    1
