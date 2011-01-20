@@ -27,6 +27,7 @@ class NodeIndex(object):
     def __contains__(self, key):
         return int(key) in self._index
 
+
 class Reference(Part):
 
     @plumb

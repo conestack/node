@@ -3,7 +3,6 @@ from plumber import (
     Part,
 )
 
-
 # XXX: currently won't work, as the decode function is missing
 # check the one in bda.ldap.strcodec
 # XXX: It feels here it would be nice to be able to get an instance of a
