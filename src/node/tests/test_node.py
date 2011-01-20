@@ -24,6 +24,7 @@ TESTFILES = [
     '../plumbing/nodespace.txt',
     '../plumbing/reference.txt',
     '../plumbing/order.txt',
+    '../plumbing/lifecycle.txt',
     '../plumbing/unicode.txt',
     '../plumbing/wrap.txt',
     
