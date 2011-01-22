@@ -58,7 +58,7 @@ class Order(Part):
         self._dict_impl().__setitem__(self, nodekey, newnode)
         self[nodekey] = newnode[1]
     
-    @default
+    @extend
     def _validateinsertion(self, newnode, refnode):
         nodekey = newnode.__name__
         if nodekey is None:
@@ -72,7 +72,7 @@ class Order(Part):
         if index is None:
             raise ValueError, u"Given reference node not child of self."
 
-    @default
+    @extend
     def _nodeindex(self, node):
         index = 0
         for key in self.keys():
