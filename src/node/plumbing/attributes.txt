@@ -10,7 +10,7 @@ node.plumbing.attributes
     
     >>> class AttributedNode(OrderedNode):
     ...     __metaclass__ = Plumber
-    ...     __pipeline__ = Nodespaces, Attributes
+    ...     __plumbing__ = Nodespaces, Attributes
 
     >>> node = AttributedNode('attributed')
     >>> node.attribute_access_for_attrs

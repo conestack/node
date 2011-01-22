@@ -27,7 +27,7 @@ class BaseNode(_NodeMixin, _ImplMixin, dict):
     Derive this for unordered trees.
     """
     __metaclass__ = Plumber
-    __pipeline__ = NodeChildValidate, Adopt
+    __plumbing__ = NodeChildValidate, Adopt
     
     implements(INode)
     
@@ -56,7 +56,7 @@ class OrderedNode(_NodeMixin, _ImplMixin, odict):
     Derive this for ordered trees.
     """
     __metaclass__ = Plumber
-    __pipeline__ = NodeChildValidate, Adopt
+    __plumbing__ = NodeChildValidate, Adopt
     
     implements(INode)
     

@@ -9,7 +9,7 @@ node.plumbing.validate
     
     >>> class NodeChildValidateNode(OrderedNode):
     ...     __metaclass__ = Plumber
-    ...     __pipeline__ = NodeChildValidate
+    ...     __plumbing__ = NodeChildValidate
     
     >>> node = NodeChildValidateNode()
     >>> node.allow_non_node_childs

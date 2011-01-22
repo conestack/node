@@ -9,7 +9,7 @@ Tree node index::
     
     >>> class ReferenceNode(OrderedNode):
     ...     __metaclass__ = Plumber
-    ...     __pipeline__ = Reference
+    ...     __plumbing__ = Reference
 
     >>> node = ReferenceNode()
     >>> node.index

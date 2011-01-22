@@ -7,7 +7,7 @@ node.plumbing.nodespace
     
     >>> class NodespacesNode(OrderedNode):
     ...     __metaclass__ = Plumber
-    ...     __pipeline__ = Nodespaces,
+    ...     __plumbing__ = Nodespaces,
     
     >>> node = NodespacesNode()
     >>> node.nodespaces

@@ -12,7 +12,7 @@ Node insertion. There exist ``insertbefore`` and ``insertafter`` functions::
     
     >>> class OrderableNode(OrderedNode):
     ...     __metaclass__ = Plumber
-    ...     __pipeline__ = Order
+    ...     __plumbing__ = Order
     
     >>> node = OrderableNode('root')
     
@@ -83,7 +83,7 @@ Order with References
     
     >>> class OrderReferenceNode(OrderedNode):
     ...     __metaclass__ = Plumber
-    ...     __pipeline__ = Order, Reference
+    ...     __plumbing__ = Order, Reference
     
     >>> node = OrderReferenceNode('root')
     >>> node['child1'] = OrderReferenceNode()
