@@ -7,7 +7,7 @@ from plumber import (
 from zope.interface import implements
 from node.interfaces import ILifecycle
 from node.base import OrderedNode
-from node.plumbing.attributes import NodeAttributes
+from node.parts.attributes import NodeAttributes
 try:
     from zope.component.event import objectEventNotify
 except ImportError, e:

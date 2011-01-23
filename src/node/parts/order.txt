@@ -1,4 +1,4 @@
-node.plumbing.order
+node.parts.order
 ===================
 
 Order without References
@@ -8,7 +8,7 @@ Node insertion. There exist ``insertbefore`` and ``insertafter`` functions::
 
     >>> from plumber import Plumber
     >>> from node.base import OrderedNode
-    >>> from node.plumbing.order import Order
+    >>> from node.parts.order import Order
     
     >>> class OrderableNode(OrderedNode):
     ...     __metaclass__ = Plumber
@@ -79,7 +79,7 @@ detached node or subtree to a complete different tree::
 Order with References
 ---------------------
 
-    >>> from node.plumbing.reference import Reference
+    >>> from node.parts.reference import Reference
     
     >>> class OrderReferenceNode(OrderedNode):
     ...     __metaclass__ = Plumber

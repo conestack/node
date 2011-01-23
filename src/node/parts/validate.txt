@@ -1,11 +1,11 @@
-node.plumbing.validate
+node.parts.validate
 ======================
 
 ::
 
     >>> from plumber import Plumber
     >>> from node.base import OrderedNode
-    >>> from node.plumbing.validate import NodeChildValidate
+    >>> from node.parts.validate import NodeChildValidate
     
     >>> class NodeChildValidateNode(OrderedNode):
     ...     __metaclass__ = Plumber

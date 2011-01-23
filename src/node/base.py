@@ -2,8 +2,8 @@ from odict import odict
 from plumber import Plumber
 from zope.interface import implements
 from node.interfaces import INode
-from node.plumbing.adopt import Adopt
-from node.plumbing.validate import NodeChildValidate
+from node.parts.adopt import Adopt
+from node.parts.validate import NodeChildValidate
 from node.mixin import (
     _NodeMixin,
     _FullMappingMixin,

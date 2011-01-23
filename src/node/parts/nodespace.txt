@@ -1,9 +1,9 @@
-node.plumbing.nodespace
+node.parts.nodespace
 =======================
 
     >>> from plumber import Plumber
     >>> from node.base import OrderedNode
-    >>> from node.plumbing.nodespace import Nodespaces
+    >>> from node.parts.nodespace import Nodespaces
     
     >>> class NodespacesNode(OrderedNode):
     ...     __metaclass__ = Plumber

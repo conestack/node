@@ -1,12 +1,12 @@
-node.plumbing.attributes
+node.parts.attributes
 ========================
 
 ::
 
     >>> from plumber import Plumber
     >>> from node.base import OrderedNode
-    >>> from node.plumbing.nodespace import Nodespaces
-    >>> from node.plumbing.attributes import Attributes
+    >>> from node.parts.nodespace import Nodespaces
+    >>> from node.parts.attributes import Attributes
     
     >>> class AttributedNode(OrderedNode):
     ...     __metaclass__ = Plumber

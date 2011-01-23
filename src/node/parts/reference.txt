@@ -1,11 +1,11 @@
-node.plumbing.reference
+node.parts.reference
 =======================
 
 Tree node index::
 
     >>> from plumber import Plumber
     >>> from node.base import OrderedNode
-    >>> from node.plumbing.reference import Reference
+    >>> from node.parts.reference import Reference
     
     >>> class ReferenceNode(OrderedNode):
     ...     __metaclass__ = Plumber
@@ -13,7 +13,7 @@ Tree node index::
 
     >>> node = ReferenceNode()
     >>> node.index
-    <node.plumbing.reference.NodeIndex object at ...>
+    <node.parts.reference.NodeIndex object at ...>
 
     >>> from zope.interface.common.mapping import IReadMapping
     >>> IReadMapping.providedBy(node.index)

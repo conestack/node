@@ -9,7 +9,7 @@ A dictionary that uses the alias plumbing but does not assign an aliaser.
 Therefore, no aliasing is happening.
 ::
 
-    >>> from node.plumbing.alias import Alias
+    >>> from node.parts.alias import Alias
     >>> class AliasDict(dict):
     ...     __metaclass__ = Plumber
     ...     __plumbing__ = (Alias,)

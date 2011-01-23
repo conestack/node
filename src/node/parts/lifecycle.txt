@@ -1,4 +1,4 @@
-node.plumbing.lifecycle
+node.parts.lifecycle
 =======================
 
 Check NodeCreation::
@@ -24,9 +24,9 @@ Check NodeCreation::
     >>> zope.component.provideHandler(handler, [INode, INodeDetachedEvent])
     
     >>> from node.base import OrderedNode
-    >>> from node.plumbing.lifecycle import Lifecycle, AttributesLifecycle
-    >>> from node.plumbing.attributes import Attributes, NodeAttributes
-    >>> from node.plumbing.nodespace import Nodespaces
+    >>> from node.parts.lifecycle import Lifecycle, AttributesLifecycle
+    >>> from node.parts.attributes import Attributes, NodeAttributes
+    >>> from node.parts.nodespace import Nodespaces
     
     >>> root = OrderedNode('no_notify')
     >>> handler.handled
