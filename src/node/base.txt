@@ -25,22 +25,22 @@ Storage related operations of AbstractNode raise ``NotImplementedError``.
     >>> abstract['foo']
     Traceback (most recent call last):
       ...
-    NotImplementedError
+    TypeError: 'AbstractNode' object is unsubscriptable
     
     >>> del abstract['foo']
     Traceback (most recent call last):
       ...
-    NotImplementedError
+    TypeError: 'AbstractNode' object does not support item deletion
     
     >>> abstract['foo'] = 'bar'
     Traceback (most recent call last):
       ...
-    NotImplementedError
+    TypeError: 'AbstractNode' object does not support item assignment
     
     >>> [key for key in abstract]
     Traceback (most recent call last):
       ...
-    NotImplementedError
+    TypeError: 'AbstractNode' object is not iterable
     
     >>> abstract_copy = abstract.copy()
     Traceback (most recent call last):
