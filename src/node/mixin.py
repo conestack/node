@@ -1,3 +1,6 @@
+from plumber import Plumber
+
+from node.parts.mapping import FullMapping
 from node.utils import (
     AttributeAccess,
     LocationIterator,
@@ -131,130 +134,9 @@ class _FullMappingMixin(object):
     - ``__setitem__``
     - ``__iter__``
     - ``copy`` (FYI - _NodeMixin implements an agnostic ``copy`` function)
-    - ``clear``
-    - ``update``
-    - ``setdefault``
-    - ``pop``
-    - ``popitem``
     """
-    
-    ###
-    # ``IItemMapping``
-    
-    def __getitem__(self, key):
-        raise NotImplementedError
-    
-    ###
-    # ``IReadMapping``
-    
-    def get(self, key, default=None):
-        """Uses ``__getitem__``.
-        """
-        try:
-            return self[key]
-        except KeyError:
-            return default
-    
-    def __contains__(self, key):
-        """Uses ``__getitem__``.
-
-        This should be overriden by nodes, where ``__getitem__`` is expensive.
-
-        XXX: also catching the exception is expensive, so this should be
-        overriden probably always.
-        """
-        try:
-            self[key]
-        except KeyError:
-            return False
-        return True
-    
-    ###
-    # ``IWriteMapping``
-    
-    def __delitem__(self, key):
-        raise NotImplementedError
-    
-    def __setitem__(self, key, value):
-        raise NotImplementedError
-    
-    ###
-    # ``IEnumerableMapping``
-    
-    def keys(self):
-        """Uses ``__iter__``.
-        """
-        return [x for x in self]
-    
-    def __iter__(self):
-        raise NotImplementedError
-    
-    def values(self):
-        """Uses ``itervalues``.
-        """
-        return [x for x in self.itervalues()]
-    
-    def items(self):
-        """Uses ``iteritems``.
-        """
-        return [x for x in self.iteritems()]
-
-    def __len__(self):
-        """Uses ``keys``.
-
-        XXX: there could also be faster approaches depending on implementation
-        """
-        return len(self.keys())
-    
-    ###
-    # ``IIterableMapping``
-    
-    def iterkeys(self):
-        """Uses ``__iter__``.
-        """
-        return self.__iter__()
-    
-    def itervalues(self):
-        """Uses ``__iter__`` and ``__getitem__``.
-        """
-        for key in self:
-            yield self[key]
-    
-    def iteritems(self):
-        """Uses ``__iter__`` and ``__getitem__``.
-        """
-        for key in self:
-            yield key, self[key]
-    
-    ###
-    # ``IClonableMapping``
-    
-    def copy(self):
-        raise NotImplementedError
-
-    ###
-    # ``IExtendedReadMapping``
-    
-    def has_key(self, key):
-        return key in self
-
-    ###
-    # ``IExtendedWriteMapping``
-    
-    def clear(self):
-        raise NotImplementedError
-    
-    def update(self, data=(), **kw):
-        raise NotImplementedError
-    
-    def setdefault(self, key, default=None):
-        raise NotImplementedError
-    
-    def pop(self, key, default=None):
-        raise NotImplementedError
-    
-    def popitem(self):
-        raise NotImplementedError
+    __metaclass__ = Plumber
+    __pumpling__ = FullMapping
 
 
 class _ImplMixin(object):
