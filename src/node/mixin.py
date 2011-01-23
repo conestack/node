@@ -6,11 +6,11 @@ from node.utils import (
 
 class _NodeMixin(object):
     """The base for all kinds of nodes, agnostic to the type of node.
-    
+
     Implements contracts of ``zope.location.interfaces.ILocation`` and the one
     directly defined in ``node.intefaces.INode``.
     """
-    
+
     def __init__(self, name=None, parent=None):
         self.__name__ = name
         self.__parent__ = parent
@@ -21,7 +21,7 @@ class _NodeMixin(object):
         # of node index, so this could probably be removed in future, lets keep
         # until node extension has been adopted to new node infrastructure.
         self.allow_non_node_childs = False
-    
+
     @property
     def path(self):
         path = [parent.__name__ for parent in LocationIterator(self)]
@@ -34,35 +34,35 @@ class _NodeMixin(object):
         for parent in LocationIterator(self):
             root = parent
         return root
-    
+
     def detach(self, key):
         node = self[key]
         del self[key]
         return node
-    
+
     def filtereditervalues(self, interface):
         """Uses ``itervalues``.
         """
         for val in self.itervalues():
             if interface.providedBy(val):
                 yield val
-    
+
     def filteredvalues(self, interface):
         """Uses ``values``.
         """
         return [val for val in self.values() if interface.providedBy(val)]
-    
+
     # BBB 2010-12-23
     filtereditems = filtereditervalues
-    
+
     # XXX: should be implemented by a wrapper like AliasedNodespace -cfl
     def as_attribute_access(self):
         return AttributeAccess(self)
-    
+
     @property
     def noderepr(self):
         """``noderepr`` is used in ``printtree``.
-        
+
         Thus, we can overwrite it in subclass and return any debug information
         we need while ``__repr__`` is an enhanced standard object
         representation, also used as ``__str__`` on nodes.
@@ -76,7 +76,7 @@ class _NodeMixin(object):
             class_ = self.__class__
         name = unicode(self.__name__).encode('ascii', 'replace')
         return str(class_) + ': ' + name[name.find(':') + 1:]
-    
+
     def printtree(self, indent=0):
         """Uses ``values``.
         """
@@ -101,10 +101,10 @@ class _NodeMixin(object):
                                            hex(id(self))[:-1])
 
     __str__ = __repr__
-    
+
     ###
     # Agnostic IFullMapping related.
-    
+
     def copy(self):
         new = self.__class__()
         # XXX: that looks bad, would actually mean that the parent should now
@@ -120,7 +120,7 @@ class _FullMappingMixin(object):
     """The base for all kinds of nodes not relying on an ``IFullMapping`` base
     implementation, like ``dict`` or ``odict.odict``. This excludes all nodes
     inheriting from ``BaseNode`` and ``OderedNode``.
-    
+
     Implemented functions are agnostic to the type of node.
 
     Methods defined here are only methods that use the node itself, but make no
@@ -259,15 +259,15 @@ class _FullMappingMixin(object):
 
 class _ImplMixin(object):
     """Abstract mixin class for different node implementations.
-    
+
     A class utilizing this contract must inherit from choosen ``IFullMaping``.
-    
+
     We cannot use same contract as in ``odict.odict`` -> ``_dict_impl``.
     Odict requires the dict implementation to store it's internal double linked
     list while we need to have an implementation which must provide a ready to
     use ``IFullMapping``
     """
-    
+
     def _mapping_impl(self):
         """Return ``IFullMaping`` implementing class.
         """

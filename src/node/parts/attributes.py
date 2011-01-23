@@ -30,7 +30,7 @@ class Attributes(Part):
     
     attribute_access_for_attrs = default(False)
     attributes_factory = default(NodeAttributes)
-    
+
     @extend
     @property
     def attrs(self):
