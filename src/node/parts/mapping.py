@@ -12,6 +12,8 @@ from zope.interface.common.mapping import IExtendedReadMapping
 from zope.interface.common.mapping import IExtendedWriteMapping
 from zope.interface.common.mapping import IFullMapping
 
+from node.utils import Unset
+
 
 class ItemMapping(Part):
     """Simplest readable mapping object
@@ -163,21 +165,22 @@ class ExtendedWriteMapping(WriteMapping):
 
     @default
     def clear(self):
-        """works only if together with IterableMapping
+        """works only if together with EnumerableMapping
         """
-        for key in self:
+        for key in self.keys():
             del self[key]
 
     @default
     def update(self, *args, **kw):
         if len(args) > 1:
-            raise ValueError("At most one positional argument, not: %s" % \
-                    (args,))
-        data = args[0]
-        if hasattr(data, 'iteritems'):
-            data = data.iteritems()
-        for key, val in data:
-            self[key] = val
+            raise TypeError("At most one positional argument, not: %s." % \
+                    (len(args),))
+        if args:
+            data = args[0]
+            if hasattr(data, 'iteritems'):
+                data = data.iteritems()
+            for key, val in data:
+                self[key] = val
         for key, val in kw.iteritems():
             self[key] = val
 
@@ -192,13 +195,15 @@ class ExtendedWriteMapping(WriteMapping):
             return default
 
     @default
-    def pop(self, key, default=None):
+    def pop(self, key, default=Unset):
         """works only if together with ReadMapping
         """
         try:
             val = self[key]
             del self[key]
         except KeyError:
+            if default is Unset:
+                raise
             val = default
         return val
 
@@ -210,6 +215,7 @@ class ExtendedWriteMapping(WriteMapping):
             val = self[key]
             del self[key]
             return key, val
+        raise KeyError('popitem(): mapping is empty')
 
 
 class FullMapping(ExtendedReadMapping, ExtendedWriteMapping, ClonableMapping,
