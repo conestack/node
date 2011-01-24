@@ -435,11 +435,13 @@ FullMappingTester
     >>> fmtester.test_update()
     Traceback (most recent call last):
       ...
-    Exception: KeyError, Expected ``baz`` after update
+    Exception: KeyError, Expected ``baz`` and ``blub`` after update
     
     >>> class TestMappingUpdate(TestMappingLen):
     ...     def update(self, data=(), **kw):
     ...         for key, value in data:
+    ...             self[key] = object()
+    ...         for key, value in kw.iteritems():
     ...             self[key] = object()
     
     >>> fmtester = FullMappingTester(TestMappingUpdate)
@@ -451,6 +453,21 @@ FullMappingTester
     >>> class TestMappingUpdate(TestMappingLen):
     ...     def update(self, data=(), **kw):
     ...         for key, value in data:
+    ...             self[key] = value
+    ...         for key, value in kw.iteritems():
+    ...             self[key] = object()
+
+    >>> fmtester = FullMappingTester(TestMappingUpdate)
+    >>> fmtester.test_update()
+    Traceback (most recent call last):
+      ...
+    Exception: Object at ``blub`` not expected one after update
+
+    >>> class TestMappingUpdate(TestMappingLen):
+    ...     def update(self, data=(), **kw):
+    ...         for key, value in data:
+    ...             self[key] = value
+    ...         for key, value in kw.iteritems():
     ...             self[key] = value
     
     >>> fmtester = FullMappingTester(TestMappingUpdate)
@@ -637,7 +654,7 @@ FullMappingTester
     >>> fmtester.test_pop()
     Traceback (most recent call last):
       ...
-    Exception: Excected ``KeyError`` for inexistent item.
+    Exception: Expected ``KeyError`` for inexistent item.
     
     >>> class TestMappingPop(TestMappingSetDefault):
     ...     def pop(self, key, default=None):

@@ -18,12 +18,12 @@ class ResultWriter(object):
     def success(self):
         self.results[self.name] = 'OK'
     
-    def failed(self, msg):
-        self.results[self.name] = 'Failed: %s' % (msg,)
+    def failed(self, exc):
+        self.results[self.name] = 'failed: %s' % (repr(exc),)
     
     def print_combined(self):
         for key, val in self.results.iteritems():
-            print '``%s``: %s' % (key, self.results[key])
+            print '``%s``: %s' % (key, val)
 
 
 class ContractError(Exception):
@@ -38,7 +38,8 @@ class BaseTester(object):
     # context manipulation.
     iface_contract = []
     
-    def __init__(self, class_, context=None):
+    # sorted_output = True should be default
+    def __init__(self, class_, context=None, sorted_output=False):
         """
         ``class_``
             class object for creating children in test.
@@ -51,6 +52,7 @@ class BaseTester(object):
         self.context = context
         if self.context is None:
             self.context = class_()
+        self.sorted_output = sorted_output
         self._results = odict()
     
     @property
@@ -59,7 +61,20 @@ class BaseTester(object):
     
     @property
     def combined(self):
-        self.writer().print_combined()
+        if self.sorted_output:
+            for key, val in sorted(self.writer().results.iteritems()):
+                print '``%s``: %s' % (key, val)
+        else:
+            self.writer().print_combined()
+
+    @property
+    def wherefrom(self):
+        for name in sorted(self.iface_contract):
+            print name + ": ",
+            if name in self.class_.__dict__:
+                print self.class_.__name__
+            else:
+                print "inherited from base class"
     
     def run(self):
         for name in self.iface_contract:
@@ -72,7 +87,7 @@ class BaseTester(object):
                 func()
                 writer.success()
             except Exception, e:
-                writer.failed(str(e))
+                writer.failed(e)
     
     def writer(self, key=None):
         return ResultWriter(self._results, name=key)
