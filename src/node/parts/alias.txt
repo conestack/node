@@ -3,7 +3,7 @@ Alias plumbing
 
 ::
 
-    >>> from plumber import Plumber
+    >>> from plumber import plumber
 
 A dictionary that uses the alias plumbing but does not assign an aliaser.
 Therefore, no aliasing is happening.
@@ -11,7 +11,7 @@ Therefore, no aliasing is happening.
 
     >>> from node.parts.alias import Alias
     >>> class AliasDict(dict):
-    ...     __metaclass__ = Plumber
+    ...     __metaclass__ = plumber
     ...     __plumbing__ = (Alias,)
 
     >>> ad = AliasDict()
@@ -54,7 +54,7 @@ key.
     ...         raise KeyError(key)
 
     >>> class FailDict(FakeDict):
-    ...     __metaclass__ = Plumber
+    ...     __metaclass__ = plumber
     ...     __plumbing__ = (Alias,)
 
     >>> fail = FailDict(aliaser=aliaser)

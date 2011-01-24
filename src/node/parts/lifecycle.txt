@@ -32,14 +32,14 @@ Check NodeCreation::
     >>> handler.handled
     []
     
-    >>> from plumber import Plumber
+    >>> from plumber import plumber
     
     >>> class LifecycleNodeAttributes(NodeAttributes):
-    ...     __metaclass__ = Plumber
+    ...     __metaclass__ = plumber
     ...     __plumbing__ = AttributesLifecycle
     
     >>> class LifecycleNode(OrderedNode):
-    ...     __metaclass__ = Plumber
+    ...     __metaclass__ = plumber
     ...     __plumbing__ = Nodespaces, Attributes, Lifecycle
     ...     attributes_factory = LifecycleNodeAttributes
 

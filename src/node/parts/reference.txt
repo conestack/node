@@ -3,12 +3,12 @@ node.parts.reference
 
 Tree node index::
 
-    >>> from plumber import Plumber
+    >>> from plumber import plumber
     >>> from node.base import OrderedNode
     >>> from node.parts.reference import Reference
     
     >>> class ReferenceNode(OrderedNode):
-    ...     __metaclass__ = Plumber
+    ...     __metaclass__ = plumber
     ...     __plumbing__ = Reference
 
     >>> node = ReferenceNode()

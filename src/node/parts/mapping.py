@@ -93,7 +93,7 @@ class EnumerableMapping(ReadMapping):
 
     @default
     def items(self):
-        """Uses ``iteritems``.
+        """Uses ``__iter__`` and ``__getitem__``.
 
         return items in key order
         """
@@ -163,6 +163,8 @@ class ExtendedWriteMapping(WriteMapping):
 
     @default
     def clear(self):
+        """works only if together with IterableMapping
+        """
         for key in self:
             del self[key]
 
@@ -176,11 +178,13 @@ class ExtendedWriteMapping(WriteMapping):
             data = data.iteritems()
         for key, val in data:
             self[key] = val
-        for key, val in kw.iteritems:
+        for key, val in kw.iteritems():
             self[key] = val
 
     @default
     def setdefault(self, key, default=None):
+        """works only if together with ReadMapping
+        """
         try:
             return self[key]
         except KeyError:
@@ -189,6 +193,8 @@ class ExtendedWriteMapping(WriteMapping):
 
     @default
     def pop(self, key, default=None):
+        """works only if together with ReadMapping
+        """
         try:
             val = self[key]
             del self[key]
@@ -198,12 +204,12 @@ class ExtendedWriteMapping(WriteMapping):
 
     @default
     def popitem(self):
-        try:
+        """works only if together with IterableMapping
+        """
+        for key in self:
             val = self[key]
             del self[key]
-        except KeyError:
-            val = default
-        return key, val
+            return key, val
 
 
 class FullMapping(ExtendedReadMapping, ExtendedWriteMapping, ClonableMapping,

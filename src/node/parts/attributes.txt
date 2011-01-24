@@ -3,13 +3,13 @@ node.parts.attributes
 
 ::
 
-    >>> from plumber import Plumber
+    >>> from plumber import plumber
     >>> from node.base import OrderedNode
     >>> from node.parts.nodespace import Nodespaces
     >>> from node.parts.attributes import Attributes
     
     >>> class AttributedNode(OrderedNode):
-    ...     __metaclass__ = Plumber
+    ...     __metaclass__ = plumber
     ...     __plumbing__ = Nodespaces, Attributes
 
     >>> node = AttributedNode('attributed')

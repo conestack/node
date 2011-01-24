@@ -3,7 +3,7 @@ Adopt plumbing
 
 General imports::
 
-    >>> from plumber import Plumber
+    >>> from plumber import plumber
     >>> from node.tests.env import MockupNode
     >>> from node.tests.env import NoNode
 
@@ -11,7 +11,7 @@ A dictionary is used as end point::
 
     >>> from node.parts.adopt import Adopt
     >>> class AdoptingDict(dict):
-    ...     __metaclass__ = Plumber
+    ...     __metaclass__ = plumber
     ...     __plumbing__ = (Adopt,)
 
     >>> ad = AdoptingDict()
@@ -56,7 +56,7 @@ instead of just naming the plumbing init eg plumbing__init__.
     ...         raise KeyError(key)
 
     >>> class FailingAD(FakeDict):
-    ...     __metaclass__ = Plumber
+    ...     __metaclass__ = plumber
     ...     __plumbing__ = (Adopt,)
 
     >>> fail = FailingAD()

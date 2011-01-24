@@ -1,7 +1,11 @@
+from plumber import default
+from plumber import extend
+from plumber import plumb
 from zope.interface import implements
 
 from node.interfaces import INode
 from node.parts.mapping import FullMapping
+from node.utils import Unset
 
 
 class Nodify(FullMapping):
@@ -12,21 +16,27 @@ class Nodify(FullMapping):
     __parent__ = default(None)
 
     @plumb
-    def __init__(prt, _next, self, *args, **kw)
+    def __init__(prt, _next, self, *args, **kw):
         # we have to pop our keywords before passing on, independent of when we
         # use then.
-        name = kw.pop('name', default=type(None))
-        parent = kw.pop('parent', default=type(None))
+        name = kw.pop('name', Unset)
+        parent = kw.pop('parent', Unset)
+
+        # should not be here
+        self.allow_non_node_childs = False
+
+        # next in the chain
         _next(self, *args, **kw)
+
         # Set name and parent, if they were in kw
-        if name is not type(None):
+        if name is not Unset:
             self.__name__ = name
-        if parent is not type(None):
+        if parent is not Unset:
             self.__parent__ = parent
 
     @plumb
-    def copy(prt, _next, self, *args, **kw):
-        new = _next(self, *args, **kw)
+    def copy(prt, _next, self):
+        new = _next(self)
         # XXX Where do we need a copy to have the same name, and when do we
         # need it to have the same parent? And what does it mean to have a
         # parent? Should be documented in Nodify doctest -cfl.
@@ -73,8 +83,9 @@ class Nodify(FullMapping):
     filtereditems = default(filtereditervalues)
 
     # XXX: should be implemented by a wrapper like AliasedNodespace -cfl
-    #def as_attribute_access(self):
-    #    return AttributeAccess(self)
+    @default
+    def as_attribute_access(self):
+        return AttributeAccess(self)
 
     @default
     @property
@@ -107,7 +118,7 @@ class Nodify(FullMapping):
                 # Non-Node values are just printed
                 print "%s%s" % (indent * ' ', node)
 
-    @default
+    @extend
     def __repr__(self):
         if hasattr(self.__class__, '_wrapped'):
             class_name = self.__class__._wrapped.__name__
@@ -120,4 +131,4 @@ class Nodify(FullMapping):
                                            name,
                                            hex(id(self))[:-1])
 
-    __str__ = default(__repr__)
+    __str__ = extend(__repr__)
