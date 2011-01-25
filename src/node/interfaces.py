@@ -283,11 +283,11 @@ class IStorage(Interface):
         """Iter throught storage keys.
         """
 
-# BBB
 
 ###############################################################################
-# node attributes
+# BBB
 ###############################################################################
+
 
 class INodeAttributes(IEnumerableMapping, IWriteMapping):
     """Interface describing the attributes of a (lifecycle) Node.
@@ -309,16 +309,6 @@ class INodeAttributes(IEnumerableMapping, IWriteMapping):
         """
 
 
-class ILifecycleNodeAttributes(INodeAttributes):
-    """Node attributes which care about its lifecycle.
-    """
-
-
-###############################################################################
-# unchanged from zodict below
-###############################################################################
-
-# XXX: get rid of. use ICallable instead.
 class ICallableNode(INode):
     """Node which implements the ``__call__`` function.
     """
@@ -328,7 +318,6 @@ class ICallableNode(INode):
         """
 
 
-# XXX: get rid of. use IAttributed instead.
 class IAttributedNode(INode):
     """Node which care about its attributes.
     """
@@ -336,7 +325,6 @@ class IAttributedNode(INode):
     attributes_factory = Attribute(u"``INodeAttributes`` implementation class")
 
 
-# XXX: get rid of. use ILifecycle instead.
 class ILifecycleNode(INode):
     """Node which care about its lifecycle.
     """
@@ -344,17 +332,13 @@ class ILifecycleNode(INode):
                        u"notification.")
 
 
-# XXX: is this a behavior as well?
 class IComposition(INode):
-    """XXX: Write me
-    """
+    pass
 
-# XXX: should also be behavior.
+
 class IAttributedComposition(IComposition, IAttributedNode):
-    """XXX: Write me
-    """
+    pass
 
-# XXX: should also be behavior.
+
 class ILifecycleComposition(IComposition, ILifecycleNode):
-    """XXX: Write me
-    """
+    pass
