@@ -12,19 +12,19 @@ class Unicode(Part):
     """
     
     @plumb
-    def __delitem__(plb, _next, self, key):
+    def __delitem__(_next, self, key):
         if isinstance(key, str):
             key = decode(key)
         _next(key)
 
     @plumb
-    def __getitem__(plb, _next, self, key):
+    def __getitem__(_next, self, key):
         if isinstance(key, str):
             key = decode(key)
         return _next(key)
 
     @plumb
-    def __setitem__(plb, _next, self, key, val):
+    def __setitem__(_next, self, key, val):
         if isinstance(key, str):
             key = decode(key)
         if isinstance(val, str):

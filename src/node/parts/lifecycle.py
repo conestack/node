@@ -32,13 +32,13 @@ class Lifecycle(Part):
     })
 
     @plumb
-    def __init__(prt, _next, self, *args, **kw):
+    def __init__(_next, self, *args, **kw):
         _next(self, *args, **kw)
         self._notify_suppress = False
         objectEventNotify(self.events['created'](self))
 
     @plumb
-    def __setitem__(prt, _next, self, key, val):
+    def __setitem__(_next, self, key, val):
         _next(self, key, val)
         if self._notify_suppress:
             return
@@ -46,7 +46,7 @@ class Lifecycle(Part):
                                                newName=key))
 
     @plumb
-    def __delitem__(prt, _next, self, key):
+    def __delitem__(_next, self, key):
         delnode = self[key]
         _next(self, key)
         if self._notify_suppress:
@@ -55,7 +55,7 @@ class Lifecycle(Part):
                                                  oldName=key))
     
     @plumb
-    def detach(prt, _next, self, key):
+    def detach(_next, self, key):
         notify_before = self._notify_suppress
         self._notify_suppress = True
         node = _next(self, key)
@@ -68,14 +68,14 @@ class Lifecycle(Part):
 class AttributesLifecycle(Part):
 
     @plumb
-    def __setitem__(prt, _next, self, key, val):
+    def __setitem__(_next, self, key, val):
         _next(self, key, val)
         if self.context._notify_suppress:
             return
         objectEventNotify(self.context.events['modified'](self.context))
 
     @plumb
-    def __delitem__(prt, _next, self, key):
+    def __delitem__(_next, self, key):
         _next(self, key)
         if self.context._notify_suppress:
             return

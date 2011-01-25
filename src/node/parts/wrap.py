@@ -11,14 +11,14 @@ class Wrap(Part):
     """
     
     @plumb
-    def __getitem__(plb, _next, self, key):
+    def __getitem__(_next, self, key):
         val = _next(self, key)
         if INode.providedBy(val):
             val = NodeNode(val)
         return val
 
     @plumb
-    def __setitem__(plb, _next, self, key, val):
+    def __setitem__(_next, self, key, val):
         if INode.providedBy(val):
             val = val.context
         _next(self, key, val)

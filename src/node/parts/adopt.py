@@ -9,7 +9,7 @@ class Adopt(Part):
     """Plumbing element that provides adoption of children.
     """
     @plumb
-    def __setitem__(plb, _next, self, key, val):
+    def __setitem__(_next, self, key, val):
         # only care about adopting if we have a node
         if not INode.providedBy(val):
             _next(self, key, val)

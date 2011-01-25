@@ -16,7 +16,7 @@ class NodeChildValidate(Part):
     allow_non_node_childs = default(False)
     
     @plumb
-    def __setitem__(plb, _next, self, key, val):
+    def __setitem__(_next, self, key, val):
         if not self.allow_non_node_childs and inspect.isclass(val):
             raise ValueError, u"It isn't allowed to use classes as values."
         if not self.allow_non_node_childs and not INode.providedBy(val):

@@ -16,7 +16,7 @@ class Nodify(FullMapping):
     __parent__ = default(None)
 
     @plumb
-    def __init__(prt, _next, self, *args, **kw):
+    def __init__(_next, self, *args, **kw):
         # we have to pop our keywords before passing on, independent of when we
         # use then.
         name = kw.pop('name', Unset)
@@ -35,7 +35,7 @@ class Nodify(FullMapping):
             self.__parent__ = parent
 
     @plumb
-    def copy(prt, _next, self):
+    def copy(_next, self):
         new = _next(self)
         # XXX Where do we need a copy to have the same name, and when do we
         # need it to have the same parent? And what does it mean to have a

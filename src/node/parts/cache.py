@@ -1,7 +1,7 @@
 # STUB
 
 class Cache(object):
-    def __getitem__(plb, _next, self, key):
+    def __getitem__(_next, self, key):
         # - check if key is in cache
         # - check if cached item is still valid
         # - return if valid

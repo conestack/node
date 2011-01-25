@@ -32,14 +32,14 @@ class Reference(Part):
     implements(IReference)
 
     @plumb
-    def __init__(prt, _next, self, *args, **kw):
+    def __init__(_next, self, *args, **kw):
         self._index = dict()
         self._uuid = None
         self.uuid = uuid.uuid4()
         _next(self, *args, **kw)
     
     @plumb
-    def __setitem__(prt, _next, self, key, val):
+    def __setitem__(_next, self, key, val):
         if INode.providedBy(val):
             has_children = False
             for valkey in val.iterkeys():
@@ -54,7 +54,7 @@ class Reference(Part):
         _next(self, key, val)
     
     @plumb
-    def __delitem__(prt, _next, self, key):
+    def __delitem__(_next, self, key):
         # fail immediately if key does not exist
         todel = self[key]
         if hasattr(todel, '_to_delete'):
@@ -63,7 +63,7 @@ class Reference(Part):
         _next(self, key)
     
     @plumb
-    def detach(prt, _next, self, key):
+    def detach(_next, self, key):
         node = _next(self, key)
         node._index = { int(node.uuid): node }
         node._index_nodes()

@@ -3,6 +3,14 @@ from zope.interface import implements
 from zope.interface.common.mapping import IEnumerableMapping, IFullMapping
 from interfaces import IAttributeAccess
 
+
+class Unset(object):
+    """Used to identify unset values in contrast to None
+
+    use for example by node.parts.nodify.Nodify
+    """
+
+
 def LocationIterator(object):
     """Iterate over an object and all of its parents.
 

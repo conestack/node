@@ -28,11 +28,11 @@ class Alias(Part):
     """
     
     @plumb
-    def __init__(plb, _next, self, aliaser=None):
+    def __init__(_next, self, aliaser=None):
         self.aliaser = aliaser
 
     @plumb
-    def __delitem__(plb, _next, self, key):
+    def __delitem__(_next, self, key):
         if self.aliaser:
             unaliased_key = self.aliaser.unalias(key)
         else:
@@ -43,7 +43,7 @@ class Alias(Part):
             raise KeyError(key)
 
     @plumb
-    def __getitem__(plb, _next, self, key):
+    def __getitem__(_next, self, key):
         if self.aliaser:
             unaliased_key = self.aliaser.unalias(key)
         else:
@@ -54,7 +54,7 @@ class Alias(Part):
             raise KeyError(key)
 
     @plumb
-    def __iter__(plb, _next, self):
+    def __iter__(_next, self):
         for key in _next(self):
             try:
                 if self.aliaser:
@@ -68,7 +68,7 @@ class Alias(Part):
                 raise
 
     @plumb
-    def __setitem__(plb, _next, self, key, val):
+    def __setitem__(_next, self, key, val):
         if self.aliaser:
             unaliased_key = self.aliaser.unalias(key)
         else:
@@ -79,7 +79,7 @@ class Alias(Part):
             raise KeyError(key)
 
 #    @plumb
-#    def iteritems(plb, _next, self):
+#    def iteritems(_next, self):
 #        """XXX non-functional
 #
 #        idea is to ignore _next, but instead reroute to other functions here
