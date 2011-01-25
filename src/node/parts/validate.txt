@@ -1,5 +1,5 @@
-node.parts.validate
-======================
+node.parts.NodeChildValidate
+----------------------------
 
 ::
 

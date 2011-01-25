@@ -4,8 +4,7 @@ node.aliasing
 DictAliaser
 -----------
 
-A dict aliaser takes a dictionary as base for aliasing.
-::
+A dict aliaser takes a dictionary as base for aliasing.::
 
     >>> from node.aliasing import DictAliaser
     >>> da = DictAliaser([('alias1', 'key1'), ('alias2', 'key2')])
@@ -26,11 +25,11 @@ A dict aliaser takes a dictionary as base for aliasing.
     ...
     KeyError: 'foo'
 
+
 PrefixAliaser
 -------------
 
-An aliaser that simply prefixes all keys.
-::
+An aliaser that simply prefixes all keys.::
 
     >>> from node.aliasing import PrefixAliaser
     >>> pa = PrefixAliaser('prefix-')
@@ -46,11 +45,11 @@ An aliaser that simply prefixes all keys.
     ...
     KeyError: u"key 'foo' does not match prefix 'prefix-'"
 
+
 SuffixAliaser
 -------------
 
-An aliaser that simply suffixes all keys.
-::
+An aliaser that simply suffixes all keys.::
 
     >>> from node.aliasing import SuffixAliaser
     >>> sa = SuffixAliaser('-suffix')
@@ -66,11 +65,11 @@ An aliaser that simply suffixes all keys.
     ...
     KeyError: u"key 'foo' does not match suffix '-suffix'"
 
+
 AliaserChain
 ------------
 
-A chain of aliasers.
-::
+A chain of aliasers.::
 
     >>> from node.aliasing import AliaserChain
     >>> aliaser = AliaserChain()
@@ -86,8 +85,10 @@ A chain of aliasers.
     >>> aliaser.unalias(aliaser.alias('foo'))
     'foo'
 
+
 PrefixSuffixAliaser
 -------------------
+
 ::
 
     >>> from node.aliasing import PrefixSuffixAliaser

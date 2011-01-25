@@ -1,13 +1,13 @@
-FullMapping part
-----------------
+node.part.FullMapping
+---------------------
 
-Plumber and FullMappingTester::
+Plumber and FullMappingTester.::
 
     >>> from plumber import plumber
     >>> from node.testing import FullMappingTester
 
 A full mapping that is going to fail, because nobody takes care of
-``__delitem__``, ``__getitem__``, ``__iter__`` and ``__setitem__``::
+``__delitem__``, ``__getitem__``, ``__iter__`` and ``__setitem__``.::
 
     >>> from node.parts.mapping import FullMapping
     >>> class MyFullMapping(object):
@@ -40,7 +40,7 @@ A full mapping that is going to fail, because nobody takes care of
     ``values``: failed: NotImplementedError()
 
 All methods are defined on the class by the FullMapping part, none are
-inherited from base classes::
+inherited from base classes.::
 
     >>> tester.wherefrom
     __contains__:  MyFullMapping
@@ -64,7 +64,7 @@ inherited from base classes::
     update:  MyFullMapping
     values:  MyFullMapping
 
-Use a storage::
+Use a storage.::
 
     >>> from node.parts.storage import DictStorage
     >>> class MyFullMapping(object):
@@ -97,7 +97,7 @@ Use a storage::
     ``values``: OK
 
 Only the Four were taken from the base class, the others were filled in by the
-FullMapping part::
+FullMapping part.::
 
     >>> tester.wherefrom
     __contains__:  MyFullMapping

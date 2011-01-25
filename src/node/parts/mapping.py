@@ -1,18 +1,21 @@
-from plumber import Part
-from plumber import default
-from plumber import extend
+from plumber import (
+    Part,
+    default,
+    extend,
+)
 from zope.interface import implements
-from zope.interface.common.mapping import IItemMapping
-from zope.interface.common.mapping import IReadMapping
-from zope.interface.common.mapping import IIterableMapping
-from zope.interface.common.mapping import IWriteMapping
-from zope.interface.common.mapping import IEnumerableMapping
-from zope.interface.common.mapping import IMapping
-from zope.interface.common.mapping import IClonableMapping
-from zope.interface.common.mapping import IExtendedReadMapping
-from zope.interface.common.mapping import IExtendedWriteMapping
-from zope.interface.common.mapping import IFullMapping
-
+from zope.interface.common.mapping import (
+    IItemMapping,
+    IReadMapping,
+    IIterableMapping,
+    IWriteMapping,
+    IEnumerableMapping,
+    IMapping,
+    IClonableMapping,
+    IExtendedReadMapping,
+    IExtendedWriteMapping,
+    IFullMapping,
+)
 from node.utils import Unset
 
 
@@ -222,8 +225,10 @@ class ExtendedWriteMapping(WriteMapping):
         raise KeyError('popitem(): mapping is empty')
 
 
-class FullMapping(ExtendedReadMapping, ExtendedWriteMapping, ClonableMapping,
-        Mapping):
+class FullMapping(ExtendedReadMapping,
+                  ExtendedWriteMapping,
+                  ClonableMapping,
+                  Mapping):
     """Provides defaults for IFullMapping
 
     NotImplementedError is raised by defaults for:

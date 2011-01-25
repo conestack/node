@@ -1,14 +1,17 @@
-from plumber import default
-from plumber import extend
-from plumber import plumb
-from plumber import Part
+from plumber import (
+    default,
+    extend,
+    plumb,
+    Part,
+)
 from zope.interface import implements
-
 from node.interfaces import INode
 from node.parts.mapping import FullMapping
-from node.utils import Unset
-from node.utils import LocationIterator
-from node.utils import AttributeAccess
+from node.utils import (
+    Unset,
+    LocationIterator,
+    AttributeAccess,
+)
 
 
 class Nodify(FullMapping):

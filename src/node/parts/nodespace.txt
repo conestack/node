@@ -1,5 +1,5 @@
-node.parts.nodespace
-=======================
+node.parts.Nodespaces
+---------------------
 
     >>> from odict import odict
     >>> from plumber import plumber

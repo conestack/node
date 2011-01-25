@@ -1,7 +1,10 @@
 from odict import odict
-from plumber import default
-from plumber import extend
-from plumber import Part
+from plumber import (
+    default,
+    extend,
+    Part,
+)
+
 
 class DictStorage(Part):
     
@@ -53,20 +56,6 @@ class OdictStorage(Part):
     @extend
     def __iter__(self):
         return self.storage.__iter__()
-    
-    @extend
-    def update(self, *args, **kw):
-        if len(args) > 1:
-            raise TypeError("At most one positional argument, not: %s." % \
-                    (len(args),))
-        if args:
-            data = args[0]
-            if hasattr(data, 'iteritems'):
-                data = data.iteritems()
-            for key, val in data:
-                self[key] = val
-        for key, val in kw.iteritems():
-            self[key] = val
     
     @extend
     def popitem(self):

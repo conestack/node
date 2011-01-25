@@ -10,6 +10,7 @@ from node.interfaces import (
     INodeChildValidate,
 )
 
+
 class NodeChildValidate(Part):
     implements(INodeChildValidate)
     

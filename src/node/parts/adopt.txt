@@ -1,13 +1,13 @@
-Adopt plumbing
---------------
+node.parts.Adopt
+----------------
 
-General imports::
+General imports.::
 
     >>> from plumber import plumber
     >>> from node.tests.env import MockupNode
     >>> from node.tests.env import NoNode
 
-A dictionary is used as end point::
+A dictionary is used as end point.::
 
     >>> from node.parts.adopt import Adopt
     >>> class AdoptingDict(dict):
@@ -16,7 +16,7 @@ A dictionary is used as end point::
 
     >>> ad = AdoptingDict()
 
-The mockup node is adopted::
+The mockup node is adopted.::
 
     >>> node = MockupNode()
     >>> ad['foo'] = node
@@ -27,7 +27,7 @@ The mockup node is adopted::
     >>> node.__parent__ is ad
     True
 
-The non-node object is not adopted::
+The non-node object is not adopted.::
 
     >>> nonode = NoNode()
     >>> ad['bar'] = nonode

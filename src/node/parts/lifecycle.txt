@@ -1,7 +1,7 @@
-node.parts.lifecycle
-=======================
+node.parts.Lifecycle
+--------------------
 
-Check NodeCreation::
+Check NodeCreation.::
 
     >>> import zope.component
     >>> from node.interfaces import INode
@@ -57,8 +57,7 @@ Check NodeCreation::
     >>> handler.handled
     [<node.events.NodeCreatedEvent object at ...>]
 
-Check Node adding.
-::
+Check Node adding.::
     
     >>> del handler.handled[0]
     >>> child1 = LifecycleNode()
@@ -67,20 +66,19 @@ Check Node adding.
     [<node.events.NodeCreatedEvent object at ...>, 
     <node.events.NodeAddedEvent object at ...>]
 
-Check Node modification.
-::
+Check Node modification.::
 
     >>> del handler.handled[0]
     >>> del handler.handled[0]
 
     >>> ignore = child1.attrs
     
-No event, despite the node creation for the attributes nodespace
+No event, despite the node creation for the attributes nodespace.::
 
     >>> handler.handled
     []
     
-Node modified events if the attributes nodespace is changed
+Node modified events if the attributes nodespace is changed.::
 
     >>> child1.attrs['foo'] = 1
     >>> handler.handled
@@ -91,16 +89,14 @@ Node modified events if the attributes nodespace is changed
     >>> handler.handled
     [<node.events.NodeModifiedEvent object at ...>]
 
-Check Node Deletion.
-:: 
+Check Node Deletion.:: 
 
     >>> handler.handled = []
     >>> del root['child1']
     >>> handler.handled
     [<node.events.NodeRemovedEvent object at ...>]
 
-Check Node Detach.
-:: 
+Check Node Detach.:: 
 
     >>> child2 = LifecycleNode()
     >>> root['child2'] = child2

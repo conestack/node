@@ -2,12 +2,14 @@ import inspect
 from plumber import plumber
 from zope.interface import implements
 from node.interfaces import INode
-from node.parts.adopt import Adopt
-from node.parts.nodify import Nodify
-from node.parts.nodify import NodeInit
-from node.parts.nodify import NodeRepr
-from node.parts.validate import NodeChildValidate
-from node.parts.storage import OdictStorage
+from node.parts import (
+    Adopt,
+    Nodify,
+    NodeInit,
+    NodeRepr,
+    NodeChildValidate,
+    OdictStorage,
+)
 
 
 class MockupNode(object):
@@ -21,10 +23,6 @@ class NoNode(object):
 
 
 class MyNode(object):
-    """Below we utilize ``odict.odict`` for most of the work. There exists node 
-    ``OrderedNode``, which already uses odict, so for illustration we import
-    ``odict`` as ``somefullmapping``.
-    """
     __metaclass__ = plumber
     __plumbing__ = (
         NodeInit,

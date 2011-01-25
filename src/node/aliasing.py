@@ -1,14 +1,20 @@
 from odict import odict
-from plumber import plumber
-from plumber import Part
+from plumber import (
+    plumber,
+    Part,
+)
 from zope.interface import implements
-from zope.interface.common.mapping import IEnumerableMapping
-from zope.interface.common.mapping import IFullMapping
+from zope.interface.common.mapping import (
+    IEnumerableMapping,
+    IFullMapping,
+)
 from node.interfaces import IAliaser
 from node.utils import ReverseMapping
-from node.parts.adopt import Adopt
-from node.parts.nodify import Nodify
-from node.parts.validate import NodeChildValidate
+from node.parts import (
+    Adopt,
+    Nodify,
+    NodeChildValidate,
+)
 
 
 class DictAliaser(odict):
@@ -132,7 +138,11 @@ class AliasedNodespace(object):
     XXX: make me a Part
     """
     __metaclass__ = plumber
-    __plumbing__ = NodeChildValidate, Adopt, Nodify
+    __plumbing__ = (
+        NodeChildValidate,
+        Adopt,
+        Nodify,
+    )
     
     def __init__(self, context, aliaser=None):
         """

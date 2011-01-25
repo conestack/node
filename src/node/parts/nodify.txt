@@ -1,3 +1,6 @@
+node.parts.Nodify
+-----------------
+
     >>> from plumber import plumber
 
     >>> from node.testing import FullMappingTester
@@ -12,9 +15,25 @@
     ...     __plumbing__ = NodeInit, Adopt, Nodify, NodeRepr, DictStorage
 
     >>> tester = FullMappingTester(Node, sorted_output=True)
-    >>> tester.direct_error = True
-    
     >>> tester.run()
-    
-    
-    >>> #tester.combined
+    >>> tester.combined
+    ``__contains__``: OK
+    ``__delitem__``: OK
+    ``__getitem__``: OK
+    ``__iter__``: OK
+    ``__len__``: OK
+    ``__setitem__``: OK
+    ``clear``: OK
+    ``copy``: OK
+    ``get``: OK
+    ``has_key``: OK
+    ``items``: OK
+    ``iteritems``: OK
+    ``iterkeys``: OK
+    ``itervalues``: OK
+    ``keys``: OK
+    ``pop``: OK
+    ``popitem``: OK
+    ``setdefault``: OK
+    ``update``: OK
+    ``values``: OK
