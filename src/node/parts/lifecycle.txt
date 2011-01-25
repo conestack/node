@@ -23,10 +23,10 @@ Check NodeCreation::
     >>> zope.component.provideHandler(handler, [INode, INodeRemovedEvent])
     >>> zope.component.provideHandler(handler, [INode, INodeDetachedEvent])
     
-    >>> from node.base import OrderedNode
     >>> from node.parts.lifecycle import Lifecycle, AttributesLifecycle
     >>> from node.parts.attributes import Attributes, NodeAttributes
     >>> from node.parts.nodespace import Nodespaces
+    >>> from node.parts.nodify import Nodify
     
     >>> root = OrderedNode('no_notify')
     >>> handler.handled
@@ -38,9 +38,9 @@ Check NodeCreation::
     ...     __metaclass__ = plumber
     ...     __plumbing__ = AttributesLifecycle
     
-    >>> class LifecycleNode(OrderedNode):
+    >>> class LifecycleNode(dict):
     ...     __metaclass__ = plumber
-    ...     __plumbing__ = Nodespaces, Attributes, Lifecycle
+    ...     __plumbing__ = Nodespaces, Attributes, Lifecycle, Nodify
     ...     attributes_factory = LifecycleNodeAttributes
 
     >>> root = LifecycleNode('root')
