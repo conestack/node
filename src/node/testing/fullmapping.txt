@@ -311,7 +311,7 @@ FullMappingTester
     >>> fmtester.test_items()
     Traceback (most recent call last):
       ...
-    Exception: Expected same value for ``key`` and  ``__name__``
+    Exception: Expected same value for ``key`` "foo" and ``__name__`` "None"
     
     >>> class TestNodeItems(TestNodeSetItem, TestMappingItems):
     ...     pass

@@ -23,17 +23,19 @@ class Order(Part):
         index = self._nodeindex(refnode)
         prevnode = None
         prevkey = None
+        storage = self.storage
+        dict_impl = storage._dict_impl()
         if index > 0:
             prevkey = self.keys()[index - 1]
-            prevnode = self._dict_impl().__getitem__(self, prevkey)
+            prevnode = dict_impl.__getitem__(storage, prevkey)
         if prevnode is not None:
-            self._dict_impl().__getitem__(self, prevkey)[2] = nodekey
+            dict_impl.__getitem__(storage, prevkey)[2] = nodekey
             newnode = [prevkey, newnode, refkey]
         else:
-            self.lh = nodekey
+            storage.lh = nodekey
             newnode = [_nil, newnode, refkey]
-        self._dict_impl().__getitem__(self, refkey)[0] = nodekey
-        self._dict_impl().__setitem__(self, nodekey, newnode)
+        dict_impl.__getitem__(storage, refkey)[0] = nodekey
+        dict_impl.__setitem__(storage, nodekey, newnode)
         self[nodekey] = newnode[1]
 
     @extend
@@ -45,17 +47,19 @@ class Order(Part):
         nextnode = None
         nextkey = None
         keys = self.keys()
+        storage = self.storage
+        dict_impl = storage._dict_impl()
         if index < len(keys) - 1:
             nextkey = self.keys()[index + 1]
-            nextnode = self._dict_impl().__getitem__(self, nextkey)
+            nextnode = dict_impl.__getitem__(storage, nextkey)
         if nextnode is not None:
-            self._dict_impl().__getitem__(self, nextkey)[0] = nodekey
+            dict_impl.__getitem__(storage, nextkey)[0] = nodekey
             newnode = [refkey, newnode, nextkey]
         else:
-            self.lt = nodekey
+            storage.lt = nodekey
             newnode = [refkey, newnode, _nil]
-        self._dict_impl().__getitem__(self, refkey)[2] = nodekey
-        self._dict_impl().__setitem__(self, nodekey, newnode)
+        dict_impl.__getitem__(storage, refkey)[2] = nodekey
+        dict_impl.__setitem__(storage, nodekey, newnode)
         self[nodekey] = newnode[1]
     
     @extend

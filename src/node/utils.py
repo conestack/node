@@ -8,6 +8,11 @@ class Unset(object):
     """Used to identify unset values in contrast to None
 
     use for example by node.parts.nodify.Nodify
+    
+    XXX: instanciate directly here??
+    XXX: yafowil contains another unset object, use the one from node
+    XXX: call me UNSET as constant?
+         UNSET = object()
     """
 
 

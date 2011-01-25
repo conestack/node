@@ -1,10 +1,14 @@
 from odict import odict
+from plumber import plumber
+from plumber import Part
 from zope.interface import implements
 from zope.interface.common.mapping import IEnumerableMapping
 from zope.interface.common.mapping import IFullMapping
-from interfaces import IAliaser
-from utils import ReverseMapping
-from base import AbstractNode
+from node.interfaces import IAliaser
+from node.utils import ReverseMapping
+from node.parts.adopt import Adopt
+from node.parts.nodify import Nodify
+from node.parts.validate import NodeChildValidate
 
 
 class DictAliaser(odict):
@@ -116,10 +120,7 @@ class NamedAliasers(dict):
     """
 
 
-###
-#
-# Outdated, now realized as a plumbing
-class AliasedNodespace(AbstractNode):
+class AliasedNodespace(object):
     """Performs aliasing/unaliasing for node children.
 
     Is not the parent of its children, the children don't know about their name
@@ -127,7 +128,11 @@ class AliasedNodespace(AbstractNode):
 
     Future additional mode: children are wrapped, wrapper knows name and we are
     parent of wrapper.
+    
+    XXX: make me a Part
     """
+    __metaclass__ = plumber
+    __plumbing__ = NodeChildValidate, Adopt, Nodify
     
     def __init__(self, context, aliaser=None):
         """
@@ -137,7 +142,11 @@ class AliasedNodespace(AbstractNode):
             the aliaser to be used
         """
         #XXX: is just taking over the name ok for all use cases? 
-        super(AliasedNodespace, self).__init__(context.__name__)
+        #super(AliasedNodespace, self).__init__(context.__name__)
+        
+        self.__name__ = context.__name__
+        self.__parent__ = None
+        
         self.context = context
         self.aliaser = aliaser
 
@@ -181,6 +190,6 @@ class AliasedNodespace(AbstractNode):
                 # no whitelisting and a KeyError on our internal data: that's
                 # bad! Most probably not triggered on _Node but a subclass
                 raise RuntimeError(u"Inconsist internal node state")
-
+    
     def __repr__(self):
         return "Aliased " + self.context.__repr__()

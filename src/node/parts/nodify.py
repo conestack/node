@@ -1,11 +1,14 @@
 from plumber import default
 from plumber import extend
 from plumber import plumb
+from plumber import Part
 from zope.interface import implements
 
 from node.interfaces import INode
 from node.parts.mapping import FullMapping
 from node.utils import Unset
+from node.utils import LocationIterator
+from node.utils import AttributeAccess
 
 
 class Nodify(FullMapping):
@@ -15,24 +18,21 @@ class Nodify(FullMapping):
     __name__ = default(None)
     __parent__ = default(None)
 
-    @plumb
-    def __init__(_next, self, *args, **kw):
-        # we have to pop our keywords before passing on, independent of when we
-        # use then.
-        name = kw.pop('name', Unset)
-        parent = kw.pop('parent', Unset)
+    #@plumb
+    #def __init__(_next, self, *args, **kw):
+    #    # we have to pop our keywords before passing on, independent of when we
+    #    # use then.
+    #    name = kw.pop('name', Unset)
+    #    parent = kw.pop('parent', Unset)
 
-        # should not be here
-        self.allow_non_node_childs = False
+    #    # next in the chain
+    #    _next(self, *args, **kw)
 
-        # next in the chain
-        _next(self, *args, **kw)
-
-        # Set name and parent, if they were in kw
-        if name is not Unset:
-            self.__name__ = name
-        if parent is not Unset:
-            self.__parent__ = parent
+    #    # Set name and parent, if they were in kw
+    #    if name is not Unset:
+    #        self.__name__ = name
+    #    if parent is not Unset:
+    #        self.__parent__ = parent
 
     @plumb
     def copy(_next, self):
@@ -43,7 +43,7 @@ class Nodify(FullMapping):
         new.__name__ = self.__name__
         new.__parent__ = self.__parent__
         return new
-
+    
     @default
     @property
     def path(self):
@@ -117,6 +117,9 @@ class Nodify(FullMapping):
             except AttributeError:
                 # Non-Node values are just printed
                 print "%s%s" % (indent * ' ', node)
+
+
+class NodeRepr(Part):
 
     @extend
     def __repr__(self):

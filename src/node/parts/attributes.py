@@ -1,4 +1,5 @@
 from plumber import (
+    plumber,
     plumb,
     extend,
     default,
@@ -6,14 +7,25 @@ from plumber import (
 )
 from zope.interface import implements
 from node.interfaces import IAttributes
-from node.base import OrderedNode
+from node.parts.adopt import Adopt
+from node.parts.nodify import Nodify
+from node.parts.validate import NodeChildValidate
+from node.parts.storage import OdictStorage
 from node.utils import AttributeAccess
 
 
-class NodeAttributes(OrderedNode):
+class NodeAttributes(object):
+    
+    __metaclass__ = plumber
+    __plumbing__ = (
+        NodeChildValidate,
+        Adopt,
+        Nodify,
+        OdictStorage,
+    )
     
     def __init__(self, context):
-        OrderedNode.__init__(self)
+        #OrderedNode.__init__(self)
         self.allow_non_node_childs = True
         self.context = context
         self._node = context # BBB

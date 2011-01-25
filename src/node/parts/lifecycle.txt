@@ -28,20 +28,25 @@ Check NodeCreation::
     >>> from node.parts.nodespace import Nodespaces
     >>> from node.parts.nodify import Nodify
     
+    >>> from node.base import OrderedNode
     >>> root = OrderedNode('no_notify')
     >>> handler.handled
     []
     
     >>> from plumber import plumber
+    >>> from node.parts.storage import DictStorage
     
     >>> class LifecycleNodeAttributes(NodeAttributes):
     ...     __metaclass__ = plumber
     ...     __plumbing__ = AttributesLifecycle
     
-    >>> class LifecycleNode(dict):
+    >>> class LifecycleNode(object):
     ...     __metaclass__ = plumber
-    ...     __plumbing__ = Nodespaces, Attributes, Lifecycle, Nodify
+    ...     __plumbing__ = Nodespaces, Attributes, Lifecycle, Nodify, DictStorage
     ...     attributes_factory = LifecycleNodeAttributes
+    ...     def __init__(self, name=None, parent=None):
+    ...         self.__name__ = name
+    ...         self.__parent__ = parent
 
     >>> root = LifecycleNode('root')
     >>> handler.handled

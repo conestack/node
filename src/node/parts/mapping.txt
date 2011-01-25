@@ -64,27 +64,12 @@ inherited from base classes::
     update:  MyFullMapping
     values:  MyFullMapping
 
-A base class that implements the Four is enough, we call it a storage::
+Use a storage::
 
-    >>> class Storage(object):
-    ...     def __init__(self):
-    ...         self.data = dict()
-    ...
-    ...     def __delitem__(self, key):
-    ...         del self.data[key]
-    ...
-    ...     def __getitem__(self, key):
-    ...         return self.data[key]
-    ...
-    ...     def __iter__(self):
-    ...         return iter(self.data)
-    ...
-    ...     def __setitem__(self, key, val):
-    ...         self.data[key] = val
-
-    >>> class MyFullMapping(Storage):
+    >>> from node.parts.storage import DictStorage
+    >>> class MyFullMapping(object):
     ...     __metaclass__ = plumber
-    ...     __plumbing__ = FullMapping
+    ...     __plumbing__ = FullMapping, DictStorage
 
     >>> tester = FullMappingTester(MyFullMapping, include_node_checks=False,
     ...                            sorted_output=True)
@@ -116,11 +101,11 @@ FullMapping part::
 
     >>> tester.wherefrom
     __contains__:  MyFullMapping
-    __delitem__:  inherited from base class
-    __getitem__:  inherited from base class
-    __iter__:  inherited from base class
+    __delitem__:  MyFullMapping
+    __getitem__:  MyFullMapping
+    __iter__:  MyFullMapping
     __len__:  MyFullMapping
-    __setitem__:  inherited from base class
+    __setitem__:  MyFullMapping
     clear:  MyFullMapping
     copy:  MyFullMapping
     get:  MyFullMapping
@@ -135,62 +120,3 @@ FullMapping part::
     setdefault:  MyFullMapping
     update:  MyFullMapping
     values:  MyFullMapping
-
-
-FullMapping a dict is rather pointless::
-
-    >>> class MyFullMapping(dict):
-    ...     __metaclass__ = plumber
-    ...     __plumbing__ = FullMapping
-
-    >>> tester = FullMappingTester(MyFullMapping, include_node_checks=False,
-    ...                            sorted_output=True)
-    >>> tester.run()
-
-it works::
-
-    >>> tester.combined
-    ``__contains__``: OK
-    ``__delitem__``: OK
-    ``__getitem__``: OK
-    ``__iter__``: OK
-    ``__len__``: OK
-    ``__setitem__``: OK
-    ``clear``: OK
-    ``copy``: OK
-    ``get``: OK
-    ``has_key``: OK
-    ``items``: OK
-    ``iteritems``: OK
-    ``iterkeys``: OK
-    ``itervalues``: OK
-    ``keys``: OK
-    ``pop``: OK
-    ``popitem``: OK
-    ``setdefault``: OK
-    ``update``: OK
-    ``values``: OK
-
-but the dict already implements all methods, none were taken from FullMapping::
-
-    >>> tester.wherefrom
-    __contains__:  inherited from base class
-    __delitem__:  inherited from base class
-    __getitem__:  inherited from base class
-    __iter__:  inherited from base class
-    __len__:  inherited from base class
-    __setitem__:  inherited from base class
-    clear:  inherited from base class
-    copy:  inherited from base class
-    get:  inherited from base class
-    has_key:  inherited from base class
-    items:  inherited from base class
-    iteritems:  inherited from base class
-    iterkeys:  inherited from base class
-    itervalues:  inherited from base class
-    keys:  inherited from base class
-    pop:  inherited from base class
-    popitem:  inherited from base class
-    setdefault:  inherited from base class
-    update:  inherited from base class
-    values:  inherited from base class

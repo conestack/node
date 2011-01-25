@@ -107,7 +107,9 @@ class FullMappingTester(BaseTester):
                 raise Exception(msg)
             if self.include_node_checks:
                 if key != value.__name__:
-                    msg = 'Expected same value for ``key`` and  ``__name__``'
+                    msg = 'Expected same value for ``key`` "%s" and ' + \
+                          '``__name__`` "%s"'
+                    msg = msg % (str(key), str(value.__name__))
                     raise Exception(msg)
         for key, value in items:
             if not value is self.context[key]:
@@ -144,7 +146,9 @@ class FullMappingTester(BaseTester):
     def test_update(self):
         baz = self.class_()
         blub = self.class_()
+        # if update maps to odict update, kw's fail
         self.context.update((('baz', baz),), blub=blub)
+        #self.context.update((('baz', baz), ('blub', blub)))
         try:
             self.context['baz']
             self.context['blub']

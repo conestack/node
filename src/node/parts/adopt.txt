@@ -12,7 +12,7 @@ A dictionary is used as end point::
     >>> from node.parts.adopt import Adopt
     >>> class AdoptingDict(dict):
     ...     __metaclass__ = plumber
-    ...     __plumbing__ = (Adopt,)
+    ...     __plumbing__ = Adopt
 
     >>> ad = AdoptingDict()
 
@@ -54,10 +54,12 @@ instead of just naming the plumbing init eg plumbing__init__.
     >>> class FakeDict(object):
     ...     def __setitem__(self, key, val):
     ...         raise KeyError(key)
+    ...     def setdefault(self, key, default=None):
+    ...         pass
 
     >>> class FailingAD(FakeDict):
     ...     __metaclass__ = plumber
-    ...     __plumbing__ = (Adopt,)
+    ...     __plumbing__ = Adopt
 
     >>> fail = FailingAD()
     >>> node = MockupNode()

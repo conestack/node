@@ -38,6 +38,8 @@ class BaseTester(object):
     # context manipulation.
     iface_contract = []
     
+    direct_error = False
+    
     # sorted_output = True should be default
     def __init__(self, class_, context=None, sorted_output=False):
         """
@@ -83,6 +85,10 @@ class BaseTester(object):
                 msg = 'Given Implementation does not provide ``%s``' % name
                 raise ContractError(msg)
             writer = self.writer(name)
+            if self.direct_error:
+                func()
+                writer.success()
+                continue
             try:
                 func()
                 writer.success()

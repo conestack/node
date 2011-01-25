@@ -145,6 +145,7 @@ class IterableMapping(EnumerableMapping):
 
 class ClonableMapping(Part):
     implements(IClonableMapping)
+    
     # We need to extend, because a base class does not know what to create
     @extend
     def copy(self):
@@ -155,6 +156,7 @@ class ClonableMapping(Part):
 
 class ExtendedReadMapping(IterableMapping):
     implements(IExtendedReadMapping)
+    
     @default
     def has_key(self, key):
         """uses ``__iter__``

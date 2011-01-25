@@ -173,6 +173,21 @@ class INode(ILocation, IFullMapping):
 # plumbing parts
 ###############################################################################
 
+class IMappingImpl(Interface):
+    """A class utilizing this contract must inherit from choosen
+    ``IFullMapping``.
+
+    We cannot use same contract as in ``odict.odict`` -> ``_dict_impl``.
+    Odict requires the dict implementation to store it's internal double linked
+    list while we need to have an implementation which must provide a ready to
+    use ``IFullMapping``
+    """
+
+    def _mapping_impl():
+        """Return ``IFullMaping`` implementing class.
+        """
+
+
 class INodeChildValidate(Interface):
     """XXX
     """

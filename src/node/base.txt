@@ -14,7 +14,7 @@ AbstractNode
     <class 'node.base.AbstractNode'>
     
     >>> AbstractNode.__bases__
-    (<class 'node.mixin._NodeMixin'>, <class 'node.mixin._FullMappingMixin'>)
+    (<type 'object'>,)
     
     >>> abstract = AbstractNode()
     >>> abstract
@@ -25,22 +25,22 @@ Storage related operations of AbstractNode raise ``NotImplementedError``.
     >>> abstract['foo']
     Traceback (most recent call last):
       ...
-    TypeError: 'AbstractNode' object is unsubscriptable
+    NotImplementedError
     
     >>> del abstract['foo']
     Traceback (most recent call last):
       ...
-    TypeError: 'AbstractNode' object does not support item deletion
+    NotImplementedError
     
     >>> abstract['foo'] = 'bar'
     Traceback (most recent call last):
       ...
-    TypeError: 'AbstractNode' object does not support item assignment
+    NotImplementedError
     
     >>> [key for key in abstract]
     Traceback (most recent call last):
       ...
-    TypeError: 'AbstractNode' object is not iterable
+    NotImplementedError
     
     >>> abstract_copy = abstract.copy()
     Traceback (most recent call last):
@@ -113,7 +113,7 @@ BaseNode
     <class 'node.base.BaseNode'>
     
     >>> BaseNode.__bases__
-    (<class 'node.mixin._ImplMixin'>, <type 'dict'>)
+    (<type 'object'>,)
     
     >>> basenode = BaseNode()
     >>> basenode
@@ -152,9 +152,7 @@ OrderedNode
     <class 'node.base.OrderedNode'>
     
     >>> OrderedNode.__bases__
-    (<class 'node.mixin._NodeMixin'>, 
-    <class 'node.mixin._ImplMixin'>, 
-    <class 'odict.pyodict.odict'>)
+    (<type 'object'>,)
     
     >>> orderednode = OrderedNode()
     >>> orderednode
