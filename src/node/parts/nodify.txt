@@ -1,0 +1,12 @@
+    >>> from plumber import plumber
+
+    >>> from node.testing import FullMappingTester
+    >>> from node.parts.nodify import Nodify
+
+    >>> class Node(dict):
+    ...     __metaclass__ = plumber
+    ...     __plumbing__ = Nodify
+
+    >>> tester = FullMappingTester(Node, sorted_output=True)
+    >>> tester.run()
+    >>> tester.combined
