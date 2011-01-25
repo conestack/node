@@ -1,18 +1,21 @@
 from odict import odict
-from plumber import plumber
-from plumber import Part
-from plumber import default
-from plumber import extend
+from plumber import (
+    plumber,
+    Part,
+    default,
+    extend,
+)
 from zope.interface import implements
-
 from node.interfaces import INode
-from node.parts.adopt import Adopt
-from node.parts.nodify import Nodify
-from node.parts.nodify import NodeInit
-from node.parts.nodify import NodeRepr
-from node.parts.validate import NodeChildValidate
-from node.parts.storage import DictStorage
-from node.parts.storage import OdictStorage
+from node.parts import (
+    Adopt,
+    Nodify,
+    NodeInit,
+    NodeRepr,
+    NodeChildValidate,
+    DictStorage,
+    OdictStorage,
+)
 
 
 class AbstractNode(object):

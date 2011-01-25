@@ -4,11 +4,13 @@ node.parts.Nodify
     >>> from plumber import plumber
 
     >>> from node.testing import FullMappingTester
-    >>> from node.parts.nodify import Nodify
-    >>> from node.parts.nodify import NodeInit
-    >>> from node.parts.storage import DictStorage
-    >>> from node.parts.adopt import Adopt
-    >>> from node.parts.nodify import NodeRepr
+    >>> from node.parts import (
+    ...     Nodify,
+    ...     NodeInit,
+    ...     DictStorage,
+    ...     Adopt,
+    ...     NodeRepr,
+    ... )
 
     >>> class Node(object):
     ...     __metaclass__ = plumber

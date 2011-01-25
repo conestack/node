@@ -4,12 +4,14 @@ node.parts.Lifecycle
 Check NodeCreation.::
 
     >>> import zope.component
-    >>> from node.interfaces import INode
-    >>> from node.interfaces import INodeCreatedEvent
-    >>> from node.interfaces import INodeAddedEvent
-    >>> from node.interfaces import INodeModifiedEvent
-    >>> from node.interfaces import INodeRemovedEvent
-    >>> from node.interfaces import INodeDetachedEvent
+    >>> from node.interfaces import (
+    ...     INode,
+    ...     INodeCreatedEvent,
+    ...     INodeAddedEvent,
+    ...     INodeModifiedEvent,
+    ...     INodeRemovedEvent,
+    ...     INodeDetachedEvent,
+    ... )
     
     >>> class Handler(object):
     ...     handled = []
@@ -23,19 +25,29 @@ Check NodeCreation.::
     >>> zope.component.provideHandler(handler, [INode, INodeRemovedEvent])
     >>> zope.component.provideHandler(handler, [INode, INodeDetachedEvent])
     
-    >>> from node.parts.lifecycle import Lifecycle, AttributesLifecycle
-    >>> from node.parts.attributes import Attributes, NodeAttributes
-    >>> from node.parts.nodespace import Nodespaces
-    >>> from node.parts.nodify import Nodify
-    >>> from node.parts.nodify import NodeInit
+    >>> from plumber import plumber
+    >>> from node.parts import (
+    ...     Lifecycle, 
+    ...     AttributesLifecycle, 
+    ...     Attributes, 
+    ...     NodeAttributes, 
+    ...     Nodespaces, 
+    ...     Nodify, 
+    ...     NodeInit, 
+    ...     DictStorage, 
+    ... )
     
-    >>> from node.base import OrderedNode
-    >>> root = OrderedNode('no_notify')
+    >>> class NoLifecycleNode(object):
+    ...     __metaclass__ = plumber
+    ...     __plumbing__ = (
+    ...         NodeInit,
+    ...         Nodify,
+    ...         DictStorage,
+    ...     )
+    
+    >>> root = NoLifecycleNode('no_notify')
     >>> handler.handled
     []
-    
-    >>> from plumber import plumber
-    >>> from node.parts.storage import DictStorage
     
     >>> class LifecycleNodeAttributes(NodeAttributes):
     ...     __metaclass__ = plumber

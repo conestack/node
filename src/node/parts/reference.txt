@@ -4,12 +4,25 @@ node.parts.Reference
 Tree node index.::
 
     >>> from plumber import plumber
-    >>> from node.base import OrderedNode
-    >>> from node.parts.reference import Reference
+    >>> from node.parts import (
+    ...     Adopt,
+    ...     Nodify,
+    ...     NodeInit,
+    ...     NodeRepr,
+    ...     OdictStorage,
+    ...     Reference,
+    ... )
     
-    >>> class ReferenceNode(OrderedNode):
+    >>> class ReferenceNode(object):
     ...     __metaclass__ = plumber
-    ...     __plumbing__ = Reference
+    ...     __plumbing__ = (
+    ...         NodeInit,
+    ...         Adopt,
+    ...         Reference,
+    ...         Nodify,
+    ...         NodeRepr,
+    ...         OdictStorage,
+    ...     )
 
     >>> node = ReferenceNode()
     >>> node.index

@@ -8,7 +8,7 @@ node.parts.Alias
 A dictionary that uses the alias plumbing but does not assign an aliaser.
 Therefore, no aliasing is happening.::
 
-    >>> from node.parts.alias import Alias
+    >>> from node.parts import Alias
     >>> class AliasDict(dict):
     ...     __metaclass__ = plumber
     ...     __plumbing__ = (Alias,)

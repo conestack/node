@@ -9,7 +9,7 @@ General imports.::
 
 A dictionary is used as end point.::
 
-    >>> from node.parts.adopt import Adopt
+    >>> from node.parts import Adopt
     >>> class AdoptingDict(dict):
     ...     __metaclass__ = plumber
     ...     __plumbing__ = Adopt

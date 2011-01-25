@@ -3,41 +3,61 @@ node.parts.Nodespaces
 
     >>> from odict import odict
     >>> from plumber import plumber
-    >>> from node.base import OrderedNode
-    >>> from node.parts.adopt import Adopt
-    >>> from node.parts.nodify import Nodify
-    >>> from node.parts.nodify import NodeRepr
-    >>> from node.parts.nodespace import Nodespaces
+    >>> from node.parts import (
+    ...     Adopt,
+    ...     Nodify,
+    ...     NodeInit,
+    ...     NodeRepr,
+    ...     Nodespaces,
+    ...     OdictStorage,
+    ... )
     
     >>> class NodespacesNode(odict):
     ...     __metaclass__ = plumber
-    ...     __plumbing__ = Adopt, Nodespaces, Nodify, NodeRepr
+    ...     __plumbing__ = (
+    ...         NodeInit, 
+    ...         Adopt, 
+    ...         Nodespaces, 
+    ...         Nodify, 
+    ...         NodeRepr, 
+    ...         OdictStorage,
+    ... )
     
     >>> node = NodespacesNode()
     >>> node.nodespaces
     odict([('__children__', <NodespacesNode object 'None' at ...>)])
     
-    >>> node['__children__']['child'] = OrderedNode()
+    >>> class SomeNode(object):
+    ...     __metaclass__ = plumber
+    ...     __plumbing__ = (
+    ...         NodeInit, 
+    ...         Adopt, 
+    ...         Nodify, 
+    ...         NodeRepr, 
+    ...         OdictStorage,
+    ...     )
+    
+    >>> node['__children__']['child'] = SomeNode()
     >>> node['child']
-    <OrderedNode object 'child' at ...>
+    <SomeNode object 'child' at ...>
     
     >>> node['__children__']['child'] is node['child']
     True
     
-    >>> node['__foo__'] = OrderedNode()
+    >>> node['__foo__'] = SomeNode()
     >>> node['__foo__']
-    <OrderedNode object '__foo__' at ...>
+    <SomeNode object '__foo__' at ...>
     
-    >>> node['__foo__']['child'] = OrderedNode()
+    >>> node['__foo__']['child'] = SomeNode()
     >>> node['__foo__']['child']
-    <OrderedNode object 'child' at ...>
+    <SomeNode object 'child' at ...>
     
     >>> node['__foo__']['child'] is node['child']
     False
     
     >>> node.nodespaces
     odict([('__children__', <NodespacesNode object 'None' at ...>), 
-    ('__foo__', <OrderedNode object '__foo__' at ...>)])
+    ('__foo__', <SomeNode object '__foo__' at ...>)])
     
     >>> node['__inexistent__']
     Traceback (most recent call last):
