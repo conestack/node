@@ -4,9 +4,12 @@ from plumber import (
     extend,
     Part,
 )
+from node.interfaces import IStorage
+from zope.interface import implements
 
 
 class DictStorage(Part):
+    implements(IStorage)
     
     @default
     @property
@@ -33,6 +36,7 @@ class DictStorage(Part):
 
 
 class OdictStorage(Part):
+    implements(IStorage)
     
     @default
     @property

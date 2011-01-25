@@ -1,4 +1,7 @@
-from zope.interface import Interface, Attribute
+from zope.interface import (
+    Interface,
+    Attribute,
+)
 from zope.interface.common.mapping import (
     IEnumerableMapping,
     IWriteMapping,
@@ -20,7 +23,7 @@ except ImportError, e:
 
             This implementation is slightly simpler than the original one, as
             this is only intended to be used on App Engine, where the original
-            interface is not available anyway, so probably nobody will register
+            interface is not available anyway, so nobody should register
             any adapters/utilities for it.
             """
             __parent__ = Attribute('The parent in the location hierarchy.')
@@ -48,6 +51,7 @@ except ImportError, e: # BBB
 ###############################################################################
 # events
 ###############################################################################
+
 
 class INodeCreatedEvent(IObjectCreatedEvent):
     """An new Node was born.
@@ -77,6 +81,7 @@ class INodeDetachedEvent(IObjectRemovedEvent):
 ###############################################################################
 # helpers
 ###############################################################################
+
 
 class IAttributeAccess(Interface):
     """Provides Attribute access to dict like context.
@@ -142,6 +147,7 @@ class ICallable(Interface):
 # node
 ###############################################################################
 
+
 class INode(ILocation, IFullMapping):
     """A node.
     """
@@ -160,10 +166,6 @@ class INode(ILocation, IFullMapping):
     def filteredvalues(interface):
         """Return filtered child nodes by interface.
         """
-    
-    def as_attribute_access():
-        """Return this node as IAttributeAccess implementing object.
-        """
 
     def printtree():
         """Debugging helper.
@@ -173,30 +175,28 @@ class INode(ILocation, IFullMapping):
 # plumbing parts
 ###############################################################################
 
-class IMappingImpl(Interface):
-    """A class utilizing this contract must inherit from choosen
-    ``IFullMapping``.
 
-    We cannot use same contract as in ``odict.odict`` -> ``_dict_impl``.
-    Odict requires the dict implementation to store it's internal double linked
-    list while we need to have an implementation which must provide a ready to
-    use ``IFullMapping``
+class IAsAttrAccess(Interface):
+    """Part to get node as IAttributeAccess implementation.
     """
 
-    def _mapping_impl():
-        """Return ``IFullMaping`` implementing class.
+    def as_attribute_access():
+        """Return this node as IAttributeAccess implementing object.
         """
 
 
 class INodeChildValidate(Interface):
-    """XXX
+    """Part for child node validation.
     """
     allow_non_node_childs = Attribute(u"Flag wether this node may contain non "
                                       u"node based children.")
 
 
 class INodespaces(Interface):
-    """XXX
+    """Part for providing nodespaces on node.
+    
+    A nodespace is a seperate node with special keys - pre- and postfixed with
+    ``__`` which gets mapped on storage write operations.
     """
     nodespaces = Attribute(u"Nodespaces.")
 
@@ -251,24 +251,36 @@ class ILifecycle(Interface):
                        u"notification.")
 
 
-class ITimout(Interface):
-    """Times out nodes.
-    
-    # XXX: use timer?
-    >>> from threading import Timer
-    >>> def testme():
-    ...     print 'called'
-    ... 
-    >>> timer = Timer(5, testme) # timeout in seconds.
-    >>> timer.start()
-    >>> called
+class ICache(Interface):
+    """Cache nodes.
     """
-    timeout = Attribute(u"Node timeout in seconds.")
-    elapse = Attribute(u"Minumum elapse time before timeout check is repeated "
-                       u"in seconds.")
     
     def invalidate(key=None):
         """Invalidate child with key or all childs of this node.
+        """
+
+
+class IStorage(Interface):
+    """Provide storage endpoints.
+    
+    Minimum Storage requirement is described below. An implementation of this
+    interface could provide other storage related methods as appropriate.
+    """
+    
+    def __getitem__(key):
+        """Return Item from Storage.
+        """
+    
+    def __delitem__(key):
+        """Delete Item from storage.
+        """
+    
+    def __setitem__(key, val):
+        """Set item to storage.
+        """
+    
+    def __iter__():
+        """Iter throught storage keys.
         """
 
 # BBB

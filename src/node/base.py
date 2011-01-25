@@ -9,6 +9,7 @@ from zope.interface import implements
 from node.interfaces import INode
 from node.parts import (
     Adopt,
+    AsAttrAccess,
     Nodify,
     NodeInit,
     NodeRepr,
@@ -40,6 +41,7 @@ class BaseNode(object):
         NodeInit,
         NodeChildValidate,
         Adopt,
+        AsAttrAccess,
         Nodify,
         NodeRepr,
         DictStorage,
@@ -58,6 +60,7 @@ class OrderedNode(object):
         NodeInit,
         NodeChildValidate,
         Adopt,
+        AsAttrAccess,
         Nodify,
         NodeRepr,
         OdictStorage,

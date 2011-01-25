@@ -69,11 +69,6 @@ class Nodify(FullMapping):
     # BBB 2010-12-23
     filtereditems = default(filtereditervalues)
 
-    # XXX: should be implemented by a wrapper like AliasedNodespace -cfl
-    @default
-    def as_attribute_access(self):
-        return AttributeAccess(self)
-
     @default
     @property
     def noderepr(self):

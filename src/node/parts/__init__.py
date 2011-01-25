@@ -1,5 +1,6 @@
 from node.parts.adopt import Adopt
 from node.parts.alias import Alias
+from node.parts.asattraccess import AsAttrAccess
 from node.parts.attributes import (
     NodeAttributes,
     Attributes,

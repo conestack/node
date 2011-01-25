@@ -4,6 +4,7 @@ from zope.interface import implements
 from node.interfaces import INode
 from node.parts import (
     Adopt,
+    AsAttrAccess,
     Nodify,
     NodeInit,
     NodeRepr,
@@ -28,6 +29,7 @@ class MyNode(object):
         NodeInit,
         NodeChildValidate,
         Adopt,
+        AsAttrAccess,
         Nodify,
         NodeRepr,
         OdictStorage,
