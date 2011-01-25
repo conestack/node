@@ -4,6 +4,7 @@ from zope.interface import implements
 from node.interfaces import INode
 from node.parts.adopt import Adopt
 from node.parts.nodify import Nodify
+from node.parts.nodify import NodeInit
 from node.parts.nodify import NodeRepr
 from node.parts.validate import NodeChildValidate
 from node.parts.storage import OdictStorage
@@ -25,9 +26,11 @@ class MyNode(object):
     ``odict`` as ``somefullmapping``.
     """
     __metaclass__ = plumber
-    __plumbing__ = NodeChildValidate, Adopt, Nodify, NodeRepr, OdictStorage
-    
-    def __init__(self, name=None, parent=None):
-        super(self.__class__, self).__init__()
-        self.__name__ = name
-        self.__parent__ = parent
+    __plumbing__ = (
+        NodeInit,
+        NodeChildValidate,
+        Adopt,
+        Nodify,
+        NodeRepr,
+        OdictStorage,
+    )

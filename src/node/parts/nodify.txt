@@ -2,16 +2,14 @@
 
     >>> from node.testing import FullMappingTester
     >>> from node.parts.nodify import Nodify
+    >>> from node.parts.nodify import NodeInit
     >>> from node.parts.storage import DictStorage
     >>> from node.parts.adopt import Adopt
     >>> from node.parts.nodify import NodeRepr
 
     >>> class Node(object):
     ...     __metaclass__ = plumber
-    ...     __plumbing__ = Adopt, Nodify, NodeRepr, DictStorage
-    ...     def __init__(self, name=None, parent=None):
-    ...         self.__name__ = name
-    ...         self.__parent__ = parent
+    ...     __plumbing__ = NodeInit, Adopt, Nodify, NodeRepr, DictStorage
 
     >>> tester = FullMappingTester(Node, sorted_output=True)
     >>> tester.direct_error = True

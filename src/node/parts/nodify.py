@@ -12,27 +12,11 @@ from node.utils import AttributeAccess
 
 
 class Nodify(FullMapping):
-    """Fills in gaps to implement full INode interface
+    """Fills in gaps to implement full INode interface.
     """
     implements(INode)
     __name__ = default(None)
     __parent__ = default(None)
-
-    #@plumb
-    #def __init__(_next, self, *args, **kw):
-    #    # we have to pop our keywords before passing on, independent of when we
-    #    # use then.
-    #    name = kw.pop('name', Unset)
-    #    parent = kw.pop('parent', Unset)
-
-    #    # next in the chain
-    #    _next(self, *args, **kw)
-
-    #    # Set name and parent, if they were in kw
-    #    if name is not Unset:
-    #        self.__name__ = name
-    #    if parent is not Unset:
-    #        self.__parent__ = parent
 
     @plumb
     def copy(_next, self):
@@ -117,6 +101,14 @@ class Nodify(FullMapping):
             except AttributeError:
                 # Non-Node values are just printed
                 print "%s%s" % (indent * ' ', node)
+
+
+class NodeInit(Part):
+    
+    @extend
+    def __init__(self, name=None, parent=None):
+        self.__name__ = name
+        self.__parent__ = parent
 
 
 class NodeRepr(Part):

@@ -25,7 +25,6 @@ class NodeAttributes(object):
     )
     
     def __init__(self, context):
-        #OrderedNode.__init__(self)
         self.allow_non_node_childs = True
         self.context = context
         self._node = context # BBB
