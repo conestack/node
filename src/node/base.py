@@ -1,64 +1,37 @@
 from odict import odict
-from plumber import Plumber
+from plumber import plumber
 from zope.interface import implements
+
 from node.interfaces import INode
 from node.parts.adopt import Adopt
+from node.parts.nodify import Nodify
 from node.parts.validate import NodeChildValidate
-from node.mixin import (
-    _NodeMixin,
-    _FullMappingMixin,
-    _ImplMixin,
-)
-
-class AbstractNode(_NodeMixin, _FullMappingMixin):
-    """An abstract Node.
-    
-    Derive this if you like to implement all storage related functions on your
-    own.
-    """
-    implements(INode)
+from node.mixin import _ImplMixin
 
 
-class BaseNode(_NodeMixin, _ImplMixin, dict):
+class BaseNode(_ImplMixin, dict):
     """Base node, not ordered.
     
     Uses ``dict`` as ``IFullMapping`` implementation.
     
     Derive this for unordered trees.
     """
-    __metaclass__ = Plumber
-    __plumbing__ = NodeChildValidate, Adopt
-    
-    implements(INode)
+    __metaclass__ = plumber
+    __plumbing__ = NodeChildValidate, Adopt, Nodify
     
     def _mapping_impl(self):
         return dict
-    
-    def update(self, data=(), **kw):
-        for key, value in data:
-            self[key] = value
-        for key, value in kw.items():
-            self[key] = value
-    
-    def setdefault(self, key, value=None):
-        try:
-            return self[key]
-        except KeyError:
-            self[key] = value
-            return value
 
 
-class OrderedNode(_NodeMixin, _ImplMixin, odict):
+class OrderedNode(_ImplMixin, odict):
     """Ordered node.
     
     Uses ``odict`` as ``IFullMapping`` implementation.
     
     Derive this for ordered trees.
     """
-    __metaclass__ = Plumber
-    __plumbing__ = NodeChildValidate, Adopt
-    
-    implements(INode)
+    __metaclass__ = plumber
+    __plumbing__ = NodeChildValidate, Adopt, Nodify
     
     def _mapping_impl(self):
         return odict

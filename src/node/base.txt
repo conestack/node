@@ -113,9 +113,7 @@ BaseNode
     <class 'node.base.BaseNode'>
     
     >>> BaseNode.__bases__
-    (<class 'node.mixin._NodeMixin'>, 
-    <class 'node.mixin._ImplMixin'>, 
-    <type 'dict'>)
+    (<class 'node.mixin._ImplMixin'>, <type 'dict'>)
     
     >>> basenode = BaseNode()
     >>> basenode

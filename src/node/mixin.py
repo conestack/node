@@ -1,6 +1,7 @@
-from plumber import Plumber
+from plumber import plumber
 
 from node.parts.mapping import FullMapping
+from node.parts.nodify import Nodify
 from node.utils import (
     AttributeAccess,
     LocationIterator,

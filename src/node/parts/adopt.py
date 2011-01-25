@@ -27,3 +27,12 @@ class Adopt(Part):
             val.__name__ = old_name
             val.__parent__ = old_parent
             raise
+
+    @plumb
+    def setdefault(_next, self, key, default=None):
+        # We reroute through getitem and setitem, skipping _next
+        try:
+            return self[key]
+        except KeyError:
+            self[key] = default
+            return default
