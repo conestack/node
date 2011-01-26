@@ -16,7 +16,7 @@ We need a thread implementation which checks for access collision.
     >>> import time
     >>> import threading
     >>> from threading import Thread
-    >>> from zodict.locking import TreeLock
+    >>> from node.locking import TreeLock
     >>> class TestThread(Thread):
     ...     _waited = False
     ...     def run(self):
