@@ -17,20 +17,17 @@ TESTFILES = [
     '../aliasing.txt',
     '../locking.txt',
     
-    '../parts/adopt.txt',
-    '../parts/validate.txt',
     '../parts/alias.txt',
     '../parts/attributes.txt',
+    '../parts/common.txt',
+    '../parts/lifecycle.txt',
     '../parts/mapping.txt',
     '../parts/nodespace.txt',
     '../parts/nodify.txt',
-    '../parts/reference.txt',
     '../parts/order.txt',
-    '../parts/lifecycle.txt',
-    '../parts/unicode.txt',
-    '../parts/wrap.txt',
+    '../parts/reference.txt',
     
-    #'../../../README.rst',
+    '../../../README.rst',
 ]
 
 def test_suite():

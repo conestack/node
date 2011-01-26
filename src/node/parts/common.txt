@@ -1,3 +1,6 @@
+Common Parts
+============
+
 node.parts.Adopt
 ----------------
 
@@ -71,3 +74,41 @@ instead of just naming the plumbing init eg plumbing__init__.
     True
     >>> node.__parent__ is None
     True
+
+node.parts.NodeChildValidate
+----------------------------
+
+::
+
+    >>> from plumber import plumber
+    >>> from node.parts import (
+    ...     NodeChildValidate,
+    ...     Nodify,
+    ...     OdictStorage,
+    ... )
+    
+    >>> class NodeChildValidateNode(object):
+    ...     __metaclass__ = plumber
+    ...     __plumbing__ = NodeChildValidate, Nodify, OdictStorage
+    
+    >>> node = NodeChildValidateNode()
+    >>> node.allow_non_node_childs
+    False
+    
+    >>> node['child'] = 1
+    Traceback (most recent call last):
+      ...
+    ValueError: Non-node childs are not allowed.
+    
+    >>> class SomeClass(object): pass
+    
+    >>> node['aclasshere'] = SomeClass
+    Traceback (most recent call last):
+      ...
+    ValueError: It isn't allowed to use classes as values.
+    
+    >>> node.allow_non_node_childs = True
+    
+    >>> node['child'] = 1
+    >>> node['child']
+    1
