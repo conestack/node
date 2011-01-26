@@ -60,7 +60,3 @@ class OdictStorage(Part):
     @extend
     def __iter__(self):
         return self.storage.__iter__()
-    
-    @extend
-    def popitem(self):
-        return self.storage.popitem()

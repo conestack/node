@@ -218,7 +218,7 @@ class ExtendedWriteMapping(WriteMapping):
     def popitem(self):
         """works only if together with IterableMapping
         """
-        for key in self:
+        for key in reversed(self.keys()):
             val = self[key]
             del self[key]
             return key, val
