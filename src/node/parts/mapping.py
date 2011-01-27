@@ -3,6 +3,7 @@ from plumber import (
     default,
     extend,
 )
+from node.utils import Unset
 from zope.interface import implements
 from zope.interface.common.mapping import (
     IItemMapping,
@@ -16,7 +17,6 @@ from zope.interface.common.mapping import (
     IExtendedWriteMapping,
     IFullMapping,
 )
-from node.utils import Unset
 
 
 class ItemMapping(Part):
@@ -149,8 +149,7 @@ class IterableMapping(EnumerableMapping):
 class ClonableMapping(Part):
     implements(IClonableMapping)
     
-    # We need to extend, because a base class does not know what to create
-    @extend
+    @default
     def copy(self):
         new = self.__class__()
         new.update(self)

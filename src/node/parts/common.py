@@ -6,8 +6,11 @@ from plumber import (
 )
 from node.interfaces import (
     INode,
+    IAdopt,
     IAsAttrAccess,
+    IUnicode,
     INodeChildValidate,
+    IWrap,
 )
 from node.utils import AttributeAccess
 from zope.interface import implements
@@ -16,6 +19,8 @@ from zope.interface import implements
 class Adopt(Part):
     """Plumbing element that provides adoption of children.
     """
+    implements(IAdopt)
+    
     @plumb
     def __setitem__(_next, self, key, val):
         # only care about adopting if we have a node
@@ -61,6 +66,7 @@ class Unicode(Part):
     # check the one in bda.ldap.strcodec
     # XXX: It feels here it would be nice to be able to get an instance of a
     # plumbing to configure the codec.
+    implements(IUnicode)
     
     @plumb
     def __delitem__(_next, self, key):
@@ -101,6 +107,7 @@ class Wrap(Part):
     """Plumbing element that wraps nodes coming from deeper levels in a 
     NodeNode.
     """
+    implements(IWrap)
     
     @plumb
     def __getitem__(_next, self, key):

@@ -5,7 +5,10 @@ from plumber import (
     Part,
 )
 from zope.interface import implements
-from node.interfaces import ILifecycle
+from node.interfaces import (
+    ILifecycle,
+    IAttributesLifecycle,
+)
 from node.parts.attributes import NodeAttributes
 try:
     from zope.component.event import objectEventNotify
@@ -65,6 +68,7 @@ class Lifecycle(Part):
 
 
 class AttributesLifecycle(Part):
+    implements(IAttributesLifecycle)
 
     @plumb
     def __setitem__(_next, self, key, val):

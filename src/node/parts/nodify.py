@@ -5,7 +5,10 @@ from plumber import (
     Part,
 )
 from zope.interface import implements
-from node.interfaces import INode
+from node.interfaces import (
+    INode,
+    INodify,
+)
 from node.parts.mapping import FullMapping
 from node.utils import (
     Unset,
@@ -17,7 +20,7 @@ from node.utils import (
 class Nodify(FullMapping):
     """Fills in gaps to implement full INode interface.
     """
-    implements(INode)
+    implements(INode, INodify)
     __name__ = default(None)
     __parent__ = default(None)
 

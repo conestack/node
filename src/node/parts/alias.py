@@ -2,6 +2,8 @@ from plumber import (
     plumb,
     Part,
 )
+from node.interfaces import IAlias
+from zope.interface import implements
 from zope.interface.common.mapping import IEnumerableMapping
 
 
@@ -26,6 +28,7 @@ class Alias(Part):
     For rerouting we would needs entrance methods, see below in commented
     iteritems.
     """
+    implements(IAlias)
     
     @plumb
     def __init__(_next, self, aliaser=None):

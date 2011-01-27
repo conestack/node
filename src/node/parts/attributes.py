@@ -5,7 +5,6 @@ from plumber import (
     default,
     Part,
 )
-from zope.interface import implements
 from node.interfaces import IAttributes
 from node.parts.common import (
     Adopt,
@@ -14,6 +13,7 @@ from node.parts.common import (
 from node.parts.nodify import Nodify
 from node.parts.storage import OdictStorage
 from node.utils import AttributeAccess
+from zope.interface import implements
 
 
 class NodeAttributes(object):

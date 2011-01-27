@@ -90,7 +90,6 @@ class IAttributeAccess(Interface):
     
     Implementation is supposed to be an adapter like object.
     """
-    
     def __getattr__(name):
         """Call __getitem__ on context.
         """
@@ -124,6 +123,11 @@ class IAliaser(Interface):
         """
 
 
+###############################################################################
+# markers
+###############################################################################
+
+
 class IRoot(Interface):
     """Marker for a root node.
     """
@@ -132,15 +136,6 @@ class IRoot(Interface):
 class ILeaf(Interface):
     """Marker for node without children.
     """
-
-
-class ICallable(Interface):
-    """Node which implements the ``__call__`` function.
-    """
-
-    def __call__():
-        """Expose the tree contents to an output channel.
-        """
 
 
 ###############################################################################
@@ -176,6 +171,16 @@ class INode(ILocation, IFullMapping):
 ###############################################################################
 
 
+class IAdopt(Interface):
+    """XXX: Description of plumbs
+    """
+
+
+class IAlias(Interface):
+    """XXX: Desctiption of plumbs
+    """
+
+
 class IAsAttrAccess(Interface):
     """Part to get node as IAttributeAccess implementation.
     """
@@ -183,6 +188,48 @@ class IAsAttrAccess(Interface):
     def as_attribute_access():
         """Return this node as IAttributeAccess implementing object.
         """
+
+
+class IAttributes(Interface):
+    """Provide attributes on node.
+    """
+    attrs = Attribute(u"``INodeAttributes`` implementation.")
+    attrs_factory = Attribute(u"``INodeAttributes`` implementation class")
+
+
+class IAttributesLifecycle(Interface):
+    """XXX: Description of plumbs
+    """
+
+
+class ICache(Interface):
+    """Cache nodes.
+    """
+
+
+class ICallable(Interface):
+    """Part or node which implements the ``__call__`` function.
+    """
+
+    def __call__():
+        """Expose the tree contents to an output channel.
+        """
+
+
+class IInvalidate(Interface):
+    """Node invalidation.
+    """
+
+    def invalidate(key=None):
+        """Invalidate child with key or all childs of this node.
+        """
+
+
+class ILifecycle(Interface):
+    """Takes care about lifecycle events.
+    """
+    events = Attribute(u"Dict with lifecycle event classes to use for "
+                       u"notification.")
 
 
 class INodeChildValidate(Interface):
@@ -201,22 +248,9 @@ class INodespaces(Interface):
     nodespaces = Attribute(u"Nodespaces.")
 
 
-class IAttributes(Interface):
-    """Provide attributes on node.
+class INodify(Interface):
+    """Part which hooks node API.
     """
-    attrs = Attribute(u"``INodeAttributes`` implementation.")
-    attrs_factory = Attribute(u"``INodeAttributes`` implementation class")
-
-
-class IReference(Interface):
-    """Holding an internal index of all nodes contained in the tree.
-    """
-    uuid = Attribute(u"``uuid.UUID`` of this node.")
-    index = Attribute(u"The tree node index")
-    
-    def node(uuid):
-        """Return node by uuid located anywhere in this nodetree.
-        """
 
 
 class IOrder(Interface):
@@ -244,19 +278,14 @@ class IOrder(Interface):
         """
 
 
-class ILifecycle(Interface):
-    """Takes care about lifecycle events.
+class IReference(Interface):
+    """Holding an internal index of all nodes contained in the tree.
     """
-    events = Attribute(u"Dict with lifecycle event classes to use for "
-                       u"notification.")
-
-
-class ICache(Interface):
-    """Cache nodes.
-    """
+    uuid = Attribute(u"``uuid.UUID`` of this node.")
+    index = Attribute(u"The tree node index")
     
-    def invalidate(key=None):
-        """Invalidate child with key or all childs of this node.
+    def node(uuid):
+        """Return node by uuid located anywhere in this nodetree.
         """
 
 
@@ -282,6 +311,16 @@ class IStorage(Interface):
     def __iter__():
         """Iter throught storage keys.
         """
+
+
+class IUnicode(Interface):
+    """XXX: Description of plumbs
+    """
+
+
+class IWrap(Interface):
+    """XXX: Description of plumbs
+    """
 
 
 ###############################################################################
