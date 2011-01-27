@@ -181,6 +181,17 @@ OrderedNode
     ``pop``: OK
     ``popitem``: OK
     ``clear``: OK
+    
+    >>> orderednode['child'] = OrderedNode()
+    >>> orderednode.printtree()
+    <class 'node.base.OrderedNode'>: None
+      <class 'node.base.OrderedNode'>: child
+    
+    >>> import pickle
+    >>> unpickled = pickle.loads(pickle.dumps(orderednode))
+    >>> unpickled.printtree()
+    <class 'node.base.OrderedNode'>: None
+      <class 'node.base.OrderedNode'>: child
 
 
 ILocation contract
