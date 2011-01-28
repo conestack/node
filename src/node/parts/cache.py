@@ -64,8 +64,28 @@ class Cache(Part):
             cache[key] = _next(self, key)
         return cache[key]
 
-    # XXX: __delitem__ plumb
+    # XXX: think of using subscribers instead of plumbings for cache
+    #      invalidation on __setitem__, __delitem__, __iter__.
+    #      but this makes us depend caching to lifecycle.
     
-    # XXX: __setitem__ plumb
+    @plumb
+    def __setitem__(_next, self, key, value):
+        try:
+            del self.cache[key]
+        except KeyError:
+            pass
+        _next(self, key, value)
     
-    # XXX: __iter__ plumb
+    @plumb
+    def __delitem__(_next, self, key):
+        try:
+            del self.cache[key]
+        except KeyError:
+            pass
+        _next(self, key)
+    
+    @plumb
+    def __iter__(_next, self):
+        # XXX
+        return _next(self)
+    
