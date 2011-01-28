@@ -1,0 +1,127 @@
+node.parts.invalidate
+=====================
+
+    >>> from plumber import plumber
+    >>> from node.interfaces import (
+    ...     IInvalidate,
+    ...     ICache,
+    ... )
+    >>> from node.parts import (
+    ...     Nodify,
+    ...     NodeInit,
+    ...     NodeRepr,
+    ...     Adopt,
+    ...     Invalidate,
+    ...     Cache,
+    ...     OdictStorage,
+    ... )
+
+Build a node with active invalidation functionality::
+
+    >>> class Node(object):
+    ...     __metaclass__ = plumber
+    ...     __plumbing__ = (
+    ...         NodeInit, 
+    ...         NodeRepr, 
+    ...         Adopt, 
+    ...         Invalidate, 
+    ...         Nodify, 
+    ...         OdictStorage,
+    ...     )
+
+Test tree::
+
+    >>> root = Node()
+    >>> root['c1'] = Node()
+    >>> root['c2'] = Node()
+    >>> root['c2']['d1'] = Node()
+    >>> root['c2']['d2'] = Node()
+    
+    >>> IInvalidate.providedBy(root)
+    True
+    >>> ICache.providedBy(root)
+    False
+    
+    >>> root.printtree()
+    <class 'Node'>: None
+      <class 'Node'>: c1
+      <class 'Node'>: c2
+        <class 'Node'>: d1
+        <class 'Node'>: d2
+
+Active invalidation of child by key::
+    
+    >>> root.invalidate(key='c1')
+    >>> root.printtree()
+    <class 'Node'>: None
+      <class 'Node'>: c2
+        <class 'Node'>: d1
+        <class 'Node'>: d2
+    
+    >>> root.invalidate(key='c1')
+    Traceback (most recent call last):
+      ...
+    KeyError: 'c1'
+
+Active invalidation of all children::
+
+    >>> root['c2'].invalidate()
+    >>> root.printtree()
+    <class 'Node'>: None
+      <class 'Node'>: c2
+
+
+node.parts.cache
+================
+
+Build a node with active invalidation and cache functionality::
+
+    >>> class Node(object):
+    ...     __metaclass__ = plumber
+    ...     __plumbing__ = (
+    ...         NodeInit, 
+    ...         NodeRepr, 
+    ...         Adopt, 
+    ...         Cache, 
+    ...         Invalidate, 
+    ...         Nodify, 
+    ...         OdictStorage,
+    ...     )
+    
+    >>> root = Node()
+    >>> root['c1'] = Node()
+    >>> root['c2'] = Node()
+    >>> root['c2']['d1'] = Node()
+    >>> root['c2']['d2'] = Node()
+    
+    >>> IInvalidate.providedBy(root)
+    True
+    >>> ICache.providedBy(root)
+    True
+
+We just accessed 'c2' above, only cached value on root at the moment::
+
+    >>> root.cache
+    {'c2': <Node object 'c2' at ...>}
+    
+    >>> root['c1']
+    <Node object 'c1' at ...>
+
+After accessing 'c1', it is cached as well::
+
+    >>> root.cache
+    {'c2': <Node object 'c2' at ...>, 
+    'c1': <Node object 'c1' at ...>}
+
+Invalidate plumbing removes item from cache::
+
+    >>> root.invalidate(key='c1')
+    >>> root.cache
+    {'c2': <Node object 'c2' at ...>}
+
+    >>> root.invalidate()
+    >>> root.cache
+    {}
+    
+    >>> root.printtree()
+    <class 'Node'>: None

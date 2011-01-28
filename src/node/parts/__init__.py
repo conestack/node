@@ -3,6 +3,10 @@ from node.parts.attributes import (
     NodeAttributes,
     Attributes,
 )
+from node.parts.cache import (
+    Invalidate,
+    Cache,
+)
 from node.parts.common import (
     Adopt,
     AsAttrAccess,

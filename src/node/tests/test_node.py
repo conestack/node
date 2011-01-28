@@ -16,9 +16,9 @@ TESTFILES = [
     '../utils.txt',
     '../aliasing.txt',
     '../locking.txt',
-    
     '../parts/alias.txt',
     '../parts/attributes.txt',
+    '../parts/cache.txt',
     '../parts/common.txt',
     '../parts/lifecycle.txt',
     '../parts/mapping.txt',
@@ -26,7 +26,6 @@ TESTFILES = [
     '../parts/nodify.txt',
     '../parts/order.txt',
     '../parts/reference.txt',
-    
     '../../../README.rst',
 ]
 
