@@ -58,6 +58,7 @@ class _Node(object):
         __iter__
     """
     implements(INode)
+    allow_non_node_childs = False
     
     def _node_impl(self):
         return None
@@ -88,7 +89,6 @@ class _Node(object):
             self.uuid = uuid.uuid4()
         else:
             self._index = None
-        self.allow_non_node_childs = False
         self.aliaser = None
         self._nodespaces = None
 
@@ -409,9 +409,10 @@ deprecated('Node',
 class NodeAttributes(Node):
     """Semantic object.
     """
+    allow_non_node_childs = True
+
     def __init__(self, node):
         Node.__init__(self, index=False)
-        self.allow_non_node_childs = True
         self._node = node
 
 
