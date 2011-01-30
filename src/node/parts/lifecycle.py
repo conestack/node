@@ -33,10 +33,11 @@ class Lifecycle(Part):
         'detached': NodeDetachedEvent,
     })
 
+    _notify_suppress = default(False)
+
     @plumb
     def __init__(_next, self, *args, **kw):
         _next(self, *args, **kw)
-        self._notify_suppress = False
         objectEventNotify(self.events['created'](self))
 
     @plumb
