@@ -25,7 +25,7 @@ class NodeAttributes(object):
         OdictStorage,
     )
 
-    allow_non_node_childs = default(True)
+    allow_non_node_childs = True
     
     # XXX: __parent__ as Node we belong to, no need for own __init__ then
     def __init__(self, context):
