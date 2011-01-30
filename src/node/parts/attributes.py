@@ -17,7 +17,6 @@ from zope.interface import implements
 
 
 class NodeAttributes(object):
-    
     __metaclass__ = plumber
     __plumbing__ = (
         NodeChildValidate,
@@ -25,12 +24,16 @@ class NodeAttributes(object):
         Nodify,
         OdictStorage,
     )
+
+    allow_non_node_childs = default(True)
     
+    # XXX: __parent__ as Node we belong to, no need for own __init__ then
     def __init__(self, context):
-        self.allow_non_node_childs = True
         self.context = context
         self._node = context # BBB
     
+    # XXX: do we need that or could we make normal nodes show their parent,
+    # too?
     def __repr__(self):
         name = unicode(self.__parent__.__name__).encode('ascii', 'replace')
         return "<%s object '%s' at %s>" % (self.__class__.__name__,
@@ -38,6 +41,7 @@ class NodeAttributes(object):
                                            hex(id(self))[:-1])
 
 
+# XXX: inherit from nodespaces part
 class Attributes(Part):
     implements(IAttributes)
     

@@ -104,6 +104,7 @@ class Nodify(FullMapping):
                 print "%s%s" % (indent * ' ', node)
 
 
+# XXX: Why are these separated from Nodify?
 class NodeInit(Part):
     
     @extend
@@ -112,6 +113,7 @@ class NodeInit(Part):
         self.__parent__ = parent
 
 
+# XXX: Why are these separated from Nodify?
 class NodeRepr(Part):
 
     @extend

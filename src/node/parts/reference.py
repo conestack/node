@@ -31,10 +31,12 @@ class NodeIndex(object):
 class Reference(Part):
     implements(IReference)
 
+    _uuid = default(None)
+
     @plumb
     def __init__(_next, self, *args, **kw):
+        # XXX: should be wrapped via property and set on first access
         self._index = dict()
-        self._uuid = None
         self.uuid = uuid.uuid4()
         _next(self, *args, **kw)
     
