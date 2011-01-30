@@ -1,4 +1,5 @@
 from plumber import (
+    default,
     plumb,
     Part,
 )
@@ -29,10 +30,13 @@ class Alias(Part):
     iteritems.
     """
     implements(IAlias)
+    aliaser = default(None)
     
     @plumb
-    def __init__(_next, self, aliaser=None):
-        self.aliaser = aliaser
+    def __init__(_next, self, *args, **kw):
+        if 'aliaser' in kw:
+            self.aliaser = kw.pop('aliaser')
+        _next(self, *args, **kw)
 
     @plumb
     def __delitem__(_next, self, key):
