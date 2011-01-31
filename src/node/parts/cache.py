@@ -10,6 +10,7 @@ from node.interfaces import (
 from zope.interface import implements
 
 
+# XXX: This looks like it deletes all children in the storage, not in the cache
 class Invalidate(Part):
     implements(IInvalidate)
     

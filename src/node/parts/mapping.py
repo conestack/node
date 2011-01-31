@@ -149,7 +149,8 @@ class IterableMapping(EnumerableMapping):
 class ClonableMapping(Part):
     implements(IClonableMapping)
     
-    @default
+    # We need to extend, because a base class does not know what to create
+    @extend
     def copy(self):
         new = self.__class__()
         new.update(self)

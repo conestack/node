@@ -1,7 +1,7 @@
 from plumber import (
     plumber,
     plumb,
-    extend,
+    finalize,
     default,
     Part,
 )
@@ -48,7 +48,7 @@ class Attributes(Part):
     attribute_access_for_attrs = default(False)
     attributes_factory = default(NodeAttributes)
 
-    @extend
+    @finalize
     @property
     def attrs(self):
         try:
@@ -63,4 +63,4 @@ class Attributes(Part):
         return attrs
     
     # BBB
-    attributes = extend(attrs)
+    attributes = finalize(attrs)

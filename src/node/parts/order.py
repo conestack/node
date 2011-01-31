@@ -1,7 +1,6 @@
 from odict.pyodict import _nil
 from plumber import (
     extend,
-    default,
     Part,
 )
 from zope.interface import implements

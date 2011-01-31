@@ -1,7 +1,6 @@
 from plumber import (
-    plumb,
     default,
-    extend,
+    plumb,
     Part,
 )
 from zope.interface import implements

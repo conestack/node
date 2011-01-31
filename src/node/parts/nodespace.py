@@ -1,7 +1,7 @@
 from odict import odict
 from plumber import (
     plumb,
-    extend,
+    finalize,
     default,
     Part,
 )
@@ -16,7 +16,7 @@ class Nodespaces(Part):
     
     _nodespaces = default(None)
     
-    @extend
+    @finalize
     @property
     def nodespaces(self):
         """A storage and general way to access our nodespaces.
