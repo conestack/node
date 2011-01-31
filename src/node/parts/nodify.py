@@ -25,6 +25,12 @@ class Nodify(FullMapping):
     __parent__ = default(None)
 
     @plumb
+    def __init__(_next, self, name=None, parent=None):
+        _next(self)
+        self.__name__ = name
+        self.__parent__ = parent
+
+    @plumb
     def copy(_next, self):
         new = _next(self)
         # XXX Where do we need a copy to have the same name, and when do we
@@ -102,19 +108,6 @@ class Nodify(FullMapping):
             except AttributeError:
                 # Non-Node values are just printed
                 print "%s%s" % (indent * ' ', node)
-
-
-# XXX: Why are these separated from Nodify?
-class NodeInit(Part):
-    
-    @extend
-    def __init__(self, name=None, parent=None):
-        self.__name__ = name
-        self.__parent__ = parent
-
-
-# XXX: Why are these separated from Nodify?
-class NodeRepr(Part):
 
     @extend
     def __repr__(self):

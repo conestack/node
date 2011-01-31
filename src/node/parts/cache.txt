@@ -3,16 +3,14 @@ node.parts.invalidate
 
     >>> from plumber import plumber
     >>> from node.interfaces import (
-    ...     IInvalidate,
     ...     ICache,
+    ...     IInvalidate,
     ... )
     >>> from node.parts import (
-    ...     Nodify,
-    ...     NodeInit,
-    ...     NodeRepr,
     ...     Adopt,
-    ...     Invalidate,
     ...     Cache,
+    ...     Invalidate,
+    ...     Nodify,
     ...     OdictStorage,
     ... )
 
@@ -21,8 +19,6 @@ Build a node with active invalidation functionality::
     >>> class Node(object):
     ...     __metaclass__ = plumber
     ...     __plumbing__ = (
-    ...         NodeInit, 
-    ...         NodeRepr, 
     ...         Adopt, 
     ...         Invalidate, 
     ...         Nodify, 
@@ -79,8 +75,6 @@ Build a node with active invalidation and cache functionality::
     >>> class Node(object):
     ...     __metaclass__ = plumber
     ...     __plumbing__ = (
-    ...         NodeInit, 
-    ...         NodeRepr, 
     ...         Adopt, 
     ...         Cache, 
     ...         Invalidate, 

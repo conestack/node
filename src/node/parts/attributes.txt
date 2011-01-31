@@ -7,8 +7,6 @@ node.parts.Attributes
     >>> from node.parts import (
     ...     NodeChildValidate,
     ...     Nodify,
-    ...     NodeInit,
-    ...     NodeRepr,
     ...     OdictStorage,
     ...     Nodespaces,
     ...     Attributes,
@@ -17,12 +15,10 @@ node.parts.Attributes
     >>> class AttributedNode(object):
     ...     __metaclass__ = plumber
     ...     __plumbing__ = (
-    ...         NodeInit,
     ...         NodeChildValidate,
     ...         Nodespaces,
     ...         Attributes,
     ...         Nodify,
-    ...         NodeRepr,
     ...         OdictStorage,
     ...     )
 

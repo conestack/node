@@ -33,14 +33,12 @@ Check NodeCreation.::
     ...     NodeAttributes, 
     ...     Nodespaces, 
     ...     Nodify, 
-    ...     NodeInit, 
     ...     DictStorage, 
     ... )
     
     >>> class NoLifecycleNode(object):
     ...     __metaclass__ = plumber
     ...     __plumbing__ = (
-    ...         NodeInit,
     ...         Nodify,
     ...         DictStorage,
     ...     )
@@ -56,7 +54,6 @@ Check NodeCreation.::
     >>> class LifecycleNode(object):
     ...     __metaclass__ = plumber
     ...     __plumbing__ = (
-    ...         NodeInit,
     ...         Nodespaces,
     ...         Attributes,
     ...         Lifecycle,

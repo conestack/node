@@ -31,11 +31,7 @@ from node.parts.mapping import (
     FullMapping,
 )
 from node.parts.nodespace import Nodespaces
-from node.parts.nodify import (
-    Nodify,
-    NodeInit,
-    NodeRepr,
-)
+from node.parts.nodify import Nodify
 from node.parts.order import Order
 from node.parts.reference import (
     NodeIndex,

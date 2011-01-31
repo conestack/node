@@ -5,16 +5,14 @@ node.parts.Nodify
 
     >>> from node.testing import FullMappingTester
     >>> from node.parts import (
-    ...     Nodify,
-    ...     NodeInit,
-    ...     DictStorage,
     ...     Adopt,
-    ...     NodeRepr,
+    ...     DictStorage,
+    ...     Nodify,
     ... )
 
     >>> class Node(object):
     ...     __metaclass__ = plumber
-    ...     __plumbing__ = NodeInit, Adopt, Nodify, NodeRepr, DictStorage
+    ...     __plumbing__ = Adopt, Nodify, DictStorage
 
     >>> tester = FullMappingTester(Node, sorted_output=True)
     >>> tester.run()

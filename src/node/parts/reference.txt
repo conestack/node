@@ -7,8 +7,6 @@ Tree node index.::
     >>> from node.parts import (
     ...     Adopt,
     ...     Nodify,
-    ...     NodeInit,
-    ...     NodeRepr,
     ...     OdictStorage,
     ...     Reference,
     ... )
@@ -16,11 +14,9 @@ Tree node index.::
     >>> class ReferenceNode(object):
     ...     __metaclass__ = plumber
     ...     __plumbing__ = (
-    ...         NodeInit,
     ...         Adopt,
     ...         Reference,
     ...         Nodify,
-    ...         NodeRepr,
     ...         OdictStorage,
     ...     )
 

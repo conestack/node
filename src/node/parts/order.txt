@@ -8,11 +8,8 @@ Node insertion. There exist ``insertbefore`` and ``insertafter`` functions::
 
     >>> from plumber import plumber
     >>> from node.parts import (
-    ...     NodeInit,
     ...     Adopt,
     ...     Nodify, 
-    ...     NodeInit, 
-    ...     NodeRepr,
     ...     OdictStorage, 
     ...     Order,
     ...     Reference,
@@ -21,11 +18,9 @@ Node insertion. There exist ``insertbefore`` and ``insertafter`` functions::
     >>> class OrderableNode(object):
     ...     __metaclass__ = plumber
     ...     __plumbing__ = (
-    ...         NodeInit,
     ...         Adopt,
     ...         Order,
     ...         Nodify,
-    ...         NodeRepr,
     ...         OdictStorage,
     ...     )
     
@@ -99,12 +94,10 @@ Order with References
     >>> class OrderReferenceNode(object):
     ...     __metaclass__ = plumber
     ...     __plumbing__ = (
-    ...         NodeInit,
     ...         Adopt,
     ...         Order,
     ...         Reference,
     ...         Nodify,
-    ...         NodeRepr,
     ...         OdictStorage,
     ...     )
     

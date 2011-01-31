@@ -11,8 +11,6 @@ from node.parts import (
     Adopt,
     AsAttrAccess,
     Nodify,
-    NodeInit,
-    NodeRepr,
     NodeChildValidate,
     DictStorage,
     OdictStorage,
@@ -22,10 +20,8 @@ from node.parts import (
 class AbstractNode(object):
     __metaclass__ = plumber
     __plumbing__ = (
-        NodeInit,
         Adopt,
         Nodify,
-        NodeRepr,
     )
 
 
@@ -38,12 +34,10 @@ class BaseNode(object):
     """
     __metaclass__ = plumber
     __plumbing__ = (
-        NodeInit,
         NodeChildValidate,
         Adopt,
         AsAttrAccess,
         Nodify,
-        NodeRepr,
         DictStorage,
     )
 
@@ -57,11 +51,9 @@ class OrderedNode(object):
     """
     __metaclass__ = plumber
     __plumbing__ = (
-        NodeInit,
         NodeChildValidate,
         Adopt,
         AsAttrAccess,
         Nodify,
-        NodeRepr,
         OdictStorage,
     )

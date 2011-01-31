@@ -27,10 +27,9 @@ class NodeAttributes(object):
 
     allow_non_node_childs = True
     
-    # XXX: __parent__ as Node we belong to, no need for own __init__ then
-    def __init__(self, context):
-        self.context = context
-        self._node = context # BBB
+    def __init__(self):
+        self.context = self.__parent__ # BBB 2011-01-31
+        self._node = self.__parent__   # BBB 2011-01-31
     
     # XXX: do we need that or could we make normal nodes show their parent,
     # too?
@@ -55,9 +54,7 @@ class Attributes(Part):
             attrs = self.nodespaces['__attrs__']
         except KeyError:
             attrs = self.nodespaces['__attrs__'] = \
-                self.attributes_factory(self)
-            attrs.__name__ = '__attrs__'
-            attrs.__parent__ = self
+                self.attributes_factory(name='__attrs__', parent=self)
         if self.attribute_access_for_attrs:
             return AttributeAccess(attrs)
         return attrs

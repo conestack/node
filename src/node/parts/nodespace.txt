@@ -5,21 +5,17 @@ node.parts.Nodespaces
     >>> from plumber import plumber
     >>> from node.parts import (
     ...     Adopt,
-    ...     Nodify,
-    ...     NodeInit,
-    ...     NodeRepr,
     ...     Nodespaces,
+    ...     Nodify,
     ...     OdictStorage,
     ... )
     
     >>> class NodespacesNode(odict):
     ...     __metaclass__ = plumber
     ...     __plumbing__ = (
-    ...         NodeInit, 
     ...         Adopt, 
     ...         Nodespaces, 
     ...         Nodify, 
-    ...         NodeRepr, 
     ...         OdictStorage,
     ... )
     
@@ -30,10 +26,8 @@ node.parts.Nodespaces
     >>> class SomeNode(object):
     ...     __metaclass__ = plumber
     ...     __plumbing__ = (
-    ...         NodeInit, 
     ...         Adopt, 
     ...         Nodify, 
-    ...         NodeRepr, 
     ...         OdictStorage,
     ...     )
     

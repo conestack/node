@@ -73,13 +73,13 @@ class AttributesLifecycle(Part):
     @plumb
     def __setitem__(_next, self, key, val):
         _next(self, key, val)
-        if self.context._notify_suppress:
+        if self.__parent__._notify_suppress:
             return
-        objectEventNotify(self.context.events['modified'](self.context))
+        objectEventNotify(self.__parent__.events['modified'](self.__parent__))
 
     @plumb
     def __delitem__(_next, self, key):
         _next(self, key)
-        if self.context._notify_suppress:
+        if self.__parent__._notify_suppress:
             return
-        objectEventNotify(self.context.events['modified'](self.context))
+        objectEventNotify(self.__parent__.events['modified'](self.__parent__))

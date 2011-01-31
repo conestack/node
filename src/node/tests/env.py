@@ -3,12 +3,10 @@ from plumber import plumber
 from zope.interface import implements
 from node.interfaces import INode
 from node.parts import (
+    NodeChildValidate,
     Adopt,
     AsAttrAccess,
     Nodify,
-    NodeInit,
-    NodeRepr,
-    NodeChildValidate,
     OdictStorage,
 )
 
@@ -26,11 +24,9 @@ class NoNode(object):
 class MyNode(object):
     __metaclass__ = plumber
     __plumbing__ = (
-        NodeInit,
         NodeChildValidate,
         Adopt,
         AsAttrAccess,
         Nodify,
-        NodeRepr,
         OdictStorage,
     )
