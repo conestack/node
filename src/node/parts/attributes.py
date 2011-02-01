@@ -27,7 +27,9 @@ class NodeAttributes(object):
 
     allow_non_node_childs = True
     
-    def __init__(self):
+    def __init__(self, name=None, parent=None):
+        self.__name__ = name
+        self.__parent__ = parent
         self.context = self.__parent__ # BBB 2011-01-31
         self._node = self.__parent__   # BBB 2011-01-31
     

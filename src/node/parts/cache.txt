@@ -24,6 +24,9 @@ Build a node with active invalidation functionality::
     ...         Nodify, 
     ...         OdictStorage,
     ...     )
+    ...     def __init__(self, name=None, parent=None):
+    ...         self.__name__ = name
+    ...         self.__parent__ = parent
 
 Test tree::
 
@@ -81,6 +84,9 @@ Build a node with active invalidation and cache functionality::
     ...         Nodify, 
     ...         OdictStorage,
     ...     )
+    ...     def __init__(self, name=None, parent=None):
+    ...         self.__name__ = name
+    ...         self.__parent__ = parent
     
     >>> root = Node()
     >>> root['c1'] = Node()

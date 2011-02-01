@@ -23,8 +23,11 @@ Node insertion. There exist ``insertbefore`` and ``insertafter`` functions::
     ...         Nodify,
     ...         OdictStorage,
     ...     )
+    ...     def __init__(self, name=None, parent=None):
+    ...         self.__name__ = name
+    ...         self.__parent__ = parent
     
-    >>> node = OrderableNode(name='root')
+    >>> node = OrderableNode('root')
     
     >>> node['child1'] = OrderableNode()
     >>> node['child2'] = OrderableNode()
@@ -40,7 +43,7 @@ Node insertion. There exist ``insertbefore`` and ``insertafter`` functions::
     ValueError: Given node has no __name__ set.
     
     >>> new.__name__ = 'child3'
-    >>> node.insertbefore(new, OrderableNode(name='fromelsewhere'))
+    >>> node.insertbefore(new, OrderableNode('fromelsewhere'))
     Traceback (most recent call last):
       ...
     ValueError: Given reference node not child of self.
@@ -100,6 +103,9 @@ Order with References
     ...         Nodify,
     ...         OdictStorage,
     ...     )
+    ...     def __init__(self, name=None, parent=None):
+    ...         self.__name__ = name
+    ...         self.__parent__ = parent
     
     >>> node = OrderReferenceNode(name='root')
     >>> node['child1'] = OrderReferenceNode()

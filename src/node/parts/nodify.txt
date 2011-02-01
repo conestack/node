@@ -13,6 +13,9 @@ node.parts.Nodify
     >>> class Node(object):
     ...     __metaclass__ = plumber
     ...     __plumbing__ = Adopt, Nodify, DictStorage
+    ...     def __init__(self, name=None, parent=None):
+    ...         self.__name__ = name
+    ...         self.__parent__ = parent
 
     >>> tester = FullMappingTester(Node, sorted_output=True)
     >>> tester.run()

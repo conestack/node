@@ -24,13 +24,13 @@ class Nodify(FullMapping):
     __name__ = default(None)
     __parent__ = default(None)
 
-    @plumb
-    def __init__(_next, self, *args, **kw):
-        if 'name' in kw:
-            self.__name__ = kw.pop('name')
-        if 'parent' in kw:
-            self.__parent__ = kw.pop('parent')
-        _next(self, *args, **kw)
+#    @plumb
+#    def __init__(_next, self, *args, **kw):
+#        if 'name' in kw:
+#            self.__name__ = kw.pop('name')
+#        if 'parent' in kw:
+#            self.__parent__ = kw.pop('parent')
+#        _next(self, *args, **kw)
 
     @plumb
     def copy(_next, self):
