@@ -22,7 +22,7 @@ node.parts.Attributes
     ...         OdictStorage,
     ...     )
 
-    >>> node = AttributedNode('attributed')
+    >>> node = AttributedNode(name='attributed')
     >>> node.attribute_access_for_attrs
     False
 

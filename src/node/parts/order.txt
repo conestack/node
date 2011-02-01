@@ -24,7 +24,7 @@ Node insertion. There exist ``insertbefore`` and ``insertafter`` functions::
     ...         OdictStorage,
     ...     )
     
-    >>> node = OrderableNode('root')
+    >>> node = OrderableNode(name='root')
     
     >>> node['child1'] = OrderableNode()
     >>> node['child2'] = OrderableNode()
@@ -52,7 +52,7 @@ Node insertion. There exist ``insertbefore`` and ``insertafter`` functions::
       <class 'OrderableNode'>: child3
       <class 'OrderableNode'>: child2
 
-    >>> new = OrderableNode('child4')
+    >>> new = OrderableNode(name='child4')
     >>> node.insertafter(new, node['child3'])
     >>> node.printtree()
     <class 'OrderableNode'>: root
@@ -61,7 +61,7 @@ Node insertion. There exist ``insertbefore`` and ``insertafter`` functions::
       <class 'OrderableNode'>: child4
       <class 'OrderableNode'>: child2
 
-    >>> new = OrderableNode('child5')
+    >>> new = OrderableNode(name='child5')
     >>> node.insertafter(new, node['child2'])
     >>> node.printtree()
     <class 'OrderableNode'>: root

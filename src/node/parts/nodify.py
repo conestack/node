@@ -25,10 +25,12 @@ class Nodify(FullMapping):
     __parent__ = default(None)
 
     @plumb
-    def __init__(_next, self, name=None, parent=None):
-        _next(self)
-        self.__name__ = name
-        self.__parent__ = parent
+    def __init__(_next, self, *args, **kw):
+        if 'name' in kw:
+            self.__name__ = kw.pop('name')
+        if 'parent' in kw:
+            self.__parent__ = kw.pop('parent')
+        _next(self, *args, **kw)
 
     @plumb
     def copy(_next, self):

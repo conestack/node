@@ -43,7 +43,7 @@ Check NodeCreation.::
     ...         DictStorage,
     ...     )
     
-    >>> root = NoLifecycleNode('no_notify')
+    >>> root = NoLifecycleNode(name='no_notify')
     >>> handler.handled
     []
     
@@ -62,7 +62,7 @@ Check NodeCreation.::
     ...     )
     ...     attributes_factory = LifecycleNodeAttributes
 
-    >>> root = LifecycleNode('root')
+    >>> root = LifecycleNode(name='root')
     >>> handler.handled
     [<node.events.NodeCreatedEvent object at ...>]
 
