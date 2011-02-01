@@ -6,6 +6,7 @@ Tree node index.::
     >>> from plumber import plumber
     >>> from node.parts import (
     ...     Adopt,
+    ...     DefaultInit,
     ...     Nodify,
     ...     OdictStorage,
     ...     Reference,
@@ -16,12 +17,10 @@ Tree node index.::
     ...     __plumbing__ = (
     ...         Adopt,
     ...         Reference,
+    ...         DefaultInit,
     ...         Nodify,
     ...         OdictStorage,
     ...     )
-    ...     def __init__(self, name=None, parent=None):
-    ...         self.__name__ = name
-    ...         self.__parent__ = parent
 
     >>> node = ReferenceNode()
     >>> node.index

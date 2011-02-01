@@ -9,6 +9,7 @@ Node insertion. There exist ``insertbefore`` and ``insertafter`` functions::
     >>> from plumber import plumber
     >>> from node.parts import (
     ...     Adopt,
+    ...     DefaultInit,
     ...     Nodify, 
     ...     OdictStorage, 
     ...     Order,
@@ -20,12 +21,10 @@ Node insertion. There exist ``insertbefore`` and ``insertafter`` functions::
     ...     __plumbing__ = (
     ...         Adopt,
     ...         Order,
+    ...         DefaultInit,
     ...         Nodify,
     ...         OdictStorage,
     ...     )
-    ...     def __init__(self, name=None, parent=None):
-    ...         self.__name__ = name
-    ...         self.__parent__ = parent
     
     >>> node = OrderableNode('root')
     
@@ -100,12 +99,10 @@ Order with References
     ...         Adopt,
     ...         Order,
     ...         Reference,
+    ...         DefaultInit,
     ...         Nodify,
     ...         OdictStorage,
     ...     )
-    ...     def __init__(self, name=None, parent=None):
-    ...         self.__name__ = name
-    ...         self.__parent__ = parent
     
     >>> node = OrderReferenceNode(name='root')
     >>> node['child1'] = OrderReferenceNode()

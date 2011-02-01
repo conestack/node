@@ -6,6 +6,7 @@ node.parts.Nodespaces
     >>> from node.parts import (
     ...     Adopt,
     ...     Nodespaces,
+    ...     DefaultInit,
     ...     Nodify,
     ...     OdictStorage,
     ... )
@@ -18,9 +19,6 @@ node.parts.Nodespaces
     ...         Nodify, 
     ...         OdictStorage,
     ...     )
-    ...     def __init__(self, name=None, parent=None):
-    ...         self.__name__ = name
-    ...         self.__parent__ = parent
     
     >>> node = NodespacesNode()
     >>> node.nodespaces
@@ -31,11 +29,9 @@ node.parts.Nodespaces
     ...     __plumbing__ = (
     ...         Adopt, 
     ...         Nodify, 
+    ...         DefaultInit,
     ...         OdictStorage,
     ...     )
-    ...     def __init__(self, name=None, parent=None):
-    ...         self.__name__ = name
-    ...         self.__parent__ = parent
     
     >>> node['__children__']['child'] = SomeNode()
     >>> node['child']

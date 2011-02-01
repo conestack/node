@@ -17,20 +17,24 @@ from node.utils import (
 )
 
 
+class DefaultInit(Part):
+    """Default init function for nodes.
+    
+    Plumbing init functions is crap because it breaks the API and is unhandy.
+    """
+    
+    @extend
+    def __init__(self, name=None, parent=None):
+        self.__name__ = name
+        self.__parent__ = parent
+
+
 class Nodify(FullMapping):
     """Fills in gaps to implement full INode interface.
     """
     implements(INode, INodify)
     __name__ = default(None)
     __parent__ = default(None)
-
-#    @plumb
-#    def __init__(_next, self, *args, **kw):
-#        if 'name' in kw:
-#            self.__name__ = kw.pop('name')
-#        if 'parent' in kw:
-#            self.__parent__ = kw.pop('parent')
-#        _next(self, *args, **kw)
 
     @plumb
     def copy(_next, self):

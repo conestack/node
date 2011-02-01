@@ -83,16 +83,14 @@ node.parts.NodeChildValidate
     >>> from plumber import plumber
     >>> from node.parts import (
     ...     NodeChildValidate,
+    ...     DefaultInit,
     ...     Nodify,
     ...     OdictStorage,
     ... )
     
     >>> class NodeChildValidateNode(object):
     ...     __metaclass__ = plumber
-    ...     __plumbing__ = NodeChildValidate, Nodify, OdictStorage
-    ...     def __init__(self, name=None, parent=None):
-    ...         self.__name__ = name
-    ...         self.__parent__ = parent
+    ...     __plumbing__ = NodeChildValidate, DefaultInit, Nodify, OdictStorage
     
     >>> node = NodeChildValidateNode()
     >>> node.allow_non_node_childs

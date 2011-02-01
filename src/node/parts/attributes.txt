@@ -6,6 +6,7 @@ node.parts.Attributes
     >>> from plumber import plumber
     >>> from node.parts import (
     ...     NodeChildValidate,
+    ...     DefaultInit,
     ...     Nodify,
     ...     OdictStorage,
     ...     Nodespaces,
@@ -18,12 +19,10 @@ node.parts.Attributes
     ...         NodeChildValidate,
     ...         Nodespaces,
     ...         Attributes,
+    ...         DefaultInit,
     ...         Nodify,
     ...         OdictStorage,
     ...     )
-    ...     def __init__(self, name=None, parent=None):
-    ...         self.__name__ = name
-    ...         self.__parent__ = parent
 
     >>> node = AttributedNode(name='attributed')
     >>> node.attribute_access_for_attrs

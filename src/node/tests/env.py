@@ -6,6 +6,7 @@ from node.parts import (
     NodeChildValidate,
     Adopt,
     AsAttrAccess,
+    DefaultInit,
     Nodify,
     OdictStorage,
 )
@@ -25,11 +26,9 @@ class MyNode(object):
     __metaclass__ = plumber
     __plumbing__ = (
         NodeChildValidate,
+        DefaultInit,
         Adopt,
         AsAttrAccess,
         Nodify,
         OdictStorage,
     )
-    def __init__(self, name=None, parent=None):
-        self.__name__ = name
-        self.__parent__ = parent
