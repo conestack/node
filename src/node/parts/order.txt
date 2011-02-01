@@ -101,7 +101,7 @@ Order with References
     ...         OdictStorage,
     ...     )
     
-    >>> node = OrderReferenceNode('root')
+    >>> node = OrderReferenceNode(name='root')
     >>> node['child1'] = OrderReferenceNode()
     >>> node['child3'] = OrderReferenceNode()
     >>> node['child4'] = OrderReferenceNode()
