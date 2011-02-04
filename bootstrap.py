@@ -29,14 +29,28 @@ is_jython = sys.platform.startswith('java')
 parser = OptionParser()
 parser.add_option("-v", "--version", dest="version",
                           help="use a specific zc.buildout version")
+parser.add_option("-d", "--distribute",
+                   action="store_true", dest="distribute", default=False,
+                   help="Use Disribute rather than Setuptools.")
+
+parser.add_option("-c", None, action="store", dest="config_file",
+                   help=("Specify the path to the buildout configuration "
+                         "file to be used."))
 
 options, args = parser.parse_args()
+
+# if -c was provided, we push it back into args for buildout' main function
+if options.config_file is not None:
+    args += ['-c', options.config_file]
 
 if options.version is not None:
     VERSION = '==%s' % options.version
 else:
     VERSION = ''
 
+# We decided to always use distribute, make sure this is the default for us
+# USE_DISTRIBUTE = options.distribute
+USE_DISTRIBUTE = True
 args = args + ['bootstrap']
 
 to_reload = False
@@ -47,9 +61,14 @@ try:
         raise ImportError
 except ImportError:
     ez = {}
-    exec urllib2.urlopen('http://python-distribute.org/distribute_setup.py'
-                     ).read() in ez
-    ez['use_setuptools'](to_dir=tmpeggs, download_delay=0, no_fake=True)
+    if USE_DISTRIBUTE:
+        exec urllib2.urlopen('http://python-distribute.org/distribute_setup.py'
+                         ).read() in ez
+        ez['use_setuptools'](to_dir=tmpeggs, download_delay=0, no_fake=True)
+    else:
+        exec urllib2.urlopen('http://peak.telecommunity.com/dist/ez_setup.py'
+                             ).read() in ez
+        ez['use_setuptools'](to_dir=tmpeggs, download_delay=0)
 
     if to_reload:
         reload(pkg_resources)
@@ -69,7 +88,10 @@ else:
 cmd = 'from setuptools.command.easy_install import main; main()'
 ws  = pkg_resources.working_set
 
-requirement = 'distribute'
+if USE_DISTRIBUTE:
+    requirement = 'distribute'
+else:
+    requirement = 'setuptools'
 
 if is_jython:
     import subprocess
