@@ -166,6 +166,7 @@ class INode(ILocation, IFullMapping):
         """Debugging helper.
         """
 
+
 ###############################################################################
 # plumbing parts
 ###############################################################################
@@ -208,7 +209,7 @@ class ICache(Interface):
 
 
 class ICallable(Interface):
-    """Part or node which implements the ``__call__`` function.
+    """Provide a ``__call__`` function.
     """
 
     def __call__():
@@ -324,7 +325,7 @@ class IWrap(Interface):
 
 
 ###############################################################################
-# BBB
+# BBB Will be removed by node 1.0
 ###############################################################################
 
 

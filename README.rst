@@ -63,17 +63,123 @@ An ordered node. Order of items is preserved.::
     [('foo', <OrderedNode object 'foo' at ...>), 
     ('bar', <OrderedNode object 'bar' at ...>)]
 
-A full API desctiption of the node interface can be found at
+A full API description of the node interface can be found at
 ``node.interfaces.INode``.
 
 
-Writing Nodes
--------------
+A more fine granular control of node functionality
+--------------------------------------------------
 
-Nodes are implemented using the
-`plumber <http://pypi.python.org/pypi/plumber>`_ package. If you want to write
-your own Node implementations read the plumber documentation first to understand
-the syntax and look at ``node.parts`` sources for blueprints.
+``node`` utilizes the `plumber <http://pypi.python.org/pypi/plumber>`_ package.
+
+Thus, different behaviors of nodes are provided by ``plumbing parts``. Read
+the documentation of ``plumber`` for details about the plumbing system.
+
+    >>> from plumber import plumber
+    >>> from node.parts import (
+    ...     Nodespaces,
+    ...     Attributes,
+    ...     Lifecycle,
+    ...     NodeChildValidate,
+    ...     Adopt,
+    ...     DefaultInit,
+    ...     Nodify,
+    ...     OdictStorage,
+    ... )
+    
+    >>> class CustomNode(object):
+    ...     __metaclass__ = plumber
+    ...     __plumbing__ = (
+    ...         Nodespaces,
+    ...         Attributes,
+    ...         Lifecycle,
+    ...         NodeChildValidate,
+    ...         Adopt,
+    ...         DefaultInit,
+    ...         Nodify,
+    ...         OdictStorage,
+    ...     )
+    
+    >>> dir(CustomNode)
+    ['__class__', '__contains__', '__delattr__', '__delitem__', '__dict__', 
+    '__doc__', '__format__', '__getattribute__', '__getitem__', '__hash__', 
+    '__implemented__', '__init__', '__iter__', '__len__', '__metaclass__', 
+    '__module__', '__name__', '__new__', '__parent__', '__plumbing__', 
+    '__plumbing_stacks__', '__provides__', '__reduce__', '__reduce_ex__', 
+    '__repr__', '__setattr__', '__setitem__', '__sizeof__', '__str__', 
+    '__subclasshook__', '__weakref__', '_nodespaces', '_notify_suppress', 
+    'allow_non_node_childs', 'attribute_access_for_attrs', 'attributes', 
+    'attributes_factory', 'attrs', 'clear', 'copy', 'detach', 'events', 
+    'filtereditems', 'filtereditervalues', 'filteredvalues', 'get', 'has_key', 
+    'items', 'iteritems', 'iterkeys', 'itervalues', 'keys', 'noderepr', 
+    'nodespaces', 'path', 'pop', 'popitem', 'printtree', 'root', 'setdefault', 
+    'storage', 'update', 'values']
+
+As ``dir`` call shows,  ``CustomNode`` class was plumbed using given parts, now
+defining a complete ``INode`` implementation with some additional behaviours
+and is now ready to use::
+
+    >>> node = CustomNode()
+    >>> node['child'] = CustomNode()
+    >>> node.printtree()
+    <class 'CustomNode'>: None
+      <class 'CustomNode'>: child
+    
+    >>> from node.interfaces import INode
+    >>> INode.providedBy(node)
+    True
+
+
+Parts
+-----
+
+``node`` package provides several plumbing parts:
+
+Alias
+    Provide ``node.interfaces.IAlias`` on node class.
+
+Attributes
+    Provide ``node.interfaces.IAttributes`` on node class, requires
+    ``Nodespaces`` part.
+
+Adopt
+    Set ``__name__`` and ``__parent__`` attributes automatically during node
+    tree manipulation.
+
+AsAttrAccess
+    Provide ``node.interfaces.IAsAttrAccess`` on node class.
+
+Lifecycle
+    Provide ``node.interfaces.ILifecycle`` on node class.
+
+Nodespaces
+    Provide ``node.interfaces.INodespaces`` on node class.
+
+DefaultInit
+    Provide a default ``__init__`` function on node class.
+
+Nodify
+    Hook basic ``INode`` API on node class.
+
+Order
+    Provide ``node.interfaces.IOrder`` on node class.
+
+Reference
+    Provide ``node.interfaces.IReference`` on node class.
+
+DictStorage
+    Provide data related methods utilizing ``dict``.
+
+OdictStorage
+    Provide data related methods utilizing ``odict``.
+
+
+Coverage
+--------
+
+
+Todo
+----
 
 
 Contributors
@@ -87,7 +193,7 @@ Contributors
 Changes
 =======
 
-1.0
+0.9
 ---
 
 - Make it work [rnix, chaoflow, et al]
