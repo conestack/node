@@ -174,12 +174,31 @@ OdictStorage
     Provide data related methods utilizing ``odict``.
 
 
-Coverage
---------
+TestCoverage
+------------
 
+Summary of the test coverage report::
 
-Todo
-----
+  lines   cov%   module
+  
+    106    88%   node.aliasing
+     27   100%   node.base
+     24    58%   node.events
+    127    86%   node.interfaces
+     23    95%   node.locking
+     11   100%   node.parts.__init__
+     46   100%   node.parts.alias
+     38   100%   node.parts.attributes
+     53    92%   node.parts.cache
+     71    74%   node.parts.common
+     54    90%   node.parts.lifecycle
+    113   100%   node.parts.mapping
+     31   100%   node.parts.nodespace
+     67    97%   node.parts.nodify
+     65   100%   node.parts.order
+     81   100%   node.parts.reference
+     34   100%   node.parts.storage
+     73    98%   node.utils
 
 
 Contributors
@@ -192,6 +211,7 @@ Contributors
 
 Changes
 =======
+
 
 0.9
 ---
