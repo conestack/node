@@ -26,6 +26,7 @@ TESTFILES = [
     '../parts/nodify.txt',
     '../parts/order.txt',
     '../parts/reference.txt',
+    '../original.txt',
     '../../../README.rst',
 ]
 

@@ -174,6 +174,19 @@ OdictStorage
     Provide data related methods utilizing ``odict``.
 
 
+Migration
+---------
+
+A node which behaves like ``zodict.Node`` is contained at ``node.base.Node``.
+This node is supposed to be used for migration from zodict.
+
+It's also useful to take a look of which parts the original node is build of.
+
+Probably an implementation does not need all the parts at once. In this case
+define the node plumbing directly on node class instead of inheriting from
+``node.base.Node``.
+
+
 TestCoverage
 ------------
 
@@ -211,6 +224,14 @@ Contributors
 
 Changes
 =======
+
+
+0.9.1
+-----
+
+- Provide ``node.base.Node`` with same behavior like ``zodict.Node`` for
+  migration purposes.
+  [rnix, 2011-02-08]
 
 
 0.9

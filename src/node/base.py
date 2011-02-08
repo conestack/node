@@ -9,6 +9,10 @@ from zope.interface import implements
 from node.interfaces import INode
 from node.parts import (
     Adopt,
+    Nodespaces,
+    Attributes,
+    Reference,
+    Order,
     AsAttrAccess,
     DefaultInit,
     Nodify,
@@ -55,6 +59,24 @@ class OrderedNode(object):
     __plumbing__ = (
         NodeChildValidate,
         Adopt,
+        AsAttrAccess,
+        DefaultInit,
+        Nodify,
+        OdictStorage,
+    )
+
+
+class Node(object):
+    """A node with original functionality from zodict.node.Node.
+    """
+    __metaclass__ = plumber
+    __plumbing__ = (
+        NodeChildValidate,
+        Nodespaces,
+        Adopt,
+        Attributes,
+        Reference,
+        Order,
         AsAttrAccess,
         DefaultInit,
         Nodify,
