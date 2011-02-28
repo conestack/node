@@ -68,6 +68,26 @@ class OrderedNode(object):
 
 class Node(object):
     """A node with original functionality from zodict.node.Node.
+    
+    XXX: reduce by attributes
+    """
+    __metaclass__ = plumber
+    __plumbing__ = (
+        NodeChildValidate,
+        Nodespaces,
+        Adopt,
+        Attributes,
+        Reference,
+        Order,
+        AsAttrAccess,
+        DefaultInit,
+        Nodify,
+        OdictStorage,
+    )
+
+
+class AttributedNode(object):
+    """A node with original functionality from zodict.node.AttributedNode.
     """
     __metaclass__ = plumber
     __plumbing__ = (
