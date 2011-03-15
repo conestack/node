@@ -114,6 +114,10 @@ class Nodify(FullMapping):
             except AttributeError:
                 # Non-Node values are just printed
                 print "%s%s" % (indent * ' ', node)
+    
+    @default
+    def __nonzero__(self):
+        return True
 
     @extend
     def __repr__(self):

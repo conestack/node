@@ -104,16 +104,16 @@ the documentation of ``plumber`` for details about the plumbing system.
     ['__class__', '__contains__', '__delattr__', '__delitem__', '__dict__', 
     '__doc__', '__format__', '__getattribute__', '__getitem__', '__hash__', 
     '__implemented__', '__init__', '__iter__', '__len__', '__metaclass__', 
-    '__module__', '__name__', '__new__', '__parent__', '__plumbing__', 
-    '__plumbing_stacks__', '__provides__', '__reduce__', '__reduce_ex__', 
-    '__repr__', '__setattr__', '__setitem__', '__sizeof__', '__str__', 
-    '__subclasshook__', '__weakref__', '_nodespaces', '_notify_suppress', 
-    'allow_non_node_childs', 'attribute_access_for_attrs', 'attributes', 
-    'attributes_factory', 'attrs', 'clear', 'copy', 'detach', 'events', 
-    'filtereditems', 'filtereditervalues', 'filteredvalues', 'get', 'has_key', 
-    'items', 'iteritems', 'iterkeys', 'itervalues', 'keys', 'noderepr', 
-    'nodespaces', 'path', 'pop', 'popitem', 'printtree', 'root', 'setdefault', 
-    'storage', 'update', 'values']
+    '__module__', '__name__', '__new__', '__nonzero__', '__parent__', 
+    '__plumbing__', '__plumbing_stacks__', '__provides__', '__reduce__', 
+    '__reduce_ex__', '__repr__', '__setattr__', '__setitem__', '__sizeof__', 
+    '__str__', '__subclasshook__', '__weakref__', '_nodespaces', 
+    '_notify_suppress', 'allow_non_node_childs', 'attribute_access_for_attrs', 
+    'attributes', 'attributes_factory', 'attrs', 'clear', 'copy', 'detach', 
+    'events', 'filtereditems', 'filtereditervalues', 'filteredvalues', 'get', 
+    'has_key', 'items', 'iteritems', 'iterkeys', 'itervalues', 'keys', 
+    'noderepr', 'nodespaces', 'path', 'pop', 'popitem', 'printtree', 'root', 
+    'setdefault', 'storage', 'update', 'values']
 
 As ``dir`` call shows,  ``CustomNode`` class was plumbed using given parts, now
 defining a complete ``INode`` implementation with some additional behaviours
