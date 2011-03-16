@@ -225,6 +225,12 @@ Contributors
 Changes
 =======
 
+0.9.2
+-----
+
+- Add ``__nonzero__`` on ``Nodifiy`` part always return True.
+  [rnix, 2011-03-15]
+
 
 0.9.1
 -----
