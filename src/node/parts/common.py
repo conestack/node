@@ -99,6 +99,17 @@ class FixedChildren(Part):
         raise NotImplementedError("read-only")
 
 
+class GetattrChildren(Part):
+    """Access children via getattr, given the attr name is unused
+    """
+    @finalize
+    def __getattr__(self, name):
+        """For new-style classes __getattr__ is called, if the
+        attribute could not be found via MRO
+        """
+        return self.__getitem__(name)
+
+
 class NodeChildValidate(Part):
     implements(INodeChildValidate)
 

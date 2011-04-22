@@ -11,6 +11,7 @@ from node.parts.common import (
     Adopt,
     AsAttrAccess,
     FixedChildren,
+    GetattrChildren,
     NodeChildValidate,
     Unicode,
     Wrap,

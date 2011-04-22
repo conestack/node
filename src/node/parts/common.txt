@@ -107,6 +107,51 @@ node.parts.FixedChildren
     >>> node['foo'] is node['foo']
     True
 
+node.parts.GetattrChildren
+--------------------------
+
+    >>> from plumber import plumber
+    >>> from node.base import BaseNode
+    >>> from node.parts import GetattrChildren
+
+    >>> class Base(BaseNode):
+    ...     allow_non_node_childs = True
+    ...     baseattr = 1
+    ...     def __getattr__(self, name):
+    ...         if name is not "baseblend":
+    ...             raise AttributeError("baseblend")
+    ...         return "42"
+
+    >>> class GetattrNode(Base):
+    ...     __metaclass__ = plumber
+    ...     __plumbing__ = GetattrChildren
+    ...     ourattr = 2
+
+    >>> node = GetattrNode()
+    >>> node['foo'] = 10
+    >>> node['baseattr'] = 20
+    >>> node['ourattr'] = 30
+
+    >>> node['foo']
+    10
+    >>> node['baseattr']
+    20
+    >>> node['ourattr']
+    30
+
+Only children not shadowed by real attributes can be accessed via getattr::
+
+    >>> node.foo
+    10
+    >>> node.baseattr
+    1
+    >>> node.ourattr
+    2
+
+XXX: The base class' getattr does not work anymore. plumber directive
+plumborextend could solve this together with support for multiple
+parts hooking into __getattr__.
+
 
 node.parts.NodeChildValidate
 ----------------------------
