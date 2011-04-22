@@ -46,14 +46,14 @@ class Nodify(FullMapping):
         new.__parent__ = self.__parent__
         return new
 
-    @default
+    @extend
     @property
     def path(self):
         path = [parent.__name__ for parent in LocationIterator(self)]
         path.reverse()
         return path
 
-    @default
+    @extend
     @property
     def root(self):
         root = None
@@ -61,13 +61,13 @@ class Nodify(FullMapping):
             root = parent
         return root
 
-    @default
+    @extend
     def detach(self, key):
         node = self[key]
         del self[key]
         return node
 
-    @default
+    @extend
     def filtereditervalues(self, interface):
         """Uses ``itervalues``.
         """
@@ -75,16 +75,16 @@ class Nodify(FullMapping):
             if interface.providedBy(val):
                 yield val
 
-    @default
+    @extend
     def filteredvalues(self, interface):
         """Uses ``values``.
         """
         return [val for val in self.filtereditervalues(interface)]
 
     # BBB 2010-12-23
-    filtereditems = default(filtereditervalues)
+    filtereditems = extend(filtereditervalues)
 
-    @default
+    @extend
     @property
     def noderepr(self):
         """``noderepr`` is used in ``printtree``.
@@ -103,7 +103,7 @@ class Nodify(FullMapping):
         name = unicode(self.__name__).encode('ascii', 'replace')
         return str(class_) + ': ' + name[name.find(':') + 1:]
 
-    @default
+    @extend
     def printtree(self, indent=0):
         """Uses ``values``.
         """
@@ -115,6 +115,9 @@ class Nodify(FullMapping):
                 # Non-Node values are just printed
                 print "%s%s" % (indent * ' ', node)
 
+    # XXX: tricky one: If a base class provides a __nonzero__ and that
+    # base class is nodified, should the base class' __nonzero__ be
+    # used or this one? Please write your thoughts here -cfl
     @default
     def __nonzero__(self):
         return True
