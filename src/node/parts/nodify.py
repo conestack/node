@@ -48,6 +48,16 @@ class Nodify(FullMapping):
 
     @extend
     @property
+    def name(self):
+        return self.__name__
+
+    @extend
+    @property
+    def parent(self):
+        return self.__parent__
+
+    @extend
+    @property
     def path(self):
         path = [parent.__name__ for parent in LocationIterator(self)]
         path.reverse()
