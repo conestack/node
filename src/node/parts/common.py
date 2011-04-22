@@ -1,8 +1,10 @@
 import inspect
 
+from odict import odict
 from plumber import (
     Part,
     default,
+    finalize,
     plumb,
     )
 from zope.interface import implements
@@ -59,6 +61,42 @@ class AsAttrAccess(Part):
     @default
     def as_attribute_access(self):
         return AttributeAccess(self)
+
+
+class FixedChildren(Part):
+    """Part that initializes a fixed dictionary as children
+
+    The children are instantiated during __init__ and adopted by the
+    class using this part. They cannot receive init argumentes, but
+    could retrieve configuration from their parent.
+    """
+    fixed_children_factories = default(None)
+
+    @plumb
+    def __init__(_next, self, *args, **kw):
+        _next(self, *args, **kw)
+        self._children = odict()
+        for key, factory in self.fixed_children_factories:
+            child = factory()
+            child.__name__ = key
+            child.__parent__ = self
+            self._children[key] = child
+
+    @finalize
+    def __delitem__(self, key):
+        raise NotImplementedError("read-only")
+
+    @finalize
+    def __getitem__(self, key):
+        return self._children[key]
+
+    @finalize
+    def __iter__(self):
+        return iter(self._children)
+
+    @finalize
+    def __setitem__(self, key, val):
+        raise NotImplementedError("read-only")
 
 
 class NodeChildValidate(Part):

@@ -75,6 +75,39 @@ instead of just naming the plumbing init eg plumbing__init__.
     >>> node.__parent__ is None
     True
 
+
+node.parts.FixedChildren
+------------------------
+
+    >>> from plumber import plumber
+    >>> from node.parts import FixedChildren
+    >>> from node.parts import Nodify
+
+    >>> class FooChild(object): pass
+    >>> class BarChild(object): pass
+
+    >>> class FixedChildrenNode(object):
+    ...     __metaclass__ = plumber
+    ...     __plumbing__ = Nodify, FixedChildren
+    ...     fixed_children_factories = (
+    ...         ('foo', FooChild),
+    ...         ('bar', BarChild),
+    ...         )
+
+    >>> node = FixedChildrenNode()
+    >>> node.keys()
+    ['foo', 'bar']
+
+    >>> node['foo']
+    <FooChild object at ...>
+
+    >>> node['bar']
+    <BarChild object at ...>
+
+    >>> node['foo'] is node['foo']
+    True
+
+
 node.parts.NodeChildValidate
 ----------------------------
 

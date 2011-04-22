@@ -10,8 +10,9 @@ from node.parts.cache import (
 from node.parts.common import (
     Adopt,
     AsAttrAccess,
-    Unicode,
+    FixedChildren,
     NodeChildValidate,
+    Unicode,
     Wrap,
 )
 from node.parts.lifecycle import (
