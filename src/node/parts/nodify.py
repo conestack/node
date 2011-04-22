@@ -19,10 +19,10 @@ from node.utils import (
 
 class DefaultInit(Part):
     """Default init function for nodes.
-    
+
     Plumbing init functions is crap because it breaks the API and is unhandy.
     """
-    
+
     @extend
     def __init__(self, name=None, parent=None):
         self.__name__ = name
@@ -45,7 +45,7 @@ class Nodify(FullMapping):
         new.__name__ = self.__name__
         new.__parent__ = self.__parent__
         return new
-    
+
     @default
     @property
     def path(self):
@@ -114,7 +114,7 @@ class Nodify(FullMapping):
             except AttributeError:
                 # Non-Node values are just printed
                 print "%s%s" % (indent * ' ', node)
-    
+
     @default
     def __nonzero__(self):
         return True
