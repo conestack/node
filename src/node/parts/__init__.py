@@ -43,6 +43,7 @@ from node.parts.reference import (
     Reference,
 )
 from node.parts.storage import (
+    Storage,
     DictStorage,
     OdictStorage,
 )
