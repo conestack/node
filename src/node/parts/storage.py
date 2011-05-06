@@ -5,6 +5,7 @@ from plumber import (
     Part,
 )
 from node.interfaces import IStorage
+from node.utils import instance_property
 from zope.interface import implements
 
 
@@ -37,19 +38,15 @@ class Storage(Part):
 class DictStorage(Storage):
     
     @default
-    @property
+    @instance_property
     def storage(self):
-        if not hasattr(self, '_storage_data'):
-            self._storage_data = dict()
-        return self._storage_data
+        return dict()
 
 
 class OdictStorage(Storage):
     implements(IStorage)
     
     @default
-    @property
+    @instance_property
     def storage(self):
-        if not hasattr(self, '_storage_data'):
-            self._storage_data = odict()
-        return self._storage_data
+        return odict()

@@ -122,3 +122,18 @@ class AttributeAccess(object):
     def __delitem__(self, name):
         context = object.__getattribute__(self, 'context')
         del context[name]
+
+
+def instance_property(func):
+    """Decorator like ``property``, but underlying function is only called once
+    per instance. 
+    
+    Set instance attribute with '_' prefix. 
+    """
+    def wrapper(self):
+        attribute_name = '_%s' % func.__name__
+        if not hasattr(self, attribute_name):
+            setattr(self, attribute_name, func(self))
+        return getattr(self, attribute_name)
+    wrapper.__doc__ = func.__doc__
+    return property(wrapper)
