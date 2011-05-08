@@ -6,16 +6,13 @@ try:
         ObjectModifiedEvent,
         ObjectRemovedEvent,
     )
-except ImportError, e: # BBB
-    from zope.app.event.objectevent import ObjectEvent
-    class ObjectCreatedEvent(ObjectEvent):
-        pass
-    class ObjectAddedEvent(ObjectEvent):
-        pass
-    class ObjectModifiedEvent(ObjectEvent):
-        pass
-    class ObjectRemovedEvent(ObjectEvent):
-        pass
+except ImportError, e:                                      #pragma NO COVERAGE
+    # BBB, XXX: remove this soon, relict from ``zodict``
+    from zope.app.event.objectevent import ObjectEvent      #pragma NO COVERAGE
+    class ObjectCreatedEvent(ObjectEvent): pass             #pragma NO COVERAGE
+    class ObjectAddedEvent(ObjectEvent): pass               #pragma NO COVERAGE
+    class ObjectModifiedEvent(ObjectEvent): pass            #pragma NO COVERAGE
+    class ObjectRemovedEvent(ObjectEvent): pass             #pragma NO COVERAGE
 
 from node.interfaces import (
     INodeCreatedEvent,
