@@ -18,7 +18,11 @@ TESTFILES = [
     '../parts/alias.txt',
     '../parts/attributes.txt',
     '../parts/cache.txt',
-    '../parts/common.txt',
+    
+    # something happens in this test breaking coverage recording, moved test 
+    # to the end
+    #'../parts/common.txt', 
+    
     '../parts/lifecycle.txt',
     '../parts/mapping.txt',
     '../parts/nodespace.txt',
@@ -27,6 +31,9 @@ TESTFILES = [
     '../parts/reference.txt',
     '../original.txt',
     '../../../README.rst',
+    
+    # tmp at end, figure out what makes coverage break recording
+    '../parts/common.txt',
 ]
 
 def test_suite():
