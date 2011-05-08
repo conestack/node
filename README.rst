@@ -230,6 +230,9 @@ Changes
 0.9.3dev
 --------
 
+- Locking tests. Add ``time.sleep`` after thread start.
+  [rnix, 2011-05-08]
+
 - Cleanup ``BaseTester``, remove ``sorted_output`` flag (always sort), also 
   search class bases for detection in ``wherefrom``.
   [rnix, 2011-05-08]

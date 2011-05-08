@@ -16,8 +16,7 @@ FullMappingTester
     ...         self.__name__ = name
     ...         self.__parent__ = parent
 
-``__setitem__``
-::
+``__setitem__``::
 
     >>> fmtester = FullMappingTester(TestMapping)
     >>> fmtester.test___setitem__()
@@ -39,8 +38,7 @@ FullMappingTester
     >>> fmtester = FullMappingTester(TestNodeSetItem)
     >>> fmtester.test___setitem__()
     
-``__getitem__``
-::
+``__getitem__``::
 
     >>> fmtester = FullMappingTester(TestMapping)
     >>> fmtester.test___getitem__()
@@ -79,8 +77,7 @@ FullMappingTester
     >>> fmtester.test___setitem__()
     >>> fmtester.test___getitem__()
 
-``get``
-::
+``get``::
 
     >>> fmtester.test_get()
     Traceback (most recent call last):
@@ -117,8 +114,7 @@ FullMappingTester
     >>> fmtester.test___setitem__()
     >>> fmtester.test_get()
     
-``__iter__``
-::
+``__iter__``::
 
     >>> fmtester = FullMappingTester(TestMapping)
     >>> fmtester.test___iter__()
@@ -154,8 +150,7 @@ FullMappingTester
     >>> fmtester.test___setitem__()
     >>> fmtester.test___iter__()
 
-``keys``
-::
+``keys``::
 
     >>> fmtester.test_keys()
     Traceback (most recent call last):
@@ -170,8 +165,7 @@ FullMappingTester
     >>> fmtester.test___setitem__()
     >>> fmtester.test_keys()
 
-``iterkeys``
-::
+``iterkeys``::
 
     >>> fmtester.test_iterkeys()
     Traceback (most recent call last):
@@ -187,8 +181,7 @@ FullMappingTester
     >>> fmtester.test___setitem__()
     >>> fmtester.test_iterkeys()
 
-``values``
-::
+``values``::
 
     >>> fmtester.test_values()
     Traceback (most recent call last):
@@ -234,8 +227,7 @@ FullMappingTester
     >>> fmtester.test___setitem__()
     >>> fmtester.test_values()
 
-``itervalues``
-::
+``itervalues``::
 
     >>> fmtester.test_itervalues()
     Traceback (most recent call last):
@@ -251,8 +243,7 @@ FullMappingTester
     >>> fmtester.test___setitem__()
     >>> fmtester.test_itervalues()
 
-``items``
-::
+``items``::
 
     >>> fmtester.test_items()
     Traceback (most recent call last):
@@ -320,8 +311,7 @@ FullMappingTester
     >>> fmtester.test___setitem__()
     >>> fmtester.test_items()
 
-``iteritems``
-::
+``iteritems``::
 
     >>> fmtester.test_iteritems()
     Traceback (most recent call last):
@@ -337,8 +327,7 @@ FullMappingTester
     >>> fmtester.test___setitem__()
     >>> fmtester.test_iteritems()
 
-``__contains__``
-::
+``__contains__``::
 
     >>> class TestMappingContains(TestMappingIterItems):
     ...     def __contains__(self, key):
@@ -372,8 +361,7 @@ FullMappingTester
     >>> fmtester.test___setitem__()
     >>> fmtester.test___contains__()
 
-``has_key``
-::
+``has_key``::
 
     >>> fmtester.test_has_key()
     Traceback (most recent call last):
@@ -401,8 +389,7 @@ FullMappingTester
     >>> fmtester.test___setitem__()
     >>> fmtester.test_has_key()
 
-``__len__``
-::
+``__len__``::
 
     >>> fmtester.test___len__()
     Traceback (most recent call last):
@@ -430,8 +417,7 @@ FullMappingTester
     >>> fmtester.test___setitem__()
     >>> fmtester.test___len__()
 
-``update``
-::
+``update``::
 
     >>> fmtester.test_update()
     Traceback (most recent call last):
@@ -517,8 +503,7 @@ FullMappingTester
     >>> fmtester = FullMappingTester(TestMappingUpdate)
     >>> fmtester.test_update()
 
-``__delitem__``
-::
+``__delitem__``::
 
     >>> fmtester.test___delitem__()
     Traceback (most recent call last):
@@ -546,8 +531,7 @@ FullMappingTester
     >>> fmtester.test_update()
     >>> fmtester.test___delitem__()
 
-``copy``
-::
+``copy``::
 
     >>> fmtester.test_copy()
     Traceback (most recent call last):
@@ -634,8 +618,7 @@ FullMappingTester
     ...         new.update(self.items())
     ...         return new
 
-``setdefault``
-::
+``setdefault``::
 
     >>> fmtester.test_setdefault()
     Traceback (most recent call last):
@@ -681,8 +664,7 @@ FullMappingTester
     >>> fmtester.context['baz'] = TestMappingSetDefault()
     >>> fmtester.test_setdefault()
 
-``pop``
-::
+``pop``::
 
     >>> fmtester.test_pop()
     Traceback (most recent call last):
@@ -757,8 +739,7 @@ FullMappingTester
     >>> fmtester.context['baz'] = TestMappingSetDefault()
     >>> fmtester.test_pop()
 
-``popitem``
-::
+``popitem``::
 
     >>> fmtester.test_popitem()
     Traceback (most recent call last):
@@ -801,8 +782,7 @@ FullMappingTester
     >>> fmtester.test___setitem__()
     >>> fmtester.test_popitem()
 
-``clear``
-::
+``clear``::
 
     >>> fmtester.test_clear()
     Traceback (most recent call last):
@@ -828,8 +808,7 @@ FullMappingTester
     ...                              include_node_checks=False)
     >>> fmtester.test_clear()
 
-Run tester on mapping.
-::
+Run tester on mapping::
 
     >>> class TestMappingAll(TestMappingClear): pass
     >>> fmtester = FullMappingTester(TestMappingAll,
@@ -857,8 +836,7 @@ Run tester on mapping.
     ``update``: OK
     ``values``: OK
 
-Run tester on node.
-::
+Run tester on node::
 
     >>> class TestNodeAll(TestNodeCopy, TestMappingAll): pass
     >>> fmtester = FullMappingTester(TestNodeAll)

@@ -27,7 +27,6 @@ class ContractError(Exception):
 
 
 class BaseTester(object):
-    
     # list of interface contract attributes to test.
     # test functions always are named 'test_[contractname]'.
     # execution is in order, so you might depend tests to prior happened

@@ -36,16 +36,13 @@ try:
         IObjectModifiedEvent,
         IObjectRemovedEvent,
     )
-except ImportError, e: # BBB
-    from zope.app.event.interfaces import IObjectEvent
-    class IObjectCreatedEvent(IObjectEvent):
-        pass
-    class IObjectAddedEvent(IObjectEvent):
-        pass
-    class IObjectModifiedEvent(IObjectEvent):
-        pass
-    class IObjectRemovedEvent(IObjectEvent):
-        pass
+except ImportError, e:                                      #pragma NO COVERAGE
+    # BBB, XXX: remove this soon, relict from ``zodict``
+    from zope.app.event.interfaces import IObjectEvent      #pragma NO COVERAGE
+    class IObjectCreatedEvent(IObjectEvent): pass           #pragma NO COVERAGE
+    class IObjectAddedEvent(IObjectEvent): pass             #pragma NO COVERAGE
+    class IObjectModifiedEvent(IObjectEvent): pass          #pragma NO COVERAGE
+    class IObjectRemovedEvent(IObjectEvent): pass           #pragma NO COVERAGE
 
 
 ###############################################################################
@@ -87,8 +84,6 @@ class IAttributeAccess(Interface):
     """Provides Attribute access to dict like context.
     
     Dome dict API functions are wrapped.
-    
-    Implementation is supposed to be an adapter like object.
     """
     def __getattr__(name):
         """Call __getitem__ on context.
@@ -115,11 +110,11 @@ class IAliaser(Interface):
     """Generic Aliasing Interface.
     """
     def alias(key):
-        """returns the alias for a key
+        """Return alias for key.
         """
 
     def unalias(aliased_key):
-        """returns the key belonging to an aliased_key
+        """Return the key belonging to aliased_key.
         """
 
 
@@ -173,7 +168,13 @@ class INode(ILocation, IFullMapping):
 
 
 class IAdopt(Interface):
-    """XXX: Description of plumbs
+    """Plumbing part that provides adoption of children.
+    
+    * Takes care of ``__name__`` and ``__parent__`` attributes of child node
+      on ``__setitem__``.
+      
+    * Re-route ``__getitem__`` and ``__setitem__`` in ``setdefault``, skipping
+      ``_next``.
     """
 
 

@@ -21,8 +21,6 @@ from node.utils import AttributeAccess
 
 
 class Adopt(Part):
-    """Plumbing element that provides adoption of children.
-    """
     implements(IAdopt)
 
     @plumb
@@ -47,7 +45,7 @@ class Adopt(Part):
 
     @plumb
     def setdefault(_next, self, key, default=None):
-        # We reroute through getitem and setitem, skipping _next
+        # We reroute through __getitem__ and __setitem__, skipping _next
         try:
             return self[key]
         except KeyError:
