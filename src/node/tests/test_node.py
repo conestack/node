@@ -10,8 +10,6 @@ optionflags = doctest.NORMALIZE_WHITESPACE | \
 TESTFILES = [
     'env.txt',
     '../testing/fullmapping.txt',
-    '../testing/location.txt',
-    '../testing/node.txt',
     '../base.txt',
     '../utils.txt',
     '../aliasing.txt',

@@ -129,7 +129,8 @@ class FullMappingTester(BaseTester):
                   '``__contains__``'
             raise Exception(msg)
         if 'xxx' in self.context:
-            raise 'Expected __contains__ to return False for non-existent key'
+            msg = 'Expected __contains__ to return False for non-existent key'
+            raise Exception(msg)
 
     def test_has_key(self):
         if not self.context.has_key('foo') \
@@ -153,7 +154,8 @@ class FullMappingTester(BaseTester):
             self.context['baz']
             self.context['blub']
         except KeyError:
-            raise Exception('KeyError, Expected ``baz`` and ``blub`` after update')
+            raise Exception('KeyError, Expected ``baz`` and ``blub`` after '
+                            'update')
         if baz is not self.context['baz']:
             raise Exception('Object at ``baz`` not expected one after update')
         if blub is not self.context['blub']:
@@ -167,8 +169,8 @@ class FullMappingTester(BaseTester):
                 raise RuntimeError("Cannot del test key.")
         try:
             self.context.update(dict(), dict())
-            raise Exception('Expected ValueError for update with more than one'
-                    ' positional argument.')
+            raise Exception('Expected TypeError for update with more than one '
+                            'positional argument.')
         except TypeError:
             pass
 

@@ -2,8 +2,6 @@ node.base
 =========
 
     >>> from node.testing import FullMappingTester
-    >>> from node.testing import LocationTester
-    >>> from node.testing import NodeTester
 
 
 AbstractNode
@@ -20,8 +18,8 @@ AbstractNode
     >>> abstract
     <AbstractNode object 'None' at ...>
 
-Storage related operations of AbstractNode raise ``NotImplementedError``.
-::
+Storage related operations of AbstractNode raise ``NotImplementedError``::
+
     >>> abstract['foo']
     Traceback (most recent call last):
       ...
@@ -73,8 +71,8 @@ Storage related operations of AbstractNode raise ``NotImplementedError``.
     NotImplementedError
     
 ``node.tests.env`` contains a base node implementation inheriting from
-``AbstractNode`` for illustration purposes.
-::
+``AbstractNode`` for illustration purposes::
+
     >>> from node.tests.env import MyNode
     >>> mynode = MyNode()
     >>> mynode
@@ -200,8 +198,8 @@ ILocation contract
 XXX: make tester object for ILocation contract
 
 ``ILocations`` promises ``__name__`` and ``__parent__`` attributes. They are
-used to define tree hierarchy.
-::
+used to define tree hierarchy::
+
     >>> from node.testing.base import create_tree
     >>> mynode = create_tree(MyNode)
     >>> mynode
@@ -269,8 +267,8 @@ XXX: make tester object for INode contract
 XXX: decide wether ``aliases`` or ``aliaser`` (still dunno) should be kept in
      base interface.
 
-``printtree``
-::
+``printtree``::
+
     >>> mynode.printtree()
     <class 'node.tests.env.MyNode'>: None
       <class 'node.tests.env.MyNode'>: child_0
@@ -307,8 +305,8 @@ XXX: decide wether ``aliases`` or ``aliaser`` (still dunno) should be kept in
         <class 'node.base.OrderedNode'>: subchild_0
         <class 'node.base.OrderedNode'>: subchild_1
 
-``path``
-::
+``path``::
+
     >>> mynode.__name__ = 'root'
     >>> mynode.path
     ['root']
@@ -330,8 +328,8 @@ XXX: decide wether ``aliases`` or ``aliaser`` (still dunno) should be kept in
     >>> orderednode['child_1']['subchild_1'].path
     ['root', 'child_1', 'subchild_1']
 
-``root``
-::
+``root``::
+
     >>> mynode['child_1']['subchild_1'].root is mynode
     True
     
@@ -341,8 +339,8 @@ XXX: decide wether ``aliases`` or ``aliaser`` (still dunno) should be kept in
     >>> orderednode['child_1']['subchild_1'].root is orderednode
     True
 
-``allow_non_node_childs``
-::
+``allow_non_node_childs``::
+
     >>> mynode.allow_non_node_childs
     False
     
@@ -406,8 +404,8 @@ XXX: decide wether ``aliases`` or ``aliaser`` (still dunno) should be kept in
     >>> del orderednode['foo']
     >>> orderednode.allow_non_node_childs = False
 
-``filteredvalues``
-::
+``filteredvalues``::
+
     >>> from zope.interface import Interface, directlyProvides, noLongerProvides
     >>> class IFilter(Interface):
     ...     pass
@@ -454,8 +452,8 @@ XXX: decide wether ``aliases`` or ``aliaser`` (still dunno) should be kept in
     >>> orderednode.filteredvalues(IFilter)
     []
 
-``as_attribute_access``
-::
+``as_attribute_access``::
+
     >>> myattrs = mynode.as_attribute_access()
     >>> myattrs
     <node.utils.AttributeAccess object at ...>

@@ -354,6 +354,17 @@ FullMappingTester
     
     >>> class TestMappingContains(TestMappingIterItems):
     ...     def __contains__(self, key):
+    ...         return True
+    >>> fmtester = FullMappingTester(TestMappingContains,
+    ...                              include_node_checks=False)
+    >>> fmtester.test___setitem__()
+    >>> fmtester.test___contains__()
+    Traceback (most recent call last):
+      ...
+    Exception: Expected __contains__ to return False for non-existent key
+    
+    >>> class TestMappingContains(TestMappingIterItems):
+    ...     def __contains__(self, key):
     ...         return key in self.data
     
     >>> fmtester = FullMappingTester(TestMappingContains,
@@ -462,6 +473,39 @@ FullMappingTester
     Traceback (most recent call last):
       ...
     Exception: Object at ``blub`` not expected one after update
+
+    >>> class BrokenData(dict):
+    ...     def __delitem__(self, key):
+    ...         if key == 'blub':
+    ...             raise Exception(u"Broken implementation")
+    
+    >>> class TestMappingUpdate(TestMappingLen):
+    ...     def __init__(self):
+    ...         self.data = BrokenData()
+    ...     def update(self, data=(), **kw):
+    ...         for key, value in data:
+    ...             self[key] = value
+    ...         for key, value in kw.iteritems():
+    ...             self[key] = value
+    
+    >>> fmtester = FullMappingTester(TestMappingUpdate)
+    >>> fmtester.test_update()
+    Traceback (most recent call last):
+      ...
+    RuntimeError: Cannot del test key.
+    
+    >>> class TestMappingUpdate(TestMappingLen):
+    ...     def update(self, data=(), data1=(), **kw):
+    ...         for key, value in data:
+    ...             self[key] = value
+    ...         for key, value in kw.iteritems():
+    ...             self[key] = value
+    
+    >>> fmtester = FullMappingTester(TestMappingUpdate)
+    >>> fmtester.test_update()
+    Traceback (most recent call last):
+      ...
+    Exception: Expected TypeError for update with more than one positional argument.
 
     >>> class TestMappingUpdate(TestMappingLen):
     ...     def update(self, data=(), **kw):

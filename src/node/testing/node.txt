@@ -1,4 +1,0 @@
-node.testing.node
-=================
-
-    >>> from node.testing import NodeTester
