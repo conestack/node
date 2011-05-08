@@ -9,6 +9,7 @@ optionflags = doctest.NORMALIZE_WHITESPACE | \
 
 TESTFILES = [
     'env.txt',
+    '../testing/base.txt',
     '../testing/fullmapping.txt',
     '../base.txt',
     '../utils.txt',

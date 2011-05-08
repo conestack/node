@@ -27,10 +27,8 @@ class FullMappingTester(BaseTester):
         'clear',
     ]
 
-    def __init__(self, class_, context=None, include_node_checks=True,
-            sorted_output=False):
-        super(FullMappingTester, self).__init__(class_, context=context,
-                sorted_output=sorted_output)
+    def __init__(self, class_, context=None, include_node_checks=True):
+        super(FullMappingTester, self).__init__(class_, context=context)
         self.include_node_checks = include_node_checks
 
     def test___setitem__(self):

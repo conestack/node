@@ -20,10 +20,6 @@ class ResultWriter(object):
     
     def failed(self, exc):
         self.results[self.name] = 'failed: %s' % (repr(exc),)
-    
-    def print_combined(self):
-        for key, val in self.results.iteritems():
-            print '``%s``: %s' % (key, val)
 
 
 class ContractError(Exception):
@@ -40,8 +36,7 @@ class BaseTester(object):
     
     direct_error = False
     
-    # sorted_output = True should be default
-    def __init__(self, class_, context=None, sorted_output=False):
+    def __init__(self, class_, context=None):
         """
         ``class_``
             class object for creating children in test.
@@ -54,7 +49,6 @@ class BaseTester(object):
         self.context = context
         if self.context is None:
             self.context = class_()
-        self.sorted_output = sorted_output
         self._results = odict()
     
     @property
@@ -63,11 +57,8 @@ class BaseTester(object):
     
     @property
     def combined(self):
-        if self.sorted_output:
-            for key, val in sorted(self.writer().results.iteritems()):
-                print '``%s``: %s' % (key, val)
-        else:
-            self.writer().print_combined()
+        for key, val in sorted(self.writer().results.iteritems()):
+            print '``%s``: %s' % (key, val)
 
     @property
     def wherefrom(self):
@@ -76,13 +67,18 @@ class BaseTester(object):
             if name in self.class_.__dict__:
                 print self.class_.__name__
             else:
-                print "inherited from base class"
+                for base in self.class_.__bases__:
+                    if name in base.__dict__:
+                        print base.__name__
+                        continue
+                    print "function not found on object"
     
     def run(self):
         for name in self.iface_contract:
             func = getattr(self, 'test_%s' % name, None)
             if func is None:
-                msg = 'Given Implementation does not provide ``%s``' % name
+                msg = '``%s`` does not provide ``test_%s``' % (
+                    self.__class__.__name__, name)
                 raise ContractError(msg)
             writer = self.writer(name)
             if self.direct_error:

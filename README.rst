@@ -230,7 +230,11 @@ Changes
 0.9.3dev
 --------
 
-- Remove useless try/except in ``utils.AttributeAccess``
+- Cleanup ``BaseTester``, remove ``sorted_output`` flag (always sort), also 
+  search class bases for detection in ``wherefrom``.
+  [rnix, 2011-05-08]
+
+- Remove useless try/except in ``utils.AttributeAccess``.
   [rnix, 2011-05-08]
 
 - Add ``instance_property`` decorator to utils.

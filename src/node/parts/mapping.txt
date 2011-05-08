@@ -14,8 +14,7 @@ A full mapping that is going to fail, because nobody takes care of
     ...     __metaclass__ = plumber
     ...     __plumbing__ = FullMapping
 
-    >>> tester = FullMappingTester(MyFullMapping, include_node_checks=False,
-    ...                            sorted_output=True)
+    >>> tester = FullMappingTester(MyFullMapping, include_node_checks=False)
     >>> tester.run()
     >>> tester.combined
     ``__contains__``: failed: NotImplementedError()
@@ -71,8 +70,7 @@ Use a storage.::
     ...     __metaclass__ = plumber
     ...     __plumbing__ = FullMapping, DictStorage
 
-    >>> tester = FullMappingTester(MyFullMapping, include_node_checks=False,
-    ...                            sorted_output=True)
+    >>> tester = FullMappingTester(MyFullMapping, include_node_checks=False)
     >>> tester.run()
     >>> tester.combined
     ``__contains__``: OK

@@ -15,7 +15,7 @@ node.parts.Nodify
     ...     __metaclass__ = plumber
     ...     __plumbing__ = Adopt, DefaultInit, Nodify, DictStorage
 
-    >>> tester = FullMappingTester(Node, sorted_output=True)
+    >>> tester = FullMappingTester(Node)
     >>> tester.run()
     >>> tester.combined
     ``__contains__``: OK

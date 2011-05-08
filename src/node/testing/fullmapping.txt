@@ -836,26 +836,26 @@ Run tester on mapping.
     ...                              include_node_checks=False)
     >>> fmtester.run()
     >>> fmtester.combined
-    ``__setitem__``: OK
+    ``__contains__``: OK
+    ``__delitem__``: OK
     ``__getitem__``: OK
-    ``get``: OK
     ``__iter__``: OK
-    ``keys``: OK
-    ``iterkeys``: OK
-    ``values``: OK
-    ``itervalues``: OK
+    ``__len__``: OK
+    ``__setitem__``: OK
+    ``clear``: OK
+    ``copy``: OK
+    ``get``: OK
+    ``has_key``: OK
     ``items``: OK
     ``iteritems``: OK
-    ``__contains__``: OK
-    ``has_key``: OK
-    ``__len__``: OK
-    ``update``: OK
-    ``__delitem__``: OK
-    ``copy``: OK
-    ``setdefault``: OK
+    ``iterkeys``: OK
+    ``itervalues``: OK
+    ``keys``: OK
     ``pop``: OK
     ``popitem``: OK
-    ``clear``: OK
+    ``setdefault``: OK
+    ``update``: OK
+    ``values``: OK
 
 Run tester on node.
 ::
@@ -864,23 +864,23 @@ Run tester on node.
     >>> fmtester = FullMappingTester(TestNodeAll)
     >>> fmtester.run()
     >>> fmtester.combined
-    ``__setitem__``: OK
+    ``__contains__``: OK
+    ``__delitem__``: OK
     ``__getitem__``: OK
-    ``get``: OK
     ``__iter__``: OK
-    ``keys``: OK
-    ``iterkeys``: OK
-    ``values``: OK
-    ``itervalues``: OK
+    ``__len__``: OK
+    ``__setitem__``: OK
+    ``clear``: OK
+    ``copy``: OK
+    ``get``: OK
+    ``has_key``: OK
     ``items``: OK
     ``iteritems``: OK
-    ``__contains__``: OK
-    ``has_key``: OK
-    ``__len__``: OK
-    ``update``: OK
-    ``__delitem__``: OK
-    ``copy``: OK
-    ``setdefault``: OK
+    ``iterkeys``: OK
+    ``itervalues``: OK
+    ``keys``: OK
     ``pop``: OK
     ``popitem``: OK
-    ``clear``: OK
+    ``setdefault``: OK
+    ``update``: OK
+    ``values``: OK
