@@ -106,10 +106,7 @@ class AttributeAccess(object):
     
     def __setattr__(self, name, value):
         context = object.__getattribute__(self, 'context')
-        try:
-            context[name] = value
-        except KeyError:
-            raise AttributeError(name)
+        context[name] = value
     
     def __getitem__(self, name):
         context = object.__getattribute__(self, 'context')

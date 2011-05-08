@@ -230,8 +230,12 @@ Changes
 0.9.3dev
 --------
 
+- Remove useless try/except in ``utils.AttributeAccess``
+  [rnix, 2011-05-08]
+
 - Add ``instance_property`` decorator to utils.
   [rnix, 2011-05-06]
+
 
 0.9.2
 -----
