@@ -133,14 +133,25 @@ class ILeaf(Interface):
     """
 
 
+class ICallable(Interface):
+    """Provide a ``__call__`` function.
+    """
+
+    def __call__():
+        """Expose the tree contents to an output channel.
+        """
+
+
 ###############################################################################
 # node
 ###############################################################################
 
 
 class INode(ILocation, IFullMapping):
-    """A node.
+    """Basic node interface.
     """
+    name = Attribute(u"Read only property mapping ``__name__``.")
+    parent = Attribute(u"Read only property mapping ``__parent__``.")
     path = Attribute(u"Path of node as list")
     root = Attribute(u"Root node. Normally wither the node with no more "
                      u"parent or a node implementing ``node.interfaces.IRoot``")
@@ -167,96 +178,172 @@ class INode(ILocation, IFullMapping):
 ###############################################################################
 
 
+class INodify(INode):
+    """Plumbing part which hooks INode API.
+    
+    Plumbing hooks:
+    
+    copy
+        set ``__name__`` and ``__parent__`` attributes on new copy.
+    """
+
+
 class IAdopt(Interface):
     """Plumbing part that provides adoption of children.
     
-    * Takes care of ``__name__`` and ``__parent__`` attributes of child node
-      on ``__setitem__``.
+    Plumbing hooks:
+    
+    __setitem__
+        Takes care of ``__name__`` and ``__parent__`` attributes of child node.
       
-    * Re-route ``__getitem__`` and ``__setitem__`` in ``setdefault``, skipping
-      ``_next``.
+    setdefault
+        Re-route ``__getitem__`` and ``__setitem__``, skipping ``_next``.
     """
 
 
 class IAlias(Interface):
-    """XXX: Desctiption of plumbs
+    """Plumbing part that provides aliasing of child keys.
+    
+    Plumbing hooks:
+    
+    __init__
+        Takes care of 'aliaser' keyword argument and set to ``self.aliaser``
+        if given.
+    
+    __getitem__
+        Return child by aliased key.
+    
+    __setitem__
+        Set child by aliased key.
+    
+    __delitem__
+        Delete item by aliased key.
+    
+    __iter__
+        Iterate aliased keys.
     """
+    aliaser = Attribute(u"``IAliaser`` implementation.")
 
 
 class IAsAttrAccess(Interface):
-    """Part to get node as IAttributeAccess implementation.
+    """Plumbing part to get node as IAttributeAccess implementation.
     """
-
     def as_attribute_access():
         """Return this node as IAttributeAccess implementing object.
         """
 
 
 class IAttributes(Interface):
-    """Provide attributes on node.
+    """Plumbing part to provide attributes on node.
     """
     attrs = Attribute(u"``INodeAttributes`` implementation.")
     attrs_factory = Attribute(u"``INodeAttributes`` implementation class")
 
 
-class IAttributesLifecycle(Interface):
-    """XXX: Description of plumbs
-    """
-
-
-class ICache(Interface):
-    """Cache nodes.
-    """
-
-
-class ICallable(Interface):
-    """Provide a ``__call__`` function.
-    """
-
-    def __call__():
-        """Expose the tree contents to an output channel.
-        """
-
-
-class IInvalidate(Interface):
-    """Node invalidation.
-    """
-
-    def invalidate(key=None):
-        """Invalidate child with key or all childs of this node.
-        """
-
-
 class ILifecycle(Interface):
-    """Takes care about lifecycle events.
+    """Plumbing part taking care of lifecycle events.
+    
+    Plumbing hooks:
+    
+    __init__
+        Trigger created event.
+    
+    __setitem__
+        Trigger added event.
+    
+    __delitem__
+        Trigger removed event.
+    
+    detach
+        Trigger detached event.
+    
     """
     events = Attribute(u"Dict with lifecycle event classes to use for "
                        u"notification.")
 
 
+class IAttributesLifecycle(Interface):
+    """Plumbing part for attributes manipulation lifecycle events.
+    
+    Plumbing hooks:
+    
+    __setitem__
+        Trigger modified event.
+    
+    __delitem__
+        Trigger modified event.
+    """
+
+
+class ICache(Interface):
+    """Plumbing part for caching.
+    
+    Plumbing hooks:
+    
+    __getitem__
+        Return cached child or read child.
+    
+    __setitem__
+        Remove child from cache and set item.
+    
+    __delitem__
+        Remove child from cache.
+    
+    __iter__
+        Iterate cached keys or iterate.
+    
+    invalidate
+        Invalidate cache.
+    """
+    cache = Attribute(u"Dict like object representing the cache.")
+
+
+class IInvalidate(Interface):
+    """Plumbing part for node invalidation.
+    """
+    def invalidate(key=None):
+        """Invalidate child with key or all children of this node.
+        """
+
+
 class INodeChildValidate(Interface):
-    """Part for child node validation.
+    """Plumbing part for child node validation.
+    
+    Plumbing hooks:
+    
+    __setitem__
+        If ``allow_non_node_childs`` is False, check if given child is instance
+        of node, otherwise raise ``ValuError``.
     """
     allow_non_node_childs = Attribute(u"Flag wether this node may contain non "
                                       u"node based children.")
 
 
 class INodespaces(Interface):
-    """Part for providing nodespaces on node.
+    """Plumbing part for providing nodespaces on node.
     
     A nodespace is a seperate node with special keys - pre- and postfixed with
-    ``__`` which gets mapped on storage write operations.
+    ``__`` and gets mapped on storage write operations.
+    
+    Plumbing hooks:
+    
+    __getitem__
+        Return nodespace if key pre- and postfixed with '__', otherwise child
+        from ``__children__`` nodespace.
+    
+    __setitem__
+        Set nodespace if key pre- and postfixed with '__', otherwise set child
+        to ``__children__`` nodespace.
+    
+    __delitem__
+        Delete nodespace if key pre- and postfixed with '__', otherwise delete
+        child from ``__children__`` nodespace.
     """
-    nodespaces = Attribute(u"Nodespaces.")
-
-
-class INodify(Interface):
-    """Part which hooks node API.
-    """
+    nodespaces = Attribute(u"Nodespaces. Dict like object.")
 
 
 class IOrder(Interface):
-    """Reordering support.
+    """Plumbing part for ordering support.
     """
     
     def insertbefore(newnode, refnode):
@@ -281,7 +368,21 @@ class IOrder(Interface):
 
 
 class IReference(Interface):
-    """Holding an internal index of all nodes contained in the tree.
+    """Plumbing part holding an index of all nodes contained in the tree.
+    
+    Plumbing hooks:
+    
+    __init__
+        Create and set uuid.
+    
+    __setitem__
+        Set child in index.
+    
+    __delitem__
+        Delete child from index.
+    
+    detach
+        Reduce index of detached child.
     """
     uuid = Attribute(u"``uuid.UUID`` of this node.")
     index = Attribute(u"The tree node index")
@@ -292,7 +393,7 @@ class IReference(Interface):
 
 
 class IStorage(Interface):
-    """Provide storage endpoints.
+    """Plumbing part providing storage related endpoints.
     
     Minimum Storage requirement is described below. An implementation of this
     interface could provide other storage related methods as appropriate.
@@ -302,12 +403,12 @@ class IStorage(Interface):
         """Return Item from Storage.
         """
     
-    def __delitem__(key):
-        """Delete Item from storage.
-        """
-    
     def __setitem__(key, val):
         """Set item to storage.
+        """
+    
+    def __delitem__(key):
+        """Delete Item from storage.
         """
     
     def __iter__():
@@ -316,13 +417,24 @@ class IStorage(Interface):
 
 
 class IUnicode(Interface):
-    """XXX: Description of plumbs
+    """Plumbing part to ensure unicode for keys and string values.
+    
+    Plumbing hooks:
+    
+    __getitem__
+        Ensure unicode key.
+    
+    __setitem__
+        Ensure unicode key and unicode value if value is basestring.
+    
+    __delitem__
+        Ensure unicode key
     """
 
 
-class IWrap(Interface):
-    """XXX: Description of plumbs
-    """
+#class IWrap(Interface):
+#    """
+#    """
 
 
 ###############################################################################

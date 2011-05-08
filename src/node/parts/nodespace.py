@@ -56,7 +56,6 @@ class Nodespaces(Part):
     
     @plumb
     def __delitem__(_next, self, key):
-        #import pdb;pdb.set_trace()
         # blend in our nodespaces as children, with name __<name>__
         if key.startswith('__') and key.endswith('__'):
             # a reserved child key mapped to the nodespace behind

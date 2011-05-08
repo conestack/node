@@ -1,22 +1,20 @@
 import inspect
-
 from odict import odict
 from plumber import (
     Part,
     default,
     finalize,
     plumb,
-    )
+)
 from zope.interface import implements
-
 from node.interfaces import (
     IAdopt,
     IAsAttrAccess,
     INode,
     INodeChildValidate,
     IUnicode,
-    IWrap,
-    )
+    #IWrap,
+)
 from node.utils import AttributeAccess
 
 
@@ -123,8 +121,6 @@ class NodeChildValidate(Part):
 
 
 class Unicode(Part):
-    """Plumbing element to ensure unicode for keys and string values.
-    """
     # XXX: currently won't work, as the decode function is missing
     # check the one in bda.ldap.strcodec
     # XXX: It feels here it would be nice to be able to get an instance of a
@@ -152,21 +148,21 @@ class Unicode(Part):
         return _next(key, val)
 
 
-class Wrap(Part):
-    """Plumbing element that wraps nodes coming from deeper levels in a
-    NodeNode.
-    """
-    implements(IWrap)
-
-    @plumb
-    def __getitem__(_next, self, key):
-        val = _next(self, key)
-        if INode.providedBy(val):
-            val = NodeNode(val)
-        return val
-
-    @plumb
-    def __setitem__(_next, self, key, val):
-        if INode.providedBy(val):
-            val = val.context
-        _next(self, key, val)
+#class Wrap(Part):
+#    """Plumbing element that wraps nodes coming from deeper levels in a
+#    NodeNode.
+#    """
+#    implements(IWrap)
+#
+#    @plumb
+#    def __getitem__(_next, self, key):
+#        val = _next(self, key)
+#        if INode.providedBy(val):
+#            val = NodeNode(val)
+#        return val
+#
+#    @plumb
+#    def __setitem__(_next, self, key, val):
+#        if INode.providedBy(val):
+#            val = val.context
+#        _next(self, key, val)

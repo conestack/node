@@ -9,9 +9,7 @@ from zope.interface.common.mapping import IEnumerableMapping
 
 
 class Alias(Part):
-    """Plumbing element that provides aliasing of child names/keys
-
-    KeyErrors are caught and reraised with the aliased key.
+    """KeyErrors are caught and reraised with the aliased key.
     XXX: Could be configureable: aliased_keyerrors.
 
     XXX: Problem: at least __contains__, keys and iterkeys would also need to

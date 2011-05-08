@@ -230,6 +230,9 @@ Changes
 0.9.3dev
 --------
 
+- Inherit ``INodify`` interface from ``INode``.
+  [rnix, 2011-05-08]
+
 - Locking tests. Add ``time.sleep`` after thread start.
   [rnix, 2011-05-08]
 
