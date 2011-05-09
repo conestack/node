@@ -7,18 +7,21 @@ from node.interfaces import (
     IInvalidate,
     ICache,
 )
+from node.utils import instance_property
 from zope.interface import implements
 
 
-# XXX: This looks like it deletes all children in the storage, not in the cache
 class Invalidate(Part):
+    """Plumbing part for invalidation.
+    
+    This basic implementation assumes that nodes using this part are NOT storage
+    related. It just uses ``self.__delitem__``.
+    """
     implements(IInvalidate)
     
     @default
     def invalidate(self, key=None):
-        """Invalidate Child with key or all children.
-        
-        Raise KeyError if child does not exist for key if given.
+        """Raise KeyError if child does not exist for key if given.
         """
         if key is not None:
             del self[key]
@@ -32,13 +35,11 @@ class Cache(Part):
     implements(ICache)
     
     @default
-    @property
+    @instance_property
     def cache(self):
         """Default cache is a dict on self.
         """
-        if not hasattr(self, '_cache'):
-            self._cache = dict()
-        return self._cache
+        return dict()
     
     @plumb
     def invalidate(_next, self, key=None):
@@ -50,10 +51,7 @@ class Cache(Part):
                 pass
         else:
             for key in cache.keys():
-                try:
-                    del cache[key]
-                except KeyError:
-                    pass
+                del cache[key]
         _next(self, key=key)
     
     @plumb
@@ -68,6 +66,9 @@ class Cache(Part):
     # XXX: think of using subscribers instead of plumbings for cache
     #      invalidation on __setitem__, __delitem__, __iter__.
     #      but this makes us depend caching to lifecycle.
+    # 
+    #      might be another caching mechanism, both caching variants are
+    #      possible then.
     
     @plumb
     def __setitem__(_next, self, key, value):
@@ -87,6 +88,5 @@ class Cache(Part):
     
     @plumb
     def __iter__(_next, self):
-        # XXX
+        # do not cache keys on default implementation.
         return _next(self)
-    

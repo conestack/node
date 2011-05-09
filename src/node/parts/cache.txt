@@ -122,3 +122,29 @@ Invalidate plumbing removes item from cache::
     
     >>> root.printtree()
     <class 'Node'>: None
+
+Test invalidation plumbing hook with missing cache values::
+
+    >>> root['x1'] = Node()
+    >>> root['x2'] = Node()
+    >>> root.printtree()
+    <class 'Node'>: None
+      <class 'Node'>: x1
+      <class 'Node'>: x2
+    
+    >>> root.cache
+    {'x2': <Node object 'x2' at ...>, 
+    'x1': <Node object 'x1' at ...>}
+    
+    >>> del root.cache['x1']
+    >>> del root.cache['x2']
+    
+    >>> root.invalidate(key='x1')
+    >>> root.printtree()
+    <class 'Node'>: None
+      <class 'Node'>: x2
+    
+    >>> del root.cache['x2']
+    >>> root.invalidate()
+    >>> root.printtree()
+    <class 'Node'>: None
