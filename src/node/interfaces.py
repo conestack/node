@@ -526,10 +526,10 @@ class ILifecycleNode(INode):
                        u"notification.")
 
 
-#class IComposition(INode):
-#    pass
-#
-#
+class IComposition(INode):
+    pass
+
+
 #class IAttributedComposition(IComposition, IAttributedNode):
 #    pass
 #
