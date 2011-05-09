@@ -137,43 +137,83 @@ Parts
 
 ``node`` package provides several plumbing parts:
 
-Alias
-    Provide ``node.interfaces.IAlias`` on node class.
+node.parts.DefaultInit
+    Plumbing part providing default ``__init__`` function on node.
+    See ``node.interfaces.IDefaultInit``.
 
-Attributes
-    Provide ``node.interfaces.IAttributes`` on node class, requires
-    ``Nodespaces`` part.
+node.parts.Nodify
+    Plumbing part to Fill in gaps for full INode API.
+    See ``node.interfaces.INodify``.
 
-Adopt
-    Set ``__name__`` and ``__parent__`` attributes automatically during node
-    tree manipulation.
+node.parts.Adopt
+    Plumbing part that provides adoption of children.
+    See ``node.interfaces.IAdopt``.
 
-AsAttrAccess
-    Provide ``node.interfaces.IAsAttrAccess`` on node class.
+node.parts.NodeChildValidate
+    Plumbing part for child node validation.
+    See ``node.interfaces.INodeChildValidate``.
 
-Lifecycle
-    Provide ``node.interfaces.ILifecycle`` on node class.
+node.parts.UnicodeAware
+    Plumbing part to ensure unicode for keys and string values.
+    See ``node.interfaces.IUnicodeAware``.
 
-Nodespaces
-    Provide ``node.interfaces.INodespaces`` on node class.
+node.parts.Alias
+    Plumbing part that provides aliasing of child keys.
+    See ``node.interfaces.IAlias``.
 
-DefaultInit
-    Provide a default ``__init__`` function on node class.
+node.parts.AsAttrAccess
+    Plumbing part to get node as IAttributeAccess implementation.
+    See ``node.interfaces.IAsAttrAccess``.
 
-Nodify
-    Hook basic ``INode`` API on node class.
+node.parts.FixedChildren
+    Plumbing part that initializes a fixed dictionary as children.
+    See ``node.interfaces.IFixedChildren``.
 
-Order
-    Provide ``node.interfaces.IOrder`` on node class.
+node.parts.GetattrChildren
+    Plumbing part for child access via ``__getattr__``, given the attribute
+    name is unused.
+    See ``node.interfaces.IGetattrChildren``.
 
-Reference
-    Provide ``node.interfaces.IReference`` on node class.
+node.parts.Nodespaces
+    Plumbing part for providing nodespaces on node.
+    See ``node.interfaces.INodespaces``.
 
-DictStorage
-    Provide data related methods utilizing ``dict``.
+node.parts.Attributes
+    Plumbing part to provide attributes on node.
+    Requires ``node.parts.Nodespaces`` part.
+    See ``node.interfaces.IAttributes``.
 
-OdictStorage
-    Provide data related methods utilizing ``odict``.
+node.parts.Lifecycle
+    Plumbing part taking care of lifecycle events.
+    See ``node.interfaces.ILifecycle``.
+
+node.parts.AttributesLifecycle
+    Plumbing part for handling ifecycle events at attributes manipulation.
+    See ``node.interfaces.IAttributesLifecycle``.
+
+node.parts.Invalidate
+    Plumbing part for node invalidation.
+    See ``node.interfaces.Invalidate``.
+
+node.parts.Cache
+    Plumbing part for caching.
+    See ``node.interfaces.ICache``.
+
+node.parts.Order
+    Plumbing part for ordering support.
+    See ``node.interfaces.IOrder``.
+
+node.parts.Reference
+    Plumbing part holding an index of all nodes contained in the tree.
+    See ``node.interfaces.IReference``.
+
+node.parts.DictStorage
+    Provide dictionary storage.
+    See ``node.interfaces.IStorage``.
+
+node.parts.OdictStorage
+    Provide ordered dictionary storage.
+    See ``node.interfaces.IStorage``.
 
 
 Migration
@@ -195,25 +235,30 @@ TestCoverage
 Summary of the test coverage report::
 
   lines   cov%   module
-  
-    106    88%   node.aliasing
-     27   100%   node.base
-     24    58%   node.events
-    127    86%   node.interfaces
-     23    95%   node.locking
+    106    72%   node.aliasing
+     53   100%   node.base
+     14   100%   node.events
+    125   100%   node.interfaces
+     23   100%   node.locking
      11   100%   node.parts.__init__
      46   100%   node.parts.alias
      38   100%   node.parts.attributes
-     53    92%   node.parts.cache
-     71    74%   node.parts.common
-     54    90%   node.parts.lifecycle
+     50   100%   node.parts.cache
+     83   100%   node.parts.common
+     52   100%   node.parts.lifecycle
     113   100%   node.parts.mapping
      31   100%   node.parts.nodespace
-     67    97%   node.parts.nodify
+     70   100%   node.parts.nodify
      65   100%   node.parts.order
      81   100%   node.parts.reference
-     34   100%   node.parts.storage
-     73    98%   node.utils
+     27   100%   node.parts.storage
+      1   100%   node.testing.__init__
+     62   100%   node.testing.base
+    214   100%   node.testing.fullmapping
+      1   100%   node.tests.__init__
+     19   100%   node.tests.env
+     31   100%   node.tests.test_node
+    109   100%   node.utils
 
 
 Contributors
@@ -229,6 +274,9 @@ Changes
 
 0.9.3dev
 --------
+
+- Increase test coverage
+  [rnix, 2011-05-09]
 
 - Add interfaces ``IFixedChildren`` and ``IGetattrChildren`` for related parts.
   [rnix, 2011-05-09]

@@ -178,8 +178,16 @@ class INode(ILocation, IFullMapping):
 ###############################################################################
 
 
+class IDefaultInit(Interface):
+    """Plumbing part providing default ``__init__`` function on node.
+    """
+    def __init__(name=None, parent=None):
+        """Set ``self.__name__`` and ``self.__parent__`` at init time.
+        """
+
+
 class INodify(INode):
-    """Plumbing part which hooks INode API.
+    """Plumbing part to Fill in gaps for full INode API.
     
     Plumbing hooks:
     
@@ -198,6 +206,35 @@ class IAdopt(Interface):
       
     setdefault
         Re-route ``__getitem__`` and ``__setitem__``, skipping ``_next``.
+    """
+
+
+class INodeChildValidate(Interface):
+    """Plumbing part for child node validation.
+    
+    Plumbing hooks:
+    
+    __setitem__
+        If ``allow_non_node_childs`` is False, check if given child is instance
+        of node, otherwise raise ``ValuError``.
+    """
+    allow_non_node_childs = Attribute(u"Flag wether this node may contain non "
+                                      u"node based children.")
+
+
+class IUnicodeAware(Interface):
+    """Plumbing part to ensure unicode for keys and string values.
+    
+    Plumbing hooks:
+    
+    __getitem__
+        Ensure unicode key.
+    
+    __setitem__
+        Ensure unicode key and unicode value if value is basestring.
+    
+    __delitem__
+        Ensure unicode key
     """
 
 
@@ -266,6 +303,29 @@ class IGetattrChildren(Interface):
         """
 
 
+class INodespaces(Interface):
+    """Plumbing part for providing nodespaces on node.
+    
+    A nodespace is a seperate node with special keys - pre- and postfixed with
+    ``__`` and gets mapped on storage write operations.
+    
+    Plumbing hooks:
+    
+    __getitem__
+        Return nodespace if key pre- and postfixed with '__', otherwise child
+        from ``__children__`` nodespace.
+    
+    __setitem__
+        Set nodespace if key pre- and postfixed with '__', otherwise set child
+        to ``__children__`` nodespace.
+    
+    __delitem__
+        Delete nodespace if key pre- and postfixed with '__', otherwise delete
+        child from ``__children__`` nodespace.
+    """
+    nodespaces = Attribute(u"Nodespaces. Dict like object.")
+
+
 class IAttributes(Interface):
     """Plumbing part to provide attributes on node.
     """
@@ -296,7 +356,7 @@ class ILifecycle(Interface):
 
 
 class IAttributesLifecycle(Interface):
-    """Plumbing part for attributes manipulation lifecycle events.
+    """Plumbing part for handling ifecycle events at attributes manipulation.
     
     Plumbing hooks:
     
@@ -306,6 +366,14 @@ class IAttributesLifecycle(Interface):
     __delitem__
         Trigger modified event.
     """
+
+
+class IInvalidate(Interface):
+    """Plumbing part for node invalidation.
+    """
+    def invalidate(key=None):
+        """Invalidate child with key or all children of this node.
+        """
 
 
 class ICache(Interface):
@@ -329,50 +397,6 @@ class ICache(Interface):
         Invalidate cache.
     """
     cache = Attribute(u"Dict like object representing the cache.")
-
-
-class IInvalidate(Interface):
-    """Plumbing part for node invalidation.
-    """
-    def invalidate(key=None):
-        """Invalidate child with key or all children of this node.
-        """
-
-
-class INodeChildValidate(Interface):
-    """Plumbing part for child node validation.
-    
-    Plumbing hooks:
-    
-    __setitem__
-        If ``allow_non_node_childs`` is False, check if given child is instance
-        of node, otherwise raise ``ValuError``.
-    """
-    allow_non_node_childs = Attribute(u"Flag wether this node may contain non "
-                                      u"node based children.")
-
-
-class INodespaces(Interface):
-    """Plumbing part for providing nodespaces on node.
-    
-    A nodespace is a seperate node with special keys - pre- and postfixed with
-    ``__`` and gets mapped on storage write operations.
-    
-    Plumbing hooks:
-    
-    __getitem__
-        Return nodespace if key pre- and postfixed with '__', otherwise child
-        from ``__children__`` nodespace.
-    
-    __setitem__
-        Set nodespace if key pre- and postfixed with '__', otherwise set child
-        to ``__children__`` nodespace.
-    
-    __delitem__
-        Delete nodespace if key pre- and postfixed with '__', otherwise delete
-        child from ``__children__`` nodespace.
-    """
-    nodespaces = Attribute(u"Nodespaces. Dict like object.")
 
 
 class IOrder(Interface):
@@ -447,22 +471,6 @@ class IStorage(Interface):
     def __iter__():
         """Iter throught storage keys.
         """
-
-
-class IUnicodeAware(Interface):
-    """Plumbing part to ensure unicode for keys and string values.
-    
-    Plumbing hooks:
-    
-    __getitem__
-        Ensure unicode key.
-    
-    __setitem__
-        Ensure unicode key and unicode value if value is basestring.
-    
-    __delitem__
-        Ensure unicode key
-    """
 
 
 #class IWrap(Interface):

@@ -5,7 +5,10 @@ from plumber import (
     Part,
 )
 from zope.interface import implements
-from node.interfaces import INodify
+from node.interfaces import (
+    IDefaultInit,
+    INodify,
+)
 from node.parts.mapping import FullMapping
 from node.utils import (
     Unset,
@@ -15,10 +18,7 @@ from node.utils import (
 
 
 class DefaultInit(Part):
-    """Default init function for nodes.
-
-    Plumbing init functions is crap because it breaks the API and is unhandy.
-    """
+    implements(IDefaultInit)
 
     @extend
     def __init__(self, name=None, parent=None):
@@ -27,8 +27,6 @@ class DefaultInit(Part):
 
 
 class Nodify(FullMapping):
-    """Fills in gaps to implement full INode interface.
-    """
     implements(INodify)
     __name__ = default(None)
     __parent__ = default(None)

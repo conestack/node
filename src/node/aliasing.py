@@ -135,7 +135,7 @@ class AliasedNodespace(object):
     Future additional mode: children are wrapped, wrapper knows name and we are
     parent of wrapper.
     
-    XXX: make me a Part
+    XXX: make me a Part -> Flo, would you be so kind?
     """
     __metaclass__ = plumber
     __plumbing__ = (
