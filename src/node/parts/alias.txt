@@ -1,8 +1,6 @@
 node.parts.Alias
 ----------------
-
 ::
-
     >>> from plumber import plumber
 
 A dictionary that uses the alias plumbing but does not assign an aliaser.

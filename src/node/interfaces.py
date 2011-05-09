@@ -233,6 +233,39 @@ class IAsAttrAccess(Interface):
         """
 
 
+class IFixedChildren(Interface):
+    """Plumbing part that initializes a fixed dictionary as children.
+
+    The children are instantiated during ``__init__`` and adopted by the
+    class using this part. They cannot receive init arguments, but
+    could retrieve configuration from their parent.
+    
+    Plumbing hooks:
+    
+    __init__
+        Create fixed children defined in ``fixed_children_factories``
+    """
+    fixed_children_factories = Attribute(u"Dict like object containing child "
+                                         u"factories.")
+    
+    def __delitem__(key):
+        """Deny deleting, read-only.
+        """
+
+    def __setitem__(key, val):
+        """Deny setting item, read-only.
+        """
+
+
+class IGetattrChildren(Interface):
+    """Plumbing part for child access via ``__getattr__``, given the attribute
+    name is unused.
+    """
+    def __getattr__(name):
+        """Map ``__getitem__``.
+        """
+
+
 class IAttributes(Interface):
     """Plumbing part to provide attributes on node.
     """
@@ -485,13 +518,13 @@ class ILifecycleNode(INode):
                        u"notification.")
 
 
-class IComposition(INode):
-    pass
-
-
-class IAttributedComposition(IComposition, IAttributedNode):
-    pass
-
-
-class ILifecycleComposition(IComposition, ILifecycleNode):
-    pass
+#class IComposition(INode):
+#    pass
+#
+#
+#class IAttributedComposition(IComposition, IAttributedNode):
+#    pass
+#
+#
+#class ILifecycleComposition(IComposition, ILifecycleNode):
+#    pass

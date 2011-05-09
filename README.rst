@@ -230,6 +230,9 @@ Changes
 0.9.3dev
 --------
 
+- Add ``node.utils.StrCodec``.
+  [rnix, 2011-05-09]
+
 - Inherit ``INodify`` interface from ``INode``.
   [rnix, 2011-05-08]
 

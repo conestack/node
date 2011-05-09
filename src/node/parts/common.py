@@ -8,14 +8,20 @@ from plumber import (
 )
 from zope.interface import implements
 from node.interfaces import (
+    INode,
     IAdopt,
     IAsAttrAccess,
-    INode,
+    IFixedChildren,
+    IGetattrChildren,
     INodeChildValidate,
     IUnicode,
     #IWrap,
 )
-from node.utils import AttributeAccess
+from node.utils import (
+    AttributeAccess,
+    encode,
+    decode,
+)
 
 
 class Adopt(Part):
@@ -65,7 +71,11 @@ class FixedChildren(Part):
     The children are instantiated during __init__ and adopted by the
     class using this part. They cannot receive init argumentes, but
     could retrieve configuration from their parent.
+    
+    XXX: This implementation is similar to what's implemented in
+         cone.app.model.FactoryNode. harmonize.
     """
+    implements(IFixedChildren)
     fixed_children_factories = default(None)
 
     @plumb
@@ -96,8 +106,12 @@ class FixedChildren(Part):
 
 
 class GetattrChildren(Part):
-    """Access children via getattr, given the attr name is unused
+    """Access children via ``__getattr__``, given the attribute name is unused.
+    
+    XXX: Similar behavior as AsAttrAccess. harmonize.
     """
+    implements(IGetattrChildren)
+    
     @finalize
     def __getattr__(self, name):
         """For new-style classes __getattr__ is called, if the
@@ -121,8 +135,6 @@ class NodeChildValidate(Part):
 
 
 class Unicode(Part):
-    # XXX: currently won't work, as the decode function is missing
-    # check the one in bda.ldap.strcodec
     # XXX: It feels here it would be nice to be able to get an instance of a
     # plumbing to configure the codec.
     implements(IUnicode)

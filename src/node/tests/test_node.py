@@ -29,7 +29,8 @@ TESTFILES = [
     '../parts/nodify.txt',
     '../parts/order.txt',
     '../parts/reference.txt',
-    '../original.txt',
+    '../parts/storage.txt',
+    '../bbb.txt',
     '../../../README.rst',
     
     # tmp at end, figure out what makes coverage break recording

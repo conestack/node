@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 node.utils
 ==========
 
@@ -17,9 +19,8 @@ Test Zodict::
     
     ### XXX: all interface methods there.
 
-ReverseMapping
---------------
-::
+ReverseMapping::
+
     >>> from node.utils import ReverseMapping
     >>> context = {
     ...     'foo': 'a',
@@ -62,9 +63,8 @@ ReverseMapping
     >>> mapping.get('foo', 'DEFAULT')
     'DEFAULT'
 
-AttributeAccess
----------------
-::
+AttributeAccess::
+
     >>> from node.utils import AttributeAccess
     >>> attraccess = AttributeAccess(context)
     >>> attraccess.foo
@@ -93,3 +93,41 @@ AttributeAccess
     >>> attraccess.x = 0
     >>> object.__getattribute__(attraccess, 'context').keys()
     ['baz', 'foo', 'x']
+
+StrCodec decode and encode::
+
+    >>> from node.utils import (
+    ...     StrCodec,
+    ...     encode,
+    ...     decode,
+    ... )
+    >>> encode(u'\xe4')
+    '\xc3\xa4'
+    
+    >>> encode([u'\xe4'])
+    ['\xc3\xa4']
+    
+    >>> encode({u'\xe4': u'\xe4'})
+    {'\xc3\xa4': '\xc3\xa4'}
+    
+    >>> encode('\xc3\xa4')
+    '\xc3\xa4'
+    
+    >>> decode('foo')
+    u'foo'
+    
+    >>> decode(('foo', 'bar'))
+    (u'foo', u'bar')
+    
+    >>> decode({'foo': 'bar'})
+    {u'foo': u'bar'}
+    
+    >>> decode('fo\xe4')
+    'fo\xe4'
+    
+    >>> codec = StrCodec(soft=False)
+    >>> codec.decode('fo\xe4')
+    Traceback (most recent call last):
+      ...
+    UnicodeDecodeError: 'utf8' codec can't decode byte 0xe4 in position 2: 
+    unexpected end of data
