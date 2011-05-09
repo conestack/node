@@ -103,10 +103,13 @@ class Nodify(FullMapping):
         XXX: do we really need the difference or can we just override __repr__
         in subclasses and use __repr__ in printtree?
         """
-        if hasattr(self.__class__, '_wrapped'):
-            class_ = self.__class__._wrapped
-        else:
-            class_ = self.__class__
+        # XXX: is this a relict from plumber prototyping? -rn
+        #if hasattr(self.__class__, '_wrapped'):
+        #    class_ = self.__class__._wrapped
+        #else:
+        #    class_ = self.__class__
+        class_ = self.__class__
+        
         name = unicode(self.__name__).encode('ascii', 'replace')
         return str(class_) + ': ' + name[name.find(':') + 1:]
 
@@ -125,16 +128,22 @@ class Nodify(FullMapping):
     # XXX: tricky one: If a base class provides a __nonzero__ and that
     # base class is nodified, should the base class' __nonzero__ be
     # used or this one? Please write your thoughts here -cfl
+    # 
+    # I think @default is fine, leaves most possible flexibility to the user.
+    # Other thoughts? -rn
     @default
     def __nonzero__(self):
         return True
 
     @extend
     def __repr__(self):
-        if hasattr(self.__class__, '_wrapped'):
-            class_name = self.__class__._wrapped.__name__
-        else:
-            class_name = self.__class__.__name__
+        # XXX: is this a relict from plumber prototyping? -rn
+        #if hasattr(self.__class__, '_wrapped'):
+        #    class_name = self.__class__._wrapped.__name__
+        #else:
+        #    class_name = self.__class__.__name__
+        class_name = self.__class__.__name__
+        
         # XXX: This is mainly used in doctest, I think
         #      doctest fails if we output utf-8
         name = unicode(self.__name__).encode('ascii', 'replace')
