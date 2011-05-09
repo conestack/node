@@ -11,8 +11,9 @@ from node.interfaces import (
 from node.parts.attributes import NodeAttributes
 try:
     from zope.component.event import objectEventNotify
-except ImportError, e:
-    from zope.app.event.objectevent import objectEventNotify # BBB
+except ImportError, e:                                       #pragma NO COVERAGE
+    # BBB, XXX: remove this soon, relict from ``zodict``
+    from zope.app.event.objectevent import objectEventNotify #pragma NO COVERAGE
 from node.events import (
     NodeCreatedEvent,
     NodeAddedEvent,

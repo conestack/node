@@ -116,3 +116,22 @@ Check Node Detach.::
     >>> detached = root.detach('child2')    
     >>> handler.handled
     [<node.events.NodeDetachedEvent object at ...>]
+
+Check notify suppress on __setitem__::
+
+    >>> handler.handled = []
+    >>> root._notify_suppress = True
+    >>> root['child'] = NoLifecycleNode()
+    >>> handler.handled
+    []
+
+Check notify suppress on attributes manipulation::
+
+    >>> attrs = root.attrs
+    >>> attrs
+    <LifecycleNodeAttributes object 'root' at ...>
+    
+    >>> attrs['foo'] = 'foo'
+    >>> del attrs['foo']
+    >>> handler.handled
+    []
