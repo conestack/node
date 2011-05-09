@@ -1,8 +1,8 @@
 Common Parts
 ============
 
-node.parts.Adopt
-----------------
+Adopt
+-----
 
 General imports.::
 
@@ -51,8 +51,7 @@ Maybe it is also possible to have two __init__ one decorated one not, if the
 plumbing decorator could influence that all plumbing functions are stored under
 a different name. If the decorator cannot do that a Plumbing metaclass will
 work for sure, however, it is questionable whether it justifies a metaclass
-instead of just naming the plumbing init eg plumbing__init__.
-::
+instead of just naming the plumbing init eg plumbing__init__.::
 
     >>> class FakeDict(object):
     ...     def __setitem__(self, key, val):
@@ -76,16 +75,43 @@ instead of just naming the plumbing init eg plumbing__init__.
     True
 
 
-node.parts.FixedChildren
-------------------------
+UnicodeAware
+------------
+::
+    >>> from node.parts import UnicodeAware, OdictStorage, Nodify
+    >>> class UnicodeNode(object):
+    ...     __metaclass__ = plumber
+    ...     __plumbing__ = (
+    ...         Nodify,
+    ...         UnicodeAware,
+    ...         OdictStorage,
+    ...     )
+    
+    >>> node = UnicodeNode()
+    >>> node['foo'] = UnicodeNode()
+    >>> node.keys()
+    [u'foo']
+    
+    >>> node['bar'] = 'bar'
+    >>> node.items()
+    [(u'foo', <UnicodeNode object 'None' at ...>), (u'bar', u'bar')]
+    
+    >>> node['foo']
+    <UnicodeNode object 'None' at ...>
+    
+    >>> del node['bar']
+    >>> node.keys()
+    [u'foo']
 
-    >>> from plumber import plumber
+
+FixedChildren
+-------------
+::
     >>> from node.parts import FixedChildren
-    >>> from node.parts import Nodify
-
+    
     >>> class FooChild(object): pass
     >>> class BarChild(object): pass
-
+    
     >>> class FixedChildrenNode(object):
     ...     __metaclass__ = plumber
     ...     __plumbing__ = Nodify, FixedChildren
@@ -106,11 +132,21 @@ node.parts.FixedChildren
 
     >>> node['foo'] is node['foo']
     True
+    
+    >>> del node['foo']
+    Traceback (most recent call last):
+      ...
+    NotImplementedError: read-only
+    
+    >>> node['foo'] = 'foo'
+    Traceback (most recent call last):
+      ...
+    NotImplementedError: read-only
 
-node.parts.GetattrChildren
---------------------------
 
-    >>> from plumber import plumber
+GetattrChildren
+---------------
+::
     >>> from node.base import BaseNode
     >>> from node.parts import GetattrChildren
 
@@ -149,16 +185,17 @@ Only children not shadowed by real attributes can be accessed via getattr::
     2
 
 XXX: The base class' getattr does not work anymore. plumber directive
-plumborextend could solve this together with support for multiple
-parts hooking into __getattr__.
+     plumborextend could solve this together with support for multiple
+     parts hooking into __getattr__. -cfl
+     
+     Thats why i prefer AttributeAccess explicit for attribute access on node
+     children. overwriting __getattr__ and/or __getattribue__ cause too many
+     side effects imo. -rn
 
 
-node.parts.NodeChildValidate
-----------------------------
-
+NodeChildValidate
+-----------------
 ::
-
-    >>> from plumber import plumber
     >>> from node.parts import (
     ...     NodeChildValidate,
     ...     DefaultInit,

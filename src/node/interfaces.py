@@ -449,7 +449,7 @@ class IStorage(Interface):
         """
 
 
-class IUnicode(Interface):
+class IUnicodeAware(Interface):
     """Plumbing part to ensure unicode for keys and string values.
     
     Plumbing hooks:

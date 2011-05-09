@@ -14,7 +14,7 @@ from node.interfaces import (
     IFixedChildren,
     IGetattrChildren,
     INodeChildValidate,
-    IUnicode,
+    IUnicodeAware,
     #IWrap,
 )
 from node.utils import (
@@ -134,22 +134,22 @@ class NodeChildValidate(Part):
         _next(self, key, val)
 
 
-class Unicode(Part):
+class UnicodeAware(Part):
     # XXX: It feels here it would be nice to be able to get an instance of a
     # plumbing to configure the codec.
-    implements(IUnicode)
+    implements(IUnicodeAware)
 
     @plumb
     def __delitem__(_next, self, key):
         if isinstance(key, str):
             key = decode(key)
-        _next(key)
+        _next(self, key)
 
     @plumb
     def __getitem__(_next, self, key):
         if isinstance(key, str):
             key = decode(key)
-        return _next(key)
+        return _next(self, key)
 
     @plumb
     def __setitem__(_next, self, key, val):
@@ -157,7 +157,7 @@ class Unicode(Part):
             key = decode(key)
         if isinstance(val, str):
             val = decode(val)
-        return _next(key, val)
+        return _next(self, key, val)
 
 
 #class Wrap(Part):

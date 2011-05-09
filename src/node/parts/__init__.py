@@ -13,7 +13,7 @@ from node.parts.common import (
     FixedChildren,
     GetattrChildren,
     NodeChildValidate,
-    Unicode,
+    UnicodeAware,
 #    Wrap,
 )
 from node.parts.lifecycle import (

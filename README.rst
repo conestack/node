@@ -230,6 +230,12 @@ Changes
 0.9.3dev
 --------
 
+- Add interfaces ``IFixedChildren`` and ``IGetattrChildren`` for related parts.
+  [rnix, 2011-05-09]
+
+- Rename ``Unicode`` part to ``UnicodeAware``.
+  [rnix, 2011-05-09]
+
 - Add ``node.utils.StrCodec``.
   [rnix, 2011-05-09]
 
@@ -248,6 +254,9 @@ Changes
 
 - Add ``instance_property`` decorator to utils.
   [rnix, 2011-05-06]
+
+- Add ``FixedChildren`` and ``GetattrChildren`` parts.
+  [chaoflow, 2011-04-22]
 
 
 0.9.2
