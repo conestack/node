@@ -272,8 +272,8 @@ Contributors
 Changes
 =======
 
-0.9.3dev
---------
+0.9.3
+-----
 
 - Increase test coverage
   [rnix, 2011-05-09]
