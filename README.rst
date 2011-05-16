@@ -275,6 +275,9 @@ Changes
 0.9.4dev
 --------
 
+- Remove duplicate implements in storage parts
+  [rnix, 2011-05-16]
+
 
 0.9.3
 -----

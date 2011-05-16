@@ -44,7 +44,6 @@ class DictStorage(Storage):
 
 
 class OdictStorage(Storage):
-    implements(IStorage)
     
     @default
     @instance_property
