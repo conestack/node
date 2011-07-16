@@ -1,7 +1,10 @@
 from odict import odict
 from zope.interface import implements
 from zope.interface.common.mapping import IEnumerableMapping, IFullMapping
-from interfaces import IAttributeAccess
+from interfaces import (
+    IAttributeAccess,
+    INode,
+)
 
 
 class Unset(object):
