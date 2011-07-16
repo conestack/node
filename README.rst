@@ -275,6 +275,9 @@ Changes
 0.9.4dev
 --------
 
+- Consider ``INode`` implementing objects in ``node.utils.StrCodec``
+  [rnix, 2011-07-16]
+
 - Remove duplicate implements in storage parts
   [rnix, 2011-05-16]
 

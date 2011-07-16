@@ -121,32 +121,39 @@ class AttributeAccess(object):
         del context[name]
 
 
-CHARACTER_ENCODING='utf-8'
+CHARACTER_ENCODING = 'utf-8'
 
 class StrCodec(object):
     """Encode unicodes to strs and decode strs to unicodes
 
     We will recursively work on arbitrarily nested structures consisting of
-    str, unicode, list, tuple and dict mixed with others, which we won't touch.
-    During that process a deep copy is produces leaving the orginal data
-    structure intact.
+    str, unicode, list, tuple, dict and INode implementations mixed with others,
+    which we won't touch. During that process a deep copy is produces leaving 
+    the orginal data structure intact. 
     """
+    
     def __init__(self, encoding=CHARACTER_ENCODING, soft=True):
-        """@param encoding: character encoding to decode from/encode to
-           @param soft: if True, catch UnicodeDecodeErrors and leave this
-           strings as-is.
+        """
+        ``encoding``
+            the character encoding to decode from/encode to
+        
+        ``soft``
+           if True, catch UnicodeDecodeErrors and leave this strings as-is.
         """
         self._encoding = encoding
         self._soft = soft
 
     def encode(self, arg):
-        """Return an encoded copy of the argument.
+        """Return an encoded copy of the argument
         
-        - Strings are decoded and re-encoded to make sure they conform to the
+        - strs are decoded and reencode to make sure they conform to the
           encoding
-        - Unicodees are encoded as string according to encoding
-        - Lists/tuples/dicts are recursively worked on
-        - Everything else is left untouched
+        
+        - unicodes are encoded as str according to encoding
+        
+        - lists/tuples/dicts are recursively worked on
+        
+        - everything else is left untouched
         """
         if isinstance(arg, (list, tuple)):
             arg = arg.__class__(map(self.encode, arg))
@@ -156,6 +163,8 @@ class StrCodec(object):
             arg = self.encode(self.decode(arg))
         elif isinstance(arg, unicode):
             arg = arg.encode(self._encoding)
+        elif INode.providedBy(arg):
+            arg = dict([self.encode(t) for t in arg.iteritems()])
         return arg
 
     def decode(self, arg):
@@ -171,6 +180,8 @@ class StrCodec(object):
                 # exception
                 if not self._soft:
                     raise
+        elif INode.providedBy(arg):
+            arg = dict([self.decode(t) for t in arg.iteritems()])
         return arg
 
 strcodec = StrCodec()
