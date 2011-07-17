@@ -96,6 +96,7 @@ AttributeAccess::
 
 StrCodec decode and encode::
 
+    >>> from node.base import BaseNode
     >>> from node.utils import (
     ...     StrCodec,
     ...     encode,
@@ -113,6 +114,12 @@ StrCodec decode and encode::
     >>> encode('\xc3\xa4')
     '\xc3\xa4'
     
+    >>> node = BaseNode()
+    >>> node.allow_non_node_childs = True
+    >>> node['foo'] = u'\xe4'
+    >>> encode(node)
+    {'foo': '\xc3\xa4'}
+    
     >>> decode('foo')
     u'foo'
     
@@ -124,6 +131,12 @@ StrCodec decode and encode::
     
     >>> decode('fo\xe4')
     'fo\xe4'
+    
+    >>> node = BaseNode()
+    >>> node.allow_non_node_childs = True
+    >>> node['foo'] = '\xc3\xa4'
+    >>> decode(node)
+    {u'foo': u'\xe4'}
     
     >>> codec = StrCodec(soft=False)
     >>> codec.decode('fo\xe4')
