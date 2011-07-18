@@ -129,11 +129,11 @@ class PrefixSuffixAliaser(AliaserChain):
             SuffixAliaser(suffix))
 
 
-class NamedAliasers(dict):
-    """A dictionary storing aliasers by name.
-    
-    XXX
-    """
+#class NamedAliasers(dict):
+#    """A dictionary storing aliasers by name.
+#    
+#    XXX
+#    """
 
 
 class AliasedNodespace(object):
@@ -170,18 +170,6 @@ class AliasedNodespace(object):
         self.context = context
         self.aliaser = aliaser
 
-    @property
-    def changed(self):
-        # XXX: move this out of here. Base AliasedNodespace should not take
-        #      care about special contracts. this one is currently used in
-        #      node.ext.ldap, subclass AliasedNodespace there.
-        return self.context.changed                         #pragma NO COVERAGE
-
-    @property
-    def __call__(self):
-        # XXX: propably move this out here as well.
-        return self.context()                               #pragma NO COVERAGE
-
     def __delitem__(self, key):
         unaliased_key = self.aliaser and self.aliaser.unalias(key) or key
         try:
@@ -210,7 +198,7 @@ class AliasedNodespace(object):
                     continue
                 # no whitelisting and a KeyError on our internal data: that's
                 # bad! Most probably not triggered on _Node but a subclass
-                # XXX: test case showing this
+                # XXX: test case showing this.
                 raise RuntimeError(                         #pragma NO COVERAGE
                     u"Inconsist internal node state")       #pragma NO COVERAGE
     
