@@ -275,7 +275,11 @@ Changes
 0.9.4dev
 --------
 
-- ``node.aliasing`` tests
+- remove non storage contract specific properties from
+  ``node.aliasing.AliasedNodespace``
+  [rnix, 2011-07-18]
+
+- ``node.aliasing`` test completion
   [rnix, 2011-07-18]
 
 - Add non strict functionality to ``node.aliasing.DictAliaser`` for accessing
