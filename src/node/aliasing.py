@@ -23,12 +23,26 @@ class DictAliaser(odict):
     ``__getitem__`` -> unalias
     """
     implements(IAliaser, IFullMapping)
+    
+    def __init__(self, data=(), strict=True):
+        super(DictAliaser, self).__init__(data)
+        self.strict = strict
 
     def alias(self, key):
-        return ReverseMapping(self)[key]
+        try:
+            return ReverseMapping(self)[key]
+        except KeyError, e:
+            if not self.strict:
+                return key
+            raise e
     
     def unalias(self, aliased_key):
-        return self[aliased_key]
+        try:
+            return self[aliased_key]
+        except KeyError, e:
+            if not self.strict:
+                return aliased_key
+            raise e
 
 
 class PrefixAliaser(object):
@@ -79,12 +93,6 @@ class SuffixAliaser(object):
         return suffixed_key[:-len(suffix)]
 
 
-# XXX: what was that again?
-# rnix: no idea
-class NodespaceAliases(dict):
-    pass
-    
-
 class AliaserChain(object):
     """A chain of aliasers.
 
@@ -123,6 +131,8 @@ class PrefixSuffixAliaser(AliaserChain):
 
 class NamedAliasers(dict):
     """A dictionary storing aliasers by name.
+    
+    XXX
     """
 
 
@@ -134,8 +144,6 @@ class AliasedNodespace(object):
 
     Future additional mode: children are wrapped, wrapper knows name and we are
     parent of wrapper.
-    
-    XXX: make me a Part -> Flo, would you be so kind?
     """
     __metaclass__ = plumber
     __plumbing__ = (
@@ -146,12 +154,14 @@ class AliasedNodespace(object):
     
     def __init__(self, context, aliaser=None):
         """
-        ``context``
+        context
             the node whose children to alias
-        ``aliaser``
+            
+        aliaser
             the aliaser to be used
         """
-        #XXX: is just taking over the name ok for all use cases? 
+        # XXX: is just taking over the name ok for all use cases? 
+        # XXX: case where not? -rn
         #super(AliasedNodespace, self).__init__(context.__name__)
         
         self.__name__ = context.__name__
@@ -162,11 +172,15 @@ class AliasedNodespace(object):
 
     @property
     def changed(self):
-        return self.context.changed
+        # XXX: move this out of here. Base AliasedNodespace should not take
+        #      care about special contracts. this one is currently used in
+        #      node.ext.ldap, subclass AliasedNodespace there.
+        return self.context.changed                         #pragma NO COVERAGE
 
     @property
     def __call__(self):
-        return self.context.__call__()
+        # XXX: propably move this out here as well.
+        return self.context()                               #pragma NO COVERAGE
 
     def __delitem__(self, key):
         unaliased_key = self.aliaser and self.aliaser.unalias(key) or key
@@ -184,11 +198,8 @@ class AliasedNodespace(object):
 
     def __setitem__(self, key, val):
         unaliased_key = self.aliaser and self.aliaser.unalias(key) or key
-        try:
-            self.context[unaliased_key] = val
-        except KeyError:
-            raise KeyError(key)
-
+        self.context[unaliased_key] = val
+    
     def __iter__(self):
         for key in self.context:
             try:
@@ -199,7 +210,9 @@ class AliasedNodespace(object):
                     continue
                 # no whitelisting and a KeyError on our internal data: that's
                 # bad! Most probably not triggered on _Node but a subclass
-                raise RuntimeError(u"Inconsist internal node state")
+                # XXX: test case showing this
+                raise RuntimeError(                         #pragma NO COVERAGE
+                    u"Inconsist internal node state")       #pragma NO COVERAGE
     
     def __repr__(self):
         return "Aliased " + self.context.__repr__()

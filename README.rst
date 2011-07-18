@@ -235,7 +235,7 @@ TestCoverage
 Summary of the test coverage report::
 
   lines   cov%   module
-    106    72%   node.aliasing
+    106   100%   node.aliasing
      53   100%   node.base
      14   100%   node.events
     125   100%   node.interfaces
@@ -274,6 +274,13 @@ Changes
 
 0.9.4dev
 --------
+
+- ``node.aliasing`` tests
+  [rnix, 2011-07-18]
+
+- Add non strict functionality to ``node.aliasing.DictAliaser`` for accessing
+  non aliased keys as is as fallback
+  [rnix, 2011-07-18]
 
 - Consider ``INode`` implementing objects in ``node.utils.StrCodec``
   [rnix, 2011-07-16]
