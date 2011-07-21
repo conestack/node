@@ -1,11 +1,6 @@
 node.parts.Lifecycle
 --------------------
 
-Reset zope component hookable functions to original implementation::
-
-    >>> from zope.component.hooks import resetHooks
-    >>> resetHooks()
-
 Check NodeCreation.::
 
     >>> import zope.component
