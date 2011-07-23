@@ -1,3 +1,4 @@
+import logging
 from odict import odict
 from zope.interface import implements
 from zope.interface.common.mapping import IEnumerableMapping, IFullMapping
@@ -5,6 +6,9 @@ from interfaces import (
     IAttributeAccess,
     INode,
 )
+
+
+logger = logging.getLogger('node')
 
 
 class Unset(object):
@@ -126,6 +130,7 @@ class AttributeAccess(object):
 
 CHARACTER_ENCODING = 'utf-8'
 
+
 class StrCodec(object):
     """Encode unicodes to strs and decode strs to unicodes
 
@@ -187,6 +192,7 @@ class StrCodec(object):
             arg = dict([self.decode(t) for t in arg.iteritems()])
         return arg
 
+
 strcodec = StrCodec()
 encode = strcodec.encode
 decode = strcodec.decode
@@ -205,3 +211,17 @@ def instance_property(func):
         return getattr(self, attribute_name)
     wrapper.__doc__ = func.__doc__
     return property(wrapper)
+
+
+def debug(func):
+    """Decorator for logging debug messages.
+    """
+    def wrapped(*args, **kws):
+        logger.debug(
+            u'%s: args=%s, kws=%s' % (
+                func.func_name, unicode(args), unicode(kws)))
+        f_result = func(*args, **kws)
+        logger.debug(u'%s: --> %s' % (func.func_name, unicode(f_result)))
+        return f_result
+    wrapped.__doc__ = func.__doc__
+    return wrapped

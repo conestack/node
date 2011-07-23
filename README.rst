@@ -275,6 +275,9 @@ Changes
 0.9.4dev
 --------
 
+- add ``node.utils.debug`` decorator.
+  [rnix, 2011-07-23]
+
 - remove non storage contract specific properties from
   ``node.aliasing.AliasedNodespace``
   [rnix, 2011-07-18]
