@@ -528,11 +528,3 @@ class ILifecycleNode(INode):
 
 class IComposition(INode):
     pass
-
-
-#class IAttributedComposition(IComposition, IAttributedNode):
-#    pass
-#
-#
-#class ILifecycleComposition(IComposition, ILifecycleNode):
-#    pass

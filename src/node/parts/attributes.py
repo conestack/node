@@ -30,13 +30,13 @@ class NodeAttributes(object):
     def __init__(self, name=None, parent=None):
         self.__name__ = name
         self.__parent__ = parent
-        self.context = self.__parent__ # BBB 2011-01-31
-        self._node = self.__parent__   # BBB 2011-01-31
+        self.context = parent # BBB 2011-01-31
+        self._node = parent   # BBB 2011-01-31
     
     # XXX: do we need that or could we make normal nodes show their parent,
     # too?
     def __repr__(self):
-        name = unicode(self.__parent__.__name__).encode('ascii', 'replace')
+        name = unicode(self.parent.name).encode('ascii', 'replace')
         return "<%s object '%s' at %s>" % (self.__class__.__name__,
                                            name,
                                            hex(id(self))[:-1])

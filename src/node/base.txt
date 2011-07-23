@@ -198,7 +198,8 @@ ILocation contract
 XXX: make tester object for ILocation contract
 
 ``ILocations`` promises ``__name__`` and ``__parent__`` attributes. They are
-used to define tree hierarchy::
+used to define tree hierarchy. As read only arguments they are available
+at ``name`` and ``parent`` on nodes::
 
     >>> from node.testing.base import create_tree
     >>> mynode = create_tree(MyNode)
@@ -208,54 +209,57 @@ used to define tree hierarchy::
     >>> mynode.__name__
     >>> mynode.__parent__
     
-    >>> mynode['child_1'].__name__
+    >>> mynode.name
+    >>> mynode.parent
+    
+    >>> mynode['child_1'].name
     'child_1'
     
-    >>> mynode['child_1'].__parent__ is mynode
+    >>> mynode['child_1'].parent is mynode
     True
     
-    >>> mynode['child_1']['subchild_1'].__name__
+    >>> mynode['child_1']['subchild_1'].name
     'subchild_1'
     
-    >>> mynode['child_1']['subchild_1'].__parent__.__parent__ is mynode
+    >>> mynode['child_1']['subchild_1'].parent.parent is mynode
     True
     
     >>> basenode = create_tree(BaseNode)
     >>> basenode
     <BaseNode object 'None' at ...>
     
-    >>> basenode.__name__
-    >>> basenode.__parent__
+    >>> basenode.name
+    >>> basenode.parent
     
-    >>> basenode['child_1'].__name__
+    >>> basenode['child_1'].name
     'child_1'
     
-    >>> basenode['child_1'].__parent__ is basenode
+    >>> basenode['child_1'].parent is basenode
     True
     
-    >>> basenode['child_1']['subchild_1'].__name__
+    >>> basenode['child_1']['subchild_1'].name
     'subchild_1'
     
-    >>> basenode['child_1']['subchild_1'].__parent__.__parent__ is basenode
+    >>> basenode['child_1']['subchild_1'].parent.parent is basenode
     True
     
     >>> orderednode = create_tree(OrderedNode)
     >>> orderednode
     <OrderedNode object 'None' at ...>
 
-    >>> orderednode.__name__
-    >>> orderednode.__parent__
+    >>> orderednode.name
+    >>> orderednode.parent
     
-    >>> orderednode['child_1'].__name__
+    >>> orderednode['child_1'].name
     'child_1'
     
-    >>> orderednode['child_1'].__parent__ is orderednode
+    >>> orderednode['child_1'].parent is orderednode
     True
     
-    >>> orderednode['child_1']['subchild_1'].__name__
+    >>> orderednode['child_1']['subchild_1'].name
     'subchild_1'
     
-    >>> orderednode['child_1']['subchild_1'].__parent__.__parent__ is orderednode
+    >>> orderednode['child_1']['subchild_1'].parent.parent is orderednode
     True
 
 
