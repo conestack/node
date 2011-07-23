@@ -7,8 +7,8 @@ Adopt
 General imports.::
 
     >>> from plumber import plumber
-    >>> from node.tests.env import MockupNode
-    >>> from node.tests.env import NoNode
+    >>> from node.testing.env import MockupNode
+    >>> from node.testing.env import NoNode
 
 A dictionary is used as end point.::
 

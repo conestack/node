@@ -162,9 +162,9 @@ class AliasedNodespace(object):
         """
         # XXX: is just taking over the name ok for all use cases? 
         # XXX: case where not? -rn
-        #super(AliasedNodespace, self).__init__(context.__name__)
+        #super(AliasedNodespace, self).__init__(context.name)
         
-        self.__name__ = context.__name__
+        self.__name__ = context.name
         self.__parent__ = None
         
         self.context = context

@@ -70,10 +70,10 @@ Storage related operations of AbstractNode raise ``NotImplementedError``::
       ...
     NotImplementedError
     
-``node.tests.env`` contains a base node implementation inheriting from
+``node.testing.env`` contains a base node implementation inheriting from
 ``AbstractNode`` for illustration purposes::
 
-    >>> from node.tests.env import MyNode
+    >>> from node.testing.env import MyNode
     >>> mynode = MyNode()
     >>> mynode
     <MyNode object 'None' at ...>
@@ -270,16 +270,16 @@ XXX: decide wether ``aliases`` or ``aliaser`` (still dunno) should be kept in
 ``printtree``::
 
     >>> mynode.printtree()
-    <class 'node.tests.env.MyNode'>: None
-      <class 'node.tests.env.MyNode'>: child_0
-        <class 'node.tests.env.MyNode'>: subchild_0
-        <class 'node.tests.env.MyNode'>: subchild_1
-      <class 'node.tests.env.MyNode'>: child_1
-        <class 'node.tests.env.MyNode'>: subchild_0
-        <class 'node.tests.env.MyNode'>: subchild_1
-      <class 'node.tests.env.MyNode'>: child_2
-        <class 'node.tests.env.MyNode'>: subchild_0
-        <class 'node.tests.env.MyNode'>: subchild_1
+    <class 'node.testing.env.MyNode'>: None
+      <class 'node.testing.env.MyNode'>: child_0
+        <class 'node.testing.env.MyNode'>: subchild_0
+        <class 'node.testing.env.MyNode'>: subchild_1
+      <class 'node.testing.env.MyNode'>: child_1
+        <class 'node.testing.env.MyNode'>: subchild_0
+        <class 'node.testing.env.MyNode'>: subchild_1
+      <class 'node.testing.env.MyNode'>: child_2
+        <class 'node.testing.env.MyNode'>: subchild_0
+        <class 'node.testing.env.MyNode'>: subchild_1
     
     >>> basenode.printtree()
     <class 'node.base.BaseNode'>: None

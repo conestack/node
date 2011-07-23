@@ -235,10 +235,10 @@ TestCoverage
 Summary of the test coverage report::
 
   lines   cov%   module
-    106   100%   node.aliasing
+    107   100%   node.aliasing
      53   100%   node.base
      14   100%   node.events
-    125   100%   node.interfaces
+    127   100%   node.interfaces
      23   100%   node.locking
      11   100%   node.parts.__init__
      46   100%   node.parts.alias
@@ -251,14 +251,14 @@ Summary of the test coverage report::
      70   100%   node.parts.nodify
      65   100%   node.parts.order
      81   100%   node.parts.reference
-     27   100%   node.parts.storage
+     26   100%   node.parts.storage
       1   100%   node.testing.__init__
      62   100%   node.testing.base
+     19   100%   node.testing.env
     214   100%   node.testing.fullmapping
       1   100%   node.tests.__init__
-     19   100%   node.tests.env
      31   100%   node.tests.test_node
-    109   100%   node.utils
+    125   100%   node.utils
 
 
 Contributors

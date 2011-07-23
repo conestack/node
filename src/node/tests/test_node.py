@@ -8,7 +8,7 @@ optionflags = doctest.NORMALIZE_WHITESPACE | \
               doctest.REPORT_ONLY_FIRST_FAILURE
 
 TESTFILES = [
-    'env.txt',
+    '../testing/env.txt',
     '../testing/base.txt',
     '../testing/fullmapping.txt',
     '../base.txt',
