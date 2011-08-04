@@ -8,33 +8,33 @@ optionflags = doctest.NORMALIZE_WHITESPACE | \
               doctest.REPORT_ONLY_FIRST_FAILURE
 
 TESTFILES = [
-    '../testing/env.txt',
-    '../testing/base.txt',
-    '../testing/fullmapping.txt',
-    '../base.txt',
-    '../utils.txt',
-    '../aliasing.txt',
-    '../locking.txt',
-    '../parts/alias.txt',
-    '../parts/attributes.txt',
-    '../parts/cache.txt',
+    '../testing/env.rst',
+    '../testing/base.rst',
+    '../testing/fullmapping.rst',
+    '../base.rst',
+    '../utils.rst',
+    '../aliasing.rst',
+    '../locking.rst',
+    '../parts/alias.rst',
+    '../parts/attributes.rst',
+    '../parts/cache.rst',
     
     # something happens in this test breaking coverage recording, moved test 
     # to the end
-    #'../parts/common.txt', 
+    #'../parts/common.rst', 
     
-    '../parts/lifecycle.txt',
-    '../parts/mapping.txt',
-    '../parts/nodespace.txt',
-    '../parts/nodify.txt',
-    '../parts/order.txt',
-    '../parts/reference.txt',
-    '../parts/storage.txt',
-    '../bbb.txt',
+    '../parts/lifecycle.rst',
+    '../parts/mapping.rst',
+    '../parts/nodespace.rst',
+    '../parts/nodify.rst',
+    '../parts/order.rst',
+    '../parts/reference.rst',
+    '../parts/storage.rst',
+    '../bbb.rst',
     '../../../README.rst',
     
     # tmp at end, figure out what makes coverage break recording
-    '../parts/common.txt',
+    '../parts/common.rst',
 ]
 
 def test_suite():
