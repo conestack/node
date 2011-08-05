@@ -272,8 +272,8 @@ Contributors
 Changes
 =======
 
-0.9.4dev
---------
+0.9.4
+-----
 
 - add ``node.utils.debug`` decorator.
   [rnix, 2011-07-23]
