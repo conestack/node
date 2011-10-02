@@ -249,7 +249,7 @@ Summary of the test coverage report::
     113   100%   node.parts.mapping
      31   100%   node.parts.nodespace
      70   100%   node.parts.nodify
-     65   100%   node.parts.order
+     79   100%   node.parts.order
      81   100%   node.parts.reference
      26   100%   node.parts.storage
       1   100%   node.testing.__init__
@@ -271,6 +271,13 @@ Contributors
 
 Changes
 =======
+
+0.9.5dev
+--------
+
+- add ``insertfirst`` and ``insertlast`` to ``node.parts.Order``.
+  [rnix, 2011-10-02]
+
 
 0.9.4
 -----

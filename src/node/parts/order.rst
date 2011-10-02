@@ -87,9 +87,49 @@ detached node or subtree to a complete different tree::
       <class 'OrderableNode'>: child2
       <class 'OrderableNode'>: child5
 
+There exist ``insertfirst`` and ``insertlast`` functions::
+
+    >>> new = OrderableNode(name='first')
+    >>> node.insertfirst(new)
+    >>> node.printtree()
+    <class 'OrderableNode'>: root
+      <class 'OrderableNode'>: first
+      <class 'OrderableNode'>: child4
+      <class 'OrderableNode'>: child1
+      <class 'OrderableNode'>: child3
+      <class 'OrderableNode'>: child2
+      <class 'OrderableNode'>: child5
+    
+    >>> new = OrderableNode(name='last')
+    >>> node.insertlast(new)
+    >>> node.printtree()
+    <class 'OrderableNode'>: root
+      <class 'OrderableNode'>: first
+      <class 'OrderableNode'>: child4
+      <class 'OrderableNode'>: child1
+      <class 'OrderableNode'>: child3
+      <class 'OrderableNode'>: child2
+      <class 'OrderableNode'>: child5
+      <class 'OrderableNode'>: last
+
+    >>> node.clear()
+    >>> new = OrderableNode(name='new')
+    >>> node.insertfirst(new)
+    >>> node.printtree()
+    <class 'OrderableNode'>: root
+      <class 'OrderableNode'>: new
+    
+    >>> node.clear()
+    >>> node.insertlast(new)
+    >>> node.printtree()
+    <class 'OrderableNode'>: root
+      <class 'OrderableNode'>: new
+
 
 Order with References
 ---------------------
+
+::
 
     >>> from node.parts import Reference
     

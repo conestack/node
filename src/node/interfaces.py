@@ -403,6 +403,14 @@ class IOrder(Interface):
     """Plumbing part for ordering support.
     """
     
+    def insertfirst(newnode):
+        """Insert newnode as first node.
+        """
+    
+    def insertlast(newnode):
+        """Insert newnode as last node.
+        """
+    
     def insertbefore(newnode, refnode):
         """Insert newnode before refnode.
 
