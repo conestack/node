@@ -16,6 +16,24 @@ class Order(Part):
     implements(IOrder)
 
     @extend
+    def insertfirst(self, newnode):
+        keys = self.keys()
+        if not keys:
+            self[newnode.name] = newnode
+            return
+        refnode = self[keys[0]]
+        self.insertbefore(newnode, refnode)
+    
+    @extend
+    def insertlast(self, newnode):
+        keys = self.keys()
+        if not keys:
+            self[newnode.name] = newnode
+            return
+        refnode = self[keys[-1]]
+        self.insertafter(newnode, refnode)
+    
+    @extend
     def insertbefore(self, newnode, refnode):
         self._validateinsertion(newnode, refnode)
         nodekey = newnode.__name__
