@@ -4,7 +4,7 @@ node.parts.Order
 Order without References
 ------------------------
 
-Node insertion. There exist ``insertbefore`` and ``insertafter`` functions::
+Node insertion. ``insertbefore`` and ``insertafter``::
 
     >>> from plumber import plumber
     >>> from node.parts import (
@@ -87,7 +87,7 @@ detached node or subtree to a complete different tree::
       <class 'OrderableNode'>: child2
       <class 'OrderableNode'>: child5
 
-There exist ``insertfirst`` and ``insertlast`` functions::
+``insertfirst`` and ``insertlast``::
 
     >>> new = OrderableNode(name='first')
     >>> node.insertfirst(new)
@@ -124,6 +124,89 @@ There exist ``insertfirst`` and ``insertlast`` functions::
     >>> node.printtree()
     <class 'OrderableNode'>: root
       <class 'OrderableNode'>: new
+
+``swap``::
+
+    >>> node.clear()
+    >>> node['0'] = OrderableNode()
+    >>> node['1'] = OrderableNode()
+    >>> node['2'] = OrderableNode()
+    >>> node['3'] = OrderableNode()
+    >>> node['4'] = OrderableNode()
+    >>> node.keys()
+    ['0', '1', '2', '3', '4']
+
+Case first 2, a < b::
+
+    >>> node.swap(node['0'], node['1'])
+    >>> node.keys()
+    ['1', '0', '2', '3', '4']
+
+Case first 2, a > b::
+
+    >>> node.swap(node['0'], node['1'])
+    >>> node.keys()
+    ['0', '1', '2', '3', '4']
+
+Case last 2, a < b::
+
+    >>> node.swap(node['3'], node['4'])
+    >>> node.keys()
+    ['0', '1', '2', '4', '3']
+
+Case last 2, a > b::
+
+    >>> node.swap(node['3'], node['4'])
+    >>> node.keys()
+    ['0', '1', '2', '3', '4']
+
+Case neighbors, a < b::
+
+    >>> node.swap(node['1'], node['2'])
+    >>> node.keys()
+    ['0', '2', '1', '3', '4']
+
+Case neighbors, a > b::
+
+    >>> node.swap(node['1'], node['2'])
+    >>> node.keys()
+    ['0', '1', '2', '3', '4']
+
+Case non neighbors, one node first, a < b::
+
+    >>> node.swap(node['0'], node['2'])
+    >>> node.keys()
+    ['2', '1', '0', '3', '4']
+
+Case non neighbors, one node first, a > b::
+
+    >>> node.swap(node['0'], node['2'])
+    >>> node.keys()
+    ['0', '1', '2', '3', '4']
+
+Case non neighbors, one node last, a < b::
+
+    >>> node.swap(node['2'], node['4'])
+    >>> node.keys()
+    ['0', '1', '4', '3', '2']
+
+Case non neighbors, one node last, a > b::
+
+    >>> node.swap(node['2'], node['4'])
+    >>> node.keys()
+    ['0', '1', '2', '3', '4']
+
+Case non neighbors, a < b::
+
+    >>> node.swap(node['1'], node['3'])
+    >>> node.keys()
+    ['0', '3', '2', '1', '4']
+
+Case non neighbors, a > b::
+
+    >>> node.swap(node['1'], node['3'])
+    >>> node.keys()
+    ['0', '1', '2', '3', '4']
 
 
 Order with References

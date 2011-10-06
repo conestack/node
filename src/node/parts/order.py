@@ -16,6 +16,38 @@ class Order(Part):
     implements(IOrder)
 
     @extend
+    def swap(self, node_a, node_b):
+        dict_impl = self.storage._dict_impl()
+        orgin_a = dict_impl.__getitem__(self.storage, node_a.name)
+        orgin_b = dict_impl.__getitem__(self.storage, node_b.name)
+        new_a = [orgin_b[0], orgin_a[1], orgin_b[2]]
+        new_b = [orgin_a[0], orgin_b[1], orgin_a[2]]
+        if new_a[0] == new_a[1].name:
+            new_a[0] = new_b[1].name
+            new_b[2] = new_a[1].name
+        if new_b[0] == new_b[1].name:
+            new_b[0] = new_a[1].name
+            new_a[2] = new_b[1].name
+        if new_a[0] is not _nil:
+            dict_impl.__getitem__(self.storage, new_a[0])[2] = new_a[1].name
+        if new_a[2] is not _nil:
+            dict_impl.__getitem__(self.storage, new_a[2])[0] = new_a[1].name
+        if new_b[0] is not _nil:
+            dict_impl.__getitem__(self.storage, new_b[0])[2] = new_b[1].name
+        if new_b[2] is not _nil:
+            dict_impl.__getitem__(self.storage, new_b[2])[0] = new_b[1].name
+        dict_impl.__setitem__(self.storage, new_a[1].name, new_a)
+        dict_impl.__setitem__(self.storage, new_b[1].name, new_b)
+        if new_a[0] is _nil:
+            self.storage.lh = new_a[1].name
+        if new_a[2] is _nil:
+            self.storage.lt = new_a[1].name
+        if new_b[0] is _nil:
+            self.storage.lh = new_b[1].name
+        if new_b[2] is _nil:
+            self.storage.lt = new_b[1].name
+    
+    @extend
     def insertfirst(self, newnode):
         keys = self.keys()
         if not keys:

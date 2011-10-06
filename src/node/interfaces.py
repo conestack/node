@@ -403,6 +403,10 @@ class IOrder(Interface):
     """Plumbing part for ordering support.
     """
     
+    def swap(node_a, node_b):
+        """Swap 2 nodes.
+        """
+    
     def insertfirst(newnode):
         """Insert newnode as first node.
         """
