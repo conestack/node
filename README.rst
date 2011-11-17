@@ -275,6 +275,10 @@ Changes
 0.9.5dev
 --------
 
+- use ``node.name`` instead of ``node.__name__`` in
+  ``node.parts.nodify.Nodify.path``.
+  [rnix, 2011-11-17]
+
 - add ``swap`` to  ``node.parts.Order``.
   [rnix, 2011-10-05]
 
