@@ -28,23 +28,23 @@ class Order(Part):
         if new_b[0] == new_b[1].name:
             new_b[0] = new_a[1].name
             new_a[2] = new_b[1].name
-        if new_a[0] is not _nil:
+        if new_a[0] != _nil:
             dict_impl.__getitem__(self.storage, new_a[0])[2] = new_a[1].name
-        if new_a[2] is not _nil:
+        if new_a[2] != _nil:
             dict_impl.__getitem__(self.storage, new_a[2])[0] = new_a[1].name
-        if new_b[0] is not _nil:
+        if new_b[0] != _nil:
             dict_impl.__getitem__(self.storage, new_b[0])[2] = new_b[1].name
-        if new_b[2] is not _nil:
+        if new_b[2] != _nil:
             dict_impl.__getitem__(self.storage, new_b[2])[0] = new_b[1].name
         dict_impl.__setitem__(self.storage, new_a[1].name, new_a)
         dict_impl.__setitem__(self.storage, new_b[1].name, new_b)
-        if new_a[0] is _nil:
+        if new_a[0] == _nil:
             self.storage.lh = new_a[1].name
-        if new_a[2] is _nil:
+        if new_a[2] == _nil:
             self.storage.lt = new_a[1].name
-        if new_b[0] is _nil:
+        if new_b[0] == _nil:
             self.storage.lh = new_b[1].name
-        if new_b[2] is _nil:
+        if new_b[2] == _nil:
             self.storage.lt = new_b[1].name
     
     @extend

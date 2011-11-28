@@ -275,6 +275,9 @@ Changes
 0.9.5dev
 --------
 
+- fix ``node.parts.Order.swap`` in order to work with pickled nodes.
+  [rnix, 2011-11-28]
+
 - use ``node.name`` instead of ``node.__name__`` in
   ``node.parts.nodify.Nodify.path``.
   [rnix, 2011-11-17]
