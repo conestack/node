@@ -203,6 +203,10 @@ node.parts.Order
     Plumbing part for ordering support.
     See ``node.interfaces.IOrder``.
 
+node.parts.UUIDAware
+    Plumbing part providing a uuid on nodes.
+    See ``node.interfaces.IUUIDAware``.
+
 node.parts.Reference
     Plumbing part holding an index of all nodes contained in the tree.
     See ``node.interfaces.IReference``.
@@ -250,7 +254,7 @@ Summary of the test coverage report::
      31   100%   node.parts.nodespace
      70   100%   node.parts.nodify
     109   100%   node.parts.order
-     81   100%   node.parts.reference
+     99   100%   node.parts.reference
      26   100%   node.parts.storage
       1   100%   node.testing.__init__
      62   100%   node.testing.base
@@ -274,6 +278,9 @@ Changes
 
 0.9.5dev
 --------
+
+- add ``node.parts.UUIDAware`` plumbing part.
+  [rnix, 2011-12-02]
 
 - fix ``node.parts.Order.swap`` in order to work with pickled nodes.
   [rnix, 2011-11-28]

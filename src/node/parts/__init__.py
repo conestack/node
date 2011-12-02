@@ -39,6 +39,7 @@ from node.parts.nodify import (
 )
 from node.parts.order import Order
 from node.parts.reference import (
+    UUIDAware,
     NodeIndex,
     Reference,
 )

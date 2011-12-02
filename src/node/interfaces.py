@@ -436,13 +436,37 @@ class IOrder(Interface):
         """
 
 
-class IReference(Interface):
-    """Plumbing part holding an index of all nodes contained in the tree.
+class IUUIDAware(Interface):
+    """Plumbing part providing a uuid on nodes.
     
     Plumbing hooks:
     
     __init__
         Create and set uuid.
+    
+    copy
+        Set new uuid on copied obejct. Considers ``overwrite_recursiv_on_copy``. 
+    """
+    uuid = Attribute(u"``uuid.UUID`` of this node.")
+    overwrite_recursiv_on_copy = Attribute(u"Flag whether to set new UUID on "
+                                           u"children as well when calling "
+                                           u"``node.copy()``. This only makes "
+                                           u"sence for nodes performing a "
+                                           u"``deepcopy`` or anythin "
+                                           u"equivalent also creating copies "
+                                           u"of it's children.")
+    
+    def set_uuid_for(node, override=False, recursiv=False):
+        """Set ``uuid`` for node. If ``override`` is True, override existing
+        ``uuid`` attributes, if ``recursiv`` is True, set new ``uuid`` on
+        children as well.
+        """
+
+
+class IReference(IUUIDAware):
+    """Plumbing part holding an index of all nodes contained in the tree.
+    
+    Plumbing hooks:
     
     __setitem__
         Set child in index.
@@ -453,7 +477,6 @@ class IReference(Interface):
     detach
         Reduce index of detached child.
     """
-    uuid = Attribute(u"``uuid.UUID`` of this node.")
     index = Attribute(u"The tree node index")
     
     def node(uuid):

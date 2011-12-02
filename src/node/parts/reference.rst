@@ -1,17 +1,96 @@
-node.parts.Reference
+node.parts.UUIDAware
 --------------------
-
-Tree node index.::
-
+::
+    >>> import copy
     >>> from plumber import plumber
     >>> from node.parts import (
     ...     Adopt,
     ...     DefaultInit,
     ...     Nodify,
     ...     OdictStorage,
+    ...     UUIDAware,
     ...     Reference,
     ... )
+
+Create a uid aware node. For recursiv uid handling the ``copy`` function needs
+to perform a ``deepcopy``::
+
+    >>> class UUIDNode(object):
+    ...     __metaclass__ = plumber
+    ...     __plumbing__ = (
+    ...         Adopt,
+    ...         DefaultInit,
+    ...         Nodify,
+    ...         OdictStorage,
+    ...         UUIDAware,
+    ...     )
+    ...     def copy(self):
+    ...         return copy.deepcopy(self)
+
+UUID is set at init time::
+
+    >>> root = UUIDNode(name='root')
+    >>> root.uuid
+    UUID('...')
+
+On ``copy``, a new uid gets set::
+
+    >>> root_cp = root.copy()
+    >>> root is root_cp
+    False
     
+    >>> root.uuid == root_cp.uuid
+    False
+
+Create children, copy tree and check if all uuids have changed::
+
+    >>> c1 = root['c1'] = UUIDNode()
+    >>> s1 = c1['s1'] = UUIDNode()
+    >>> root.printtree()
+    <class 'UUIDNode'>: root
+      <class 'UUIDNode'>: c1
+        <class 'UUIDNode'>: s1
+    
+    >>> root_cp = root.copy()
+    >>> root_cp.printtree()
+    <class 'UUIDNode'>: root
+      <class 'UUIDNode'>: c1
+        <class 'UUIDNode'>: s1
+    
+    >>> root.uuid == root_cp.uuid
+    False
+    
+    >>> root['c1'].uuid == root_cp['c1'].uuid
+    False
+    
+    >>> root['c1']['s1'].uuid == root_cp['c1']['s1'].uuid
+    False
+
+When detaching, part of a tree, uids stay unchanged::
+
+    >>> c1_uid = root['c1'].uuid
+    >>> s1_uid = root['c1']['s1'].uuid
+    >>> detached = root.detach('c1')
+    
+    >>> root.printtree()
+    <class 'UUIDNode'>: root
+    
+    >>> detached.printtree()
+    <class 'UUIDNode'>: c1
+      <class 'UUIDNode'>: s1
+    
+    >>> c1_uid == detached.uuid
+    True
+    
+    >>> s1_uid == detached['s1'].uuid
+    True
+
+
+node.parts.Reference
+--------------------
+
+Tree node index.::
+
     >>> class ReferenceNode(object):
     ...     __metaclass__ = plumber
     ...     __plumbing__ = (
