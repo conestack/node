@@ -4,6 +4,7 @@ from odict import odict
 from plumber import (
     Part,
     default,
+    extend,
     finalize,
     plumb,
 )
@@ -12,6 +13,7 @@ from node.interfaces import (
     INode,
     IAdopt,
     IAsAttrAccess,
+    IChildFactory,
     IFixedChildren,
     IGetattrChildren,
     INodeChildValidate,
@@ -65,6 +67,26 @@ class AsAttrAccess(Part):
     @default
     def as_attribute_access(self):
         return AttributeAccess(self)
+
+
+class ChildFactory(Part):
+    implements(IChildFactory)
+    factories = default(odict())
+    
+    @extend
+    def __iter__(self):
+        return self.factories.__iter__()
+    
+    iterkeys = extend(__iter__)
+    
+    @plumb
+    def __getitem__(_next, self, key):
+        try:
+            child = _next(self, key)
+        except KeyError:
+            child = self.factories[key]()
+            self[key] = child
+        return child
 
 
 class FixedChildren(Part):

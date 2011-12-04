@@ -165,6 +165,11 @@ node.parts.AsAttrAccess
     Plumbing part to get node as IAttributeAccess implementation.
     See ``node.interfaces.IAsAttrAccess``.
 
+node.parts.ChildFactory
+    Plumbing part providing child factories which are invoked at
+    ``__getitem__`` if object by key is not present at plumbing endpoint yet.
+    See ``node.interfaces.IChildFactory``.
+
 node.parts.FixedChildren
     Plumbing part that initializes a fixed dictionary as children.
     See ``node.interfaces.IFixedChildren``.
@@ -248,7 +253,7 @@ Summary of the test coverage report::
      46   100%   node.parts.alias
      38   100%   node.parts.attributes
      50   100%   node.parts.cache
-    103   100%   node.parts.common
+    116   100%   node.parts.common
      52   100%   node.parts.lifecycle
     113   100%   node.parts.mapping
      31   100%   node.parts.nodespace
@@ -278,6 +283,9 @@ Changes
 
 0.9.5dev
 --------
+
+- add ``node.parts.ChildFactory`` plumbing part.
+  [rnix, 2011-12-04]
 
 - add ``node.parts.UUIDAware`` plumbing part.
   [rnix, 2011-12-02]

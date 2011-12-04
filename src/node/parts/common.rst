@@ -104,14 +104,31 @@ UnicodeAware
     [u'foo']
 
 
-FixedChildren
--------------
+ChildFactory
+------------
 ::
-    >>> from node.parts import FixedChildren
+    >>> from node.parts import ChildFactory
     
     >>> class FooChild(object): pass
     >>> class BarChild(object): pass
     
+    >>> class ChildFactoryNode(object):
+    ...     __metaclass__ = plumber
+    ...     __plumbing__ = Nodify, ChildFactory, OdictStorage
+    ...     factories = {
+    ...         'foo': FooChild,
+    ...         'bar': BarChild,
+    ...     }
+    >>> node = ChildFactoryNode()
+    >>> node.items()
+    [('foo', <FooChild object at ...>), 
+    ('bar', <BarChild object at ...>)]
+
+
+FixedChildren
+-------------
+::
+    >>> from node.parts import FixedChildren
     >>> class FixedChildrenNode(object):
     ...     __metaclass__ = plumber
     ...     __plumbing__ = Nodify, FixedChildren

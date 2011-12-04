@@ -10,6 +10,7 @@ from node.parts.cache import (
 from node.parts.common import (
     Adopt,
     AsAttrAccess,
+    ChildFactory,
     FixedChildren,
     GetattrChildren,
     NodeChildValidate,

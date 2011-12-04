@@ -270,6 +270,17 @@ class IAsAttrAccess(Interface):
         """
 
 
+class IChildFactory(Interface):
+    """Plumbing part providing child factories which are invoked at
+    ``__getitem__`` if object by key is not present at plumbing endpoint yet.
+    """
+    factories = Attribute(u"Dict like object containing key/factory pairs.")
+    
+    def __iter__():
+        """Return iterator of factory keys. 
+        """
+
+
 class IFixedChildren(Interface):
     """Plumbing part that initializes a fixed dictionary as children.
 
