@@ -1,3 +1,4 @@
+import uuid
 import inspect
 from odict import odict
 from plumber import (
@@ -15,6 +16,7 @@ from node.interfaces import (
     IGetattrChildren,
     INodeChildValidate,
     IUnicodeAware,
+    IUUIDAware,
     #IWrap,
 )
 from node.utils import (
@@ -159,6 +161,32 @@ class UnicodeAware(Part):
             val = decode(val)
         return _next(self, key, val)
 
+
+class UUIDAware(Part):
+    implements(IUUIDAware)
+    
+    uuid = default(None)
+    overwrite_recursiv_on_copy = default(True)
+    
+    @plumb
+    def __init__(_next, self, *args, **kw):
+        _next(self, *args, **kw)
+        self.uuid = uuid.uuid4()
+    
+    @plumb
+    def copy(_next, self):
+        copied = _next(self)
+        self.set_uuid_for(copied, True, self.overwrite_recursiv_on_copy)
+        return copied
+    
+    @default
+    def set_uuid_for(self, node, override=False, recursiv=False):
+        if IUUIDAware.providedBy(node):
+            if override or not node.uuid:
+                node.uuid = uuid.uuid4()
+        if recursiv:
+            for child in node.values():
+                self.set_uuid_for(child, override, recursiv)
 
 #class Wrap(Part):
 #    """Plumbing element that wraps nodes coming from deeper levels in a

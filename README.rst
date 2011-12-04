@@ -248,13 +248,13 @@ Summary of the test coverage report::
      46   100%   node.parts.alias
      38   100%   node.parts.attributes
      50   100%   node.parts.cache
-     83   100%   node.parts.common
+    103   100%   node.parts.common
      52   100%   node.parts.lifecycle
     113   100%   node.parts.mapping
      31   100%   node.parts.nodespace
      70   100%   node.parts.nodify
     109   100%   node.parts.order
-     99   100%   node.parts.reference
+     80   100%   node.parts.reference
      26   100%   node.parts.storage
       1   100%   node.testing.__init__
      62   100%   node.testing.base

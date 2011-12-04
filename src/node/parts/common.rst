@@ -144,9 +144,128 @@ FixedChildren
     NotImplementedError: read-only
 
 
+UUIDAware
+---------
+::
+    >>> import copy
+    >>> from plumber import plumber
+    >>> from node.parts import UUIDAware, DefaultInit
+
+Create a uid aware node. For recursiv uid handling the ``copy`` function needs
+to perform a ``deepcopy``::
+
+    >>> class UUIDNode(object):
+    ...     __metaclass__ = plumber
+    ...     __plumbing__ = (
+    ...         Adopt,
+    ...         DefaultInit,
+    ...         Nodify,
+    ...         OdictStorage,
+    ...         UUIDAware,
+    ...     )
+    ...     def copy(self):
+    ...         return copy.deepcopy(self)
+
+UUID is set at init time::
+
+    >>> root = UUIDNode(name='root')
+    >>> root.uuid
+    UUID('...')
+
+On ``copy``, a new uid gets set::
+
+    >>> root_cp = root.copy()
+    >>> root is root_cp
+    False
+    
+    >>> root.uuid == root_cp.uuid
+    False
+
+Create children, copy tree and check if all uuids have changed::
+
+    >>> c1 = root['c1'] = UUIDNode()
+    >>> s1 = c1['s1'] = UUIDNode()
+    >>> root.printtree()
+    <class 'UUIDNode'>: root
+      <class 'UUIDNode'>: c1
+        <class 'UUIDNode'>: s1
+    
+    >>> root_cp = root.copy()
+    >>> root_cp.printtree()
+    <class 'UUIDNode'>: root
+      <class 'UUIDNode'>: c1
+        <class 'UUIDNode'>: s1
+    
+    >>> root.uuid == root_cp.uuid
+    False
+    
+    >>> root['c1'].uuid == root_cp['c1'].uuid
+    False
+    
+    >>> root['c1']['s1'].uuid == root_cp['c1']['s1'].uuid
+    False
+
+When detaching, part of a tree, uids stay unchanged::
+
+    >>> c1_uid = root['c1'].uuid
+    >>> s1_uid = root['c1']['s1'].uuid
+    >>> detached = root.detach('c1')
+    
+    >>> root.printtree()
+    <class 'UUIDNode'>: root
+    
+    >>> detached.printtree()
+    <class 'UUIDNode'>: c1
+      <class 'UUIDNode'>: s1
+    
+    >>> c1_uid == detached.uuid
+    True
+    
+    >>> s1_uid == detached['s1'].uuid
+    True
+
+
+NodeChildValidate
+-----------------
+::
+    >>> from node.parts import (
+    ...     NodeChildValidate,
+    ...     Nodify,
+    ...     OdictStorage,
+    ... )
+    
+    >>> class NodeChildValidateNode(object):
+    ...     __metaclass__ = plumber
+    ...     __plumbing__ = NodeChildValidate, DefaultInit, Nodify, OdictStorage
+    
+    >>> node = NodeChildValidateNode()
+    >>> node.allow_non_node_childs
+    False
+    
+    >>> node['child'] = 1
+    Traceback (most recent call last):
+      ...
+    ValueError: Non-node childs are not allowed.
+    
+    >>> class SomeClass(object): pass
+    
+    >>> node['aclasshere'] = SomeClass
+    Traceback (most recent call last):
+      ...
+    ValueError: It isn't allowed to use classes as values.
+    
+    >>> node.allow_non_node_childs = True
+    
+    >>> node['child'] = 1
+    >>> node['child']
+    1
+
+
 GetattrChildren
 ---------------
-::
+
+XXX: this test breaks coverage recording!!!::
+
     >>> from node.base import BaseNode
     >>> from node.parts import GetattrChildren
 
@@ -191,40 +310,3 @@ XXX: The base class' getattr does not work anymore. plumber directive
      Thats why i prefer AttributeAccess explicit for attribute access on node
      children. overwriting __getattr__ and/or __getattribue__ cause too many
      side effects imo. -rn
-
-
-NodeChildValidate
------------------
-::
-    >>> from node.parts import (
-    ...     NodeChildValidate,
-    ...     DefaultInit,
-    ...     Nodify,
-    ...     OdictStorage,
-    ... )
-    
-    >>> class NodeChildValidateNode(object):
-    ...     __metaclass__ = plumber
-    ...     __plumbing__ = NodeChildValidate, DefaultInit, Nodify, OdictStorage
-    
-    >>> node = NodeChildValidateNode()
-    >>> node.allow_non_node_childs
-    False
-    
-    >>> node['child'] = 1
-    Traceback (most recent call last):
-      ...
-    ValueError: Non-node childs are not allowed.
-    
-    >>> class SomeClass(object): pass
-    
-    >>> node['aclasshere'] = SomeClass
-    Traceback (most recent call last):
-      ...
-    ValueError: It isn't allowed to use classes as values.
-    
-    >>> node.allow_non_node_childs = True
-    
-    >>> node['child'] = 1
-    >>> node['child']
-    1
