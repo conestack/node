@@ -160,6 +160,11 @@ class INode(ILocation, IFullMapping):
         """Detach child Node.
         """
     
+    def acquire(interface):
+        """Traverse parents until interface provided. Return first parent
+        providing interface or None if no parent matches.
+        """
+    
     def filtereditervalues(interface):
         """Yield filtered child nodes by interface.
         """

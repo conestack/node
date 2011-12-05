@@ -39,7 +39,7 @@ Usage
 ``node`` ships with some "ready-to-import-and-use" nodes.
 
 An unordered node. This can be used as base for trees where oder of items
-doesn't matter.::
+doesn't matter::
 
     >>> from node.base import BaseNode
     >>> root = BaseNode(name='root')
@@ -48,7 +48,7 @@ doesn't matter.::
     <class 'node.base.BaseNode'>: root
       <class 'node.base.BaseNode'>: child
 
-An ordered node. Order of items is preserved.::
+An ordered node. Order of items is preserved::
 
     >>> from node.base import OrderedNode
     >>> root = OrderedNode(name='orderedroot')
@@ -73,7 +73,7 @@ A more fine granular control of node functionality
 ``node`` utilizes the `plumber <http://pypi.python.org/pypi/plumber>`_ package.
 
 Thus, different behaviors of nodes are provided by ``plumbing parts``. Read
-the documentation of ``plumber`` for details about the plumbing system.
+the documentation of ``plumber`` for details about the plumbing system::
 
     >>> from plumber import plumber
     >>> from node.parts import (
@@ -101,20 +101,20 @@ the documentation of ``plumber`` for details about the plumbing system.
     ...     )
     
     >>> dir(CustomNode)
-    ['__class__', '__contains__', '__delattr__', '__delitem__',
-    '__dict__', '__doc__', '__format__', '__getattribute__',
-    '__getitem__', '__hash__', '__implemented__', '__init__',
-    '__iter__', '__len__', '__metaclass__', '__module__', '__name__',
-    '__new__', '__nonzero__', '__parent__', '__plumbing__',
-    '__plumbing_stacks__', '__provides__', '__reduce__',
-    '__reduce_ex__', '__repr__', '__setattr__', '__setitem__',
-    '__sizeof__', '__str__', '__subclasshook__', '__weakref__',
-    '_nodespaces', '_notify_suppress', 'allow_non_node_childs',
-    'attribute_access_for_attrs', 'attributes', 'attributes_factory',
-    'attrs', 'clear', 'copy', 'detach', 'events', 'filtereditems',
-    'filtereditervalues', 'filteredvalues', 'get', 'has_key', 'items',
-    'iteritems', 'iterkeys', 'itervalues', 'keys', 'name', 'noderepr',
-    'nodespaces', 'parent', 'path', 'pop', 'popitem', 'printtree',
+    ['__class__', '__contains__', '__delattr__', '__delitem__', 
+    '__dict__', '__doc__', '__format__', '__getattribute__', 
+    '__getitem__', '__hash__', '__implemented__', '__init__', 
+    '__iter__', '__len__', '__metaclass__', '__module__', '__name__', 
+    '__new__', '__nonzero__', '__parent__', '__plumbing__', 
+    '__plumbing_stacks__', '__provides__', '__reduce__', 
+    '__reduce_ex__', '__repr__', '__setattr__', '__setitem__', 
+    '__sizeof__', '__str__', '__subclasshook__', '__weakref__', 
+    '_nodespaces', '_notify_suppress', 'acquire', 'allow_non_node_childs', 
+    'attribute_access_for_attrs', 'attributes', 'attributes_factory', 
+    'attrs', 'clear', 'copy', 'detach', 'events', 'filtereditems', 
+    'filtereditervalues', 'filteredvalues', 'get', 'has_key', 'items', 
+    'iteritems', 'iterkeys', 'itervalues', 'keys', 'name', 'noderepr', 
+    'nodespaces', 'parent', 'path', 'pop', 'popitem', 'printtree', 
     'root', 'setdefault', 'storage', 'update', 'values']
 
 As ``dir`` call shows,  ``CustomNode`` class was plumbed using given parts, now
@@ -257,7 +257,7 @@ Summary of the test coverage report::
      52   100%   node.parts.lifecycle
     113   100%   node.parts.mapping
      31   100%   node.parts.nodespace
-     70   100%   node.parts.nodify
+     79   100%   node.parts.nodify
     109   100%   node.parts.order
      80   100%   node.parts.reference
      26   100%   node.parts.storage
@@ -283,6 +283,9 @@ Changes
 
 0.9.5dev
 --------
+
+- add ``node.parts.nodify.Nodify.acquire`` function.
+  [rnix, 2011-12-05]
 
 - add ``node.parts.ChildFactory`` plumbing part.
   [rnix, 2011-12-04]

@@ -5,6 +5,7 @@ from plumber import (
     Part,
 )
 from zope.interface import implements
+from zope.interface.interfaces import IInterface
 from node.interfaces import (
     IDefaultInit,
     INodify,
@@ -71,6 +72,16 @@ class Nodify(FullMapping):
         node = self[key]
         del self[key]
         return node
+    
+    @extend
+    def acquire(self, interface):
+        node = self.parent
+        while node:
+            if (IInterface.providedBy(interface) \
+              and interface.providedBy(node)) \
+              or isinstance(node, interface):
+                return node
+            node = node.parent
 
     @extend
     def filtereditervalues(self, interface):

@@ -1,6 +1,6 @@
 node.parts.Nodify
 -----------------
-
+::
     >>> from plumber import plumber
 
     >>> from node.testing import FullMappingTester
@@ -59,3 +59,38 @@ node.parts.Nodify
     ``setdefault``: OK
     ``update``: OK
     ``values``: OK
+    
+    >>> class RootNode(Node):
+    ...     pass
+    
+    >>> root = RootNode('root')
+    >>> child = root['child'] = Node()
+    >>> subchild = child['subchild'] = Node()
+    >>> root.printtree()
+    <class 'RootNode'>: root
+      <class 'Node'>: child
+        <class 'Node'>: subchild
+    
+    >>> from zope.interface import (
+    ...     Interface,
+    ...     alsoProvides,
+    ... )
+    >>> from node.interfaces import INode
+    
+    >>> class INodeInterface(Interface):
+    ...     pass
+    
+    >>> class INoInterface(Interface):
+    ...     pass
+    
+    >>> alsoProvides(child, INodeInterface)
+    >>> subchild.acquire(RootNode)
+    <RootNode object 'root' at ...>
+    
+    >>> subchild.acquire(INodeInterface)
+    <Node object 'child' at ...>
+    
+    >>> subchild.acquire(INode)
+    <Node object 'child' at ...>
+    
+    >>> subchild.acquire(INoInterface)
