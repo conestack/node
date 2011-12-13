@@ -281,8 +281,8 @@ Contributors
 Changes
 =======
 
-0.9.5dev
---------
+0.9.5
+-----
 
 - add ``node.parts.nodify.Nodify.acquire`` function.
   [rnix, 2011-12-05]
