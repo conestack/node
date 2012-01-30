@@ -15,6 +15,7 @@ from node.parts.common import (
     GetattrChildren,
     NodeChildValidate,
     UnicodeAware,
+    UUIDAware,
 #    Wrap,
 )
 from node.parts.lifecycle import (
@@ -40,7 +41,6 @@ from node.parts.nodify import (
 )
 from node.parts.order import Order
 from node.parts.reference import (
-    UUIDAware,
     NodeIndex,
     Reference,
 )

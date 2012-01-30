@@ -452,8 +452,14 @@ class IOrder(Interface):
         """
 
 
-class IUUIDAware(Interface):
-    """Plumbing part providing a uuid on nodes.
+class IUUID(Interface):
+    """Plumbing part for providing a uuid on a node.
+    """
+    uuid = Attribute(u"``uuid.UUID`` of this node.")
+
+
+class IUUIDAware(IUUID):
+    """Be aware of node uuid for several operations.
     
     Plumbing hooks:
     
@@ -463,7 +469,6 @@ class IUUIDAware(Interface):
     copy
         Set new uuid on copied obejct. Considers ``overwrite_recursiv_on_copy``. 
     """
-    uuid = Attribute(u"``uuid.UUID`` of this node.")
     overwrite_recursiv_on_copy = Attribute(u"Flag whether to set new UUID on "
                                            u"children as well when calling "
                                            u"``node.copy()``. This only makes "
@@ -479,10 +484,13 @@ class IUUIDAware(Interface):
         """
 
 
-class IReference(IUUIDAware):
+class IReference(IUUID):
     """Plumbing part holding an index of all nodes contained in the tree.
     
     Plumbing hooks:
+    
+    __init__
+        Create and set uuid.
     
     __setitem__
         Set child in index.

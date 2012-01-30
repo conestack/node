@@ -281,6 +281,16 @@ Contributors
 Changes
 =======
 
+0.9.6dev
+--------
+
+- Do not inherit ``node.parts.Reference`` from ``node.parts.UUIDAware``.
+  [rnix, 2012-01-30]
+
+- Set ``uuid`` in ``node.parts.Reference.__init__`` plumb.
+  [rnix, 2012-01-30]
+
+
 0.9.5
 -----
 

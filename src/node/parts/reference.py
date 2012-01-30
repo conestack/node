@@ -1,3 +1,4 @@
+import uuid
 from plumber import (
     plumb,
     extend,
@@ -10,7 +11,6 @@ from node.interfaces import (
     INode,
     IReference,
 )
-from node.parts.common import UUIDAware
 
 
 class NodeIndex(object):
@@ -29,15 +29,15 @@ class NodeIndex(object):
         return int(key) in self._index
 
 
-class Reference(UUIDAware):
+class Reference(Part):
     implements(IReference)
 
     _uuid = default(None)
 
     @plumb
     def __init__(_next, self, *args, **kw):
-        # XXX: should be wrapped via property and set on first access
         self._index = dict()
+        self.uuid = uuid.uuid4()
         _next(self, *args, **kw)
     
     @plumb
