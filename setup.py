@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '0.9.6dev'
+version = '0.9.6'
 shortdesc = "The node"
 longdesc = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
 longdesc += open(os.path.join(os.path.dirname(__file__), 'LICENSE.rst')).read()

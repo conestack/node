@@ -259,7 +259,7 @@ Summary of the test coverage report::
      31   100%   node.parts.nodespace
      79   100%   node.parts.nodify
     109   100%   node.parts.order
-     80   100%   node.parts.reference
+     81   100%   node.parts.reference
      26   100%   node.parts.storage
       1   100%   node.testing.__init__
      62   100%   node.testing.base
@@ -281,8 +281,8 @@ Contributors
 Changes
 =======
 
-0.9.6dev
---------
+0.9.6
+-----
 
 - Do not inherit ``node.parts.Reference`` from ``node.parts.UUIDAware``.
   [rnix, 2012-01-30]
