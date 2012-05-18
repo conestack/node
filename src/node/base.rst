@@ -40,11 +40,6 @@ Storage related operations of AbstractNode raise ``NotImplementedError``::
       ...
     NotImplementedError
     
-    >>> abstract_copy = abstract.copy()
-    Traceback (most recent call last):
-      ...
-    NotImplementedError
-    
     >>> abstract.clear()
     Traceback (most recent call last):
       ...
@@ -140,7 +135,6 @@ BaseNode
     ``setdefault``: OK
     ``update``: OK
     ``values``: OK
-
 
 OrderedNode
 -----------
@@ -505,3 +499,97 @@ XXX: decide wether ``aliases`` or ``aliaser`` (still dunno) should be kept in
     Traceback (most recent call last):
       ...
     ValueError: It isn't allowed to use classes as values.
+
+
+Copy testing
+============
+
+Shallow copy of BaseNode::
+    
+    >>> import copy
+    >>> node = BaseNode()
+    >>> node['child'] = BaseNode()
+    
+    >>> copied_node = node.copy()
+    >>> copied_node.printtree()
+    <class 'node.base.BaseNode'>: None
+      <class 'node.base.BaseNode'>: child
+      
+    >>> node is copied_node
+    False
+    
+    >>> node['child'] is copied_node['child']
+    True
+
+    >>> copied_node = copy.copy(node)
+    >>> node is copied_node
+    False
+    
+    >>> node['child'] is copied_node['child']
+    True
+
+Deep copy of base node::
+
+    >>> copied_node = node.deepcopy()
+    >>> copied_node.printtree()
+    <class 'node.base.BaseNode'>: None
+      <class 'node.base.BaseNode'>: child
+      
+    >>> node is copied_node
+    False
+    
+    >>> node['child'] is copied_node['child']
+    False
+    
+    >>> copied_node = copy.deepcopy(node)
+    >>> node is copied_node
+    False
+    
+    >>> node['child'] is copied_node['child']
+    False
+
+Shallow copy of ordered node::
+
+    >>> node = OrderedNode()
+    >>> node['child'] = OrderedNode()
+    
+    >>> copied_node = node.copy()
+    >>> copied_node.printtree()
+    <class 'node.base.OrderedNode'>: None
+      <class 'node.base.OrderedNode'>: child
+      
+    >>> node is copied_node
+    False
+    
+    >>> node['child'] is copied_node['child']
+    True
+
+    >>> copied_node = copy.copy(node)
+    >>> node is copied_node
+    False
+    
+    >>> node['child'] is copied_node['child']
+    True
+    
+Deep copy of ordered node::
+
+    >>> node = OrderedNode()
+    >>> node['child'] = OrderedNode()
+    
+    >>> copied_node = node.deepcopy()
+    >>> copied_node.printtree()
+    <class 'node.base.OrderedNode'>: None
+      <class 'node.base.OrderedNode'>: child
+      
+    >>> node is copied_node
+    False
+    
+    >>> node['child'] is copied_node['child']
+    False
+
+    >>> copied_node = copy.deepcopy(node)
+    >>> node is copied_node
+    False
+    
+    >>> node['child'] is copied_node['child']
+    False

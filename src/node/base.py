@@ -5,7 +5,6 @@ from plumber import (
     default,
     extend,
 )
-from zope.interface import implements
 from node.interfaces import INode
 from node.parts import (
     Adopt,

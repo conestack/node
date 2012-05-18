@@ -164,8 +164,8 @@ Debug helper::
     ...     pass
     
     >>> test_search(21)
-    <LogRecord: node, 10, ...utils.py, 222, "test_search: args=(21,), kws={}">
-    <LogRecord: node, 10, ...utils.py, 224, "test_search: --> None">
+    <LogRecord: node, 10, ...utils.py, 220, "test_search: args=(21,), kws={}">
+    <LogRecord: node, 10, ...utils.py, 222, "test_search: --> None">
     
     >>> logger.setLevel(logging.INFO)
     >>> logger.removeHandler(handler)

@@ -3,7 +3,7 @@ from plumber import (
     plumber,
     Part,
 )
-from zope.interface import implements
+from zope.interface import implementer
 from zope.interface.common.mapping import (
     IEnumerableMapping,
     IFullMapping,
@@ -17,12 +17,12 @@ from node.parts import (
 )
 
 
+@implementer(IAliaser, IFullMapping)
 class DictAliaser(odict):
     """Uses its own dictionary for aliasing.
 
     ``__getitem__`` -> unalias
     """
-    implements(IAliaser, IFullMapping)
     
     def __init__(self, data=(), strict=True):
         super(DictAliaser, self).__init__(data)
@@ -45,12 +45,12 @@ class DictAliaser(odict):
             raise e
 
 
+@implementer(IAliaser)
 class PrefixAliaser(object):
     """An aliaser that prefix all keys.
 
     As it never raise KeyError it is not whitelisting.
     """
-    implements(IAliaser)
 
     def __init__(self, prefix=None):
         self.prefix = prefix
@@ -68,12 +68,12 @@ class PrefixAliaser(object):
         return prefixed_key[len(prefix):]
 
 
+@implementer(IAliaser)
 class SuffixAliaser(object):
     """An aliaser that suffixes all keys.
 
     As it never raise KeyError it is not whitelisting.
     """
-    implements(IAliaser)
 
     def __init__(self, suffix=None):
         self.suffix = suffix
@@ -93,6 +93,7 @@ class SuffixAliaser(object):
         return suffixed_key[:-len(suffix)]
 
 
+@implementer(IAliaser)
 class AliaserChain(object):
     """A chain of aliasers.
 
@@ -100,7 +101,6 @@ class AliaserChain(object):
     chain.alias(key) == aliaser2.alias(aliaser1.alias(key))
     chain.unalias(alias_key) == aliaser2.unalias(aliaser1.unalias(aliased_key))
     """
-    implements(IAliaser)
     
     # XXX: we are IEnumerableMapping if one of our childs is, which is
     #      important as we become a whitelist, eg. for Node.__iter__

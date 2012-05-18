@@ -111,7 +111,7 @@ the documentation of ``plumber`` for details about the plumbing system::
     '__sizeof__', '__str__', '__subclasshook__', '__weakref__', 
     '_nodespaces', '_notify_suppress', 'acquire', 'allow_non_node_childs', 
     'attribute_access_for_attrs', 'attributes', 'attributes_factory', 
-    'attrs', 'clear', 'copy', 'detach', 'events', 'filtereditems', 
+    'attrs', 'clear', 'copy', 'deepcopy', 'detach', 'events', 'filtereditems', 
     'filtereditervalues', 'filteredvalues', 'get', 'has_key', 'items', 
     'iteritems', 'iterkeys', 'itervalues', 'keys', 'name', 'noderepr', 
     'nodespaces', 'parent', 'path', 'pop', 'popitem', 'printtree', 
@@ -280,6 +280,17 @@ Contributors
 
 Changes
 =======
+
+0.9.7dev
+--------
+
+- ``node.parts.mapping.ClonableMapping`` nor supports deepcopy.
+  [rnix, 2012-05-18]
+
+- use ``zope.interface.implementer`` instead of ``zope.interface.implements``
+  all over the place.
+  [rnix, 2012-05-18]
+
 
 0.9.6
 -----

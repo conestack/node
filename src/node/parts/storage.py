@@ -6,11 +6,11 @@ from plumber import (
 )
 from node.interfaces import IStorage
 from node.utils import instance_property
-from zope.interface import implements
+from zope.interface import implementer
 
 
+@implementer(IStorage)
 class Storage(Part):
-    implements(IStorage)
     
     @default
     @property

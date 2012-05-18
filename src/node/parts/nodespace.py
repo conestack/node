@@ -5,15 +5,15 @@ from plumber import (
     default,
     Part,
 )
-from zope.interface import implements
+from zope.interface import implementer
 from node.interfaces import (
     INode,
     INodespaces,
 )
 
-class Nodespaces(Part):
-    implements(INodespaces)
-    
+
+@implementer(INodespaces)
+class Nodespaces(Part):    
     _nodespaces = default(None)
     
     @finalize

@@ -1,6 +1,6 @@
 import inspect
 from plumber import plumber
-from zope.interface import implements
+from zope.interface import implementer
 from node.interfaces import INode
 from node.parts import (
     NodeChildValidate,
@@ -12,8 +12,8 @@ from node.parts import (
 )
 
 
+@implementer(INode)
 class MockupNode(object):
-    implements(INode)
     __name__ = None
     __parent__ = None
 

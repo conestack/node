@@ -163,13 +163,13 @@ FixedChildren
 
 UUIDAware
 ---------
+
 ::
-    >>> import copy
     >>> from plumber import plumber
     >>> from node.parts import UUIDAware, DefaultInit
 
-Create a uid aware node. For recursiv uid handling the ``copy`` function needs
-to perform a ``deepcopy``::
+Create a uid aware node. ``copy`` is not supported on UUIDAware node trees,
+``deepcopy`` must be used::
 
     >>> class UUIDNode(object):
     ...     __metaclass__ = plumber
@@ -180,8 +180,6 @@ to perform a ``deepcopy``::
     ...         OdictStorage,
     ...         UUIDAware,
     ...     )
-    ...     def copy(self):
-    ...         return copy.deepcopy(self)
 
 UUID is set at init time::
 
@@ -189,9 +187,16 @@ UUID is set at init time::
     >>> root.uuid
     UUID('...')
 
-On ``copy``, a new uid gets set::
+Shallow ``copy`` is prohibited for UUID aware nodes::
 
     >>> root_cp = root.copy()
+    Traceback (most recent call last):
+      ...
+    RuntimeError: Shallow copy useless on UUID aware node trees, use deepcopy.
+
+On ``deepcopy``, a new uid gets set::
+
+    >>> root_cp = root.deepcopy()
     >>> root is root_cp
     False
     
@@ -207,7 +212,7 @@ Create children, copy tree and check if all uuids have changed::
       <class 'UUIDNode'>: c1
         <class 'UUIDNode'>: s1
     
-    >>> root_cp = root.copy()
+    >>> root_cp = root.deepcopy()
     >>> root_cp.printtree()
     <class 'UUIDNode'>: root
       <class 'UUIDNode'>: c1

@@ -1,10 +1,11 @@
+import copy
 from plumber import (
     Part,
     default,
     extend,
 )
 from node.utils import Unset
-from zope.interface import implements
+from zope.interface import implementer
 from zope.interface.common.mapping import (
     IItemMapping,
     IReadMapping,
@@ -19,20 +20,20 @@ from zope.interface.common.mapping import (
 )
 
 
+@implementer(IItemMapping)
 class ItemMapping(Part):
     """Simplest readable mapping object
     """
-    implements(IItemMapping)
 
     @default
     def __getitem__(self, key):
         raise NotImplementedError
 
 
+@implementer(IReadMapping)
 class ReadMapping(ItemMapping):
     """Basic mapping interface
     """
-    implements(IReadMapping)
 
     @default
     def get(self, key, default=None):
@@ -60,10 +61,10 @@ class ReadMapping(ItemMapping):
         return True
 
 
+@implementer(IWriteMapping)
 class WriteMapping(Part):
     """Mapping methods for changing data
     """
-    implements(IWriteMapping)
 
     @default
     def __delitem__(self, key):
@@ -74,10 +75,10 @@ class WriteMapping(Part):
         raise NotImplementedError
 
 
+@implementer(IEnumerableMapping)
 class EnumerableMapping(ReadMapping):
     """Mapping objects whose items can be enumerated.
     """
-    implements(IEnumerableMapping)
 
     @default
     def keys(self):
@@ -112,14 +113,14 @@ class EnumerableMapping(ReadMapping):
         return len(self.keys())
 
 
+@implementer(IMapping)
 class Mapping(WriteMapping, EnumerableMapping):
     """Simple mapping interface
     """
-    implements(IMapping)
 
 
+@implementer(IIterableMapping)
 class IterableMapping(EnumerableMapping):
-    implements(IIterableMapping)
 
     @default
     def iterkeys(self):
@@ -146,19 +147,21 @@ class IterableMapping(EnumerableMapping):
             yield key, self[key]
 
 
+@implementer(IClonableMapping)
 class ClonableMapping(Part):
-    implements(IClonableMapping)
     
-    # We need to extend, because a base class does not know what to create
-    @extend
+    @default
     def copy(self):
-        new = self.__class__()
-        new.update(self)
-        return new
+        return copy.copy(self)
+    
+    @default
+    def deepcopy(self):
+        # not part of IClonableMapping API
+        return copy.deepcopy(self)
 
 
+@implementer(IExtendedReadMapping)
 class ExtendedReadMapping(IterableMapping):
-    implements(IExtendedReadMapping)
     
     @default
     def has_key(self, key):
@@ -167,8 +170,8 @@ class ExtendedReadMapping(IterableMapping):
         return key in self
 
 
+@implementer(IExtendedWriteMapping)
 class ExtendedWriteMapping(WriteMapping):
-    implements(IExtendedWriteMapping)
 
     @default
     def clear(self):
@@ -225,6 +228,7 @@ class ExtendedWriteMapping(WriteMapping):
         raise KeyError('popitem(): mapping is empty')
 
 
+@implementer(IFullMapping)
 class FullMapping(ExtendedReadMapping,
                   ExtendedWriteMapping,
                   ClonableMapping,
@@ -237,4 +241,3 @@ class FullMapping(ExtendedReadMapping,
         - ``__iter__``
         - ``__setitem__``
     """
-    implements(IFullMapping)

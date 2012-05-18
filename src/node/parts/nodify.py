@@ -4,7 +4,7 @@ from plumber import (
     plumb,
     Part,
 )
-from zope.interface import implements
+from zope.interface import implementer
 from zope.interface.interfaces import IInterface
 from node.interfaces import (
     IDefaultInit,
@@ -18,8 +18,8 @@ from node.utils import (
 )
 
 
+@implementer(IDefaultInit)
 class DefaultInit(Part):
-    implements(IDefaultInit)
 
     @extend
     def __init__(self, name=None, parent=None):
@@ -27,20 +27,10 @@ class DefaultInit(Part):
         self.__parent__ = parent
 
 
+@implementer(INodify)
 class Nodify(FullMapping):
-    implements(INodify)
     __name__ = default(None)
     __parent__ = default(None)
-
-    @plumb
-    def copy(_next, self):
-        new = _next(self)
-        # XXX Where do we need a copy to have the same name, and when do we
-        # need it to have the same parent? And what does it mean to have a
-        # parent? Should be documented in Nodify doctest -cfl.
-        new.__name__ = self.__name__
-        new.__parent__ = self.__parent__
-        return new
 
     @extend
     @property

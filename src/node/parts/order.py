@@ -3,7 +3,7 @@ from plumber import (
     extend,
     Part,
 )
-from zope.interface import implements
+from zope.interface import implementer
 from zope.interface.common.mapping import IReadMapping
 from node.interfaces import (
     INode,
@@ -12,8 +12,8 @@ from node.interfaces import (
 )
 
 
+@implementer(IOrder)
 class Order(Part):
-    implements(IOrder)
 
     @extend
     def swap(self, node_a, node_b):

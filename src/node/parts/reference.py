@@ -5,7 +5,7 @@ from plumber import (
     default,
     Part,
 )
-from zope.interface import implements
+from zope.interface import implementer
 from zope.interface.common.mapping import IReadMapping
 from node.interfaces import (
     INode,
@@ -13,8 +13,8 @@ from node.interfaces import (
 )
 
 
+@implementer(IReadMapping)
 class NodeIndex(object):
-    implements(IReadMapping)
 
     def __init__(self, index):
         self._index = index
@@ -29,9 +29,8 @@ class NodeIndex(object):
         return int(key) in self._index
 
 
+@implementer(IReference)
 class Reference(Part):
-    implements(IReference)
-
     _uuid = default(None)
 
     @plumb

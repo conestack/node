@@ -8,16 +8,16 @@ from node.interfaces import (
     ICache,
 )
 from node.utils import instance_property
-from zope.interface import implements
+from zope.interface import implementer
 
 
+@implementer(IInvalidate)
 class Invalidate(Part):
     """Plumbing part for invalidation.
     
     This basic implementation assumes that nodes using this part are NOT storage
     related. It just uses ``self.__delitem__``.
     """
-    implements(IInvalidate)
     
     @default
     def invalidate(self, key=None):
@@ -31,8 +31,8 @@ class Invalidate(Part):
                 del self[key]
 
 
+@implementer(ICache)
 class Cache(Part):
-    implements(ICache)
     
     @default
     @instance_property

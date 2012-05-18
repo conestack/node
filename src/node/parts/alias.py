@@ -4,10 +4,11 @@ from plumber import (
     Part,
 )
 from node.interfaces import IAlias
-from zope.interface import implements
+from zope.interface import implementer
 from zope.interface.common.mapping import IEnumerableMapping
 
 
+@implementer(IAlias)
 class Alias(Part):
     """KeyErrors are caught and reraised with the aliased key.
     XXX: Could be configureable: aliased_keyerrors.
@@ -27,7 +28,6 @@ class Alias(Part):
     For rerouting we would needs entrance methods, see below in commented
     iteritems.
     """
-    implements(IAlias)
     aliaser = default(None)
     
     @plumb

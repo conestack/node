@@ -2,7 +2,7 @@ import uuid
 import inspect
 from odict import odict
 from odict.pyodict import _nil
-from zope.interface import implements
+from zope.interface import implementer
 from zope.interface.common.mapping import (
     IReadMapping,
     IFullMapping)
@@ -32,8 +32,8 @@ from utils import (
 # original from zodict
 ###############################################################################
 
+@implementer(IReadMapping)
 class NodeIndex(object):
-    implements(IReadMapping)
 
     def __init__(self, index):
         self._index = index
@@ -48,6 +48,7 @@ class NodeIndex(object):
         return int(key) in self._index
 
 
+@implementer(INode)
 class _Node(object):
     """Abstract node implementation. Subclass must mixin ``_node_impl()``.
 
@@ -57,7 +58,6 @@ class _Node(object):
         __delitem__
         __iter__
     """
-    implements(INode)
     allow_non_node_childs = False
     
     def _node_impl(self):
@@ -416,11 +416,10 @@ class NodeAttributes(Node):
         self._node = node
 
 
+@implementer(IAttributedNode)
 class AttributedNode(Node):
     """A node that has another nodespace behind self.attrs[]
     """
-    implements(IAttributedNode)
-
     attributes_factory = NodeAttributes
     attribute_aliases = None
 
@@ -474,8 +473,8 @@ class LifecycleNodeAttributes(NodeAttributes):
         objectEventNotify(self._node.events['modified'](self._node))
 
 
+@implementer(ILifecycleNode)
 class LifecycleNode(AttributedNode):
-    implements(ILifecycleNode)
 
     events = {
         'created': NodeCreatedEvent,

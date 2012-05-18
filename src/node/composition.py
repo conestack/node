@@ -2,11 +2,15 @@
 
 # XXX: used in zodict.
 
-from zope.interface import implements
+# XXX: get rid of!!
+
+from zope.interface import implementer
 from odict import odict
 from interfaces import IComposition
 from bbb import Node
 
+
+@implementer(IComposition)
 class Composition(Node):
     """
     A composition is a node that has one or more nodespaces that are the base for
@@ -19,7 +23,6 @@ class Composition(Node):
     - real children (composition is child.__parent__), that are compositions
       factored on the base of matching children from the nodespaces
     """
-    implements(IComposition)
 
     def __init__(self, name=None, nodespaces=None):
         # XXX: index support turned off for now

@@ -8,7 +8,7 @@ from plumber import (
     finalize,
     plumb,
 )
-from zope.interface import implements
+from zope.interface import implementer
 from node.interfaces import (
     INode,
     IAdopt,
@@ -28,8 +28,8 @@ from node.utils import (
 )
 
 
+@implementer(IAdopt)
 class Adopt(Part):
-    implements(IAdopt)
 
     @plumb
     def __setitem__(_next, self, key, val):
@@ -61,16 +61,16 @@ class Adopt(Part):
             return default
 
 
+@implementer(IAsAttrAccess)
 class AsAttrAccess(Part):
-    implements(IAsAttrAccess)
 
     @default
     def as_attribute_access(self):
         return AttributeAccess(self)
 
 
+@implementer(IChildFactory)
 class ChildFactory(Part):
-    implements(IChildFactory)
     factories = default(odict())
     
     @extend
@@ -89,6 +89,7 @@ class ChildFactory(Part):
         return child
 
 
+@implementer(IFixedChildren)
 class FixedChildren(Part):
     """Part that initializes a fixed dictionary as children
 
@@ -99,7 +100,6 @@ class FixedChildren(Part):
     XXX: This implementation is similar to what's implemented in
          cone.app.model.FactoryNode. harmonize.
     """
-    implements(IFixedChildren)
     fixed_children_factories = default(None)
 
     @plumb
@@ -129,12 +129,12 @@ class FixedChildren(Part):
         raise NotImplementedError("read-only")
 
 
+@implementer(IGetattrChildren)
 class GetattrChildren(Part):
     """Access children via ``__getattr__``, given the attribute name is unused.
     
     XXX: Similar behavior as AsAttrAccess. harmonize.
     """
-    implements(IGetattrChildren)
     
     @finalize
     def __getattr__(self, name):
@@ -144,9 +144,8 @@ class GetattrChildren(Part):
         return self.__getitem__(name)
 
 
+@implementer(INodeChildValidate)
 class NodeChildValidate(Part):
-    implements(INodeChildValidate)
-
     allow_non_node_childs = default(False)
 
     @plumb
@@ -158,10 +157,10 @@ class NodeChildValidate(Part):
         _next(self, key, val)
 
 
+@implementer(IUnicodeAware)
 class UnicodeAware(Part):
     # XXX: It feels here it would be nice to be able to get an instance of a
     # plumbing to configure the codec.
-    implements(IUnicodeAware)
 
     @plumb
     def __delitem__(_next, self, key):
@@ -184,9 +183,8 @@ class UnicodeAware(Part):
         return _next(self, key, val)
 
 
+@implementer(IUUIDAware)
 class UUIDAware(Part):
-    implements(IUUIDAware)
-    
     uuid = default(None)
     overwrite_recursiv_on_copy = default(True)
     
@@ -197,6 +195,11 @@ class UUIDAware(Part):
     
     @plumb
     def copy(_next, self):
+        raise RuntimeError(u"Shallow copy useless on UUID aware node trees, "
+                           u"use deepcopy.")
+    
+    @plumb
+    def deepcopy(_next, self):
         copied = _next(self)
         self.set_uuid_for(copied, True, self.overwrite_recursiv_on_copy)
         return copied
@@ -210,11 +213,11 @@ class UUIDAware(Part):
             for child in node.values():
                 self.set_uuid_for(child, override, recursiv)
 
+#@implementer(IWrap)
 #class Wrap(Part):
 #    """Plumbing element that wraps nodes coming from deeper levels in a
 #    NodeNode.
 #    """
-#    implements(IWrap)
 #
 #    @plumb
 #    def __getitem__(_next, self, key):

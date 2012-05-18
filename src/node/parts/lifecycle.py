@@ -3,7 +3,7 @@ from plumber import (
     plumb,
     Part,
 )
-from zope.interface import implements
+from zope.interface import implementer
 from node.interfaces import (
     ILifecycle,
     IAttributesLifecycle,
@@ -22,8 +22,9 @@ from node.events import (
     NodeDetachedEvent,
 )
 
+
+@implementer(ILifecycle)
 class Lifecycle(Part):
-    implements(ILifecycle)
 
     events = default({
         'created': NodeCreatedEvent,
@@ -59,7 +60,6 @@ class Lifecycle(Part):
     
     @plumb
     def detach(_next, self, key):
-        notify_before = self._notify_suppress
         self._notify_suppress = True
         node = _next(self, key)
         self._notify_suppress = False
@@ -68,8 +68,8 @@ class Lifecycle(Part):
         return node
 
 
+@implementer(IAttributesLifecycle)
 class AttributesLifecycle(Part):
-    implements(IAttributesLifecycle)
 
     @plumb
     def __setitem__(_next, self, key, val):

@@ -1,4 +1,4 @@
-from zope.interface import implements
+from zope.interface import implementer
 try:
     from zope.lifecycleevent import (
         ObjectCreatedEvent,
@@ -22,17 +22,22 @@ from node.interfaces import (
     INodeDetachedEvent,
 )
 
-class NodeCreatedEvent(ObjectCreatedEvent):
-    implements(INodeCreatedEvent)
-    
-class NodeAddedEvent(ObjectAddedEvent):
-    implements(INodeAddedEvent)
 
-class NodeModifiedEvent(ObjectModifiedEvent):
-    implements(INodeModifiedEvent)
+@implementer(INodeCreatedEvent)
+class NodeCreatedEvent(ObjectCreatedEvent): pass
 
-class NodeRemovedEvent(ObjectRemovedEvent):              
-    implements(INodeRemovedEvent)
 
-class NodeDetachedEvent(ObjectRemovedEvent):
-    implements(INodeDetachedEvent)
+@implementer(INodeAddedEvent)
+class NodeAddedEvent(ObjectAddedEvent): pass
+
+
+@implementer(INodeModifiedEvent)
+class NodeModifiedEvent(ObjectModifiedEvent): pass
+
+
+@implementer(INodeRemovedEvent)
+class NodeRemovedEvent(ObjectRemovedEvent): pass
+
+
+@implementer(INodeDetachedEvent)
+class NodeDetachedEvent(ObjectRemovedEvent): pass

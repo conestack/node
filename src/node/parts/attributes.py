@@ -13,7 +13,7 @@ from node.parts.common import (
 from node.parts.nodify import Nodify
 from node.parts.storage import OdictStorage
 from node.utils import AttributeAccess
-from zope.interface import implements
+from zope.interface import implementer
 
 
 class NodeAttributes(object):
@@ -43,9 +43,8 @@ class NodeAttributes(object):
 
 
 # XXX: inherit from nodespaces part
+@implementer(IAttributes)
 class Attributes(Part):
-    implements(IAttributes)
-    
     attribute_access_for_attrs = default(False)
     attributes_factory = default(NodeAttributes)
 

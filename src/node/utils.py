@@ -1,6 +1,6 @@
 import logging
 from odict import odict
-from zope.interface import implements
+from zope.interface import implementer
 from zope.interface.common.mapping import IEnumerableMapping, IFullMapping
 from interfaces import (
     IAttributeAccess,
@@ -34,22 +34,21 @@ def LocationIterator(object):
         object = getattr(object, '__parent__', None)
 
 
+@implementer(IFullMapping)
 class Zodict(odict):
     """Mark ordered dict with corresponding interface.
     
     XXX: I think we might not need this any longer.
     """
-    implements(IFullMapping)
     
     def __init__(self, data=()):
         odict.__init__(self, data=data)
 
 
+@implementer(IEnumerableMapping)
 class ReverseMapping(object):
     """Reversed IEnumerableMapping.
     """
-    
-    implements(IEnumerableMapping)
     
     def __init__(self, context):
         """Object behaves as adapter for dict like object.
@@ -94,12 +93,11 @@ class ReverseMapping(object):
         return len(self.context)
 
 
+@implementer(IAttributeAccess)
 class AttributeAccess(object):
     """If someone really needs to access the original context (which should not 
     happen), she hast to use ``object.__getattr__(attraccess, 'context')``.
     """
-    
-    implements(IAttributeAccess)
     
     def __init__(self, context):
         object.__setattr__(self, 'context', context)
