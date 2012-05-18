@@ -19,7 +19,6 @@ from node.interfaces import (
     INodeChildValidate,
     IUnicodeAware,
     IUUIDAware,
-    #IWrap,
 )
 from node.utils import (
     AttributeAccess,
@@ -50,7 +49,7 @@ class Adopt(Part):
             val.__name__ = old_name
             val.__parent__ = old_parent
             raise
-
+    
     @plumb
     def setdefault(_next, self, key, default=None):
         # We reroute through __getitem__ and __setitem__, skipping _next
@@ -212,22 +211,3 @@ class UUIDAware(Part):
         if recursiv:
             for child in node.values():
                 self.set_uuid_for(child, override, recursiv)
-
-#@implementer(IWrap)
-#class Wrap(Part):
-#    """Plumbing element that wraps nodes coming from deeper levels in a
-#    NodeNode.
-#    """
-#
-#    @plumb
-#    def __getitem__(_next, self, key):
-#        val = _next(self, key)
-#        if INode.providedBy(val):
-#            val = NodeNode(val)
-#        return val
-#
-#    @plumb
-#    def __setitem__(_next, self, key, val):
-#        if INode.providedBy(val):
-#            val = val.context
-#        _next(self, key, val)

@@ -7,6 +7,12 @@ from zope.interface.common.mapping import (
     IWriteMapping,
     IFullMapping,
 )
+from zope.lifecycleevent import (
+    IObjectCreatedEvent,
+    IObjectAddedEvent,
+    IObjectModifiedEvent,
+    IObjectRemovedEvent,
+)
 try:
     from zope.location.interfaces import ILocation
 except ImportError, e:
@@ -28,21 +34,6 @@ except ImportError, e:
             """
             __parent__ = Attribute('The parent in the location hierarchy.')
             __name__ = Attribute('The name within the parent')
-
-try:
-    from zope.lifecycleevent import (
-        IObjectCreatedEvent,
-        IObjectAddedEvent,
-        IObjectModifiedEvent,
-        IObjectRemovedEvent,
-    )
-except ImportError, e:                                      #pragma NO COVERAGE
-    # BBB, XXX: remove this soon, relict from ``zodict``
-    from zope.app.event.interfaces import IObjectEvent      #pragma NO COVERAGE
-    class IObjectCreatedEvent(IObjectEvent): pass           #pragma NO COVERAGE
-    class IObjectAddedEvent(IObjectEvent): pass             #pragma NO COVERAGE
-    class IObjectModifiedEvent(IObjectEvent): pass          #pragma NO COVERAGE
-    class IObjectRemovedEvent(IObjectEvent): pass           #pragma NO COVERAGE
 
 
 ###############################################################################
@@ -469,13 +460,11 @@ class IUUIDAware(IUUID):
     copy
         Set new uuid on copied obejct. Considers ``overwrite_recursiv_on_copy``. 
     """
-    overwrite_recursiv_on_copy = Attribute(u"Flag whether to set new UUID on "
-                                           u"children as well when calling "
-                                           u"``node.copy()``. This only makes "
-                                           u"sence for nodes performing a "
-                                           u"``deepcopy`` or anythin "
-                                           u"equivalent also creating copies "
-                                           u"of it's children.")
+    overwrite_recursiv_on_copy = Attribute(
+        u"Flag whether to set new UUID on children as well when calling "
+        u"``node.copy()``. This only makes sence for nodes performing a "
+        u"``deepcopy`` or anythin equivalent also creating copies "
+        u"of it's children.")
     
     def set_uuid_for(node, override=False, recursiv=False):
         """Set ``uuid`` for node. If ``override`` is True, override existing
@@ -530,60 +519,3 @@ class IStorage(Interface):
     def __iter__():
         """Iter throught storage keys.
         """
-
-
-#class IWrap(Interface):
-#    """
-#    """
-
-
-###############################################################################
-# BBB Will be removed by node 1.0
-###############################################################################
-
-
-class INodeAttributes(IEnumerableMapping, IWriteMapping):
-    """Interface describing the attributes of a (lifecycle) Node.
-
-    Promise to throw modification related events when calling IWriteMapping
-    related functions.
-
-    You do not instanciate this kind of object directly. This is done due to
-    ``LifecycleNode.attributes`` access. You can provide your own
-    ``INodeAttributes`` implementation by setting
-    ``LifecycleNode.attributes_factory``.
-    """
-    changed = Attribute(u"Flag indicating if attributes were changed or not.")
-
-    def __init__(node):
-        """Initialize object.
-
-        Takes attributes refering node at creation time.
-        """
-
-
-class ICallableNode(INode):
-    """Node which implements the ``__call__`` function.
-    """
-
-    def __call__():
-        """Expose the tree contents to an output channel.
-        """
-
-
-class IAttributedNode(INode):
-    """Node which care about its attributes.
-    """
-    attributes = Attribute(u"``INodeAttributes`` implementation.")
-    attributes_factory = Attribute(u"``INodeAttributes`` implementation class")
-
-
-class ILifecycleNode(INode):
-    """Node which care about its lifecycle.
-    """
-    events = Attribute(u"Dict with lifecycle event classes to use for "
-                       u"notification.")
-
-
-class IComposition(INode):
-    pass

@@ -215,6 +215,10 @@ node.parts.Reference
     Plumbing part holding an index of all nodes contained in the tree.
     See ``node.interfaces.IReference``.
 
+node.parts.Storage
+    Provide abstract storage access.
+    See ``node.interfaces.IStorage``.
+
 node.parts.DictStorage
     Provide dictionary storage.
     See ``node.interfaces.IStorage``.
@@ -245,17 +249,17 @@ Summary of the test coverage report::
   lines   cov%   module
      52   100%   node.base
      14   100%   node.events
-    141   100%   node.interfaces
+    125   100%   node.interfaces
      23   100%   node.locking
      11   100%   node.parts.__init__
-    151   100%   node.parts.alias
+    107   100%   node.parts.alias
      38   100%   node.parts.attributes
      50   100%   node.parts.cache
     118   100%   node.parts.common
      51   100%   node.parts.lifecycle
     114   100%   node.parts.mapping
      31   100%   node.parts.nodespace
-     74   100%   node.parts.nodify
+     79   100%   node.parts.nodify
     109   100%   node.parts.order
      81   100%   node.parts.reference
      26   100%   node.parts.storage
@@ -264,7 +268,7 @@ Summary of the test coverage report::
      19   100%   node.testing.env
     215   100%   node.testing.fullmapping
      29   100%   node.tests
-    125   100%   node.utils
+    120   100%   node.utils
 
 
 Contributors
@@ -284,6 +288,22 @@ Changes
 0.9.7dev
 --------
 
+- ``node.parts.mapping.ClonableMapping`` now supports ``deepcopy``.
+  [rnix, 2012-05-18]
+
+- Use ``zope.interface.implementer`` instead of ``zope.interface.implements``
+  all over the place.
+  [rnix, 2012-05-18]
+
+- Remove superfluos interfaces.
+  [rnix, 2012-05-18]
+
+- Remove ``Zodict`` from ``node.utils``.
+  [rnix, 2012-05-18]
+
+- Remove ``AliasedNodespace``, use ``Alias`` part instead.
+  [rnix, 2012-05-18]
+
 - Move aliaser objects from ``node.aliasing`` to ``node.parts.alias``.
   [rnix, 2012-05-18]
 
@@ -291,13 +311,6 @@ Changes
   [rnix, 2012-05-18]
 
 - Remove ``bbb`` module.
-  [rnix, 2012-05-18]
-
-- ``node.parts.mapping.ClonableMapping`` now supports deepcopy.
-  [rnix, 2012-05-18]
-
-- use ``zope.interface.implementer`` instead of ``zope.interface.implements``
-  all over the place.
   [rnix, 2012-05-18]
 
 

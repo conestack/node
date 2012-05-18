@@ -24,7 +24,6 @@ class NodeAttributes(object):
         Nodify,
         OdictStorage,
     )
-
     allow_non_node_childs = True
     
     def __init__(self, name=None, parent=None):
@@ -33,8 +32,6 @@ class NodeAttributes(object):
         self.context = parent # BBB 2011-01-31
         self._node = parent   # BBB 2011-01-31
     
-    # XXX: do we need that or could we make normal nodes show their parent,
-    # too?
     def __repr__(self):
         name = unicode(self.parent.name).encode('ascii', 'replace')
         return "<%s object '%s' at %s>" % (self.__class__.__name__,
@@ -42,7 +39,6 @@ class NodeAttributes(object):
                                            hex(id(self))[:-1])
 
 
-# XXX: inherit from nodespaces part
 @implementer(IAttributes)
 class Attributes(Part):
     attribute_access_for_attrs = default(False)

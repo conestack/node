@@ -32,6 +32,13 @@ class Nodify(FullMapping):
     __name__ = default(None)
     __parent__ = default(None)
 
+    @plumb
+    def copy(_next, self):
+        new = _next(self)
+        new.__name__ = self.__name__
+        new.__parent__ = self.__parent__
+        return new
+    
     @extend
     @property
     def name(self):

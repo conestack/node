@@ -34,17 +34,6 @@ def LocationIterator(object):
         object = getattr(object, '__parent__', None)
 
 
-@implementer(IFullMapping)
-class Zodict(odict):
-    """Mark ordered dict with corresponding interface.
-    
-    XXX: I think we might not need this any longer.
-    """
-    
-    def __init__(self, data=()):
-        odict.__init__(self, data=data)
-
-
 @implementer(IEnumerableMapping)
 class ReverseMapping(object):
     """Reversed IEnumerableMapping.

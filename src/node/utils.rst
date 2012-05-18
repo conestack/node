@@ -3,24 +3,11 @@
 node.utils
 ==========
 
-Zodict
-------
 
-Test Zodict::
+ReverseMapping
+--------------
 
-    >>> from zope.interface.common.mapping import IFullMapping
-    >>> from node.utils import Zodict
-    >>> Zodict
-    <class 'node.utils.Zodict'>
-    
-    >>> zod = Zodict()
-    >>> IFullMapping.providedBy(zod)
-    True
-    
-    ### XXX: all interface methods there.
-
-ReverseMapping::
-
+::
     >>> from node.utils import ReverseMapping
     >>> context = {
     ...     'foo': 'a',
@@ -63,8 +50,11 @@ ReverseMapping::
     >>> mapping.get('foo', 'DEFAULT')
     'DEFAULT'
 
-AttributeAccess::
 
+AttributeAccess
+---------------
+
+::
     >>> from node.utils import AttributeAccess
     >>> attraccess = AttributeAccess(context)
     >>> attraccess.foo
@@ -94,8 +84,11 @@ AttributeAccess::
     >>> object.__getattribute__(attraccess, 'context').keys()
     ['baz', 'foo', 'x']
 
-StrCodec decode and encode::
 
+StrCodec decode and encode
+--------------------------
+
+::
     >>> from node.base import BaseNode
     >>> from node.utils import (
     ...     StrCodec,
@@ -145,8 +138,11 @@ StrCodec decode and encode::
     UnicodeDecodeError: 'utf8' codec can't decode byte 0xe4 in position 2: 
     unexpected end of data
 
-Debug helper::
 
+Debug helper
+------------
+
+::
     >>> import logging
     >>> from node.utils import (
     ...     logger,
@@ -164,8 +160,8 @@ Debug helper::
     ...     pass
     
     >>> test_search(21)
-    <LogRecord: node, 10, ...utils.py, 220, "test_search: args=(21,), kws={}">
-    <LogRecord: node, 10, ...utils.py, 222, "test_search: --> None">
+    <LogRecord: node, 10, ...utils.py, 209, "test_search: args=(21,), kws={}">
+    <LogRecord: node, 10, ...utils.py, 211, "test_search: --> None">
     
     >>> logger.setLevel(logging.INFO)
     >>> logger.removeHandler(handler)
