@@ -244,7 +244,6 @@ TestCoverage
 Summary of the test coverage report::
 
   lines   cov%   module
-    107   100%   node.aliasing
      53   100%   node.base
      14   100%   node.events
     127   100%   node.interfaces
@@ -281,8 +280,18 @@ Contributors
 Changes
 =======
 
+
 0.9.7dev
 --------
+
+- Move aliaser objects from ``node.aliasing`` to ``node.parts.alias``.
+  [rnix, 2012-05-18]
+
+- Remove ``composition`` module.
+  [rnix, 2012-05-18]
+
+- Remove ``bbb`` module.
+  [rnix, 2012-05-18]
 
 - ``node.parts.mapping.ClonableMapping`` nor supports deepcopy.
   [rnix, 2012-05-18]

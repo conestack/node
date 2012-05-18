@@ -13,7 +13,6 @@ TESTFILES = [
     'testing/fullmapping.rst',
     'base.rst',
     'utils.rst',
-    'aliasing.rst',
     'locking.rst',
     'parts/alias.rst',
     'parts/attributes.rst',
@@ -25,7 +24,6 @@ TESTFILES = [
     'parts/order.rst',
     'parts/reference.rst',
     'parts/storage.rst',
-    'bbb.rst',
     '../../README.rst',
     # at very end, ``GetattrChildren`` tests break coverage recording
     'parts/common.rst',
