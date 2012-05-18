@@ -9,10 +9,9 @@ Overview
 
 Data structures could be described as tree. Some are by nature ``treeish``,
 like XML documents, LDAP directories or filesystem directory trees, while others
-could be treaten as. Consider SQL as example. A Database has tables, these
-contain rows which contain columns.
+could be treaten as.
 
-Next, python has elegant ways for customizing all sorts of datamodel related
+Further, python has elegant ways for customizing all sorts of datamodel related
 API. The `dictionary container type 
 <http://docs.python.org/reference/datamodel.html#emulating-container-types>`_
 fits almost completely the purpose of representing a node of a tree. The same
@@ -244,37 +243,38 @@ TestCoverage
 Summary of the test coverage report::
 
   lines   cov%   module
-     53   100%   node.base
+     52   100%   node.base
      14   100%   node.events
-    127   100%   node.interfaces
+    141   100%   node.interfaces
      23   100%   node.locking
      11   100%   node.parts.__init__
-     46   100%   node.parts.alias
+    151   100%   node.parts.alias
      38   100%   node.parts.attributes
      50   100%   node.parts.cache
-    116   100%   node.parts.common
-     52   100%   node.parts.lifecycle
-    113   100%   node.parts.mapping
+    118   100%   node.parts.common
+     51   100%   node.parts.lifecycle
+    114   100%   node.parts.mapping
      31   100%   node.parts.nodespace
-     79   100%   node.parts.nodify
+     74   100%   node.parts.nodify
     109   100%   node.parts.order
      81   100%   node.parts.reference
      26   100%   node.parts.storage
       1   100%   node.testing.__init__
      62   100%   node.testing.base
      19   100%   node.testing.env
-    214   100%   node.testing.fullmapping
-      1   100%   node.tests.__init__
-     31   100%   node.tests.test_node
+    215   100%   node.testing.fullmapping
+     29   100%   node.tests
     125   100%   node.utils
 
 
 Contributors
 ============
 
-- Robert Niederreiter <rnix@squarewave.at>
-- Florian Friesdorf <flo@chaoflow.net>
-- Jens Klein <jens@bluedynamics.com>
+- Robert Niederreiter <rnix __at__ squarewave __dot__ at>
+
+- Florian Friesdorf <flo __at__ chaoflow __dot__ net>
+
+- Jens Klein <jens __at__ bluedynamics __dot__ com>
 
 
 Changes
@@ -293,7 +293,7 @@ Changes
 - Remove ``bbb`` module.
   [rnix, 2012-05-18]
 
-- ``node.parts.mapping.ClonableMapping`` nor supports deepcopy.
+- ``node.parts.mapping.ClonableMapping`` now supports deepcopy.
   [rnix, 2012-05-18]
 
 - use ``zope.interface.implementer`` instead of ``zope.interface.implements``

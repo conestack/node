@@ -146,6 +146,7 @@ class FullMappingTester(BaseTester):
         baz = self.class_()
         blub = self.class_()
         # if update maps to odict update, kw's fail
+        self.context.update(baz)
         self.context.update((('baz', baz),), blub=blub)
         #self.context.update((('baz', baz), ('blub', blub)))
         try:
