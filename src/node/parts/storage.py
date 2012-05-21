@@ -4,7 +4,10 @@ from plumber import (
     extend,
     Part,
 )
-from node.interfaces import IStorage
+from node.interfaces import (
+    IStorage,
+    IOrdered,
+)
 from node.utils import instance_property
 from zope.interface import implementer
 
@@ -43,6 +46,7 @@ class DictStorage(Storage):
         return dict()
 
 
+@implementer(IOrdered)
 class OdictStorage(Storage):
     
     @default

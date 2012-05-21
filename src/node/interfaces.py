@@ -124,6 +124,11 @@ class ILeaf(Interface):
     """
 
 
+class IOrdered(Interface):
+    """Marker for nodes containing ordered children.
+    """
+
+
 class ICallable(Interface):
     """Provide a ``__call__`` function.
     """

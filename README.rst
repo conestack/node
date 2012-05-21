@@ -249,7 +249,7 @@ Summary of the test coverage report::
   lines   cov%   module
      52   100%   node.base
      14   100%   node.events
-    125   100%   node.interfaces
+    127   100%   node.interfaces
      23   100%   node.locking
      11   100%   node.parts.__init__
     107   100%   node.parts.alias
@@ -262,7 +262,7 @@ Summary of the test coverage report::
      79   100%   node.parts.nodify
     109   100%   node.parts.order
      81   100%   node.parts.reference
-     26   100%   node.parts.storage
+     27   100%   node.parts.storage
       1   100%   node.testing.__init__
      62   100%   node.testing.base
      19   100%   node.testing.env
@@ -287,6 +287,10 @@ Changes
 
 0.9.7dev
 --------
+
+- Introduce ``node.interfaces.IOrdered`` Marker interface. Set this interface
+  on ``node.parts.storage.OdictStorage``.
+  [rnix, 2012-05-21]
 
 - ``node.parts.mapping.ClonableMapping`` now supports ``deepcopy``.
   [rnix, 2012-05-18]
