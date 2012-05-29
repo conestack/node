@@ -285,8 +285,8 @@ Changes
 =======
 
 
-0.9.7dev
---------
+0.9.7
+-----
 
 - Introduce ``node.interfaces.IOrdered`` Marker interface. Set this interface
   on ``node.parts.storage.OdictStorage``.
