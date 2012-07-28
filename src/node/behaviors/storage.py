@@ -1,7 +1,7 @@
 from odict import odict
 from plumber import default
-from plumber import extend
-from plumber import Part
+from plumber import override
+from plumber import Behavior
 from node.interfaces import IStorage
 from node.interfaces import IOrdered
 from node.utils import instance_property
@@ -9,7 +9,7 @@ from zope.interface import implementer
 
 
 @implementer(IStorage)
-class Storage(Part):
+class Storage(Behavior):
     
     @default
     @property
@@ -17,19 +17,19 @@ class Storage(Part):
         raise NotImplementedError(u"Abstract storage does not implement "
                                   u"``storage``")
     
-    @extend
+    @override
     def __getitem__(self, key):
         return self.storage[key]
     
-    @extend
+    @override
     def __delitem__(self, key):
         del self.storage[key]
     
-    @extend
+    @override
     def __setitem__(self, key, val):
         self.storage[key] = val
     
-    @extend
+    @override
     def __iter__(self):
         return self.storage.__iter__()
 

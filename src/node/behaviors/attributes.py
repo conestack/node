@@ -2,7 +2,7 @@ from plumber import plumber
 from plumber import plumb
 from plumber import finalize
 from plumber import default
-from plumber import Part
+from plumber import Behavior
 from node.interfaces import IAttributes
 from node.behaviors.common import Adopt
 from node.behaviors.common import NodeChildValidate
@@ -36,7 +36,7 @@ class NodeAttributes(object):
 
 
 @implementer(IAttributes)
-class Attributes(Part):
+class Attributes(Behavior):
     attribute_access_for_attrs = default(False)
     attributes_factory = default(NodeAttributes)
 

@@ -1,6 +1,6 @@
 from plumber import default
 from plumber import plumb
-from plumber import Part
+from plumber import Behavior
 from zope.interface import implementer
 from node.interfaces import ILifecycle
 from node.interfaces import IAttributesLifecycle
@@ -18,7 +18,7 @@ from node.events import NodeDetachedEvent
 
 
 @implementer(ILifecycle)
-class Lifecycle(Part):
+class Lifecycle(Behavior):
 
     events = default({
         'created': NodeCreatedEvent,
@@ -63,7 +63,7 @@ class Lifecycle(Part):
 
 
 @implementer(IAttributesLifecycle)
-class AttributesLifecycle(Part):
+class AttributesLifecycle(Behavior):
 
     @plumb
     def __setitem__(_next, self, key, val):

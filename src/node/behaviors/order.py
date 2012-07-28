@@ -1,6 +1,6 @@
 from odict.pyodict import _nil
-from plumber import extend
-from plumber import Part
+from plumber import override
+from plumber import Behavior
 from zope.interface import implementer
 from zope.interface.common.mapping import IReadMapping
 from node.interfaces import INode
@@ -9,9 +9,9 @@ from node.interfaces import IOrder
 
 
 @implementer(IOrder)
-class Order(Part):
+class Order(Behavior):
 
-    @extend
+    @override
     def swap(self, node_a, node_b):
         dict_impl = self.storage._dict_impl()
         orgin_a = dict_impl.__getitem__(self.storage, node_a.name)
@@ -43,7 +43,7 @@ class Order(Part):
         if new_b[2] == _nil:
             self.storage.lt = new_b[1].name
     
-    @extend
+    @override
     def insertfirst(self, newnode):
         keys = self.keys()
         if not keys:
@@ -52,7 +52,7 @@ class Order(Part):
         refnode = self[keys[0]]
         self.insertbefore(newnode, refnode)
     
-    @extend
+    @override
     def insertlast(self, newnode):
         keys = self.keys()
         if not keys:
@@ -61,7 +61,7 @@ class Order(Part):
         refnode = self[keys[-1]]
         self.insertafter(newnode, refnode)
     
-    @extend
+    @override
     def insertbefore(self, newnode, refnode):
         self._validateinsertion(newnode, refnode)
         nodekey = newnode.__name__
@@ -84,7 +84,7 @@ class Order(Part):
         dict_impl.__setitem__(storage, nodekey, newnode)
         self[nodekey] = newnode[1]
 
-    @extend
+    @override
     def insertafter(self, newnode, refnode):
         self._validateinsertion(newnode, refnode)
         nodekey = newnode.__name__
@@ -108,12 +108,12 @@ class Order(Part):
         dict_impl.__setitem__(storage, nodekey, newnode)
         self[nodekey] = newnode[1]
     
-    @extend
+    @override
     def _validateinsertion(self, newnode, refnode):
         nodekey = newnode.__name__
         if nodekey is None:
             raise ValueError, u"Given node has no __name__ set."
-        # case if Reference Part is mixed in
+        # case if Reference behavior is mixed in
         # XXX: move out of here
         if hasattr(self, 'node'):
             if self.node(newnode.uuid) is not None:
@@ -122,7 +122,7 @@ class Order(Part):
         if index is None:
             raise ValueError, u"Given reference node not child of self."
 
-    @extend
+    @override
     def _nodeindex(self, node):
         index = 0
         for key in self.keys():

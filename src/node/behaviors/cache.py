@@ -1,4 +1,4 @@
-from plumber import Part
+from plumber import Behavior
 from plumber import default
 from plumber import plumb
 from node.interfaces import IInvalidate
@@ -8,7 +8,7 @@ from zope.interface import implementer
 
 
 @implementer(IInvalidate)
-class Invalidate(Part):
+class Invalidate(Behavior):
     """Plumbing behavior for invalidation.
     
     This basic implementation assumes that nodes using this behavior are NOT
@@ -28,7 +28,7 @@ class Invalidate(Part):
 
 
 @implementer(ICache)
-class Cache(Part):
+class Cache(Behavior):
     
     @default
     @instance_property

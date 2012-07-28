@@ -1,9 +1,9 @@
 import uuid
 import inspect
 from odict import odict
-from plumber import Part
+from plumber import Behavior
 from plumber import default
-from plumber import extend
+from plumber import override
 from plumber import finalize
 from plumber import plumb
 from zope.interface import implementer
@@ -23,7 +23,7 @@ from node.utils import decode
 
 
 @implementer(IAdopt)
-class Adopt(Part):
+class Adopt(Behavior):
 
     @plumb
     def __setitem__(_next, self, key, val):
@@ -56,7 +56,7 @@ class Adopt(Part):
 
 
 @implementer(IAsAttrAccess)
-class AsAttrAccess(Part):
+class AsAttrAccess(Behavior):
 
     @default
     def as_attribute_access(self):
@@ -64,14 +64,14 @@ class AsAttrAccess(Part):
 
 
 @implementer(IChildFactory)
-class ChildFactory(Part):
+class ChildFactory(Behavior):
     factories = default(odict())
     
-    @extend
+    @override
     def __iter__(self):
         return self.factories.__iter__()
     
-    iterkeys = extend(__iter__)
+    iterkeys = override(__iter__)
     
     @plumb
     def __getitem__(_next, self, key):
@@ -84,8 +84,8 @@ class ChildFactory(Part):
 
 
 @implementer(IFixedChildren)
-class FixedChildren(Part):
-    """Part that initializes a fixed dictionary as children
+class FixedChildren(Behavior):
+    """Behavior that initializes a fixed dictionary as children
 
     The children are instantiated during __init__ and adopted by the
     class using this behavior. They cannot receive init argumentes, but
@@ -124,7 +124,7 @@ class FixedChildren(Part):
 
 
 @implementer(IGetattrChildren)
-class GetattrChildren(Part):
+class GetattrChildren(Behavior):
     """Access children via ``__getattr__``, given the attribute name is unused.
     
     XXX: Similar behavior as AsAttrAccess. harmonize.
@@ -139,7 +139,7 @@ class GetattrChildren(Part):
 
 
 @implementer(INodeChildValidate)
-class NodeChildValidate(Part):
+class NodeChildValidate(Behavior):
     allow_non_node_childs = default(False)
 
     @plumb
@@ -152,7 +152,7 @@ class NodeChildValidate(Part):
 
 
 @implementer(IUnicodeAware)
-class UnicodeAware(Part):
+class UnicodeAware(Behavior):
     # XXX: It feels here it would be nice to be able to get an instance of a
     # plumbing to configure the codec.
 
@@ -178,7 +178,7 @@ class UnicodeAware(Part):
 
 
 @implementer(IUUIDAware)
-class UUIDAware(Part):
+class UUIDAware(Behavior):
     uuid = default(None)
     overwrite_recursiv_on_copy = default(True)
     

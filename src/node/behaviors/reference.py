@@ -1,8 +1,8 @@
 import uuid
 from plumber import plumb
-from plumber import extend
+from plumber import override
 from plumber import default
-from plumber import Part
+from plumber import Behavior
 from zope.interface import implementer
 from zope.interface.common.mapping import IReadMapping
 from node.interfaces import INode
@@ -26,7 +26,7 @@ class NodeIndex(object):
 
 
 @implementer(IReference)
-class Reference(Part):
+class Reference(Behavior):
     _uuid = default(None)
 
     @plumb
@@ -80,14 +80,14 @@ class Reference(Part):
         self._index[iuuid] = self
         self._uuid = uuid
 
-    uuid = extend(property(_get_uuid, _set_uuid))
+    uuid = override(property(_get_uuid, _set_uuid))
     
-    @extend
+    @override
     @property
     def index(self):
         return NodeIndex(self._index)
 
-    @extend
+    @override
     def node(self, uuid):
         return self._index.get(int(uuid))
     

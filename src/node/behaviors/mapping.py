@@ -1,7 +1,7 @@
 import copy
-from plumber import Part
+from plumber import Behavior
 from plumber import default
-from plumber import extend
+from plumber import override
 from node.utils import Unset
 from zope.interface import implementer
 from zope.interface.common.mapping import IItemMapping
@@ -17,7 +17,7 @@ from zope.interface.common.mapping import IFullMapping
 
 
 @implementer(IItemMapping)
-class ItemMapping(Part):
+class ItemMapping(Behavior):
     """Simplest readable mapping object
     """
 
@@ -44,7 +44,7 @@ class ReadMapping(ItemMapping):
     def __contains__(self, key):
         """Uses ``__getitem__``.
 
-        This should be overriden by storages (using extend), where
+        This should be overriden by storages (using override), where
         ``__getitem__`` is expensive.
 
         XXX: also catching the exception is expensive, so this should be
@@ -58,7 +58,7 @@ class ReadMapping(ItemMapping):
 
 
 @implementer(IWriteMapping)
-class WriteMapping(Part):
+class WriteMapping(Behavior):
     """Mapping methods for changing data
     """
 
@@ -144,7 +144,7 @@ class IterableMapping(EnumerableMapping):
 
 
 @implementer(IClonableMapping)
-class ClonableMapping(Part):
+class ClonableMapping(Behavior):
     
     @default
     def copy(self):

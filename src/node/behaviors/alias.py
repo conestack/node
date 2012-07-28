@@ -2,7 +2,7 @@ from odict import odict
 from plumber import plumber
 from plumber import default
 from plumber import plumb
-from plumber import Part
+from plumber import Behavior
 from zope.interface import implementer
 from zope.interface.common.mapping import IEnumerableMapping
 from zope.interface.common.mapping import IFullMapping
@@ -119,7 +119,7 @@ class PrefixSuffixAliaser(AliaserChain):
 
 
 @implementer(IAlias)
-class Alias(Part):
+class Alias(Behavior):
     aliaser = default(None)
     
     @plumb

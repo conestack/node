@@ -326,7 +326,7 @@ Only children not shadowed by real attributes can be accessed via getattr::
     2
 
 XXX: The base class' getattr does not work anymore. plumber directive
-     plumborextend could solve this together with support for multiple
+     plumbor override could solve this together with support for multiple
      behaviors hooking into __getattr__. -cfl
      
      Thats why i prefer AttributeAccess explicit for attribute access on node

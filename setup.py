@@ -32,7 +32,7 @@ setup(name='node',
           'odict',
           'plumber',
           'zope.lifecycleevent',
-          'zope.deprecation', # can be removed soon
+          'zope.deprecation',
       ],
       extras_require={
           'py24': [

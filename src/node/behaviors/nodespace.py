@@ -2,14 +2,14 @@ from odict import odict
 from plumber import plumb
 from plumber import finalize
 from plumber import default
-from plumber import Part
+from plumber import Behavior
 from zope.interface import implementer
 from node.interfaces import INode
 from node.interfaces import INodespaces
 
 
 @implementer(INodespaces)
-class Nodespaces(Part):    
+class Nodespaces(Behavior):    
     _nodespaces = default(None)
     
     @finalize

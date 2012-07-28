@@ -1,7 +1,7 @@
 from plumber import default
-from plumber import extend
+from plumber import override
 from plumber import plumb
-from plumber import Part
+from plumber import Behavior
 from zope.interface import implementer
 from zope.interface.interfaces import IInterface
 from node.interfaces import IDefaultInit
@@ -13,9 +13,9 @@ from node.utils import AttributeAccess
 
 
 @implementer(IDefaultInit)
-class DefaultInit(Part):
+class DefaultInit(Behavior):
 
-    @extend
+    @override
     def __init__(self, name=None, parent=None):
         self.__name__ = name
         self.__parent__ = parent
@@ -33,24 +33,24 @@ class Nodify(FullMapping):
         new.__parent__ = self.__parent__
         return new
     
-    @extend
+    @override
     @property
     def name(self):
         return self.__name__
 
-    @extend
+    @override
     @property
     def parent(self):
         return self.__parent__
 
-    @extend
+    @override
     @property
     def path(self):
         path = [parent.name for parent in LocationIterator(self)]
         path.reverse()
         return path
 
-    @extend
+    @override
     @property
     def root(self):
         root = None
@@ -58,13 +58,13 @@ class Nodify(FullMapping):
             root = parent
         return root
 
-    @extend
+    @override
     def detach(self, key):
         node = self[key]
         del self[key]
         return node
     
-    @extend
+    @override
     def acquire(self, interface):
         node = self.parent
         while node:
@@ -74,7 +74,7 @@ class Nodify(FullMapping):
                 return node
             node = node.parent
 
-    @extend
+    @override
     def filtereditervalues(self, interface):
         """Uses ``itervalues``.
         """
@@ -82,16 +82,16 @@ class Nodify(FullMapping):
             if interface.providedBy(val):
                 yield val
 
-    @extend
+    @override
     def filteredvalues(self, interface):
         """Uses ``values``.
         """
         return [val for val in self.filtereditervalues(interface)]
 
     # BBB 2010-12-23
-    filtereditems = extend(filtereditervalues)
+    filtereditems = override(filtereditervalues)
 
-    @extend
+    @override
     @property
     def noderepr(self):
         """``noderepr`` is used in ``printtree``.
@@ -113,7 +113,7 @@ class Nodify(FullMapping):
         name = unicode(self.__name__).encode('ascii', 'replace')
         return str(class_) + ': ' + name[name.find(':') + 1:]
 
-    @extend
+    @override
     def printtree(self, indent=0):
         """Uses ``values``.
         """
@@ -135,7 +135,7 @@ class Nodify(FullMapping):
     def __nonzero__(self):
         return True
 
-    @extend
+    @override
     def __repr__(self):
         # XXX: is this a relict from plumber prototyping? -rn
         #if hasattr(self.__class__, '_wrapped'):
@@ -151,4 +151,4 @@ class Nodify(FullMapping):
                                            name,
                                            hex(id(self))[:-1])
 
-    __str__ = extend(__repr__)
+    __str__ = override(__repr__)
