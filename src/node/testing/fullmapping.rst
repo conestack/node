@@ -4,6 +4,8 @@ node.testing.fullmapping
 FullMappingTester
 -----------------
 
+::
+
     >>> from node.testing import FullMappingTester
     
     >>> class TestMapping(object):

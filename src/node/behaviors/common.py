@@ -1,30 +1,25 @@
 import uuid
 import inspect
 from odict import odict
-from plumber import (
-    Part,
-    default,
-    extend,
-    finalize,
-    plumb,
-)
+from plumber import Part
+from plumber import default
+from plumber import extend
+from plumber import finalize
+from plumber import plumb
 from zope.interface import implementer
-from node.interfaces import (
-    INode,
-    IAdopt,
-    IAsAttrAccess,
-    IChildFactory,
-    IFixedChildren,
-    IGetattrChildren,
-    INodeChildValidate,
-    IUnicodeAware,
-    IUUIDAware,
-)
-from node.utils import (
-    AttributeAccess,
-    encode,
-    decode,
-)
+from node.interfaces import INode
+from node.interfaces import IAdopt
+from node.interfaces import IAsAttrAccess
+from node.interfaces import IChildFactory
+from node.interfaces import IFixedChildren
+from node.interfaces import IGetattrChildren
+from node.interfaces import INodeChildValidate
+from node.interfaces import IUnicodeAware
+from node.interfaces import IUUIDAware
+from node.utils import AttributeAccess
+from node.utils import encode
+from node.utils import decode
+
 
 
 @implementer(IAdopt)
@@ -93,7 +88,7 @@ class FixedChildren(Part):
     """Part that initializes a fixed dictionary as children
 
     The children are instantiated during __init__ and adopted by the
-    class using this part. They cannot receive init argumentes, but
+    class using this behavior. They cannot receive init argumentes, but
     could retrieve configuration from their parent.
     
     XXX: This implementation is similar to what's implemented in

@@ -1,11 +1,11 @@
-node.parts.Reference
---------------------
+node.behaviors.Reference
+------------------------
 
 Tree node index.::
 
     >>> import copy
     >>> from plumber import plumber
-    >>> from node.parts import (
+    >>> from node.behaviors import (
     ...     Adopt,
     ...     DefaultInit,
     ...     Nodify,
@@ -25,7 +25,7 @@ Tree node index.::
 
     >>> node = ReferenceNode()
     >>> node.index
-    <node.parts.reference.NodeIndex object at ...>
+    <node.behaviors.reference.NodeIndex object at ...>
 
     >>> from zope.interface.common.mapping import IReadMapping
     >>> IReadMapping.providedBy(node.index)

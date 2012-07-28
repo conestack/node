@@ -1,23 +1,19 @@
 import copy
-from plumber import (
-    Part,
-    default,
-    extend,
-)
+from plumber import Part
+from plumber import default
+from plumber import extend
 from node.utils import Unset
 from zope.interface import implementer
-from zope.interface.common.mapping import (
-    IItemMapping,
-    IReadMapping,
-    IIterableMapping,
-    IWriteMapping,
-    IEnumerableMapping,
-    IMapping,
-    IClonableMapping,
-    IExtendedReadMapping,
-    IExtendedWriteMapping,
-    IFullMapping,
-)
+from zope.interface.common.mapping import IItemMapping
+from zope.interface.common.mapping import IReadMapping
+from zope.interface.common.mapping import IIterableMapping
+from zope.interface.common.mapping import IWriteMapping
+from zope.interface.common.mapping import IEnumerableMapping
+from zope.interface.common.mapping import IMapping
+from zope.interface.common.mapping import IClonableMapping
+from zope.interface.common.mapping import IExtendedReadMapping
+from zope.interface.common.mapping import IExtendedWriteMapping
+from zope.interface.common.mapping import IFullMapping
 
 
 @implementer(IItemMapping)

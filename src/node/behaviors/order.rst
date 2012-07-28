@@ -1,5 +1,5 @@
-node.parts.Order
-================
+node.behaviors.Order
+====================
 
 Order without References
 ------------------------
@@ -7,7 +7,7 @@ Order without References
 Node insertion. ``insertbefore`` and ``insertafter``::
 
     >>> from plumber import plumber
-    >>> from node.parts import (
+    >>> from node.behaviors import (
     ...     Adopt,
     ...     DefaultInit,
     ...     Nodify, 
@@ -214,7 +214,7 @@ Order with References
 
 ::
 
-    >>> from node.parts import Reference
+    >>> from node.behaviors import Reference
     
     >>> class OrderReferenceNode(object):
     ...     __metaclass__ = plumber

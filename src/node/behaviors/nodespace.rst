@@ -1,9 +1,11 @@
-node.parts.Nodespaces
----------------------
+node.behaviors.Nodespaces
+-------------------------
+
+::
 
     >>> from odict import odict
     >>> from plumber import plumber
-    >>> from node.parts import (
+    >>> from node.behaviors import (
     ...     Adopt,
     ...     Nodespaces,
     ...     DefaultInit,

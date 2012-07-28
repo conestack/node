@@ -1,19 +1,13 @@
 from odict import odict
-from plumber import (
-    plumber,
-    default,
-    plumb,
-    Part,
-)
+from plumber import plumber
+from plumber import default
+from plumber import plumb
+from plumber import Part
 from zope.interface import implementer
-from zope.interface.common.mapping import (
-    IEnumerableMapping,
-    IFullMapping,
-)
-from node.interfaces import (
-    IAliaser,
-    IAlias,
-)
+from zope.interface.common.mapping import IEnumerableMapping
+from zope.interface.common.mapping import IFullMapping
+from node.interfaces import IAliaser
+from node.interfaces import IAlias
 from node.utils import ReverseMapping
 
 

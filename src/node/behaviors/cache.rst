@@ -1,12 +1,14 @@
-node.parts.invalidate
-=====================
+node.behaviors.invalidate
+=========================
+
+::
 
     >>> from plumber import plumber
     >>> from node.interfaces import (
     ...     ICache,
     ...     IInvalidate,
     ... )
-    >>> from node.parts import (
+    >>> from node.behaviors import (
     ...     Adopt,
     ...     Cache,
     ...     Invalidate,
@@ -69,8 +71,8 @@ Active invalidation of all children::
       <class 'Node'>: c2
 
 
-node.parts.cache
-================
+node.behaviors.cache
+====================
 
 Build a node with active invalidation and cache functionality::
 

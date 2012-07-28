@@ -1,5 +1,5 @@
-node.parts.alias
-================
+node.behaviors.alias
+====================
 
 
 DictAliaser
@@ -7,7 +7,7 @@ DictAliaser
 
 A dict aliaser takes a dictionary as base for aliasing::
 
-    >>> from node.parts.alias import DictAliaser
+    >>> from node.behaviors.alias import DictAliaser
     >>> da = DictAliaser([('alias1', 'key1'), ('alias2', 'key2')])
 
     >>> da.alias('key1')
@@ -44,7 +44,7 @@ PrefixAliaser
 
 An aliaser that simply prefixes all keys.::
 
-    >>> from node.parts.alias import PrefixAliaser
+    >>> from node.behaviors.alias import PrefixAliaser
     >>> pa = PrefixAliaser('prefix-')
     
     >>> pa.alias('foo')
@@ -64,7 +64,7 @@ SuffixAliaser
 
 An aliaser that simply suffixes all keys.::
 
-    >>> from node.parts.alias import SuffixAliaser
+    >>> from node.behaviors.alias import SuffixAliaser
     >>> sa = SuffixAliaser('-suffix')
     
     >>> sa.alias('foo')
@@ -84,7 +84,7 @@ AliaserChain
 
 A chain of aliasers.::
 
-    >>> from node.parts.alias import AliaserChain
+    >>> from node.behaviors.alias import AliaserChain
     >>> aliaser = AliaserChain()
     >>> pa2 = PrefixAliaser('pre2-')
     >>> aliaser.chain = [pa, pa2]
@@ -104,7 +104,7 @@ PrefixSuffixAliaser
 
 Combined prefix and suffix aliaser::
 
-    >>> from node.parts.alias import PrefixSuffixAliaser
+    >>> from node.behaviors.alias import PrefixSuffixAliaser
     >>> psa = PrefixSuffixAliaser('prefix-', '-suffix')
     >>> psa.alias('foo')
     'prefix-foo-suffix'
@@ -120,7 +120,7 @@ A dictionary that uses the alias plumbing but does not assign an aliaser.
 Therefore, no aliasing is happening::
 
     >>> from plumber import plumber
-    >>> from node.parts import Alias
+    >>> from node.behaviors import Alias
     >>> class AliasDict(dict):
     ...     __metaclass__ = plumber
     ...     __plumbing__ = Alias
@@ -139,7 +139,7 @@ Therefore, no aliasing is happening::
 
 Now the same but with a prefix aliaser::
 
-    >>> from node.parts.alias import PrefixAliaser
+    >>> from node.behaviors.alias import PrefixAliaser
     >>> aliaser = PrefixAliaser(prefix="pre-")
     >>> ad = AliasDict()
     >>> ad.aliaser = aliaser
@@ -201,7 +201,7 @@ must not be caught by the code that handle alias KeyErrors for whitelisting
     ...
     KeyError
 
-    >>> from node.parts.alias import DictAliaser
+    >>> from node.behaviors.alias import DictAliaser
     >>> dictaliaser = DictAliaser(data=(('foo', 'f00'), ('bar', 'b4r')))
 
     >>> ad = AliasDict()

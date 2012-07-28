@@ -1,5 +1,5 @@
-node.parts.Lifecycle
---------------------
+node.behaviors.Lifecycle
+------------------------
 
 Check NodeCreation.::
 
@@ -27,7 +27,7 @@ Check NodeCreation.::
     >>> zope.component.provideHandler(handler, [INode, INodeDetachedEvent])
     
     >>> from plumber import plumber
-    >>> from node.parts import (
+    >>> from node.behaviors import (
     ...     Lifecycle, 
     ...     AttributesLifecycle, 
     ...     Attributes, 

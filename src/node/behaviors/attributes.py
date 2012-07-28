@@ -1,17 +1,13 @@
-from plumber import (
-    plumber,
-    plumb,
-    finalize,
-    default,
-    Part,
-)
+from plumber import plumber
+from plumber import plumb
+from plumber import finalize
+from plumber import default
+from plumber import Part
 from node.interfaces import IAttributes
-from node.parts.common import (
-    Adopt,
-    NodeChildValidate,
-)
-from node.parts.nodify import Nodify
-from node.parts.storage import OdictStorage
+from node.behaviors.common import Adopt
+from node.behaviors.common import NodeChildValidate
+from node.behaviors.nodify import Nodify
+from node.behaviors.storage import OdictStorage
 from node.utils import AttributeAccess
 from zope.interface import implementer
 

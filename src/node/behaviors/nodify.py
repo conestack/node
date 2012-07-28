@@ -1,21 +1,15 @@
-from plumber import (
-    default,
-    extend,
-    plumb,
-    Part,
-)
+from plumber import default
+from plumber import extend
+from plumber import plumb
+from plumber import Part
 from zope.interface import implementer
 from zope.interface.interfaces import IInterface
-from node.interfaces import (
-    IDefaultInit,
-    INodify,
-)
-from node.parts.mapping import FullMapping
-from node.utils import (
-    Unset,
-    LocationIterator,
-    AttributeAccess,
-)
+from node.interfaces import IDefaultInit
+from node.interfaces import INodify
+from node.behaviors.mapping import FullMapping
+from node.utils import Unset
+from node.utils import LocationIterator
+from node.utils import AttributeAccess
 
 
 @implementer(IDefaultInit)

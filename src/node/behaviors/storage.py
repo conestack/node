@@ -1,13 +1,9 @@
 from odict import odict
-from plumber import (
-    default,
-    extend,
-    Part,
-)
-from node.interfaces import (
-    IStorage,
-    IOrdered,
-)
+from plumber import default
+from plumber import extend
+from plumber import Part
+from node.interfaces import IStorage
+from node.interfaces import IOrdered
 from node.utils import instance_property
 from zope.interface import implementer
 

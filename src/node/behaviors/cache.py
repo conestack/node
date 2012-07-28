@@ -1,22 +1,18 @@
-from plumber import (
-    Part,
-    default,
-    plumb,
-)
-from node.interfaces import (
-    IInvalidate,
-    ICache,
-)
+from plumber import Part
+from plumber import default
+from plumber import plumb
+from node.interfaces import IInvalidate
+from node.interfaces import ICache
 from node.utils import instance_property
 from zope.interface import implementer
 
 
 @implementer(IInvalidate)
 class Invalidate(Part):
-    """Plumbing part for invalidation.
+    """Plumbing behavior for invalidation.
     
-    This basic implementation assumes that nodes using this part are NOT storage
-    related. It just uses ``self.__delitem__``.
+    This basic implementation assumes that nodes using this behavior are NOT
+    storage related. It just uses ``self.__delitem__``.
     """
     
     @default

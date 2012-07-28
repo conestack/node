@@ -1,5 +1,5 @@
-Common Parts
-============
+Common Behaviors
+================
 
 Adopt
 -----
@@ -12,7 +12,7 @@ General imports.::
 
 A dictionary is used as end point.::
 
-    >>> from node.parts import Adopt
+    >>> from node.behaviors import Adopt
     >>> class AdoptingDict(dict):
     ...     __metaclass__ = plumber
     ...     __plumbing__ = Adopt
@@ -78,7 +78,7 @@ instead of just naming the plumbing init eg plumbing__init__.::
 UnicodeAware
 ------------
 ::
-    >>> from node.parts import UnicodeAware, OdictStorage, Nodify
+    >>> from node.behaviors import UnicodeAware, OdictStorage, Nodify
     >>> class UnicodeNode(object):
     ...     __metaclass__ = plumber
     ...     __plumbing__ = (
@@ -107,7 +107,7 @@ UnicodeAware
 ChildFactory
 ------------
 ::
-    >>> from node.parts import ChildFactory
+    >>> from node.behaviors import ChildFactory
     
     >>> class FooChild(object): pass
     >>> class BarChild(object): pass
@@ -128,7 +128,7 @@ ChildFactory
 FixedChildren
 -------------
 ::
-    >>> from node.parts import FixedChildren
+    >>> from node.behaviors import FixedChildren
     >>> class FixedChildrenNode(object):
     ...     __metaclass__ = plumber
     ...     __plumbing__ = Nodify, FixedChildren
@@ -166,7 +166,7 @@ UUIDAware
 
 ::
     >>> from plumber import plumber
-    >>> from node.parts import UUIDAware, DefaultInit
+    >>> from node.behaviors import UUIDAware, DefaultInit
 
 Create a uid aware node. ``copy`` is not supported on UUIDAware node trees,
 ``deepcopy`` must be used::
@@ -227,7 +227,7 @@ Create children, copy tree and check if all uuids have changed::
     >>> root['c1']['s1'].uuid == root_cp['c1']['s1'].uuid
     False
 
-When detaching, part of a tree, uids stay unchanged::
+When detaching part of a tree, uid's are not changed::
 
     >>> c1_uid = root['c1'].uuid
     >>> s1_uid = root['c1']['s1'].uuid
@@ -250,7 +250,7 @@ When detaching, part of a tree, uids stay unchanged::
 NodeChildValidate
 -----------------
 ::
-    >>> from node.parts import (
+    >>> from node.behaviors import (
     ...     NodeChildValidate,
     ...     Nodify,
     ...     OdictStorage,
@@ -289,7 +289,7 @@ GetattrChildren
 XXX: this test breaks coverage recording!!!::
 
     >>> from node.base import BaseNode
-    >>> from node.parts import GetattrChildren
+    >>> from node.behaviors import GetattrChildren
 
     >>> class Base(BaseNode):
     ...     allow_non_node_childs = True
@@ -327,7 +327,7 @@ Only children not shadowed by real attributes can be accessed via getattr::
 
 XXX: The base class' getattr does not work anymore. plumber directive
      plumborextend could solve this together with support for multiple
-     parts hooking into __getattr__. -cfl
+     behaviors hooking into __getattr__. -cfl
      
      Thats why i prefer AttributeAccess explicit for attribute access on node
      children. overwriting __getattr__ and/or __getattribue__ cause too many

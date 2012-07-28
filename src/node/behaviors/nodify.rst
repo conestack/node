@@ -1,10 +1,12 @@
-node.parts.Nodify
------------------
+node.behaviors.Nodify
+---------------------
+
 ::
+
     >>> from plumber import plumber
 
     >>> from node.testing import FullMappingTester
-    >>> from node.parts import (
+    >>> from node.behaviors import (
     ...     Adopt,
     ...     DictStorage,
     ...     DefaultInit,

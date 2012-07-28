@@ -1,26 +1,20 @@
-from plumber import (
-    default,
-    plumb,
-    Part,
-)
+from plumber import default
+from plumber import plumb
+from plumber import Part
 from zope.interface import implementer
-from node.interfaces import (
-    ILifecycle,
-    IAttributesLifecycle,
-)
-from node.parts.attributes import NodeAttributes
+from node.interfaces import ILifecycle
+from node.interfaces import IAttributesLifecycle
+from node.behaviors.attributes import NodeAttributes
 try:
     from zope.component.event import objectEventNotify
 except ImportError, e:                                       #pragma NO COVERAGE
     # BBB, XXX: remove this soon, relict from ``zodict``
     from zope.app.event.objectevent import objectEventNotify #pragma NO COVERAGE
-from node.events import (
-    NodeCreatedEvent,
-    NodeAddedEvent,
-    NodeRemovedEvent,
-    NodeModifiedEvent,
-    NodeDetachedEvent,
-)
+from node.events import NodeCreatedEvent
+from node.events import NodeAddedEvent
+from node.events import NodeRemovedEvent
+from node.events import NodeModifiedEvent
+from node.events import NodeDetachedEvent
 
 
 @implementer(ILifecycle)

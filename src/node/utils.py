@@ -2,10 +2,8 @@ import logging
 from odict import odict
 from zope.interface import implementer
 from zope.interface.common.mapping import IEnumerableMapping, IFullMapping
-from interfaces import (
-    IAttributeAccess,
-    INode,
-)
+from interfaces import IAttributeAccess
+from interfaces import INode
 
 
 logger = logging.getLogger('node')
@@ -14,7 +12,7 @@ logger = logging.getLogger('node')
 class Unset(object):
     """Used to identify unset values in contrast to None
 
-    use for example by node.parts.nodify.Nodify
+    use for example by node.behaviors.nodify.Nodify
     
     XXX: instanciate directly here??
     XXX: yafowil contains another unset object, use the one from node

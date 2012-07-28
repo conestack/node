@@ -71,11 +71,11 @@ A more fine granular control of node functionality
 
 ``node`` utilizes the `plumber <http://pypi.python.org/pypi/plumber>`_ package.
 
-Thus, different behaviors of nodes are provided by ``plumbing parts``. Read
+Thus, different behaviors of nodes are provided by ``plumbing behaviors``. Read
 the documentation of ``plumber`` for details about the plumbing system::
 
     >>> from plumber import plumber
-    >>> from node.parts import (
+    >>> from node.behaviors import (
     ...     Nodespaces,
     ...     Attributes,
     ...     Lifecycle,
@@ -116,9 +116,9 @@ the documentation of ``plumber`` for details about the plumbing system::
     'nodespaces', 'parent', 'path', 'pop', 'popitem', 'printtree', 
     'root', 'setdefault', 'storage', 'update', 'values']
 
-As ``dir`` call shows,  ``CustomNode`` class was plumbed using given parts, now
-defining a complete ``INode`` implementation with some additional behaviours
-and is now ready to use::
+As ``dir`` call shows,  ``CustomNode`` class was plumbed using given behaviors,
+now defining a complete ``INode`` implementation with some additional
+behaviours and is now ready to use::
 
     >>> node = CustomNode()
     >>> node['child'] = CustomNode()
@@ -131,99 +131,99 @@ and is now ready to use::
     True
 
 
-Parts
------
+Behaviors
+---------
 
-``node`` package provides several plumbing parts:
+``node`` package provides several plumbing behaviors:
 
-node.parts.DefaultInit
+node.behaviors.DefaultInit
     Plumbing part providing default ``__init__`` function on node.
     See ``node.interfaces.IDefaultInit``.
 
-node.parts.Nodify
+node.behaviors.Nodify
     Plumbing part to Fill in gaps for full INode API.
     See ``node.interfaces.INodify``.
 
-node.parts.Adopt
+node.behaviors.Adopt
     Plumbing part that provides adoption of children.
     See ``node.interfaces.IAdopt``.
 
-node.parts.NodeChildValidate
+node.behaviors.NodeChildValidate
     Plumbing part for child node validation.
     See ``node.interfaces.INodeChildValidate``.
 
-node.parts.UnicodeAware
+node.behaviors.UnicodeAware
     Plumbing part to ensure unicode for keys and string values.
     See ``node.interfaces.IUnicodeAware``.
 
-node.parts.Alias
+node.behaviors.Alias
     Plumbing part that provides aliasing of child keys.
     See ``node.interfaces.IAlias``.
 
-node.parts.AsAttrAccess
+node.behaviors.AsAttrAccess
     Plumbing part to get node as IAttributeAccess implementation.
     See ``node.interfaces.IAsAttrAccess``.
 
-node.parts.ChildFactory
+node.behaviors.ChildFactory
     Plumbing part providing child factories which are invoked at
     ``__getitem__`` if object by key is not present at plumbing endpoint yet.
     See ``node.interfaces.IChildFactory``.
 
-node.parts.FixedChildren
+node.behaviors.FixedChildren
     Plumbing part that initializes a fixed dictionary as children.
     See ``node.interfaces.IFixedChildren``.
 
-node.parts.GetattrChildren
+node.behaviors.GetattrChildren
     Plumbing part for child access via ``__getattr__``, given the attribute
     name is unused.
     See ``node.interfaces.IGetattrChildren``.
 
-node.parts.Nodespaces
+node.behaviors.Nodespaces
     Plumbing part for providing nodespaces on node.
     See ``node.interfaces.INodespaces``.
 
-node.parts.Attributes
+node.behaviors.Attributes
     Plumbing part to provide attributes on node.
-    Requires ``node.parts.Nodespaces`` part.
+    Requires ``node.behaviors.Nodespaces`` part.
     See ``node.interfaces.IAttributes``.
 
-node.parts.Lifecycle
+node.behaviors.Lifecycle
     Plumbing part taking care of lifecycle events.
     See ``node.interfaces.ILifecycle``.
 
-node.parts.AttributesLifecycle
+node.behaviors.AttributesLifecycle
     Plumbing part for handling ifecycle events at attributes manipulation.
     See ``node.interfaces.IAttributesLifecycle``.
 
-node.parts.Invalidate
+node.behaviors.Invalidate
     Plumbing part for node invalidation.
     See ``node.interfaces.Invalidate``.
 
-node.parts.Cache
+node.behaviors.Cache
     Plumbing part for caching.
     See ``node.interfaces.ICache``.
 
-node.parts.Order
+node.behaviors.Order
     Plumbing part for ordering support.
     See ``node.interfaces.IOrder``.
 
-node.parts.UUIDAware
+node.behaviors.UUIDAware
     Plumbing part providing a uuid on nodes.
     See ``node.interfaces.IUUIDAware``.
 
-node.parts.Reference
+node.behaviors.Reference
     Plumbing part holding an index of all nodes contained in the tree.
     See ``node.interfaces.IReference``.
 
-node.parts.Storage
+node.behaviors.Storage
     Provide abstract storage access.
     See ``node.interfaces.IStorage``.
 
-node.parts.DictStorage
+node.behaviors.DictStorage
     Provide dictionary storage.
     See ``node.interfaces.IStorage``.
 
-node.parts.OdictStorage
+node.behaviors.OdictStorage
     Provide ordered dictionary storage.
     See ``node.interfaces.IStorage``.
 
@@ -234,9 +234,10 @@ Migration
 A node which behaves like ``zodict.Node`` is contained at ``node.base.Node``.
 This node is supposed to be used for migration from zodict.
 
-It's also useful to take a look of which parts the original node is build of.
+It's also useful to take a look of which behaviors the original node is build
+of.
 
-Probably an implementation does not need all the parts at once. In this case
+Probably an implementation does not need all the behaviors at once. In this case
 define the node plumbing directly on node class instead of inheriting from
 ``node.base.Node``.
 
@@ -251,18 +252,18 @@ Summary of the test coverage report::
      14   100%   node.events
     127   100%   node.interfaces
      23   100%   node.locking
-     11   100%   node.parts.__init__
-    107   100%   node.parts.alias
-     38   100%   node.parts.attributes
-     50   100%   node.parts.cache
-    118   100%   node.parts.common
-     51   100%   node.parts.lifecycle
-    114   100%   node.parts.mapping
-     31   100%   node.parts.nodespace
-     79   100%   node.parts.nodify
-    109   100%   node.parts.order
-     81   100%   node.parts.reference
-     27   100%   node.parts.storage
+     11   100%   node.behaviors.__init__
+    107   100%   node.behaviors.alias
+     38   100%   node.behaviors.attributes
+     50   100%   node.behaviors.cache
+    118   100%   node.behaviors.common
+     51   100%   node.behaviors.lifecycle
+    114   100%   node.behaviors.mapping
+     31   100%   node.behaviors.nodespace
+     79   100%   node.behaviors.nodify
+    109   100%   node.behaviors.order
+     81   100%   node.behaviors.reference
+     27   100%   node.behaviors.storage
       1   100%   node.testing.__init__
      62   100%   node.testing.base
      19   100%   node.testing.env
@@ -283,6 +284,15 @@ Contributors
 
 Changes
 =======
+
+0.9.8dev
+--------
+
+- Deprecate the use of ``node.parts``. Use ``node.behaviors`` instead.
+  [rnix, 2012-07-28]
+
+- Adopt to ``plumber`` 1.2
+  [rnix, 2012-07-28]
 
 
 0.9.7

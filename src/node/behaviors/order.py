@@ -1,15 +1,11 @@
 from odict.pyodict import _nil
-from plumber import (
-    extend,
-    Part,
-)
+from plumber import extend
+from plumber import Part
 from zope.interface import implementer
 from zope.interface.common.mapping import IReadMapping
-from node.interfaces import (
-    INode,
-    IReference,
-    IOrder,
-)
+from node.interfaces import INode
+from node.interfaces import IReference
+from node.interfaces import IOrder
 
 
 @implementer(IOrder)

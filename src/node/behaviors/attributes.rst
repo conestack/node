@@ -1,10 +1,10 @@
-node.parts.Attributes
-=====================
+node.behaviors.Attributes
+=========================
 
 ::
 
     >>> from plumber import plumber
-    >>> from node.parts import (
+    >>> from node.behaviors import (
     ...     NodeChildValidate,
     ...     DefaultInit,
     ...     Nodify,

@@ -1,16 +1,12 @@
 import uuid
-from plumber import (
-    plumb,
-    extend,
-    default,
-    Part,
-)
+from plumber import plumb
+from plumber import extend
+from plumber import default
+from plumber import Part
 from zope.interface import implementer
 from zope.interface.common.mapping import IReadMapping
-from node.interfaces import (
-    INode,
-    IReference,
-)
+from node.interfaces import INode
+from node.interfaces import IReference
 
 
 @implementer(IReadMapping)

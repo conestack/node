@@ -1,7 +1,7 @@
 Abstract storage::
 
     >>> from plumber import plumber
-    >>> from node.parts import Storage
+    >>> from node.behaviors import Storage
     >>> class StorageObject(object):
     ...     __metaclass__ = plumber
     ...     __plumbing__ = Storage
@@ -14,7 +14,7 @@ Abstract storage::
 
 Dict Storage::
 
-    >>> from node.parts import DictStorage
+    >>> from node.behaviors import DictStorage
     >>> class StorageObject(object):
     ...     __metaclass__ = plumber
     ...     __plumbing__ = DictStorage
@@ -39,7 +39,7 @@ Dict Storage::
 
 Odict Storage::
 
-    >>> from node.parts import OdictStorage
+    >>> from node.behaviors import OdictStorage
     >>> class StorageObject(object):
     ...     __metaclass__ = plumber
     ...     __plumbing__ = OdictStorage

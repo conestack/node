@@ -1,24 +1,20 @@
 from odict import odict
-from plumber import (
-    plumber,
-    Part,
-    default,
-    extend,
-)
+from plumber import plumber
+from plumber import Part
+from plumber import default
+from plumber import extend
 from node.interfaces import INode
-from node.parts import (
-    Adopt,
-    Nodespaces,
-    Attributes,
-    Reference,
-    Order,
-    AsAttrAccess,
-    DefaultInit,
-    Nodify,
-    NodeChildValidate,
-    DictStorage,
-    OdictStorage,
-)
+from node.behaviors import Adopt
+from node.behaviors import Nodespaces
+from node.behaviors import Attributes
+from node.behaviors import Reference
+from node.behaviors import Order
+from node.behaviors import AsAttrAccess
+from node.behaviors import DefaultInit
+from node.behaviors import Nodify
+from node.behaviors import NodeChildValidate
+from node.behaviors import DictStorage
+from node.behaviors import OdictStorage
 
 
 class AbstractNode(object):

@@ -1,18 +1,12 @@
-from zope.interface import (
-    Interface,
-    Attribute,
-)
-from zope.interface.common.mapping import (
-    IEnumerableMapping,
-    IWriteMapping,
-    IFullMapping,
-)
-from zope.lifecycleevent import (
-    IObjectCreatedEvent,
-    IObjectAddedEvent,
-    IObjectModifiedEvent,
-    IObjectRemovedEvent,
-)
+from zope.interface import Interface
+from zope.interface import Attribute
+from zope.interface.common.mapping import IEnumerableMapping
+from zope.interface.common.mapping import IWriteMapping
+from zope.interface.common.mapping import IFullMapping
+from zope.lifecycleevent import IObjectCreatedEvent
+from zope.lifecycleevent import IObjectAddedEvent
+from zope.lifecycleevent import IObjectModifiedEvent
+from zope.lifecycleevent import IObjectRemovedEvent
 try:
     from zope.location.interfaces import ILocation
 except ImportError, e:
@@ -175,12 +169,12 @@ class INode(ILocation, IFullMapping):
 
 
 ###############################################################################
-# plumbing parts
+# plumbing behaviors
 ###############################################################################
 
 
 class IDefaultInit(Interface):
-    """Plumbing part providing default ``__init__`` function on node.
+    """Plumbing behavior providing default ``__init__`` function on node.
     """
     def __init__(name=None, parent=None):
         """Set ``self.__name__`` and ``self.__parent__`` at init time.
@@ -188,7 +182,7 @@ class IDefaultInit(Interface):
 
 
 class INodify(INode):
-    """Plumbing part to Fill in gaps for full INode API.
+    """Plumbing behavior to Fill in gaps for full INode API.
     
     Plumbing hooks:
     
@@ -198,7 +192,7 @@ class INodify(INode):
 
 
 class IAdopt(Interface):
-    """Plumbing part that provides adoption of children.
+    """Plumbing behavior that provides adoption of children.
     
     Plumbing hooks:
     
@@ -211,7 +205,7 @@ class IAdopt(Interface):
 
 
 class INodeChildValidate(Interface):
-    """Plumbing part for child node validation.
+    """Plumbing behavior for child node validation.
     
     Plumbing hooks:
     
@@ -224,7 +218,7 @@ class INodeChildValidate(Interface):
 
 
 class IUnicodeAware(Interface):
-    """Plumbing part to ensure unicode for keys and string values.
+    """Plumbing behavior to ensure unicode for keys and string values.
     
     Plumbing hooks:
     
@@ -240,7 +234,7 @@ class IUnicodeAware(Interface):
 
 
 class IAlias(Interface):
-    """Plumbing part that provides aliasing of child keys.
+    """Plumbing behavior that provides aliasing of child keys.
     
     Plumbing hooks:
     
@@ -264,7 +258,7 @@ class IAlias(Interface):
 
 
 class IAsAttrAccess(Interface):
-    """Plumbing part to get node as IAttributeAccess implementation.
+    """Plumbing behavior to get node as IAttributeAccess implementation.
     """
     def as_attribute_access():
         """Return this node as IAttributeAccess implementing object.
@@ -272,7 +266,7 @@ class IAsAttrAccess(Interface):
 
 
 class IChildFactory(Interface):
-    """Plumbing part providing child factories which are invoked at
+    """Plumbing behavior providing child factories which are invoked at
     ``__getitem__`` if object by key is not present at plumbing endpoint yet.
     """
     factories = Attribute(u"Dict like object containing key/factory pairs.")
@@ -283,10 +277,10 @@ class IChildFactory(Interface):
 
 
 class IFixedChildren(Interface):
-    """Plumbing part that initializes a fixed dictionary as children.
+    """Plumbing behavior that initializes a fixed dictionary as children.
 
     The children are instantiated during ``__init__`` and adopted by the
-    class using this part. They cannot receive init arguments, but
+    class using this behavior. They cannot receive init arguments, but
     could retrieve configuration from their parent.
     
     Plumbing hooks:
@@ -307,8 +301,8 @@ class IFixedChildren(Interface):
 
 
 class IGetattrChildren(Interface):
-    """Plumbing part for child access via ``__getattr__``, given the attribute
-    name is unused.
+    """Plumbing behavior for child access via ``__getattr__``, given the
+    attribute name is unused.
     """
     def __getattr__(name):
         """Map ``__getitem__``.
@@ -316,7 +310,7 @@ class IGetattrChildren(Interface):
 
 
 class INodespaces(Interface):
-    """Plumbing part for providing nodespaces on node.
+    """Plumbing behavior for providing nodespaces on node.
     
     A nodespace is a seperate node with special keys - pre- and postfixed with
     ``__`` and gets mapped on storage write operations.
@@ -339,14 +333,14 @@ class INodespaces(Interface):
 
 
 class IAttributes(Interface):
-    """Plumbing part to provide attributes on node.
+    """Plumbing behavior to provide attributes on node.
     """
     attrs = Attribute(u"``INodeAttributes`` implementation.")
     attrs_factory = Attribute(u"``INodeAttributes`` implementation class")
 
 
 class ILifecycle(Interface):
-    """Plumbing part taking care of lifecycle events.
+    """Plumbing behavior taking care of lifecycle events.
     
     Plumbing hooks:
     
@@ -368,7 +362,7 @@ class ILifecycle(Interface):
 
 
 class IAttributesLifecycle(Interface):
-    """Plumbing part for handling ifecycle events at attributes manipulation.
+    """Plumbing behavior for handling ifecycle events at attributes manipulation.
     
     Plumbing hooks:
     
@@ -381,7 +375,7 @@ class IAttributesLifecycle(Interface):
 
 
 class IInvalidate(Interface):
-    """Plumbing part for node invalidation.
+    """Plumbing behavior for node invalidation.
     """
     def invalidate(key=None):
         """Invalidate child with key or all children of this node.
@@ -389,7 +383,7 @@ class IInvalidate(Interface):
 
 
 class ICache(Interface):
-    """Plumbing part for caching.
+    """Plumbing behavior for caching.
     
     Plumbing hooks:
     
@@ -412,7 +406,7 @@ class ICache(Interface):
 
 
 class IOrder(Interface):
-    """Plumbing part for ordering support.
+    """Plumbing behavior for ordering support.
     """
     
     def swap(node_a, node_b):
@@ -449,7 +443,7 @@ class IOrder(Interface):
 
 
 class IUUID(Interface):
-    """Plumbing part for providing a uuid on a node.
+    """Plumbing behavior for providing a uuid on a node.
     """
     uuid = Attribute(u"``uuid.UUID`` of this node.")
 
@@ -479,7 +473,7 @@ class IUUIDAware(IUUID):
 
 
 class IReference(IUUID):
-    """Plumbing part holding an index of all nodes contained in the tree.
+    """Plumbing behavior holding an index of all nodes contained in the tree.
     
     Plumbing hooks:
     
@@ -503,7 +497,7 @@ class IReference(IUUID):
 
 
 class IStorage(Interface):
-    """Plumbing part providing storage related endpoints.
+    """Plumbing behavior providing storage related endpoints.
     
     Minimum Storage requirement is described below. An implementation of this
     interface could provide other storage related methods as appropriate.

@@ -1,6 +1,8 @@
 node.testing.env
 ================
 
+::
+
     >>> from node.testing.env import MyNode
     >>> mynode = MyNode()
 
