@@ -248,28 +248,28 @@ TestCoverage
 Summary of the test coverage report::
 
   lines   cov%   module
-     52   100%   node.base
-     14   100%   node.events
-    127   100%   node.interfaces
+     62   100%   node.base
+     34   100%   node.behaviors.__init__
+    112   100%   node.behaviors.alias
+     43   100%   node.behaviors.attributes
+     53   100%   node.behaviors.cache
+    132   100%   node.behaviors.common
+     58   100%   node.behaviors.lifecycle
+    125   100%   node.behaviors.mapping
+     35   100%   node.behaviors.nodespace
+     85   100%   node.behaviors.nodify
+    112   100%   node.behaviors.order
+     85   100%   node.behaviors.reference
+     30   100%   node.behaviors.storage
+     21   100%   node.events
+    133   100%   node.interfaces
      23   100%   node.locking
-     11   100%   node.behaviors.__init__
-    107   100%   node.behaviors.alias
-     38   100%   node.behaviors.attributes
-     50   100%   node.behaviors.cache
-    118   100%   node.behaviors.common
-     51   100%   node.behaviors.lifecycle
-    114   100%   node.behaviors.mapping
-     31   100%   node.behaviors.nodespace
-     79   100%   node.behaviors.nodify
-    109   100%   node.behaviors.order
-     81   100%   node.behaviors.reference
-     27   100%   node.behaviors.storage
       1   100%   node.testing.__init__
      62   100%   node.testing.base
-     19   100%   node.testing.env
+     24   100%   node.testing.env
     215   100%   node.testing.fullmapping
      29   100%   node.tests
-    120   100%   node.utils
+    121   100%   node.utils
 
 
 Contributors
