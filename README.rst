@@ -285,8 +285,8 @@ Contributors
 Changes
 =======
 
-0.9.8dev
---------
+0.9.8
+-----
 
 - Deprecate the use of ``node.parts``. Use ``node.behaviors`` instead.
   [rnix, 2012-07-28]
