@@ -1,9 +1,10 @@
 import logging
-from odict import odict
 from zope.interface import implementer
-from zope.interface.common.mapping import IEnumerableMapping, IFullMapping
-from interfaces import IAttributeAccess
-from interfaces import INode
+from zope.interface.common.mapping import IEnumerableMapping
+from interfaces import (
+    IAttributeAccess,
+    INode,
+)
 
 
 logger = logging.getLogger('node')
@@ -13,7 +14,7 @@ class Unset(object):
     """Used to identify unset values in contrast to None
 
     use for example by node.behaviors.nodify.Nodify
-    
+
     XXX: instanciate directly here??
     XXX: yafowil contains another unset object, use the one from node
     XXX: call me UNSET as constant?
@@ -36,20 +37,20 @@ def LocationIterator(object):
 class ReverseMapping(object):
     """Reversed IEnumerableMapping.
     """
-    
+
     def __init__(self, context):
         """Object behaves as adapter for dict like object.
-        
+
         ``context``: a dict like object.
         """
         self.context = context
-    
+
     def __getitem__(self, value):
         for key in self.context:
             if self.context[key] == value:
                 return key
         raise KeyError(value)
-    
+
     def get(self, value, default=None):
         try:
             return self[value]
@@ -62,7 +63,7 @@ class ReverseMapping(object):
             if val == value:
                 return True
         return False
-    
+
     def keys(self):
         return [val for val in self]
 
@@ -82,32 +83,32 @@ class ReverseMapping(object):
 
 @implementer(IAttributeAccess)
 class AttributeAccess(object):
-    """If someone really needs to access the original context (which should not 
-    happen), she hast to use ``object.__getattr__(attraccess, 'context')``.
+    """If someone really needs to access the original context (which should
+    not happen), she hast to use ``object.__getattr__(attraccess, 'context')``.
     """
-    
+
     def __init__(self, context):
         object.__setattr__(self, 'context', context)
-    
+
     def __getattr__(self, name):
         context = object.__getattribute__(self, 'context')
         try:
             return context[name]
         except KeyError:
             raise AttributeError(name)
-    
+
     def __setattr__(self, name, value):
         context = object.__getattribute__(self, 'context')
         context[name] = value
-    
+
     def __getitem__(self, name):
         context = object.__getattribute__(self, 'context')
         return context[name]
-    
+
     def __setitem__(self, name, value):
         context = object.__getattribute__(self, 'context')
         context[name] = value
-    
+
     def __delitem__(self, name):
         context = object.__getattribute__(self, 'context')
         del context[name]
@@ -120,16 +121,16 @@ class StrCodec(object):
     """Encode unicodes to strs and decode strs to unicodes
 
     We will recursively work on arbitrarily nested structures consisting of
-    str, unicode, list, tuple, dict and INode implementations mixed with others,
-    which we won't touch. During that process a deep copy is produces leaving 
-    the orginal data structure intact. 
+    str, unicode, list, tuple, dict and INode implementations mixed with
+    others, which we won't touch. During that process a deep copy is produces
+    leaving the orginal data structure intact.
     """
-    
+
     def __init__(self, encoding=CHARACTER_ENCODING, soft=True):
         """
         ``encoding``
             the character encoding to decode from/encode to
-        
+
         ``soft``
            if True, catch UnicodeDecodeErrors and leave this strings as-is.
         """
@@ -138,14 +139,14 @@ class StrCodec(object):
 
     def encode(self, arg):
         """Return an encoded copy of the argument
-        
+
         - strs are decoded and reencode to make sure they conform to the
           encoding
-        
+
         - unicodes are encoded as str according to encoding
-        
+
         - lists/tuples/dicts are recursively worked on
-        
+
         - everything else is left untouched
         """
         if isinstance(arg, (list, tuple)):
@@ -185,9 +186,9 @@ decode = strcodec.decode
 
 def instance_property(func):
     """Decorator like ``property``, but underlying function is only called once
-    per instance. 
-    
-    Set instance attribute with '_' prefix. 
+    per instance.
+
+    Set instance attribute with '_' prefix.
     """
     def wrapper(self):
         attribute_name = '_%s' % func.__name__

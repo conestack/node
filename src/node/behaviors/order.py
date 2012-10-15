@@ -1,11 +1,10 @@
 from odict.pyodict import _nil
-from plumber import override
-from plumber import Behavior
+from plumber import (
+    override,
+    Behavior,
+)
 from zope.interface import implementer
-from zope.interface.common.mapping import IReadMapping
-from node.interfaces import INode
-from node.interfaces import IReference
-from node.interfaces import IOrder
+from ..interfaces import IOrder
 
 
 @implementer(IOrder)
@@ -42,7 +41,7 @@ class Order(Behavior):
             self.storage.lh = new_b[1].name
         if new_b[2] == _nil:
             self.storage.lt = new_b[1].name
-    
+
     @override
     def insertfirst(self, newnode):
         keys = self.keys()
@@ -51,7 +50,7 @@ class Order(Behavior):
             return
         refnode = self[keys[0]]
         self.insertbefore(newnode, refnode)
-    
+
     @override
     def insertlast(self, newnode):
         keys = self.keys()
@@ -60,7 +59,7 @@ class Order(Behavior):
             return
         refnode = self[keys[-1]]
         self.insertafter(newnode, refnode)
-    
+
     @override
     def insertbefore(self, newnode, refnode):
         self._validateinsertion(newnode, refnode)
@@ -107,20 +106,20 @@ class Order(Behavior):
         dict_impl.__getitem__(storage, refkey)[2] = nodekey
         dict_impl.__setitem__(storage, nodekey, newnode)
         self[nodekey] = newnode[1]
-    
+
     @override
     def _validateinsertion(self, newnode, refnode):
         nodekey = newnode.__name__
         if nodekey is None:
-            raise ValueError, u"Given node has no __name__ set."
+            raise ValueError(u"Given node has no __name__ set.")
         # case if Reference behavior is mixed in
         # XXX: move out of here
         if hasattr(self, 'node'):
             if self.node(newnode.uuid) is not None:
-                raise KeyError, u"Given node already contained in tree."
+                raise KeyError(u"Given node already contained in tree.")
         index = self._nodeindex(refnode)
         if index is None:
-            raise ValueError, u"Given reference node not child of self."
+            raise ValueError(u"Given reference node not child of self.")
 
     @override
     def _nodeindex(self, node):

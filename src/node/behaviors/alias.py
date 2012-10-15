@@ -1,14 +1,19 @@
 from odict import odict
-from plumber import plumber
-from plumber import default
-from plumber import plumb
-from plumber import Behavior
+from plumber import (
+    default,
+    plumb,
+    Behavior,
+)
 from zope.interface import implementer
-from zope.interface.common.mapping import IEnumerableMapping
-from zope.interface.common.mapping import IFullMapping
-from node.interfaces import IAliaser
-from node.interfaces import IAlias
-from node.utils import ReverseMapping
+from zope.interface.common.mapping import (
+    IEnumerableMapping,
+    IFullMapping,
+)
+from ..interfaces import (
+    IAliaser,
+    IAlias,
+)
+from ..utils import ReverseMapping
 
 
 @implementer(IAliaser, IFullMapping)
@@ -17,7 +22,7 @@ class DictAliaser(odict):
 
     ``__getitem__`` -> unalias
     """
-    
+
     def __init__(self, data=(), strict=True):
         super(DictAliaser, self).__init__(data)
         self.strict = strict
@@ -29,7 +34,7 @@ class DictAliaser(odict):
             if not self.strict:
                 return key
             raise e
-    
+
     def unalias(self, aliased_key):
         try:
             return self[aliased_key]
@@ -95,7 +100,7 @@ class AliaserChain(object):
     chain.alias(key) == aliaser2.alias(aliaser1.alias(key))
     chain.unalias(alias_key) == aliaser2.unalias(aliaser1.unalias(aliased_key))
     """
-    
+
     def __init__(self, chain=None):
         self.chain = chain
 
@@ -113,7 +118,7 @@ class AliaserChain(object):
 class PrefixSuffixAliaser(AliaserChain):
     """Prefixes and suffixes.
     """
-    
+
     def __init__(self, prefix=None, suffix=None):
         self.chain = (PrefixAliaser(prefix), SuffixAliaser(suffix))
 
@@ -121,7 +126,7 @@ class PrefixSuffixAliaser(AliaserChain):
 @implementer(IAlias)
 class Alias(Behavior):
     aliaser = default(None)
-    
+
     @plumb
     def __getitem__(_next, self, key):
         if self.aliaser:
@@ -132,7 +137,7 @@ class Alias(Behavior):
             return _next(self, unaliased_key)
         except KeyError:
             raise KeyError(key)
-    
+
     @plumb
     def __setitem__(_next, self, key, val):
         if self.aliaser:
@@ -143,7 +148,7 @@ class Alias(Behavior):
             _next(self, unaliased_key, val)
         except KeyError:
             raise KeyError(key)
-    
+
     @plumb
     def __delitem__(_next, self, key):
         if self.aliaser:

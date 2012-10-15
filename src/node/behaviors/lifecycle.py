@@ -1,20 +1,21 @@
-from plumber import default
-from plumber import plumb
-from plumber import Behavior
+from plumber import (
+    default,
+    plumb,
+    Behavior,
+)
 from zope.interface import implementer
-from node.interfaces import ILifecycle
-from node.interfaces import IAttributesLifecycle
-from node.behaviors.attributes import NodeAttributes
-try:
-    from zope.component.event import objectEventNotify
-except ImportError, e:                                       #pragma NO COVERAGE
-    # BBB, XXX: remove this soon, relict from ``zodict``
-    from zope.app.event.objectevent import objectEventNotify #pragma NO COVERAGE
-from node.events import NodeCreatedEvent
-from node.events import NodeAddedEvent
-from node.events import NodeRemovedEvent
-from node.events import NodeModifiedEvent
-from node.events import NodeDetachedEvent
+from zope.component.event import objectEventNotify
+from ..interfaces import (
+    ILifecycle,
+    IAttributesLifecycle,
+)
+from ..events import (
+    NodeCreatedEvent,
+    NodeAddedEvent,
+    NodeRemovedEvent,
+    NodeModifiedEvent,
+    NodeDetachedEvent,
+)
 
 
 @implementer(ILifecycle)
@@ -51,7 +52,7 @@ class Lifecycle(Behavior):
             return
         objectEventNotify(self.events['removed'](delnode, oldParent=self,
                                                  oldName=key))
-    
+
     @plumb
     def detach(_next, self, key):
         self._notify_suppress = True

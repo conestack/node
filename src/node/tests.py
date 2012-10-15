@@ -1,5 +1,5 @@
 import unittest
-import doctest 
+import doctest
 from pprint import pprint
 from interlude import interact
 
@@ -29,10 +29,11 @@ TESTFILES = [
     'behaviors/common.rst',
 ]
 
+
 def test_suite():
     return unittest.TestSuite([
         doctest.DocFileSuite(
-            file, 
+            file,
             optionflags=optionflags,
             globs={'interact': interact,
                    'pprint': pprint},

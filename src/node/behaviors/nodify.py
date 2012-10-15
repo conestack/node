@@ -1,15 +1,17 @@
-from plumber import default
-from plumber import override
-from plumber import plumb
-from plumber import Behavior
+from plumber import (
+    default,
+    override,
+    plumb,
+    Behavior,
+)
 from zope.interface import implementer
 from zope.interface.interfaces import IInterface
-from node.interfaces import IDefaultInit
-from node.interfaces import INodify
-from node.behaviors.mapping import FullMapping
-from node.utils import Unset
-from node.utils import LocationIterator
-from node.utils import AttributeAccess
+from ..interfaces import (
+    IDefaultInit,
+    INodify,
+)
+from ..utils import LocationIterator
+from .mapping import FullMapping
 
 
 @implementer(IDefaultInit)
@@ -32,7 +34,7 @@ class Nodify(FullMapping):
         new.__name__ = self.__name__
         new.__parent__ = self.__parent__
         return new
-    
+
     @override
     @property
     def name(self):
@@ -63,7 +65,7 @@ class Nodify(FullMapping):
         node = self[key]
         del self[key]
         return node
-    
+
     @override
     def acquire(self, interface):
         node = self.parent
@@ -109,7 +111,7 @@ class Nodify(FullMapping):
         #else:
         #    class_ = self.__class__
         class_ = self.__class__
-        
+
         name = unicode(self.__name__).encode('ascii', 'replace')
         return str(class_) + ': ' + name[name.find(':') + 1:]
 
@@ -120,7 +122,7 @@ class Nodify(FullMapping):
         print "%s%s" % (indent * ' ', self.noderepr)
         for node in self.values():
             try:
-                node.printtree(indent+2)
+                node.printtree(indent + 2)
             except AttributeError:
                 # Non-Node values are just printed
                 print "%s%s" % (indent * ' ', node)
@@ -128,9 +130,10 @@ class Nodify(FullMapping):
     # XXX: tricky one: If a base class provides a __nonzero__ and that
     # base class is nodified, should the base class' __nonzero__ be
     # used or this one? Please write your thoughts here -cfl
-    # 
+    #
     # I think @default is fine, leaves most possible flexibility to the user.
     # Other thoughts? -rn
+
     @default
     def __nonzero__(self):
         return True
@@ -143,7 +146,6 @@ class Nodify(FullMapping):
         #else:
         #    class_name = self.__class__.__name__
         class_name = self.__class__.__name__
-        
         # XXX: This is mainly used in doctest, I think
         #      doctest fails if we output utf-8
         name = unicode(self.__name__).encode('ascii', 'replace')

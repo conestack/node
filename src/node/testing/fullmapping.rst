@@ -46,7 +46,7 @@ FullMappingTester
     >>> fmtester.test___getitem__()
     Traceback (most recent call last):
       ...
-    TypeError: 'TestMapping' object is unsubscriptable
+    TypeError: 'TestMapping' ...
     
     >>> class TestMappingGetItem(TestMappingSetItem):
     ...     def __getitem__(self, key):

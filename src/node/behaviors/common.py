@@ -1,25 +1,29 @@
 import uuid
 import inspect
 from odict import odict
-from plumber import Behavior
-from plumber import default
-from plumber import override
-from plumber import finalize
-from plumber import plumb
+from plumber import (
+    Behavior,
+    default,
+    override,
+    finalize,
+    plumb,
+)
 from zope.interface import implementer
-from node.interfaces import INode
-from node.interfaces import IAdopt
-from node.interfaces import IAsAttrAccess
-from node.interfaces import IChildFactory
-from node.interfaces import IFixedChildren
-from node.interfaces import IGetattrChildren
-from node.interfaces import INodeChildValidate
-from node.interfaces import IUnicodeAware
-from node.interfaces import IUUIDAware
-from node.utils import AttributeAccess
-from node.utils import encode
-from node.utils import decode
-
+from ..interfaces import (
+    INode,
+    IAdopt,
+    IAsAttrAccess,
+    IChildFactory,
+    IFixedChildren,
+    IGetattrChildren,
+    INodeChildValidate,
+    IUnicodeAware,
+    IUUIDAware,
+)
+from ..utils import (
+    AttributeAccess,
+    decode,
+)
 
 
 @implementer(IAdopt)
@@ -44,7 +48,7 @@ class Adopt(Behavior):
             val.__name__ = old_name
             val.__parent__ = old_parent
             raise
-    
+
     @plumb
     def setdefault(_next, self, key, default=None):
         # We reroute through __getitem__ and __setitem__, skipping _next
@@ -66,13 +70,13 @@ class AsAttrAccess(Behavior):
 @implementer(IChildFactory)
 class ChildFactory(Behavior):
     factories = default(odict())
-    
+
     @override
     def __iter__(self):
         return self.factories.__iter__()
-    
+
     iterkeys = override(__iter__)
-    
+
     @plumb
     def __getitem__(_next, self, key):
         try:
@@ -90,7 +94,7 @@ class FixedChildren(Behavior):
     The children are instantiated during __init__ and adopted by the
     class using this behavior. They cannot receive init argumentes, but
     could retrieve configuration from their parent.
-    
+
     XXX: This implementation is similar to what's implemented in
          cone.app.model.FactoryNode. harmonize.
     """
@@ -126,10 +130,10 @@ class FixedChildren(Behavior):
 @implementer(IGetattrChildren)
 class GetattrChildren(Behavior):
     """Access children via ``__getattr__``, given the attribute name is unused.
-    
+
     XXX: Similar behavior as AsAttrAccess. harmonize.
     """
-    
+
     @finalize
     def __getattr__(self, name):
         """For new-style classes __getattr__ is called, if the
@@ -145,7 +149,7 @@ class NodeChildValidate(Behavior):
     @plumb
     def __setitem__(_next, self, key, val):
         if not self.allow_non_node_childs and inspect.isclass(val):
-            raise ValueError, u"It isn't allowed to use classes as values."
+            raise ValueError(u"It isn't allowed to use classes as values.")
         if not self.allow_non_node_childs and not INode.providedBy(val):
             raise ValueError("Non-node childs are not allowed.")
         _next(self, key, val)
@@ -181,23 +185,23 @@ class UnicodeAware(Behavior):
 class UUIDAware(Behavior):
     uuid = default(None)
     overwrite_recursiv_on_copy = default(True)
-    
+
     @plumb
     def __init__(_next, self, *args, **kw):
         _next(self, *args, **kw)
         self.uuid = uuid.uuid4()
-    
+
     @plumb
     def copy(_next, self):
         raise RuntimeError(u"Shallow copy useless on UUID aware node trees, "
                            u"use deepcopy.")
-    
+
     @plumb
     def deepcopy(_next, self):
         copied = _next(self)
         self.set_uuid_for(copied, True, self.overwrite_recursiv_on_copy)
         return copied
-    
+
     @default
     def set_uuid_for(self, node, override=False, recursiv=False):
         if IUUIDAware.providedBy(node):

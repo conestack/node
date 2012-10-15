@@ -1,5 +1,6 @@
 from odict import odict
 
+
 def create_tree(class_):
         root = class_()
         for i in range(3):
@@ -10,14 +11,14 @@ def create_tree(class_):
 
 
 class ResultWriter(object):
-    
+
     def __init__(self, results, name=None):
         self.name = name
         self.results = results
-    
+
     def success(self):
         self.results[self.name] = 'OK'
-    
+
     def failed(self, exc):
         self.results[self.name] = 'failed: %s' % (repr(exc),)
 
@@ -32,15 +33,15 @@ class BaseTester(object):
     # execution is in order, so you might depend tests to prior happened
     # context manipulation.
     iface_contract = []
-    
+
     direct_error = False
-    
+
     def __init__(self, class_, context=None):
         """
         ``class_``
             class object for creating children in test.
         ``context``
-            an optional root context to test against, If None, an instance of 
+            an optional root context to test against, If None, an instance of
             class_ is created as root.
         """
         self._results = odict()
@@ -49,11 +50,11 @@ class BaseTester(object):
         if self.context is None:
             self.context = class_()
         self._results = odict()
-    
+
     @property
     def results(self):
         return self._results
-    
+
     @property
     def combined(self):
         for key, val in sorted(self.writer().results.iteritems()):
@@ -71,7 +72,7 @@ class BaseTester(object):
                         print base.__name__
                         continue
                     print "function not found on object"
-    
+
     def run(self):
         for name in self.iface_contract:
             func = getattr(self, 'test_%s' % name, None)
@@ -89,6 +90,6 @@ class BaseTester(object):
                 writer.success()
             except Exception, e:
                 writer.failed(e)
-    
+
     def writer(self, key=None):
         return ResultWriter(self._results, name=key)

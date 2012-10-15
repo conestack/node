@@ -275,15 +275,31 @@ Summary of the test coverage report::
 Contributors
 ============
 
-- Robert Niederreiter <rnix __at__ squarewave __dot__ at>
+- Robert Niederreiter <rnix [at] squarewave [dot] at>
 
-- Florian Friesdorf <flo __at__ chaoflow __dot__ net>
+- Florian Friesdorf <flo [at] chaoflow [dot] net>
 
-- Jens Klein <jens __at__ bluedynamics __dot__ com>
+- Jens Klein <jens [at] bluedynamics [dot] com>
 
 
 Changes
 =======
+
+0.9.9dev
+--------
+
+- Remove ``zope.component.event`` B/C.
+  [rnix, 2012-10-15]
+
+- Remove ``zope.location`` B/C.
+  [rnix, 2012-10-15]
+
+- Remove ``zope.lifecycleevent`` B/C.
+  [rnix, 2012-10-15]
+
+- Pep8.
+  [rnix, 2012-10-15]
+
 
 0.9.8
 -----

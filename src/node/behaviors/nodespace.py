@@ -1,29 +1,30 @@
 from odict import odict
-from plumber import plumb
-from plumber import finalize
-from plumber import default
-from plumber import Behavior
+from plumber import (
+    plumb,
+    finalize,
+    default,
+    Behavior,
+)
 from zope.interface import implementer
-from node.interfaces import INode
-from node.interfaces import INodespaces
+from ..interfaces import INodespaces
 
 
 @implementer(INodespaces)
-class Nodespaces(Behavior):    
+class Nodespaces(Behavior):
     _nodespaces = default(None)
-    
+
     @finalize
     @property
     def nodespaces(self):
         """A storage and general way to access our nodespaces.
-        
+
         An ``AttributedNode`` uses this to store the ``attrs`` nodespace i.e.
         """
         if self._nodespaces is None:
             self._nodespaces = odict()
             self._nodespaces['__children__'] = self
         return self._nodespaces
-    
+
     @plumb
     def __getitem__(_next, self, key):
         # blend in our nodespaces as children, with name __<name>__
@@ -36,7 +37,7 @@ class Nodespaces(Behavior):
             # nodespaces[key], nodespaces is an odict
             return self.nodespaces[key]
         return _next(self, key)
-    
+
     @plumb
     def __setitem__(_next, self, key, val):
         # blend in our nodespaces as children, with name __<name>__
@@ -49,7 +50,7 @@ class Nodespaces(Behavior):
             # index checks below must not happen for other nodespace.
             return
         _next(self, key, val)
-    
+
     @plumb
     def __delitem__(_next, self, key):
         # blend in our nodespaces as children, with name __<name>__

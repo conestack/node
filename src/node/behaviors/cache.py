@@ -1,20 +1,24 @@
-from plumber import Behavior
-from plumber import default
-from plumber import plumb
-from node.interfaces import IInvalidate
-from node.interfaces import ICache
-from node.utils import instance_property
+from plumber import (
+    Behavior,
+    default,
+    plumb,
+)
 from zope.interface import implementer
+from ..interfaces import (
+    IInvalidate,
+    ICache,
+)
+from ..utils import instance_property
 
 
 @implementer(IInvalidate)
 class Invalidate(Behavior):
     """Plumbing behavior for invalidation.
-    
+
     This basic implementation assumes that nodes using this behavior are NOT
     storage related. It just uses ``self.__delitem__``.
     """
-    
+
     @default
     def invalidate(self, key=None):
         """Raise KeyError if child does not exist for key if given.
@@ -29,14 +33,14 @@ class Invalidate(Behavior):
 
 @implementer(ICache)
 class Cache(Behavior):
-    
+
     @default
     @instance_property
     def cache(self):
         """Default cache is a dict on self.
         """
         return dict()
-    
+
     @plumb
     def invalidate(_next, self, key=None):
         cache = self.cache
@@ -49,7 +53,7 @@ class Cache(Behavior):
             for key in cache.keys():
                 del cache[key]
         _next(self, key=key)
-    
+
     @plumb
     def __getitem__(_next, self, key):
         cache = self.cache
@@ -62,10 +66,10 @@ class Cache(Behavior):
     # XXX: think of using subscribers instead of plumbings for cache
     #      invalidation on __setitem__, __delitem__, __iter__.
     #      but this makes us depend caching to lifecycle.
-    # 
+    #
     #      might be another caching mechanism, both caching variants are
     #      possible then.
-    
+
     @plumb
     def __setitem__(_next, self, key, value):
         try:
@@ -73,7 +77,7 @@ class Cache(Behavior):
         except KeyError:
             pass
         _next(self, key, value)
-    
+
     @plumb
     def __delitem__(_next, self, key):
         try:
@@ -81,7 +85,7 @@ class Cache(Behavior):
         except KeyError:
             pass
         _next(self, key)
-    
+
     @plumb
     def __iter__(_next, self):
         # do not cache keys on default implementation.

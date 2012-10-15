@@ -1,12 +1,16 @@
 import uuid
-from plumber import plumb
-from plumber import override
-from plumber import default
-from plumber import Behavior
+from plumber import (
+    plumb,
+    override,
+    default,
+    Behavior,
+)
 from zope.interface import implementer
 from zope.interface.common.mapping import IReadMapping
-from node.interfaces import INode
-from node.interfaces import IReference
+from ..interfaces import (
+    INode,
+    IReference,
+)
 
 
 @implementer(IReadMapping)
@@ -34,7 +38,7 @@ class Reference(Behavior):
         self._index = dict()
         self.uuid = uuid.uuid4()
         _next(self, *args, **kw)
-    
+
     @plumb
     def __setitem__(_next, self, key, val):
         if INode.providedBy(val):
@@ -45,11 +49,11 @@ class Reference(Behavior):
             if has_children:
                 keys = set(self._index.keys())
                 if keys.intersection(val._index.keys()):
-                    raise ValueError, u"Node with uuid already exists"
+                    raise ValueError(u"Node with uuid already exists")
             self._index.update(val._index)
             val._index = self._index
         _next(self, key, val)
-    
+
     @plumb
     def __delitem__(_next, self, key):
         # fail immediately if key does not exist
@@ -58,14 +62,14 @@ class Reference(Behavior):
             for iuuid in todel._to_delete():
                 del self._index[iuuid]
         _next(self, key)
-    
+
     @plumb
     def detach(_next, self, key):
         node = _next(self, key)
-        node._index = { int(node.uuid): node }
+        node._index = {int(node.uuid): node}
         node._index_nodes()
         return node
-    
+
     def _get_uuid(self):
         return self._uuid
 
@@ -73,7 +77,7 @@ class Reference(Behavior):
         iuuid = uuid is not None and int(uuid) or None
         if iuuid in self._index \
           and self._index[iuuid] is not self:
-            raise ValueError, u"Given uuid was already used for another Node"
+            raise ValueError(u"Given uuid was already used for another Node")
         siuuid = self._uuid is not None and int(self._uuid) or None
         if siuuid in self._index:
             del self._index[siuuid]
@@ -81,7 +85,7 @@ class Reference(Behavior):
         self._uuid = uuid
 
     uuid = override(property(_get_uuid, _set_uuid))
-    
+
     @override
     @property
     def index(self):
@@ -90,7 +94,7 @@ class Reference(Behavior):
     @override
     def node(self, uuid):
         return self._index.get(int(uuid))
-    
+
     @default
     def _to_delete(self):
         todel = [int(self.uuid)]
@@ -102,7 +106,7 @@ class Reference(Behavior):
                 # about deletion.
                 continue
         return todel
-    
+
     @default
     def _index_nodes(self):
         for node in self.values():

@@ -1,5 +1,6 @@
 from base import BaseTester
 
+
 class FullMappingTester(BaseTester):
     """Test node against ``zope.interface.mapping.IFullMaping`` interface.
     """
@@ -60,7 +61,7 @@ class FullMappingTester(BaseTester):
         for key in keys:
             if not key in expected:
                 msg = 'Expected ``%s`` as keys. Got ``%s``'
-                msg = msg  % (str(keys), str(expected))
+                msg = msg % (str(keys), str(expected))
                 raise Exception(msg)
 
     def test___iter__(self):
@@ -111,7 +112,8 @@ class FullMappingTester(BaseTester):
                     raise Exception(msg)
         for key, value in items:
             if not value is self.context[key]:
-                msg = 'Expected %s, got %s' % (str(value), str(self.context[key]))
+                msg = 'Expected %s, got %s' % (str(value),
+                                               str(self.context[key]))
                 raise Exception(msg)
 
     def test_items(self):
