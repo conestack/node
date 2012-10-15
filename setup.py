@@ -29,7 +29,7 @@ setup(name='node',
       zip_safe=True,
       install_requires=[
           'setuptools',
-          'odict',
+          'odict>1.5',
           'plumber',
           'zope.lifecycleevent',
           'zope.deprecation',

@@ -248,28 +248,28 @@ TestCoverage
 Summary of the test coverage report::
 
   lines   cov%   module
-     62   100%   node.base
-     34   100%   node.behaviors.__init__
-    112   100%   node.behaviors.alias
-     43   100%   node.behaviors.attributes
-     53   100%   node.behaviors.cache
-    132   100%   node.behaviors.common
-     58   100%   node.behaviors.lifecycle
-    125   100%   node.behaviors.mapping
-     35   100%   node.behaviors.nodespace
-     85   100%   node.behaviors.nodify
-    112   100%   node.behaviors.order
-     85   100%   node.behaviors.reference
-     30   100%   node.behaviors.storage
-     21   100%   node.events
-    133   100%   node.interfaces
+     50   100%   node.base
+     11   100%   node.behaviors.__init__
+    107   100%   node.behaviors.alias
+     38   100%   node.behaviors.attributes
+     50   100%   node.behaviors.cache
+    118   100%   node.behaviors.common
+     49   100%   node.behaviors.lifecycle
+    114   100%   node.behaviors.mapping
+     31   100%   node.behaviors.nodespace
+     79   100%   node.behaviors.nodify
+    108   100%   node.behaviors.order
+     80   100%   node.behaviors.reference
+     27   100%   node.behaviors.storage
+     18   100%   node.events
+    124   100%   node.interfaces
      23   100%   node.locking
       1   100%   node.testing.__init__
      62   100%   node.testing.base
-     24   100%   node.testing.env
-    215   100%   node.testing.fullmapping
+     18   100%   node.testing.env
+    216   100%   node.testing.fullmapping
      29   100%   node.tests
-    121   100%   node.utils
+    119   100%   node.utils
 
 
 Contributors
@@ -285,8 +285,12 @@ Contributors
 Changes
 =======
 
+
 0.9.9dev
 --------
+
+- Python 2.7 compatibility.
+  [rnix, 2012-10-15]
 
 - Remove ``zope.component.event`` B/C.
   [rnix, 2012-10-15]

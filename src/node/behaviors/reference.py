@@ -42,14 +42,13 @@ class Reference(Behavior):
     @plumb
     def __setitem__(_next, self, key, val):
         if INode.providedBy(val):
-            has_children = False
-            for valkey in val.iterkeys():
-                has_children = True
-                break
-            if has_children:
+            try:
+                val.iterkeys().next()
                 keys = set(self._index.keys())
                 if keys.intersection(val._index.keys()):
                     raise ValueError(u"Node with uuid already exists")
+            except StopIteration:
+                pass
             self._index.update(val._index)
             val._index = self._index
         _next(self, key, val)
