@@ -42,6 +42,8 @@ setup(name='node',
               'interlude',
               'plone.testing',
               'unittest2',
+              'odict[test]',
+              'plumber[test]',
           ]
       },
       entry_points="""
