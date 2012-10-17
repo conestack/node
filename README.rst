@@ -136,94 +136,94 @@ Behaviors
 
 ``node`` package provides several plumbing behaviors:
 
-node.behaviors.DefaultInit
+**node.behaviors.DefaultInit**
     Plumbing part providing default ``__init__`` function on node.
     See ``node.interfaces.IDefaultInit``.
 
-node.behaviors.Nodify
+**node.behaviors.Nodify**
     Plumbing part to Fill in gaps for full INode API.
     See ``node.interfaces.INodify``.
 
-node.behaviors.Adopt
+**node.behaviors.Adopt**
     Plumbing part that provides adoption of children.
     See ``node.interfaces.IAdopt``.
 
-node.behaviors.NodeChildValidate
+**node.behaviors.NodeChildValidate**
     Plumbing part for child node validation.
     See ``node.interfaces.INodeChildValidate``.
 
-node.behaviors.UnicodeAware
+**node.behaviors.UnicodeAware**
     Plumbing part to ensure unicode for keys and string values.
     See ``node.interfaces.IUnicodeAware``.
 
-node.behaviors.Alias
+**node.behaviors.Alias**
     Plumbing part that provides aliasing of child keys.
     See ``node.interfaces.IAlias``.
 
-node.behaviors.AsAttrAccess
+**node.behaviors.AsAttrAccess**
     Plumbing part to get node as IAttributeAccess implementation.
     See ``node.interfaces.IAsAttrAccess``.
 
-node.behaviors.ChildFactory
+**node.behaviors.ChildFactory**
     Plumbing part providing child factories which are invoked at
     ``__getitem__`` if object by key is not present at plumbing endpoint yet.
     See ``node.interfaces.IChildFactory``.
 
-node.behaviors.FixedChildren
+**node.behaviors.FixedChildren**
     Plumbing part that initializes a fixed dictionary as children.
     See ``node.interfaces.IFixedChildren``.
 
-node.behaviors.GetattrChildren
+**node.behaviors.GetattrChildren**
     Plumbing part for child access via ``__getattr__``, given the attribute
     name is unused.
     See ``node.interfaces.IGetattrChildren``.
 
-node.behaviors.Nodespaces
+**node.behaviors.Nodespaces**
     Plumbing part for providing nodespaces on node.
     See ``node.interfaces.INodespaces``.
 
-node.behaviors.Attributes
+**node.behaviors.Attributes**
     Plumbing part to provide attributes on node.
     Requires ``node.behaviors.Nodespaces`` part.
     See ``node.interfaces.IAttributes``.
 
-node.behaviors.Lifecycle
+**node.behaviors.Lifecycle**
     Plumbing part taking care of lifecycle events.
     See ``node.interfaces.ILifecycle``.
 
-node.behaviors.AttributesLifecycle
+**node.behaviors.AttributesLifecycle**
     Plumbing part for handling ifecycle events at attributes manipulation.
     See ``node.interfaces.IAttributesLifecycle``.
 
-node.behaviors.Invalidate
+**node.behaviors.Invalidate**
     Plumbing part for node invalidation.
     See ``node.interfaces.Invalidate``.
 
-node.behaviors.Cache
+**node.behaviors.Cache**
     Plumbing part for caching.
     See ``node.interfaces.ICache``.
 
-node.behaviors.Order
+**node.behaviors.Order**
     Plumbing part for ordering support.
     See ``node.interfaces.IOrder``.
 
-node.behaviors.UUIDAware
+**node.behaviors.UUIDAware**
     Plumbing part providing a uuid on nodes.
     See ``node.interfaces.IUUIDAware``.
 
-node.behaviors.Reference
+**node.behaviors.Reference**
     Plumbing part holding an index of all nodes contained in the tree.
     See ``node.interfaces.IReference``.
 
-node.behaviors.Storage
+**node.behaviors.Storage**
     Provide abstract storage access.
     See ``node.interfaces.IStorage``.
 
-node.behaviors.DictStorage
+**node.behaviors.DictStorage**
     Provide dictionary storage.
     See ``node.interfaces.IStorage``.
 
-node.behaviors.OdictStorage
+**node.behaviors.OdictStorage**
     Provide ordered dictionary storage.
     See ``node.interfaces.IStorage``.
 
@@ -286,8 +286,8 @@ Changes
 =======
 
 
-0.9.9dev
---------
+0.9.9
+-----
 
 - Python 2.7 compatibility.
   [rnix, 2012-10-15]
