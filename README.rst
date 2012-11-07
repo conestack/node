@@ -285,8 +285,8 @@ Contributors
 Changes
 =======
 
-0.9.10dev
----------
+0.9.10
+------
 
 - Fix ``node.utils.StrCodec.encode`` to return value as is if str and decoding
   failed.
