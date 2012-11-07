@@ -285,6 +285,12 @@ Contributors
 Changes
 =======
 
+0.9.10dev
+---------
+
+- Fix ``node.utils.StrCodec.encode`` to return value as is if str and decoding
+  failed.
+  [rnix, 2012-11-07]
 
 0.9.9
 -----

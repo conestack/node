@@ -141,7 +141,11 @@ class StrCodec(object):
         """Return an encoded copy of the argument
 
         - strs are decoded and reencode to make sure they conform to the
-          encoding
+          encoding.
+          XXX: makes no sence, especially because a UnicodeDecodeError ends up
+               in a recursion error due to re-trying to encode. See below.
+               Added condition to return if str is still str after decoding.
+               This behavior should be removed completely.
 
         - unicodes are encoded as str according to encoding
 
@@ -154,7 +158,11 @@ class StrCodec(object):
         elif isinstance(arg, dict):
             arg = dict([self.encode(t) for t in arg.iteritems()])
         elif isinstance(arg, str):
-            arg = self.encode(self.decode(arg))
+            arg = self.decode(arg)
+            # If UnicodeDecodeError, binary data is expected. Return value
+            # as is.
+            if not isinstance(arg, str):
+                arg = self.encode(arg)
         elif isinstance(arg, unicode):
             arg = arg.encode(self._encoding)
         elif INode.providedBy(arg):
