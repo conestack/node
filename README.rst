@@ -7,12 +7,12 @@ This package is the successor of `zodict <http://pypi.python.org/pypi/zodict>`_.
 Overview
 --------
 
-Data structures could be described as tree. Some are by nature ``treeish``,
+Data structures could be described as trees. Some are by nature ``treeish``,
 like XML documents, LDAP directories or filesystem directory trees, while others
-could be treaten as.
+can be treated that way.
 
-Further, python has elegant ways for customizing all sorts of datamodel related
-API. The `dictionary container type 
+Furthermore, python has elegant ways for customizing all sorts of datamodel related
+APIs. The `dictionary container type 
 <http://docs.python.org/reference/datamodel.html#emulating-container-types>`_
 fits almost completely the purpose of representing a node of a tree. The same
 API is also described in ``zope.interface.common.mapping.IFullMapping``.
@@ -37,7 +37,7 @@ Usage
 
 ``node`` ships with some "ready-to-import-and-use" nodes.
 
-An unordered node. This can be used as base for trees where oder of items
+An unordered node. This can be used as base for trees where order of items
 doesn't matter::
 
     >>> from node.base import BaseNode
@@ -47,7 +47,7 @@ doesn't matter::
     <class 'node.base.BaseNode'>: root
       <class 'node.base.BaseNode'>: child
 
-An ordered node. Order of items is preserved::
+An ordered node. The order of items is preserved::
 
     >>> from node.base import OrderedNode
     >>> root = OrderedNode(name='orderedroot')
@@ -116,9 +116,9 @@ the documentation of ``plumber`` for details about the plumbing system::
     'nodespaces', 'parent', 'path', 'pop', 'popitem', 'printtree', 
     'root', 'setdefault', 'storage', 'update', 'values']
 
-As ``dir`` call shows,  ``CustomNode`` class was plumbed using given behaviors,
-now defining a complete ``INode`` implementation with some additional
-behaviours and is now ready to use::
+As the ``dir`` call shows, the ``CustomNode`` class was plumbed using given behaviors,
+so defining a complete ``INode`` implementation with some additional
+behaviours and is now easily done::
 
     >>> node = CustomNode()
     >>> node['child'] = CustomNode()
@@ -134,7 +134,7 @@ behaviours and is now ready to use::
 Behaviors
 ---------
 
-``node`` package provides several plumbing behaviors:
+The ``node`` package provides several plumbing behaviors:
 
 **node.behaviors.DefaultInit**
     Plumbing part providing default ``__init__`` function on node.
@@ -231,14 +231,14 @@ Behaviors
 Migration
 ---------
 
-A node which behaves like ``zodict.Node`` is contained at ``node.base.Node``.
+A node which behaves like ``zodict.Node`` is contained in ``node.base.Node``.
 This node is supposed to be used for migration from zodict.
 
-It's also useful to take a look of which behaviors the original node is build
-of.
+It's also useful to take a look at the behaviors the original node is build
+from.
 
 Probably an implementation does not need all the behaviors at once. In this case
-define the node plumbing directly on node class instead of inheriting from
+define the node plumbing directly on a node class instead of inheriting from
 ``node.base.Node``.
 
 
