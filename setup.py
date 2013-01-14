@@ -1,21 +1,26 @@
-from setuptools import setup, find_packages
 import os
+from setuptools import (
+    setup,
+    find_packages,
+)
 
-version = '0.9.10'
+
+version = '0.9.11dev'
 shortdesc = "Building data structures as node trees"
 longdesc = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
 longdesc += open(os.path.join(os.path.dirname(__file__), 'LICENSE.rst')).read()
+
 
 setup(name='node',
       version=version,
       description=shortdesc,
       long_description=longdesc,
       classifiers=[
-            'License :: OSI Approved :: BSD License',
-            'Intended Audience :: Developers',
-            'Topic :: Software Development',
-            'Operating System :: OS Independent',
-            'Programming Language :: Python',
+          'License :: OSI Approved :: BSD License',
+          'Intended Audience :: Developers',
+          'Topic :: Software Development',
+          'Operating System :: OS Independent',
+          'Programming Language :: Python',
       ],
       keywords='',
       author='BlueDynamics Alliance',
@@ -47,6 +52,4 @@ setup(name='node',
           ]
       },
       entry_points="""
-      [console_scripts]
-      """,
-      )
+      """)
