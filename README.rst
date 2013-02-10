@@ -288,7 +288,10 @@ Changes
 0.9.11dev
 ---------
 
-- no changes yet.
+- Improve ``node.utils.Unset``. Add ``Unset`` instance at 
+  ``node.utils.UNSET``.
+  [rnix, 2013-02-10]
+
 
 0.9.10
 ------
@@ -296,6 +299,7 @@ Changes
 - Fix ``node.utils.StrCodec.encode`` to return value as is if str and decoding
   failed.
   [rnix, 2012-11-07]
+
 
 0.9.9
 -----

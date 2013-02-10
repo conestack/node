@@ -16,7 +16,7 @@ from zope.interface.common.mapping import (
     IExtendedWriteMapping,
     IFullMapping,
 )
-from ..utils import Unset
+from ..utils import UNSET
 
 
 @implementer(IItemMapping)
@@ -204,14 +204,14 @@ class ExtendedWriteMapping(WriteMapping):
             return default
 
     @default
-    def pop(self, key, default=Unset):
+    def pop(self, key, default=UNSET):
         """works only if together with ReadMapping
         """
         try:
             val = self[key]
             del self[key]
         except KeyError:
-            if default is Unset:
+            if default is UNSET:
                 raise
             val = default
         return val

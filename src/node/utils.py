@@ -11,15 +11,25 @@ logger = logging.getLogger('node')
 
 
 class Unset(object):
-    """Used to identify unset values in contrast to None
+    """Used to identify unset values in contrast to None.
 
-    use for example by node.behaviors.nodify.Nodify
-
-    XXX: instanciate directly here??
-    XXX: yafowil contains another unset object, use the one from node
-    XXX: call me UNSET as constant?
-         UNSET = object()
+    use for example by node.behaviors.nodify.Nodify.
     """
+
+    def __nonzero__(self):
+        return False
+
+    def __str__(self):
+        return ''
+
+    def __len__(self):
+        return 0
+
+    def __repr__(self):
+        return '<UNSET>'
+
+
+UNSET = Unset()
 
 
 def LocationIterator(object):
