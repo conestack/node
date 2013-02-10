@@ -285,10 +285,14 @@ Contributors
 Changes
 =======
 
-0.9.11dev
----------
+0.9.11
+------
 
-- Improve ``node.utils.Unset``. Add ``Unset`` instance at 
+- Use ``node.utils.UNSET`` instance in
+  ``node.behaviors.mapping.ExtendedWriteMapping.pop``.
+  [rnix, 2013-02-10]
+
+- Improve ``node.utils.Unset``. Add ``Unset`` instance at
   ``node.utils.UNSET``.
   [rnix, 2013-02-10]
 
