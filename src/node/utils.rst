@@ -4,6 +4,24 @@ node.utils
 ==========
 
 
+UNSET
+-----
+
+::
+    >>> from node.utils import UNSET
+    >>> UNSET
+    <UNSET>
+
+    >>> str(UNSET)
+    ''
+
+    >>> bool(UNSET)
+    False
+
+    >>> len(UNSET)
+    0
+
+
 ReverseMapping
 --------------
 
