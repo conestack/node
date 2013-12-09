@@ -5,7 +5,7 @@ from setuptools import (
 )
 
 
-version = '0.9.11'
+version = '0.9.12'
 shortdesc = "Building data structures as node trees"
 longdesc = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
 longdesc += open(os.path.join(os.path.dirname(__file__), 'LICENSE.rst')).read()
@@ -38,6 +38,7 @@ setup(name='node',
           'plumber',
           'zope.lifecycleevent',
           'zope.deprecation',
+          'zope.component',
       ],
       extras_require={
           'py24': [

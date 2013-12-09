@@ -285,6 +285,13 @@ Contributors
 Changes
 =======
 
+0.9.12
+------
+
+- Add ``zope.component`` to install dependencies.
+  [rnix, 2013-12-09]
+
+
 0.9.11
 ------
 
