@@ -16,6 +16,7 @@ Required Imports::
     ...     DefaultInit,
     ...     Nodify,
     ...     OdictStorage,
+    ...     ChildFactory,
     ... )
 
 
@@ -135,6 +136,47 @@ Active invalidation of all children::
     >>> root.printtree()
     <class 'Node'>: None
       <class 'Node'>: c2
+
+Check for ChildFactory Node::
+
+    >>> class Node(object):
+    ...     __metaclass__ = plumber
+    ...     __plumbing__ = (
+    ...         Adopt,
+    ...         VolatileStorageInvalidate,
+    ...         DefaultInit,
+    ...         Nodify,
+    ...         ChildFactory,
+    ...         OdictStorage,
+    ...     )
+    ...     factories = {
+    ...         'foo': Node,
+    ...         'bar': Node,
+    ...     }
+    >>> node = Node()
+    >>> node.items()
+    [('foo', <Node object 'foo' at ...>), 
+    ('bar', <Node object 'bar' at ...>)]
+
+    >>> node.invalidate('foo')
+    >>> node.keys()
+    ['foo', 'bar']
+
+    >>> node.storage.items()
+    [('bar', <Node object 'bar' at ...>)]
+
+    >>> node.invalidate('foo')
+    >>> node.storage.items()
+    [('bar', <Node object 'bar' at ...>)]
+
+    >>> node.invalidate()
+    >>> node.storage.items()
+    []
+
+    >>> node.invalidate('baz')
+    Traceback (most recent call last):
+      ...
+    KeyError: 'baz'
 
 
 Caching

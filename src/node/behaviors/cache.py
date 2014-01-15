@@ -26,7 +26,6 @@ class Invalidate(Behavior):
         if key is not None:
             del self[key]
         else:
-            # need to use keys instead of iter here
             for key in self.keys():
                 del self[key]
 
@@ -43,10 +42,15 @@ class VolatileStorageInvalidate(Behavior):
         """
         storage = self.storage
         if key is not None:
-            del storage[key]
+            if key in self.keys():
+                try:
+                    del storage[key]
+                except KeyError, e:
+                    pass # ignore, key is valid, but not on storage right now
+            else:
+                raise KeyError(key)
         else:
-            # need to use keys instead of iter here
-            for key in self.keys():
+            for key in storage.keys():
                 del storage[key]
 
 

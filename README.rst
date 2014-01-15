@@ -256,7 +256,7 @@ Summary of the test coverage report::
      11   100%   node.behaviors.__init__
     107   100%   node.behaviors.alias
      38   100%   node.behaviors.attributes
-     60   100%   node.behaviors.cache
+     65   100%   node.behaviors.cache
     118   100%   node.behaviors.common
      49   100%   node.behaviors.lifecycle
     114   100%   node.behaviors.mapping
