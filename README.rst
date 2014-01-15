@@ -199,6 +199,10 @@ The ``node`` package provides several plumbing behaviors:
     Plumbing part for node invalidation.
     See ``node.interfaces.Invalidate``.
 
+**node.behaviors.VolatileStorageInvalidate**
+    Plumbing part for invalidating nodes using a volatile storage.
+    See ``node.interfaces.Invalidate``.
+
 **node.behaviors.Cache**
     Plumbing part for caching.
     See ``node.interfaces.ICache``.
@@ -252,7 +256,7 @@ Summary of the test coverage report::
      11   100%   node.behaviors.__init__
     107   100%   node.behaviors.alias
      38   100%   node.behaviors.attributes
-     50   100%   node.behaviors.cache
+     60   100%   node.behaviors.cache
     118   100%   node.behaviors.common
      49   100%   node.behaviors.lifecycle
     114   100%   node.behaviors.mapping
@@ -284,6 +288,13 @@ Contributors
 
 Changes
 =======
+
+0.9.13dev
+---------
+
+- Introduce ``node.behaviors.cache.VolatileStorageInvalidate``.
+  [rnix, 2014-01-15]
+
 
 0.9.12
 ------

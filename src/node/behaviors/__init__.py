@@ -5,6 +5,7 @@ from .attributes import (
 )
 from .cache import (
     Invalidate,
+    VolatileStorageInvalidate,
     Cache,
 )
 from .common import (

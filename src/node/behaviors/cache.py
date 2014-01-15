@@ -31,6 +31,25 @@ class Invalidate(Behavior):
                 del self[key]
 
 
+@implementer(IInvalidate)
+class VolatileStorageInvalidate(Behavior):
+    """Plumbing behavior for invalidating volatile storages like
+    ``DictStorage`` or ``OdictStorage``.
+    """
+
+    @default
+    def invalidate(self, key=None):
+        """Raise KeyError if child does not exist for key if given.
+        """
+        storage = self.storage
+        if key is not None:
+            del storage[key]
+        else:
+            # need to use keys instead of iter here
+            for key in self.keys():
+                del storage[key]
+
+
 @implementer(ICache)
 class Cache(Behavior):
 
