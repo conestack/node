@@ -289,8 +289,8 @@ Contributors
 Changes
 =======
 
-0.9.13dev
----------
+0.9.13
+------
 
 - Introduce ``node.behaviors.cache.VolatileStorageInvalidate``.
   [rnix, 2014-01-15]
