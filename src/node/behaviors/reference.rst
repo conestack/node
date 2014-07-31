@@ -4,7 +4,7 @@ node.behaviors.Reference
 Tree node index.::
 
     >>> import copy
-    >>> from plumber import plumber
+    >>> from plumber import plumbing
     >>> from node.behaviors import (
     ...     Adopt,
     ...     DefaultInit,
@@ -12,16 +12,15 @@ Tree node index.::
     ...     OdictStorage,
     ...     Reference,
     ... )
-    
-    >>> class ReferenceNode(object):
-    ...     __metaclass__ = plumber
-    ...     __plumbing__ = (
-    ...         Adopt,
-    ...         Reference,
-    ...         DefaultInit,
-    ...         Nodify,
-    ...         OdictStorage,
-    ...     )
+
+    >>> @plumbing(
+    ...     Adopt,
+    ...     Reference,
+    ...     DefaultInit,
+    ...     Nodify,
+    ...     OdictStorage)
+    ... class ReferenceNode(object):
+    ...     pass
 
     >>> node = ReferenceNode()
     >>> node.index
@@ -45,7 +44,6 @@ Tree node index.::
 
 Add some children and check node containment stuff.::
 
-    
     >>> node.__name__ = 'root'
     >>> node['child'] = ReferenceNode()
     >>> node['child'].path
@@ -153,8 +151,8 @@ Delete child. All checked uuids above must be deleted from index.::
     <class 'ReferenceNode'>: root
 
     >>> node['child'] = ReferenceNode()
-    
+
     >>> node['child'].allow_non_node_childs = True
     >>> node['child']['foo'] = 1
-    
+
     >>> del node['child']

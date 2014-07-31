@@ -1,4 +1,4 @@
-from plumber import plumber
+from plumber import plumbing
 from zope.interface import implementer
 from ..interfaces import INode
 from ..behaviors import (
@@ -21,13 +21,12 @@ class NoNode(object):
     pass
 
 
+@plumbing(
+    NodeChildValidate,
+    DefaultInit,
+    Adopt,
+    AsAttrAccess,
+    Nodify,
+    OdictStorage)
 class MyNode(object):
-    __metaclass__ = plumber
-    __plumbing__ = (
-        NodeChildValidate,
-        DefaultInit,
-        Adopt,
-        AsAttrAccess,
-        Nodify,
-        OdictStorage,
-    )
+    pass

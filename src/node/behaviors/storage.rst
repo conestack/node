@@ -1,11 +1,12 @@
 Abstract storage::
 
-    >>> from plumber import plumber
+    >>> from plumber import plumbing
     >>> from node.behaviors import Storage
-    >>> class StorageObject(object):
-    ...     __metaclass__ = plumber
-    ...     __plumbing__ = Storage
-    
+
+    >>> @plumbing(Storage)
+    ... class StorageObject(object):
+    ...     pass
+
     >>> obj = StorageObject()
     >>> obj.storage
     Traceback (most recent call last):
@@ -15,24 +16,25 @@ Abstract storage::
 Dict Storage::
 
     >>> from node.behaviors import DictStorage
-    >>> class StorageObject(object):
-    ...     __metaclass__ = plumber
-    ...     __plumbing__ = DictStorage
-    
+
+    >>> @plumbing(DictStorage)
+    ... class StorageObject(object):
+    ...     pass
+
     >>> obj = StorageObject()
     >>> obj.storage
     {}
-    
+
     >>> obj['foo'] = 'foo'
     >>> obj.storage
     {'foo': 'foo'}
-    
+
     >>> obj['foo']
     'foo'
-    
+
     >>> [key for key in obj]
     ['foo']
-    
+
     >>> del obj['foo']
     >>> obj.storage
     {}
@@ -40,24 +42,25 @@ Dict Storage::
 Odict Storage::
 
     >>> from node.behaviors import OdictStorage
-    >>> class StorageObject(object):
-    ...     __metaclass__ = plumber
-    ...     __plumbing__ = OdictStorage
-    
+
+    >>> @plumbing(OdictStorage)
+    ... class StorageObject(object):
+    ...     pass
+
     >>> obj = StorageObject()
     >>> obj.storage
     odict()
-    
+
     >>> obj['foo'] = 'foo'
     >>> obj.storage
     odict([('foo', 'foo')])
-    
+
     >>> obj['foo']
     'foo'
-    
+
     >>> [key for key in obj]
     ['foo']
-    
+
     >>> del obj['foo']
     >>> obj.storage
     odict()

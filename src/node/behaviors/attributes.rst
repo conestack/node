@@ -3,7 +3,7 @@ node.behaviors.Attributes
 
 ::
 
-    >>> from plumber import plumber
+    >>> from plumber import plumbing
     >>> from node.behaviors import (
     ...     NodeChildValidate,
     ...     DefaultInit,
@@ -12,27 +12,26 @@ node.behaviors.Attributes
     ...     Nodespaces,
     ...     Attributes,
     ... )
-    
-    >>> class AttributedNode(object):
-    ...     __metaclass__ = plumber
-    ...     __plumbing__ = (
-    ...         NodeChildValidate,
-    ...         Nodespaces,
-    ...         Attributes,
-    ...         DefaultInit,
-    ...         Nodify,
-    ...         OdictStorage,
-    ...     )
+
+    >>> @plumbing(
+    ...     NodeChildValidate,
+    ...     Nodespaces,
+    ...     Attributes,
+    ...     DefaultInit,
+    ...     Nodify,
+    ...     OdictStorage)
+    ... class AttributedNode(object):
+    ...     pass
 
     >>> node = AttributedNode(name='attributed')
     >>> node.attribute_access_for_attrs
     False
 
     >>> node.attribute_access_for_attrs = True
-    
+
     >>> node.attribute_access_for_attrs
     True
-    
+
     >>> node.attrs
     <node.utils.AttributeAccess object at ...>
 
@@ -51,10 +50,10 @@ node.behaviors.Attributes
     >>> node.attribute_access_for_attrs = False
     >>> node.attrs
     <NodeAttributes object 'attributed' at ...>
-    
+
     >>> node.attrs['foo']
     'bar'
-    
+
     >>> node.attrs.foo
     Traceback (most recent call last):
       ...

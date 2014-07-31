@@ -1,4 +1,4 @@
-from plumber import plumber
+from plumber import plumbing
 from .behaviors import (
     Adopt,
     Nodespaces,
@@ -14,14 +14,20 @@ from .behaviors import (
 )
 
 
+@plumbing(
+    Adopt,
+    Nodify)
 class AbstractNode(object):
-    __metaclass__ = plumber
-    __plumbing__ = (
-        Adopt,
-        Nodify,
-    )
+    pass
 
 
+@plumbing(
+    NodeChildValidate,
+    Adopt,
+    AsAttrAccess,
+    DefaultInit,
+    Nodify,
+    DictStorage)
 class BaseNode(object):
     """Base node, not ordered.
 
@@ -29,17 +35,15 @@ class BaseNode(object):
 
     Derive this for unordered trees.
     """
-    __metaclass__ = plumber
-    __plumbing__ = (
-        NodeChildValidate,
-        Adopt,
-        AsAttrAccess,
-        DefaultInit,
-        Nodify,
-        DictStorage,
-    )
 
 
+@plumbing(
+    NodeChildValidate,
+    Adopt,
+    AsAttrAccess,
+    DefaultInit,
+    Nodify,
+    OdictStorage)
 class OrderedNode(object):
     """Ordered node.
 
@@ -47,50 +51,37 @@ class OrderedNode(object):
 
     Derive this for ordered trees.
     """
-    __metaclass__ = plumber
-    __plumbing__ = (
-        NodeChildValidate,
-        Adopt,
-        AsAttrAccess,
-        DefaultInit,
-        Nodify,
-        OdictStorage,
-    )
 
 
+@plumbing(
+    NodeChildValidate,
+    Nodespaces,
+    Adopt,
+    Attributes,
+    Reference,
+    Order,
+    AsAttrAccess,
+    DefaultInit,
+    Nodify,
+    OdictStorage)
 class Node(object):
     """A node with original functionality from zodict.node.Node.
 
     XXX: reduce by attributes
     """
-    __metaclass__ = plumber
-    __plumbing__ = (
-        NodeChildValidate,
-        Nodespaces,
-        Adopt,
-        Attributes,
-        Reference,
-        Order,
-        AsAttrAccess,
-        DefaultInit,
-        Nodify,
-        OdictStorage,
-    )
 
 
+@plumbing(
+    NodeChildValidate,
+    Nodespaces,
+    Adopt,
+    Attributes,
+    Reference,
+    Order,
+    AsAttrAccess,
+    DefaultInit,
+    Nodify,
+    OdictStorage)
 class AttributedNode(object):
     """A node with original functionality from zodict.node.AttributedNode.
     """
-    __metaclass__ = plumber
-    __plumbing__ = (
-        NodeChildValidate,
-        Nodespaces,
-        Adopt,
-        Attributes,
-        Reference,
-        Order,
-        AsAttrAccess,
-        DefaultInit,
-        Nodify,
-        OdictStorage,
-    )

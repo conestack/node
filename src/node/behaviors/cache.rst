@@ -3,7 +3,7 @@ node.behaviors.invalidate
 
 Required Imports::
 
-    >>> from plumber import plumber
+    >>> from plumber import plumbing
     >>> from node.interfaces import (
     ...     ICache,
     ...     IInvalidate,
@@ -28,15 +28,14 @@ Be aware this implementation must not be used on persisting nodes.
 
 Build invalidating node::
 
-    >>> class Node(object):
-    ...     __metaclass__ = plumber
-    ...     __plumbing__ = (
-    ...         Adopt,
-    ...         Invalidate,
-    ...         DefaultInit,
-    ...         Nodify,
-    ...         OdictStorage,
-    ...     )
+    >>> @plumbing(
+    ...     Adopt,
+    ...     Invalidate,
+    ...     DefaultInit,
+    ...     Nodify,
+    ...     OdictStorage)
+    ... class Node(object):
+    ...     pass
 
 Test tree::
 
@@ -86,15 +85,14 @@ Volatile Storage Invalidate
 When a node internally uses a volatile storage like ``DictStorage`` or
 ``OdictStorage``, some can use ``VolatileStorageInvalidate`` for invalidation::
 
-    >>> class Node(object):
-    ...     __metaclass__ = plumber
-    ...     __plumbing__ = (
-    ...         Adopt,
-    ...         VolatileStorageInvalidate,
-    ...         DefaultInit,
-    ...         Nodify,
-    ...         OdictStorage,
-    ...     )
+    >>> @plumbing(
+    ...     Adopt,
+    ...     VolatileStorageInvalidate,
+    ...     DefaultInit,
+    ...     Nodify,
+    ...     OdictStorage)
+    ... class Node(object):
+    ...     pass
 
 Test tree::
 
@@ -139,16 +137,14 @@ Active invalidation of all children::
 
 Check for ChildFactory Node::
 
-    >>> class Node(object):
-    ...     __metaclass__ = plumber
-    ...     __plumbing__ = (
-    ...         Adopt,
-    ...         VolatileStorageInvalidate,
-    ...         DefaultInit,
-    ...         Nodify,
-    ...         ChildFactory,
-    ...         OdictStorage,
-    ...     )
+    >>> @plumbing(
+    ...     Adopt,
+    ...     VolatileStorageInvalidate,
+    ...     DefaultInit,
+    ...     Nodify,
+    ...     ChildFactory,
+    ...     OdictStorage)
+    ... class Node(object):
     ...     factories = {
     ...         'foo': Node,
     ...         'bar': Node,
@@ -184,16 +180,15 @@ Caching
 
 Build a node with active invalidation and cache functionality::
 
-    >>> class Node(object):
-    ...     __metaclass__ = plumber
-    ...     __plumbing__ = (
-    ...         Adopt,
-    ...         Cache,
-    ...         Invalidate,
-    ...         DefaultInit,
-    ...         Nodify,
-    ...         OdictStorage,
-    ...     )
+    >>> @plumbing(
+    ...     Adopt,
+    ...     Cache,
+    ...     Invalidate,
+    ...     DefaultInit,
+    ...     Nodify,
+    ...     OdictStorage)
+    ... class Node(object):
+    ...     pass
 
     >>> root = Node()
     >>> root['c1'] = Node()

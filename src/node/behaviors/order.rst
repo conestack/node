@@ -6,7 +6,7 @@ Order without References
 
 Node insertion. ``insertbefore`` and ``insertafter``::
 
-    >>> from plumber import plumber
+    >>> from plumber import plumbing
     >>> from node.behaviors import (
     ...     Adopt,
     ...     DefaultInit,
@@ -15,19 +15,18 @@ Node insertion. ``insertbefore`` and ``insertafter``::
     ...     Order,
     ...     Reference,
     ... )
-    
-    >>> class OrderableNode(object):
-    ...     __metaclass__ = plumber
-    ...     __plumbing__ = (
-    ...         Adopt,
-    ...         Order,
-    ...         DefaultInit,
-    ...         Nodify,
-    ...         OdictStorage,
-    ...     )
-    
+
+    >>> @plumbing(
+    ...     Adopt,
+    ...     Order,
+    ...     DefaultInit,
+    ...     Nodify,
+    ...     OdictStorage)
+    ... class OrderableNode(object):
+    ...     pass
+
     >>> node = OrderableNode('root')
-    
+
     >>> node['child1'] = OrderableNode()
     >>> node['child2'] = OrderableNode()
     >>> node.printtree()
@@ -40,7 +39,7 @@ Node insertion. ``insertbefore`` and ``insertafter``::
     Traceback (most recent call last):
       ...
     ValueError: Given node has no __name__ set.
-    
+
     >>> new.__name__ = 'child3'
     >>> node.insertbefore(new, OrderableNode('fromelsewhere'))
     Traceback (most recent call last):
@@ -76,7 +75,7 @@ Node insertion. ``insertbefore`` and ``insertafter``::
 Move a node. Therefor we first need to detach the node we want to move from
 tree. Then insert the detached node elsewhere. In general, you can insert the
 detached node or subtree to a complete different tree::
-    
+
     >>> detached = node.detach('child4')
     >>> node.insertbefore(detached, node['child1'])
     >>> node.printtree()
@@ -99,7 +98,7 @@ detached node or subtree to a complete different tree::
       <class 'OrderableNode'>: child3
       <class 'OrderableNode'>: child2
       <class 'OrderableNode'>: child5
-    
+
     >>> new = OrderableNode(name='last')
     >>> node.insertlast(new)
     >>> node.printtree()
@@ -118,7 +117,7 @@ detached node or subtree to a complete different tree::
     >>> node.printtree()
     <class 'OrderableNode'>: root
       <class 'OrderableNode'>: new
-    
+
     >>> node.clear()
     >>> node.insertlast(new)
     >>> node.printtree()
@@ -215,30 +214,28 @@ Order with References
 ::
 
     >>> from node.behaviors import Reference
-    
-    >>> class OrderReferenceNode(object):
-    ...     __metaclass__ = plumber
-    ...     __plumbing__ = (
-    ...         Adopt,
-    ...         Order,
-    ...         Reference,
-    ...         DefaultInit,
-    ...         Nodify,
-    ...         OdictStorage,
-    ...     )
-    
+    >>> @plumbing(
+    ...     Adopt,
+    ...     Order,
+    ...     Reference,
+    ...     DefaultInit,
+    ...     Nodify,
+    ...     OdictStorage)
+    ... class OrderReferenceNode(object):
+    ...     pass
+
     >>> node = OrderReferenceNode(name='root')
     >>> node['child1'] = OrderReferenceNode()
     >>> node['child3'] = OrderReferenceNode()
     >>> node['child4'] = OrderReferenceNode()
     >>> node['child2'] = OrderReferenceNode()
     >>> node['child5'] = OrderReferenceNode()
-    
+
     >>> node.insertbefore(node['child2'], node['child1'])
     Traceback (most recent call last):
       ...
     KeyError: u'Given node already contained in tree.'
-    
+
     >>> len(node._index.keys())
     6
 
@@ -364,10 +361,10 @@ Detach subtree and insert elsewhere::
       <class 'OrderReferenceNode'>: d
       <object object at ...>
       <class 'OrderReferenceNode'>: e
-    
+
     >>> tree2.detach('d')
     <OrderReferenceNode object 'd' at ...>
-    
+
     >>> tree2.printtree()
     <class 'OrderReferenceNode'>: x
       <class 'OrderReferenceNode'>: e

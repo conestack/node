@@ -34,7 +34,7 @@ By setting strict to False, inexistent keys are returned as fallback::
     >>> da = DictAliaser([('alias1', 'key1'), ('alias2', 'key2')], strict=False)
     >>> da.alias('foo')
     'foo'
-    
+
     >>> da.unalias('foo')
     'foo'
 
@@ -46,7 +46,7 @@ An aliaser that simply prefixes all keys.::
 
     >>> from node.behaviors.alias import PrefixAliaser
     >>> pa = PrefixAliaser('prefix-')
-    
+
     >>> pa.alias('foo')
     'prefix-foo'
 
@@ -66,7 +66,7 @@ An aliaser that simply suffixes all keys.::
 
     >>> from node.behaviors.alias import SuffixAliaser
     >>> sa = SuffixAliaser('-suffix')
-    
+
     >>> sa.alias('foo')
     'foo-suffix'
 
@@ -108,7 +108,7 @@ Combined prefix and suffix aliaser::
     >>> psa = PrefixSuffixAliaser('prefix-', '-suffix')
     >>> psa.alias('foo')
     'prefix-foo-suffix'
-    
+
     >>> psa.unalias(psa.alias('foo'))
     'foo'
 
@@ -119,20 +119,21 @@ Alias
 A dictionary that uses the alias plumbing but does not assign an aliaser.
 Therefore, no aliasing is happening::
 
-    >>> from plumber import plumber
+    >>> from plumber import plumbing
     >>> from node.behaviors import Alias
-    >>> class AliasDict(dict):
-    ...     __metaclass__ = plumber
-    ...     __plumbing__ = Alias
+
+    >>> @plumbing(Alias)
+    ... class AliasDict(dict):
+    ...     pass
 
     >>> ad = AliasDict()
     >>> ad['foo'] = 1
     >>> ad['foo']
     1
-    
+
     >>> [x for x in ad]
     ['foo']
-    
+
     >>> del ad['foo']
     >>> [x for x in ad]
     []
@@ -146,10 +147,10 @@ Now the same but with a prefix aliaser::
     >>> ad['pre-foo'] = 1
     >>> ad['pre-foo']
     1
-    
+
     >>> [x for x in ad]
     ['pre-foo']
-    
+
     >>> del ad['pre-foo']
     >>> [x for x in ad]
     []
@@ -167,9 +168,9 @@ key::
     ...     def __setitem__(self, key, val):
     ...         raise KeyError(key)
 
-    >>> class FailDict(FakeDict):
-    ...     __metaclass__ = plumber
-    ...     __plumbing__ = Alias
+    >>> @plumbing(Alias)
+    ... class FailDict(FakeDict):
+    ...     pass
 
     >>> fail = FailDict()
     >>> fail.aliaser = aliaser

@@ -74,7 +74,7 @@ A more fine granular control of node functionality
 Thus, different behaviors of nodes are provided by ``plumbing behaviors``. Read
 the documentation of ``plumber`` for details about the plumbing system::
 
-    >>> from plumber import plumber
+    >>> from plumber import plumbing
     >>> from node.behaviors import (
     ...     Nodespaces,
     ...     Attributes,
@@ -85,25 +85,24 @@ the documentation of ``plumber`` for details about the plumbing system::
     ...     Nodify,
     ...     OdictStorage,
     ... )
-    
-    >>> class CustomNode(object):
-    ...     __metaclass__ = plumber
-    ...     __plumbing__ = (
-    ...         Nodespaces,
-    ...         Attributes,
-    ...         Lifecycle,
-    ...         NodeChildValidate,
-    ...         Adopt,
-    ...         DefaultInit,
-    ...         Nodify,
-    ...         OdictStorage,
-    ...     )
+
+    >>> @plumbing(
+    ...     Nodespaces,
+    ...     Attributes,
+    ...     Lifecycle,
+    ...     NodeChildValidate,
+    ...     Adopt,
+    ...     DefaultInit,
+    ...     Nodify,
+    ...     OdictStorage)
+    ... class CustomNode(object):
+    ...     pass
     
     >>> dir(CustomNode)
     ['__class__', '__contains__', '__delattr__', '__delitem__', 
     '__dict__', '__doc__', '__format__', '__getattribute__', 
     '__getitem__', '__hash__', '__implemented__', '__init__', 
-    '__iter__', '__len__', '__metaclass__', '__module__', '__name__', 
+    '__iter__', '__len__', '__module__', '__name__', 
     '__new__', '__nonzero__', '__parent__', '__plumbing__', 
     '__plumbing_stacks__', '__provides__', '__reduce__', 
     '__reduce_ex__', '__repr__', '__setattr__', '__setitem__', 
@@ -125,7 +124,7 @@ behaviours and is now easily done::
     >>> node.printtree()
     <class 'CustomNode'>: None
       <class 'CustomNode'>: child
-    
+
     >>> from node.interfaces import INode
     >>> INode.providedBy(node)
     True
@@ -252,7 +251,7 @@ TestCoverage
 Summary of the test coverage report::
 
   lines   cov%   module
-     50   100%   node.base
+     51   100%   node.base
      11   100%   node.behaviors.__init__
     107   100%   node.behaviors.alias
      38   100%   node.behaviors.attributes
@@ -270,10 +269,10 @@ Summary of the test coverage report::
      23   100%   node.locking
       1   100%   node.testing.__init__
      62   100%   node.testing.base
-     18   100%   node.testing.env
+     19   100%   node.testing.env
     216   100%   node.testing.fullmapping
      29   100%   node.tests
-    119   100%   node.utils
+    130   100%   node.utils
 
 
 Contributors
@@ -288,6 +287,13 @@ Contributors
 
 Changes
 =======
+
+0.9.14 (unreleased)
+-------------------
+
+- use ``plumbing`` decorator instead of ``plumber`` metaclass.
+  [rnix, 2014-07-31]
+
 
 0.9.13
 ------

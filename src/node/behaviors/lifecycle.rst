@@ -4,7 +4,7 @@ node.behaviors.Lifecycle
 Check NodeCreation.::
 
     >>> import zope.component
-    
+
     >>> from node.interfaces import (
     ...     INode,
     ...     INodeCreatedEvent,
@@ -13,20 +13,20 @@ Check NodeCreation.::
     ...     INodeRemovedEvent,
     ...     INodeDetachedEvent,
     ... )
-    
+
     >>> class Handler(object):
     ...     handled = []
     ...     def __call__(self, obj, event):
     ...         self.handled.append(event)
     >>> handler = Handler()
-    
+
     >>> zope.component.provideHandler(handler, [INode, INodeCreatedEvent])
     >>> zope.component.provideHandler(handler, [INode, INodeAddedEvent])
     >>> zope.component.provideHandler(handler, [INode, INodeModifiedEvent])
     >>> zope.component.provideHandler(handler, [INode, INodeRemovedEvent])
     >>> zope.component.provideHandler(handler, [INode, INodeDetachedEvent])
-    
-    >>> from plumber import plumber
+
+    >>> from plumber import plumbing
     >>> from node.behaviors import (
     ...     Lifecycle, 
     ...     AttributesLifecycle, 
@@ -37,33 +37,30 @@ Check NodeCreation.::
     ...     Nodify, 
     ...     DictStorage, 
     ... )
-    
-    >>> class NoLifecycleNode(object):
-    ...     __metaclass__ = plumber
-    ...     __plumbing__ = (
-    ...         DefaultInit,
-    ...         Nodify,
-    ...         DictStorage,
-    ...     )
-    
+
+    >>> @plumbing(
+    ...     DefaultInit,
+    ...     Nodify,
+    ...     DictStorage)
+    ... class NoLifecycleNode(object):
+    ...     pass
+
     >>> root = NoLifecycleNode(name='no_notify')
     >>> handler.handled
     []
-    
-    >>> class LifecycleNodeAttributes(NodeAttributes):
-    ...     __metaclass__ = plumber
-    ...     __plumbing__ = AttributesLifecycle
-    
-    >>> class LifecycleNode(object):
-    ...     __metaclass__ = plumber
-    ...     __plumbing__ = (
-    ...         Nodespaces,
-    ...         Attributes,
-    ...         Lifecycle,
-    ...         DefaultInit,
-    ...         Nodify,
-    ...         DictStorage,
-    ...     )
+
+    >>> @plumbing(AttributesLifecycle)
+    ... class LifecycleNodeAttributes(NodeAttributes):
+    ...     pass
+
+    >>> @plumbing(
+    ...     Nodespaces,
+    ...     Attributes,
+    ...     Lifecycle,
+    ...     DefaultInit,
+    ...     Nodify,
+    ...     DictStorage)
+    ... class LifecycleNode(object):
     ...     attributes_factory = LifecycleNodeAttributes
 
     >>> root = LifecycleNode(name='root')
@@ -71,7 +68,7 @@ Check NodeCreation.::
     [<node.events.NodeCreatedEvent object at ...>]
 
 Check Node adding.::
-    
+
     >>> del handler.handled[0]
     >>> child1 = LifecycleNode()
     >>> root['child1'] = child1
@@ -85,18 +82,18 @@ Check Node modification.::
     >>> del handler.handled[0]
 
     >>> ignore = child1.attrs
-    
+
 No event, despite the node creation for the attributes nodespace.::
 
     >>> handler.handled
     []
-    
+
 Node modified events if the attributes nodespace is changed.::
 
     >>> child1.attrs['foo'] = 1
     >>> handler.handled
     [<node.events.NodeModifiedEvent object at ...>]
-    
+
     >>> del handler.handled[0]
     >>> del child1.attrs['foo']  
     >>> handler.handled
@@ -131,7 +128,7 @@ Check notify suppress on attributes manipulation::
     >>> attrs = root.attrs
     >>> attrs
     <LifecycleNodeAttributes object 'root' at ...>
-    
+
     >>> attrs['foo'] = 'foo'
     >>> del attrs['foo']
     >>> handler.handled

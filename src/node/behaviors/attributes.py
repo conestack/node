@@ -1,5 +1,5 @@
 from plumber import (
-    plumber,
+    plumbing,
     finalize,
     default,
     Behavior,
@@ -15,14 +15,12 @@ from .nodify import Nodify
 from .storage import OdictStorage
 
 
+@plumbing(
+    NodeChildValidate,
+    Adopt,
+    Nodify,
+    OdictStorage)
 class NodeAttributes(object):
-    __metaclass__ = plumber
-    __plumbing__ = (
-        NodeChildValidate,
-        Adopt,
-        Nodify,
-        OdictStorage,
-    )
     allow_non_node_childs = True
 
     def __init__(self, name=None, parent=None):

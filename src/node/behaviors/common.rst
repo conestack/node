@@ -6,16 +6,17 @@ Adopt
 
 General imports.::
 
-    >>> from plumber import plumber
+    >>> from plumber import plumbing
     >>> from node.testing.env import MockupNode
     >>> from node.testing.env import NoNode
 
 A dictionary is used as end point.::
 
     >>> from node.behaviors import Adopt
-    >>> class AdoptingDict(dict):
-    ...     __metaclass__ = plumber
-    ...     __plumbing__ = Adopt
+
+    >>> @plumbing(Adopt)
+    ... class AdoptingDict(dict):
+    ...     pass
 
     >>> ad = AdoptingDict()
 
@@ -59,9 +60,9 @@ instead of just naming the plumbing init eg plumbing__init__.::
     ...     def setdefault(self, key, default=None):
     ...         pass
 
-    >>> class FailingAD(FakeDict):
-    ...     __metaclass__ = plumber
-    ...     __plumbing__ = Adopt
+    >>> @plumbing(Adopt)
+    ... class FailingAD(FakeDict):
+    ...     pass
 
     >>> fail = FailingAD()
     >>> node = MockupNode()
@@ -77,28 +78,27 @@ instead of just naming the plumbing init eg plumbing__init__.::
 
 UnicodeAware
 ------------
+
 ::
+
     >>> from node.behaviors import UnicodeAware, OdictStorage, Nodify
-    >>> class UnicodeNode(object):
-    ...     __metaclass__ = plumber
-    ...     __plumbing__ = (
-    ...         Nodify,
-    ...         UnicodeAware,
-    ...         OdictStorage,
-    ...     )
-    
+
+    >>> @plumbing(Nodify, UnicodeAware, OdictStorage)
+    ... class UnicodeNode(object):
+    ...     pass
+
     >>> node = UnicodeNode()
     >>> node['foo'] = UnicodeNode()
     >>> node.keys()
     [u'foo']
-    
+
     >>> node['bar'] = 'bar'
     >>> node.items()
     [(u'foo', <UnicodeNode object 'None' at ...>), (u'bar', u'bar')]
-    
+
     >>> node['foo']
     <UnicodeNode object 'None' at ...>
-    
+
     >>> del node['bar']
     >>> node.keys()
     [u'foo']
@@ -106,15 +106,16 @@ UnicodeAware
 
 ChildFactory
 ------------
+
 ::
+
     >>> from node.behaviors import ChildFactory
-    
+
     >>> class FooChild(object): pass
     >>> class BarChild(object): pass
-    
-    >>> class ChildFactoryNode(object):
-    ...     __metaclass__ = plumber
-    ...     __plumbing__ = Nodify, ChildFactory, OdictStorage
+
+    >>> @plumbing(Nodify, ChildFactory, OdictStorage)
+    ... class ChildFactoryNode(object):
     ...     factories = {
     ...         'foo': FooChild,
     ...         'bar': BarChild,
@@ -127,11 +128,13 @@ ChildFactory
 
 FixedChildren
 -------------
+
 ::
+
     >>> from node.behaviors import FixedChildren
-    >>> class FixedChildrenNode(object):
-    ...     __metaclass__ = plumber
-    ...     __plumbing__ = Nodify, FixedChildren
+
+    >>> @plumbing(Nodify, FixedChildren)
+    ... class FixedChildrenNode(object):
     ...     fixed_children_factories = (
     ...         ('foo', FooChild),
     ...         ('bar', BarChild),
@@ -149,12 +152,12 @@ FixedChildren
 
     >>> node['foo'] is node['foo']
     True
-    
+
     >>> del node['foo']
     Traceback (most recent call last):
       ...
     NotImplementedError: read-only
-    
+
     >>> node['foo'] = 'foo'
     Traceback (most recent call last):
       ...
@@ -165,21 +168,20 @@ UUIDAware
 ---------
 
 ::
-    >>> from plumber import plumber
+
     >>> from node.behaviors import UUIDAware, DefaultInit
 
 Create a uid aware node. ``copy`` is not supported on UUIDAware node trees,
 ``deepcopy`` must be used::
 
-    >>> class UUIDNode(object):
-    ...     __metaclass__ = plumber
-    ...     __plumbing__ = (
-    ...         Adopt,
-    ...         DefaultInit,
-    ...         Nodify,
-    ...         OdictStorage,
-    ...         UUIDAware,
-    ...     )
+    >>> @plumbing(
+    ...     Adopt,
+    ...     DefaultInit,
+    ...     Nodify,
+    ...     OdictStorage,
+    ...     UUIDAware)
+    ... class UUIDNode(object):
+    ...     pass
 
 UUID is set at init time::
 
@@ -199,7 +201,7 @@ On ``deepcopy``, a new uid gets set::
     >>> root_cp = root.deepcopy()
     >>> root is root_cp
     False
-    
+
     >>> root.uuid == root_cp.uuid
     False
 
@@ -211,19 +213,19 @@ Create children, copy tree and check if all uuids have changed::
     <class 'UUIDNode'>: root
       <class 'UUIDNode'>: c1
         <class 'UUIDNode'>: s1
-    
+
     >>> root_cp = root.deepcopy()
     >>> root_cp.printtree()
     <class 'UUIDNode'>: root
       <class 'UUIDNode'>: c1
         <class 'UUIDNode'>: s1
-    
+
     >>> root.uuid == root_cp.uuid
     False
-    
+
     >>> root['c1'].uuid == root_cp['c1'].uuid
     False
-    
+
     >>> root['c1']['s1'].uuid == root_cp['c1']['s1'].uuid
     False
 
@@ -232,52 +234,54 @@ When detaching part of a tree, uid's are not changed::
     >>> c1_uid = root['c1'].uuid
     >>> s1_uid = root['c1']['s1'].uuid
     >>> detached = root.detach('c1')
-    
+
     >>> root.printtree()
     <class 'UUIDNode'>: root
-    
+
     >>> detached.printtree()
     <class 'UUIDNode'>: c1
       <class 'UUIDNode'>: s1
-    
+
     >>> c1_uid == detached.uuid
     True
-    
+
     >>> s1_uid == detached['s1'].uuid
     True
 
 
 NodeChildValidate
 -----------------
+
 ::
+
     >>> from node.behaviors import (
     ...     NodeChildValidate,
     ...     Nodify,
     ...     OdictStorage,
     ... )
-    
-    >>> class NodeChildValidateNode(object):
-    ...     __metaclass__ = plumber
-    ...     __plumbing__ = NodeChildValidate, DefaultInit, Nodify, OdictStorage
-    
+
+    >>> @plumbing(NodeChildValidate, DefaultInit, Nodify, OdictStorage)
+    ... class NodeChildValidateNode(object):
+    ...     pass
+
     >>> node = NodeChildValidateNode()
     >>> node.allow_non_node_childs
     False
-    
+
     >>> node['child'] = 1
     Traceback (most recent call last):
       ...
     ValueError: Non-node childs are not allowed.
-    
+
     >>> class SomeClass(object): pass
-    
+
     >>> node['aclasshere'] = SomeClass
     Traceback (most recent call last):
       ...
     ValueError: It isn't allowed to use classes as values.
-    
+
     >>> node.allow_non_node_childs = True
-    
+
     >>> node['child'] = 1
     >>> node['child']
     1
@@ -299,9 +303,8 @@ XXX: this test breaks coverage recording!!!::
     ...             raise AttributeError("baseblend")
     ...         return "42"
 
-    >>> class GetattrNode(Base):
-    ...     __metaclass__ = plumber
-    ...     __plumbing__ = GetattrChildren
+    >>> @plumbing(GetattrChildren)
+    ... class GetattrNode(Base):
     ...     ourattr = 2
 
     >>> node = GetattrNode()
@@ -326,9 +329,9 @@ Only children not shadowed by real attributes can be accessed via getattr::
     2
 
 XXX: The base class' getattr does not work anymore. plumber directive
-     plumbor override could solve this together with support for multiple
+     plumber override could solve this together with support for multiple
      behaviors hooking into __getattr__. -cfl
-     
+
      Thats why i prefer AttributeAccess explicit for attribute access on node
      children. overwriting __getattr__ and/or __getattribue__ cause too many
      side effects imo. -rn

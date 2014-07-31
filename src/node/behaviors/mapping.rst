@@ -3,16 +3,17 @@ node.behaviors.FullMapping
 
 Plumber and FullMappingTester.::
 
-    >>> from plumber import plumber
+    >>> from plumber import plumbing
     >>> from node.testing import FullMappingTester
 
 A full mapping that is going to fail, because nobody takes care of
 ``__delitem__``, ``__getitem__``, ``__iter__`` and ``__setitem__``.::
 
     >>> from node.behaviors import FullMapping
-    >>> class MyFullMapping(object):
-    ...     __metaclass__ = plumber
-    ...     __plumbing__ = FullMapping
+
+    >>> @plumbing(FullMapping)
+    ... class MyFullMapping(object):
+    ...     pass
 
     >>> tester = FullMappingTester(MyFullMapping, include_node_checks=False)
     >>> tester.run()
@@ -66,9 +67,12 @@ inherited from base classes.::
 Use a storage.::
 
     >>> from node.behaviors import DictStorage
-    >>> class MyFullMapping(object):
-    ...     __metaclass__ = plumber
-    ...     __plumbing__ = FullMapping, DictStorage
+
+    >>> @plumbing(
+    ...     FullMapping,
+    ...     DictStorage)
+    ... class MyFullMapping(object):
+    ...     pass
 
     >>> tester = FullMappingTester(MyFullMapping, include_node_checks=False)
     >>> tester.run()
