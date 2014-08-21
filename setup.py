@@ -35,7 +35,7 @@ setup(name='node',
       install_requires=[
           'setuptools',
           'odict>1.5',
-          'plumber>1.2',
+          'plumber>1.3',
           'zope.lifecycleevent',
           'zope.deprecation',
           'zope.component',
