@@ -10,6 +10,9 @@
 /eggs
 /src/bda.ldap.egg-info
 /src/node.egg-info
+/include/
+/lib/
+/local/
 .mrsd
 .project
 .pydevproject
