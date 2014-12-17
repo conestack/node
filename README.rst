@@ -248,6 +248,9 @@ define the node plumbing directly on a node class instead of inheriting from
 TestCoverage
 ------------
 
+.. image:: https://travis-ci.org/bluedynamics/node.svg?branch=master
+    :target: https://travis-ci.org/bluedynamics/node
+
 Summary of the test coverage report::
 
   lines   cov%   module
