@@ -2,7 +2,7 @@
 Changes
 =======
 
-0.9.15 (unreleased)
+0.9.15 (2014-12-17)
 -------------------
 
 - Fix dependency declaration to ``odict`` in order to make setuptools 8.x+
