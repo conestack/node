@@ -12,7 +12,7 @@ like XML documents, LDAP directories or filesystem directory trees, while others
 can be treated that way.
 
 Furthermore, python has elegant ways for customizing all sorts of datamodel related
-APIs. The `dictionary container type 
+APIs. The `dictionary container type
 <http://docs.python.org/reference/datamodel.html#emulating-container-types>`_
 fits almost completely the purpose of representing a node of a tree. The same
 API is also described in ``zope.interface.common.mapping.IFullMapping``.
@@ -57,9 +57,9 @@ An ordered node. The order of items is preserved::
     <class 'node.base.OrderedNode'>: orderedroot
       <class 'node.base.OrderedNode'>: foo
       <class 'node.base.OrderedNode'>: bar
-    
+
     >>> root.items()
-    [('foo', <OrderedNode object 'foo' at ...>), 
+    [('foo', <OrderedNode object 'foo' at ...>),
     ('bar', <OrderedNode object 'bar' at ...>)]
 
 A full API description of the node interface can be found at
@@ -97,22 +97,22 @@ the documentation of ``plumber`` for details about the plumbing system::
     ...     OdictStorage)
     ... class CustomNode(object):
     ...     pass
-    
+
     >>> dir(CustomNode)
-    ['__class__', '__contains__', '__delattr__', '__delitem__', 
-    '__dict__', '__doc__', '__format__', '__getattribute__', 
-    '__getitem__', '__hash__', '__implemented__', '__init__', 
-    '__iter__', '__len__', '__module__', '__name__', 
-    '__new__', '__nonzero__', '__parent__', '__plumbing__', 
-    '__plumbing_stacks__', '__provides__', '__reduce__', 
-    '__reduce_ex__', '__repr__', '__setattr__', '__setitem__', 
-    '__sizeof__', '__str__', '__subclasshook__', '__weakref__', 
-    '_nodespaces', '_notify_suppress', 'acquire', 'allow_non_node_childs', 
-    'attribute_access_for_attrs', 'attributes', 'attributes_factory', 
-    'attrs', 'clear', 'copy', 'deepcopy', 'detach', 'events', 'filtereditems', 
-    'filtereditervalues', 'filteredvalues', 'get', 'has_key', 'items', 
-    'iteritems', 'iterkeys', 'itervalues', 'keys', 'name', 'noderepr', 
-    'nodespaces', 'parent', 'path', 'pop', 'popitem', 'printtree', 
+    ['__class__', '__contains__', '__delattr__', '__delitem__',
+    '__dict__', '__doc__', '__format__', '__getattribute__',
+    '__getitem__', '__hash__', '__implemented__', '__init__',
+    '__iter__', '__len__', '__module__', '__name__',
+    '__new__', '__nonzero__', '__parent__', '__plumbing__',
+    '__plumbing_stacks__', '__provides__', '__reduce__',
+    '__reduce_ex__', '__repr__', '__setattr__', '__setitem__',
+    '__sizeof__', '__str__', '__subclasshook__', '__weakref__',
+    '_nodespaces', '_notify_suppress', 'acquire', 'allow_non_node_childs',
+    'attribute_access_for_attrs', 'attributes', 'attributes_factory',
+    'attrs', 'clear', 'copy', 'deepcopy', 'detach', 'events', 'filtereditems',
+    'filtereditervalues', 'filteredvalues', 'get', 'has_key', 'items',
+    'iteritems', 'iterkeys', 'itervalues', 'keys', 'name', 'noderepr',
+    'nodespaces', 'parent', 'path', 'pop', 'popitem', 'printtree',
     'root', 'setdefault', 'storage', 'update', 'values']
 
 As the ``dir`` call shows, the ``CustomNode`` class was plumbed using given behaviors,
@@ -284,230 +284,3 @@ Contributors
 
 - Jens Klein <jens [at] bluedynamics [dot] com>
 
-
-Changes
-=======
-
-0.9.15 (unreleased)
--------------------
-
-- No changes yet.
-
-
-0.9.14
-------
-
-- use ``plumbing`` decorator instead of ``plumber`` metaclass.
-  [rnix, 2014-07-31]
-
-
-0.9.13
-------
-
-- Introduce ``node.behaviors.cache.VolatileStorageInvalidate``.
-  [rnix, 2014-01-15]
-
-
-0.9.12
-------
-
-- Add ``zope.component`` to install dependencies.
-  [rnix, 2013-12-09]
-
-
-0.9.11
-------
-
-- Use ``node.utils.UNSET`` instance in
-  ``node.behaviors.mapping.ExtendedWriteMapping.pop``.
-  [rnix, 2013-02-10]
-
-- Improve ``node.utils.Unset``. Add ``Unset`` instance at
-  ``node.utils.UNSET``.
-  [rnix, 2013-02-10]
-
-
-0.9.10
-------
-
-- Fix ``node.utils.StrCodec.encode`` to return value as is if str and decoding
-  failed.
-  [rnix, 2012-11-07]
-
-
-0.9.9
------
-
-- Python 2.7 compatibility.
-  [rnix, 2012-10-15]
-
-- Remove ``zope.component.event`` B/C.
-  [rnix, 2012-10-15]
-
-- Remove ``zope.location`` B/C.
-  [rnix, 2012-10-15]
-
-- Remove ``zope.lifecycleevent`` B/C.
-  [rnix, 2012-10-15]
-
-- Pep8.
-  [rnix, 2012-10-15]
-
-
-0.9.8
------
-
-- Deprecate the use of ``node.parts``. Use ``node.behaviors`` instead.
-  [rnix, 2012-07-28]
-
-- Adopt to ``plumber`` 1.2
-  [rnix, 2012-07-28]
-
-
-0.9.7
------
-
-- Introduce ``node.interfaces.IOrdered`` Marker interface. Set this interface
-  on ``node.parts.storage.OdictStorage``.
-  [rnix, 2012-05-21]
-
-- ``node.parts.mapping.ClonableMapping`` now supports ``deepcopy``.
-  [rnix, 2012-05-18]
-
-- Use ``zope.interface.implementer`` instead of ``zope.interface.implements``
-  all over the place.
-  [rnix, 2012-05-18]
-
-- Remove superfluos interfaces.
-  [rnix, 2012-05-18]
-
-- Remove ``Zodict`` from ``node.utils``.
-  [rnix, 2012-05-18]
-
-- Remove ``AliasedNodespace``, use ``Alias`` part instead.
-  [rnix, 2012-05-18]
-
-- Move aliaser objects from ``node.aliasing`` to ``node.parts.alias``.
-  [rnix, 2012-05-18]
-
-- Remove ``composition`` module.
-  [rnix, 2012-05-18]
-
-- Remove ``bbb`` module.
-  [rnix, 2012-05-18]
-
-
-0.9.6
------
-
-- Do not inherit ``node.parts.Reference`` from ``node.parts.UUIDAware``.
-  [rnix, 2012-01-30]
-
-- Set ``uuid`` in ``node.parts.Reference.__init__`` plumb.
-  [rnix, 2012-01-30]
-
-
-0.9.5
------
-
-- add ``node.parts.nodify.Nodify.acquire`` function.
-  [rnix, 2011-12-05]
-
-- add ``node.parts.ChildFactory`` plumbing part.
-  [rnix, 2011-12-04]
-
-- add ``node.parts.UUIDAware`` plumbing part.
-  [rnix, 2011-12-02]
-
-- fix ``node.parts.Order.swap`` in order to work with pickled nodes.
-  [rnix, 2011-11-28]
-
-- use ``node.name`` instead of ``node.__name__`` in
-  ``node.parts.nodify.Nodify.path``.
-  [rnix, 2011-11-17]
-
-- add ``swap`` to  ``node.parts.Order``.
-  [rnix, 2011-10-05]
-
-- add ``insertfirst`` and ``insertlast`` to ``node.parts.Order``.
-  [rnix, 2011-10-02]
-
-
-0.9.4
------
-
-- add ``node.utils.debug`` decorator.
-  [rnix, 2011-07-23]
-
-- remove non storage contract specific properties from
-  ``node.aliasing.AliasedNodespace``
-  [rnix, 2011-07-18]
-
-- ``node.aliasing`` test completion
-  [rnix, 2011-07-18]
-
-- Add non strict functionality to ``node.aliasing.DictAliaser`` for accessing
-  non aliased keys as is as fallback
-  [rnix, 2011-07-18]
-
-- Consider ``INode`` implementing objects in ``node.utils.StrCodec``
-  [rnix, 2011-07-16]
-
-- Remove duplicate implements in storage parts
-  [rnix, 2011-05-16]
-
-
-0.9.3
------
-
-- Increase test coverage
-  [rnix, 2011-05-09]
-
-- Add interfaces ``IFixedChildren`` and ``IGetattrChildren`` for related parts.
-  [rnix, 2011-05-09]
-
-- Rename ``Unicode`` part to ``UnicodeAware``.
-  [rnix, 2011-05-09]
-
-- Add ``node.utils.StrCodec``.
-  [rnix, 2011-05-09]
-
-- Inherit ``INodify`` interface from ``INode``.
-  [rnix, 2011-05-08]
-
-- Locking tests. Add ``time.sleep`` after thread start.
-  [rnix, 2011-05-08]
-
-- Cleanup ``BaseTester``, remove ``sorted_output`` flag (always sort), also 
-  search class bases for detection in ``wherefrom``.
-  [rnix, 2011-05-08]
-
-- Remove useless try/except in ``utils.AttributeAccess``.
-  [rnix, 2011-05-08]
-
-- Add ``instance_property`` decorator to utils.
-  [rnix, 2011-05-06]
-
-- Add ``FixedChildren`` and ``GetattrChildren`` parts.
-  [chaoflow, 2011-04-22]
-
-
-0.9.2
------
-
-- Add ``__nonzero__`` on ``Nodifiy`` part always return True.
-  [rnix, 2011-03-15]
-
-
-0.9.1
------
-
-- Provide ``node.base.Node`` with same behavior like ``zodict.Node`` for
-  migration purposes.
-  [rnix, 2011-02-08]
-
-
-0.9
----
-
-- Make it work [rnix, chaoflow, et al]

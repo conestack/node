@@ -8,6 +8,7 @@ from setuptools import (
 version = '0.9.15.dev0'
 shortdesc = "Building data structures as node trees"
 longdesc = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
+longdesc += open(os.path.join(os.path.dirname(__file__), 'CHANGES.rst')).read()
 longdesc += open(os.path.join(os.path.dirname(__file__), 'LICENSE.rst')).read()
 
 
@@ -34,7 +35,7 @@ setup(name='node',
       zip_safe=True,
       install_requires=[
           'setuptools',
-          'odict>1.5',
+          'odict>=1.5.1',
           'plumber>=1.3',
           'zope.lifecycleevent',
           'zope.deprecation',
