@@ -12,7 +12,7 @@ Changes
 -------------------
 
 - Fix dependency declaration to ``odict`` in order to make setuptools 8.x+
-  happy; using ``>= `` instaed of ``>`` now.
+  happy; using ``>=`` instead of ``>`` now.
   [jensens, 2014-12-17]
 
 
