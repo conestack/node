@@ -1,3 +1,24 @@
+"""Building the package:
+
+Look into pyc::
+
+    git clone https://github.com/gstarnberger/uncompyle.git
+    cd uncompyle/
+    sudo ./setup.py install
+    uncompyler.py pyc_file_to_decompile.pyc > recovered_file.py
+
+Building sdist::
+
+    python setup.py clean
+    python setup.py sdist
+
+Build bdist_egg::
+
+    python setup.py clean
+    python setup.py bdist_egg --exclude-source-files
+"""
+
+
 from setuptools import find_packages
 from setuptools import setup
 from Cython.Build import cythonize

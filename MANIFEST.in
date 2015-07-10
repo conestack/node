@@ -1,3 +1,3 @@
 include *.rst
 recursive-include src *
-recursive-exclude src *.pyc *.pyo
+recursive-exclude src *.pyc *.pyo *.c *.rst
