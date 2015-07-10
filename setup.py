@@ -3,6 +3,8 @@ from setuptools import setup
 from Cython.Build import cythonize
 from distutils.extension import Extension
 import os
+import subprocess
+import sys
 
 
 version = '0.9.16.dev0'
@@ -13,29 +15,47 @@ longdesc += open(os.path.join(os.path.dirname(__file__), 'LICENSE.rst')).read()
 
 
 extensions = [
-    Extension('node', [
-        'src/node/base.py',
-        'src/node/events.py',
-        'src/node/interfaces.py',
-        'src/node/locking.py',
-        'src/node/parts.py',
-        'src/node/utils.py',
-    ]),
-    Extension('node.behaviors', [
-        'src/node/behaviors/__init__.py',
-        'src/node/behaviors/alias.py',
-        'src/node/behaviors/attributes.py',
-        'src/node/behaviors/cache.py',
-        'src/node/behaviors/common.py',
-        'src/node/behaviors/lifecycle.py',
-        'src/node/behaviors/mapping.py',
-        'src/node/behaviors/nodespace.py',
-        'src/node/behaviors/nodify.py',
-        'src/node/behaviors/order.py',
-        'src/node/behaviors/reference.py',
-        'src/node/behaviors/storage.py',
-    ])
+    Extension('node.base', ['src/node/base.py']),
+    Extension('node.events', ['src/node/events.py']),
+    # zope.interface -> cythonize fails
+    # Extension('node.interfaces', ['src/node/interfaces.py']),
+    Extension('node.locking', ['src/node/locking.py']),
+    Extension('node.parts', ['src/node/parts.py']),
+    # Extension('node.utils', ['src/node/utils.py']),
+    Extension('node.behaviors.alias', ['src/node/behaviors/alias.py']),
+    Extension('node.behaviors.attributes', ['src/node/behaviors/attributes.py']),
+    Extension('node.behaviors.cache', ['src/node/behaviors/cache.py']),
+    Extension('node.behaviors.common', ['src/node/behaviors/common.py']),
+    Extension('node.behaviors.lifecycle', ['src/node/behaviors/lifecycle.py']),
+    Extension('node.behaviors.mapping', ['src/node/behaviors/mapping.py']),
+    Extension('node.behaviors.nodespace', ['src/node/behaviors/nodespace.py']),
+    Extension('node.behaviors.nodify', ['src/node/behaviors/nodify.py']),
+    Extension('node.behaviors.order', ['src/node/behaviors/order.py']),
+    Extension('node.behaviors.reference', ['src/node/behaviors/reference.py']),
+    Extension('node.behaviors.storage', ['src/node/behaviors/storage.py']),
 ]
+
+
+args = sys.argv[1:]
+if 'clean' in args:
+    print 'Delete build'
+    subprocess.Popen(
+        'rm -rf build',
+        shell=True,
+        executable='/bin/bash'
+    )
+    print 'Delete C files'
+    subprocess.Popen(
+        'find . -name "*.c" | xargs rm',
+        shell=True,
+        executable='/bin/bash'
+    )
+    print 'Delete SO files'
+    subprocess.Popen(
+        'find . -name "*.so" | xargs rm',
+        shell=True,
+        executable='/bin/bash'
+    )
 
 
 setup(

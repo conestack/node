@@ -1,5 +1,8 @@
 *.pyc
+*.c
+*.so
 /bda.ldap.egg-info
+/build
 /coverage
 /dist
 /bin
