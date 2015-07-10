@@ -17,10 +17,9 @@ longdesc += open(os.path.join(os.path.dirname(__file__), 'LICENSE.rst')).read()
 extensions = [
     Extension('node.base', ['src/node/base.py']),
     Extension('node.events', ['src/node/events.py']),
-    # zope.interface -> cythonize fails
-    # Extension('node.interfaces', ['src/node/interfaces.py']),
     Extension('node.locking', ['src/node/locking.py']),
     Extension('node.parts', ['src/node/parts.py']),
+    # test fails right now
     # Extension('node.utils', ['src/node/utils.py']),
     Extension('node.behaviors.alias', ['src/node/behaviors/alias.py']),
     Extension('node.behaviors.attributes', ['src/node/behaviors/attributes.py']),
