@@ -1,10 +1,8 @@
+from node.interfaces import IOrder
 from odict.pyodict import _nil
-from plumber import (
-    override,
-    Behavior,
-)
+from plumber import Behavior
+from plumber import override
 from zope.interface import implementer
-from ..interfaces import IOrder
 
 
 @implementer(IOrder)

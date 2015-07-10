@@ -1,14 +1,12 @@
+from node.behaviors import Adopt
+from node.behaviors import AsAttrAccess
+from node.behaviors import DefaultInit
+from node.behaviors import NodeChildValidate
+from node.behaviors import Nodify
+from node.behaviors import OdictStorage
+from node.interfaces import INode
 from plumber import plumbing
 from zope.interface import implementer
-from ..interfaces import INode
-from ..behaviors import (
-    NodeChildValidate,
-    Adopt,
-    AsAttrAccess,
-    DefaultInit,
-    Nodify,
-    OdictStorage,
-)
 
 
 @implementer(INode)

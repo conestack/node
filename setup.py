@@ -1,8 +1,7 @@
+from Cython.Build import cythonize
+from setuptools import find_packages
+from setuptools import setup
 import os
-from setuptools import (
-    setup,
-    find_packages,
-)
 
 
 version = '0.9.16.dev0'
@@ -53,5 +52,6 @@ setup(name='node',
               'plumber[test]',
           ]
       },
+      ext_modules=cythonize(['src/node/*.py', 'src/node/behaviors/*.py']),
       entry_points="""
       """)

@@ -1,17 +1,13 @@
-from plumber import (
-    default,
-    override,
-    plumb,
-    Behavior,
-)
+from node.behaviors.mapping import FullMapping
+from node.interfaces import IDefaultInit
+from node.interfaces import INodify
+from node.utils import LocationIterator
+from plumber import Behavior
+from plumber import default
+from plumber import override
+from plumber import plumb
 from zope.interface import implementer
 from zope.interface.interfaces import IInterface
-from ..interfaces import (
-    IDefaultInit,
-    INodify,
-)
-from ..utils import LocationIterator
-from .mapping import FullMapping
 
 
 @implementer(IDefaultInit)

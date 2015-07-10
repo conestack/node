@@ -1,19 +1,13 @@
+from node.interfaces import IAlias
+from node.interfaces import IAliaser
+from node.utils import ReverseMapping
 from odict import odict
-from plumber import (
-    default,
-    plumb,
-    Behavior,
-)
+from plumber import Behavior
+from plumber import default
+from plumber import plumb
 from zope.interface import implementer
-from zope.interface.common.mapping import (
-    IEnumerableMapping,
-    IFullMapping,
-)
-from ..interfaces import (
-    IAliaser,
-    IAlias,
-)
-from ..utils import ReverseMapping
+from zope.interface.common.mapping import IEnumerableMapping
+from zope.interface.common.mapping import IFullMapping
 
 
 @implementer(IAliaser, IFullMapping)

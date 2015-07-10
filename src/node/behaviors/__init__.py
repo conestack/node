@@ -1,52 +1,36 @@
-from .alias import Alias
-from .attributes import (
-    NodeAttributes,
-    Attributes,
-)
-from .cache import (
-    Invalidate,
-    VolatileStorageInvalidate,
-    Cache,
-)
-from .common import (
-    Adopt,
-    AsAttrAccess,
-    ChildFactory,
-    FixedChildren,
-    GetattrChildren,
-    NodeChildValidate,
-    UnicodeAware,
-    UUIDAware,
-)
-# from .common import Wrap
-from .lifecycle import (
-    Lifecycle,
-    AttributesLifecycle,
-)
-from .mapping import (
-    ItemMapping,
-    ReadMapping,
-    WriteMapping,
-    EnumerableMapping,
-    Mapping,
-    IterableMapping,
-    ClonableMapping,
-    ExtendedReadMapping,
-    ExtendedWriteMapping,
-    FullMapping,
-)
-from .nodespace import Nodespaces
-from .nodify import (
-    DefaultInit,
-    Nodify,
-)
-from .order import Order
-from .reference import (
-    NodeIndex,
-    Reference,
-)
-from .storage import (
-    Storage,
-    DictStorage,
-    OdictStorage,
-)
+from node.behaviors.alias import Alias
+from node.behaviors.attributes import Attributes
+from node.behaviors.attributes import NodeAttributes
+from node.behaviors.cache import Cache
+from node.behaviors.cache import Invalidate
+from node.behaviors.cache import VolatileStorageInvalidate
+from node.behaviors.common import Adopt
+from node.behaviors.common import AsAttrAccess
+from node.behaviors.common import ChildFactory
+from node.behaviors.common import FixedChildren
+from node.behaviors.common import GetattrChildren
+from node.behaviors.common import NodeChildValidate
+# from node.behaviors.common import Wrap
+from node.behaviors.common import UUIDAware
+from node.behaviors.common import UnicodeAware
+from node.behaviors.lifecycle import AttributesLifecycle
+from node.behaviors.lifecycle import Lifecycle
+from node.behaviors.mapping import ClonableMapping
+from node.behaviors.mapping import EnumerableMapping
+from node.behaviors.mapping import ExtendedReadMapping
+from node.behaviors.mapping import ExtendedWriteMapping
+from node.behaviors.mapping import FullMapping
+from node.behaviors.mapping import ItemMapping
+from node.behaviors.mapping import IterableMapping
+from node.behaviors.mapping import Mapping
+from node.behaviors.mapping import ReadMapping
+from node.behaviors.mapping import WriteMapping
+from node.behaviors.nodespace import Nodespaces
+from node.behaviors.nodify import DefaultInit
+from node.behaviors.nodify import Nodify
+from node.behaviors.order import Order
+from node.behaviors.reference import NodeIndex
+from node.behaviors.reference import Reference
+from node.behaviors.storage import DictStorage
+from node.behaviors.storage import OdictStorage
+from node.behaviors.storage import Storage

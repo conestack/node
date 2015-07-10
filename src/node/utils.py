@@ -1,10 +1,8 @@
-import logging
+from node.interfaces import IAttributeAccess
+from node.interfaces import INode
 from zope.interface import implementer
 from zope.interface.common.mapping import IEnumerableMapping
-from interfaces import (
-    IAttributeAccess,
-    INode,
-)
+import logging
 
 
 logger = logging.getLogger('node')
