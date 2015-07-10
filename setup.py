@@ -1,7 +1,7 @@
-from Cython.Build import cythonize
-from distutils.extension import Extension
 from setuptools import find_packages
 from setuptools import setup
+from Cython.Build import cythonize
+from distutils.extension import Extension
 import os
 
 
@@ -12,27 +12,30 @@ longdesc += open(os.path.join(os.path.dirname(__file__), 'CHANGES.rst')).read()
 longdesc += open(os.path.join(os.path.dirname(__file__), 'LICENSE.rst')).read()
 
 
-sources = [
-    'src/node/base.py',
-    'src/node/behaviors/__init__.py',
-    'src/node/behaviors/alias.py',
-    'src/node/behaviors/attributes.py',
-    'src/node/behaviors/cache.py',
-    'src/node/behaviors/common.py',
-    'src/node/behaviors/lifecycle.py',
-    'src/node/behaviors/mapping.py',
-    'src/node/behaviors/nodespace.py',
-    'src/node/behaviors/nodify.py',
-    'src/node/behaviors/order.py',
-    'src/node/behaviors/reference.py',
-    'src/node/behaviors/storage.py',
-    'src/node/events.py',
-    'src/node/interfaces.py',
-    'src/node/locking.py',
-    'src/node/parts.py',
-    'src/node/utils.py',
+extensions = [
+    Extension('node', [
+        'src/node/base.py',
+        'src/node/events.py',
+        'src/node/interfaces.py',
+        'src/node/locking.py',
+        'src/node/parts.py',
+        'src/node/utils.py',
+    ]),
+    Extension('node.behaviors', [
+        'src/node/behaviors/__init__.py',
+        'src/node/behaviors/alias.py',
+        'src/node/behaviors/attributes.py',
+        'src/node/behaviors/cache.py',
+        'src/node/behaviors/common.py',
+        'src/node/behaviors/lifecycle.py',
+        'src/node/behaviors/mapping.py',
+        'src/node/behaviors/nodespace.py',
+        'src/node/behaviors/nodify.py',
+        'src/node/behaviors/order.py',
+        'src/node/behaviors/reference.py',
+        'src/node/behaviors/storage.py',
+    ])
 ]
-extensions = [Extension("sources", sources)]
 
 
 setup(
