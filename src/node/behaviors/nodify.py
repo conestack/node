@@ -8,6 +8,7 @@ from zope.interface import implementer
 from zope.interface.interfaces import IInterface
 from ..interfaces import (
     IDefaultInit,
+    INode,
     INodify,
 )
 from ..utils import LocationIterator
@@ -119,13 +120,13 @@ class Nodify(FullMapping):
     def printtree(self, indent=0):
         """Uses ``values``.
         """
-        print "%s%s" % (indent * ' ', self.noderepr)
-        for node in self.values():
-            try:
-                node.printtree(indent + 2)
-            except AttributeError:
+        print "{0}{1}".format(indent * ' ', self.noderepr)
+        for key, value in self.items():
+            if INode.providedBy(value):
+                value.printtree(indent + 2)
+            else:
                 # Non-Node values are just printed
-                print "%s%s" % (indent * ' ', node)
+                print "{0}{1}: {2}".format((indent + 2) * ' ', key, value)
 
     # XXX: tricky one: If a base class provides a __nonzero__ and that
     # base class is nodified, should the base class' __nonzero__ be

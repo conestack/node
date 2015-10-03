@@ -5,7 +5,9 @@ Changes
 0.9.16 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Improve ``node.behaviors.nodify.Nodify.printtree``. None node children are
+  printed with key.
+  [rnix, 2015-10-03]
 
 
 0.9.15 (2014-12-17)

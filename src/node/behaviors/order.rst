@@ -359,7 +359,7 @@ Detach subtree and insert elsewhere::
     >>> tree2.printtree()
     <class 'OrderReferenceNode'>: x
       <class 'OrderReferenceNode'>: d
-      <object object at ...>
+        a: <object object at ...>
       <class 'OrderReferenceNode'>: e
 
     >>> tree2.detach('d')
