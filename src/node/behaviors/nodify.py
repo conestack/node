@@ -125,8 +125,11 @@ class Nodify(FullMapping):
             if INode.providedBy(value):
                 value.printtree(indent + 2)
             else:
-                # Non-Node values are just printed
-                print "{0}{1}: {2}".format((indent + 2) * ' ', key, value)
+                print "{0}{1}: {2}".format(
+                    (indent + 2) * ' ',
+                    key,
+                    repr(value)
+                )
 
     # XXX: tricky one: If a base class provides a __nonzero__ and that
     # base class is nodified, should the base class' __nonzero__ be
