@@ -406,7 +406,10 @@ XXX: decide wether ``aliases`` or ``aliaser`` (still dunno) should be kept in
 
 ``filteredvalues``::
 
-    >>> from zope.interface import Interface, directlyProvides, noLongerProvides
+    >>> from zope.interface import Interface
+    >>> from zope.interface import directlyProvides
+    >>> from zope.interface import noLongerProvides
+
     >>> class IFilter(Interface):
     ...     pass
     

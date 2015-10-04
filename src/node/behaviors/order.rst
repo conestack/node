@@ -7,14 +7,12 @@ Order without References
 Node insertion. ``insertbefore`` and ``insertafter``::
 
     >>> from plumber import plumbing
-    >>> from node.behaviors import (
-    ...     Adopt,
-    ...     DefaultInit,
-    ...     Nodify, 
-    ...     OdictStorage, 
-    ...     Order,
-    ...     Reference,
-    ... )
+    >>> from node.behaviors import Adopt
+    >>> from node.behaviors import DefaultInit
+    >>> from node.behaviors import Nodify
+    >>> from node.behaviors import OdictStorage
+    >>> from node.behaviors import Order
+    >>> from node.behaviors import Reference
 
     >>> @plumbing(
     ...     Adopt,
@@ -213,7 +211,6 @@ Order with References
 
 ::
 
-    >>> from node.behaviors import Reference
     >>> @plumbing(
     ...     Adopt,
     ...     Order,

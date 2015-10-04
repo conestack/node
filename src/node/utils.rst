@@ -108,11 +108,10 @@ StrCodec decode and encode
 
 ::
     >>> from node.base import BaseNode
-    >>> from node.utils import (
-    ...     StrCodec,
-    ...     encode,
-    ...     decode,
-    ... )
+    >>> from node.utils import StrCodec
+    >>> from node.utils import encode
+    >>> from node.utils import decode
+
     >>> encode('\x01\x05\x00\x00\x00\x00\x00\x05\x15\x00\x00\x00\xd4'
     ...        '\xa0\xff\xff\xaeW\x82\xa9P\xcf8\xaf&\x0e\x00\x00')
     '\x01\x05\x00\x00\x00\x00\x00\x05\x15\x00\x00\x00\xd4\xa0\xff\xff\xaeW\x82\xa9P\xcf8\xaf&\x0e\x00\x00'
@@ -166,10 +165,9 @@ Debug helper
 
 ::
     >>> import logging
-    >>> from node.utils import (
-    ...     logger,
-    ...     debug,
-    ... )
+    >>> from node.utils import logger
+    >>> from node.utils import debug
+
     >>> class TestHandler(logging.StreamHandler):
     ...     def handle(self, record):
     ...         print record

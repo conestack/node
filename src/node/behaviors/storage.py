@@ -1,15 +1,11 @@
+from node.interfaces import IOrdered
+from node.interfaces import IStorage
+from node.utils import instance_property
 from odict import odict
-from plumber import (
-    default,
-    override,
-    Behavior,
-)
+from plumber import Behavior
+from plumber import default
+from plumber import override
 from zope.interface import implementer
-from ..interfaces import (
-    IStorage,
-    IOrdered,
-)
-from ..utils import instance_property
 
 
 @implementer(IStorage)

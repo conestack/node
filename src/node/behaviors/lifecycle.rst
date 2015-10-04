@@ -4,15 +4,21 @@ node.behaviors.Lifecycle
 Check NodeCreation.::
 
     >>> import zope.component
-
-    >>> from node.interfaces import (
-    ...     INode,
-    ...     INodeCreatedEvent,
-    ...     INodeAddedEvent,
-    ...     INodeModifiedEvent,
-    ...     INodeRemovedEvent,
-    ...     INodeDetachedEvent,
-    ... )
+    >>> from plumber import plumbing
+    >>> from node.interfaces import INode
+    >>> from node.interfaces import INodeCreatedEvent
+    >>> from node.interfaces import INodeAddedEvent
+    >>> from node.interfaces import INodeModifiedEvent
+    >>> from node.interfaces import INodeRemovedEvent
+    >>> from node.interfaces import INodeDetachedEvent
+    >>> from node.behaviors import Lifecycle
+    >>> from node.behaviors import AttributesLifecycle
+    >>> from node.behaviors import Attributes
+    >>> from node.behaviors import NodeAttributes
+    >>> from node.behaviors import Nodespaces
+    >>> from node.behaviors import DefaultInit
+    >>> from node.behaviors import Nodify
+    >>> from node.behaviors import DictStorage
 
     >>> class Handler(object):
     ...     handled = []
@@ -25,18 +31,6 @@ Check NodeCreation.::
     >>> zope.component.provideHandler(handler, [INode, INodeModifiedEvent])
     >>> zope.component.provideHandler(handler, [INode, INodeRemovedEvent])
     >>> zope.component.provideHandler(handler, [INode, INodeDetachedEvent])
-
-    >>> from plumber import plumbing
-    >>> from node.behaviors import (
-    ...     Lifecycle, 
-    ...     AttributesLifecycle, 
-    ...     Attributes, 
-    ...     NodeAttributes, 
-    ...     Nodespaces, 
-    ...     DefaultInit,
-    ...     Nodify, 
-    ...     DictStorage, 
-    ... )
 
     >>> @plumbing(
     ...     DefaultInit,

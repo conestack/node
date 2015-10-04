@@ -4,20 +4,16 @@ node.behaviors.invalidate
 Required Imports::
 
     >>> from plumber import plumbing
-    >>> from node.interfaces import (
-    ...     ICache,
-    ...     IInvalidate,
-    ... )
-    >>> from node.behaviors import (
-    ...     Adopt,
-    ...     Cache,
-    ...     Invalidate,
-    ...     VolatileStorageInvalidate,
-    ...     DefaultInit,
-    ...     Nodify,
-    ...     OdictStorage,
-    ...     ChildFactory,
-    ... )
+    >>> from node.interfaces import ICache
+    >>> from node.interfaces import IInvalidate
+    >>> from node.behaviors import Adopt
+    >>> from node.behaviors import Cache
+    >>> from node.behaviors import Invalidate
+    >>> from node.behaviors import VolatileStorageInvalidate
+    >>> from node.behaviors import DefaultInit
+    >>> from node.behaviors import Nodify
+    >>> from node.behaviors import OdictStorage
+    >>> from node.behaviors import ChildFactory
 
 
 Default Invalidation

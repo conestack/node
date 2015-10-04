@@ -1,7 +1,7 @@
-import unittest
-import doctest
-from pprint import pprint
 from interlude import interact
+from pprint import pprint
+import doctest
+import unittest
 
 optionflags = doctest.NORMALIZE_WHITESPACE | \
               doctest.ELLIPSIS | \

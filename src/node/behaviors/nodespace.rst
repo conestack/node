@@ -5,13 +5,11 @@ node.behaviors.Nodespaces
 
     >>> from odict import odict
     >>> from plumber import plumbing
-    >>> from node.behaviors import (
-    ...     Adopt,
-    ...     Nodespaces,
-    ...     DefaultInit,
-    ...     Nodify,
-    ...     OdictStorage,
-    ... )
+    >>> from node.behaviors import Adopt
+    >>> from node.behaviors import Nodespaces
+    >>> from node.behaviors import DefaultInit
+    >>> from node.behaviors import Nodify
+    >>> from node.behaviors import OdictStorage
 
     >>> @plumbing(
     ...     Adopt, 

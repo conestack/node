@@ -6,12 +6,10 @@ node.behaviors.Nodify
     >>> from plumber import plumbing
 
     >>> from node.testing import FullMappingTester
-    >>> from node.behaviors import (
-    ...     Adopt,
-    ...     DictStorage,
-    ...     DefaultInit,
-    ...     Nodify,
-    ... )
+    >>> from node.behaviors import Adopt
+    >>> from node.behaviors import DictStorage
+    >>> from node.behaviors import DefaultInit
+    >>> from node.behaviors import Nodify
 
     >>> @plumbing(
     ...     Adopt,
@@ -77,10 +75,8 @@ node.behaviors.Nodify
       <class 'Node'>: child
         <class 'Node'>: subchild
 
-    >>> from zope.interface import (
-    ...     Interface,
-    ...     alsoProvides,
-    ... )
+    >>> from zope.interface import Interface
+    >>> from zope.interface import alsoProvides
     >>> from node.interfaces import INode
 
     >>> class INodeInterface(Interface):

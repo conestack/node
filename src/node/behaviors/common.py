@@ -1,29 +1,23 @@
-import uuid
-import inspect
+from node.interfaces import IAdopt
+from node.interfaces import IAsAttrAccess
+from node.interfaces import IChildFactory
+from node.interfaces import IFixedChildren
+from node.interfaces import IGetattrChildren
+from node.interfaces import INode
+from node.interfaces import INodeChildValidate
+from node.interfaces import IUUIDAware
+from node.interfaces import IUnicodeAware
+from node.utils import AttributeAccess
+from node.utils import decode
 from odict import odict
-from plumber import (
-    Behavior,
-    default,
-    override,
-    finalize,
-    plumb,
-)
+from plumber import Behavior
+from plumber import default
+from plumber import finalize
+from plumber import override
+from plumber import plumb
 from zope.interface import implementer
-from ..interfaces import (
-    INode,
-    IAdopt,
-    IAsAttrAccess,
-    IChildFactory,
-    IFixedChildren,
-    IGetattrChildren,
-    INodeChildValidate,
-    IUnicodeAware,
-    IUUIDAware,
-)
-from ..utils import (
-    AttributeAccess,
-    decode,
-)
+import inspect
+import uuid
 
 
 @implementer(IAdopt)

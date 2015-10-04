@@ -1,14 +1,10 @@
-from plumber import (
-    Behavior,
-    default,
-    plumb,
-)
+from node.interfaces import ICache
+from node.interfaces import IInvalidate
+from node.utils import instance_property
+from plumber import Behavior
+from plumber import default
+from plumber import plumb
 from zope.interface import implementer
-from ..interfaces import (
-    IInvalidate,
-    ICache,
-)
-from ..utils import instance_property
 
 
 @implementer(IInvalidate)

@@ -1,21 +1,15 @@
-from plumber import (
-    default,
-    plumb,
-    Behavior,
-)
-from zope.interface import implementer
+from node.events import NodeAddedEvent
+from node.events import NodeCreatedEvent
+from node.events import NodeDetachedEvent
+from node.events import NodeModifiedEvent
+from node.events import NodeRemovedEvent
+from node.interfaces import IAttributesLifecycle
+from node.interfaces import ILifecycle
+from plumber import Behavior
+from plumber import default
+from plumber import plumb
 from zope.component.event import objectEventNotify
-from ..interfaces import (
-    ILifecycle,
-    IAttributesLifecycle,
-)
-from ..events import (
-    NodeCreatedEvent,
-    NodeAddedEvent,
-    NodeRemovedEvent,
-    NodeModifiedEvent,
-    NodeDetachedEvent,
-)
+from zope.interface import implementer
 
 
 @implementer(ILifecycle)

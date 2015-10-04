@@ -1,12 +1,10 @@
+from node.interfaces import INodespaces
 from odict import odict
-from plumber import (
-    plumb,
-    finalize,
-    default,
-    Behavior,
-)
+from plumber import Behavior
+from plumber import default
+from plumber import finalize
+from plumber import plumb
 from zope.interface import implementer
-from ..interfaces import INodespaces
 
 
 @implementer(INodespaces)

@@ -4,14 +4,12 @@ node.behaviors.Attributes
 ::
 
     >>> from plumber import plumbing
-    >>> from node.behaviors import (
-    ...     NodeChildValidate,
-    ...     DefaultInit,
-    ...     Nodify,
-    ...     OdictStorage,
-    ...     Nodespaces,
-    ...     Attributes,
-    ... )
+    >>> from node.behaviors import NodeChildValidate
+    >>> from node.behaviors import DefaultInit
+    >>> from node.behaviors import Nodify
+    >>> from node.behaviors import OdictStorage
+    >>> from node.behaviors import Nodespaces
+    >>> from node.behaviors import Attributes
 
     >>> @plumbing(
     ...     NodeChildValidate,

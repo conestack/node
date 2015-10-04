@@ -81,7 +81,9 @@ UnicodeAware
 
 ::
 
-    >>> from node.behaviors import UnicodeAware, OdictStorage, Nodify
+    >>> from node.behaviors import UnicodeAware
+    >>> from node.behaviors import OdictStorage
+    >>> from node.behaviors import Nodify
 
     >>> @plumbing(Nodify, UnicodeAware, OdictStorage)
     ... class UnicodeNode(object):
@@ -169,7 +171,8 @@ UUIDAware
 
 ::
 
-    >>> from node.behaviors import UUIDAware, DefaultInit
+    >>> from node.behaviors import UUIDAware
+    >>> from node.behaviors import DefaultInit
 
 Create a uid aware node. ``copy`` is not supported on UUIDAware node trees,
 ``deepcopy`` must be used::
@@ -254,11 +257,9 @@ NodeChildValidate
 
 ::
 
-    >>> from node.behaviors import (
-    ...     NodeChildValidate,
-    ...     Nodify,
-    ...     OdictStorage,
-    ... )
+    >>> from node.behaviors import NodeChildValidate
+    >>> from node.behaviors import Nodify
+    >>> from node.behaviors import OdictStorage
 
     >>> @plumbing(NodeChildValidate, DefaultInit, Nodify, OdictStorage)
     ... class NodeChildValidateNode(object):

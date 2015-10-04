@@ -1,16 +1,12 @@
-import uuid
-from plumber import (
-    plumb,
-    override,
-    default,
-    Behavior,
-)
+from node.interfaces import INode
+from node.interfaces import IReference
+from plumber import Behavior
+from plumber import default
+from plumber import override
+from plumber import plumb
 from zope.interface import implementer
 from zope.interface.common.mapping import IReadMapping
-from ..interfaces import (
-    INode,
-    IReference,
-)
+import uuid
 
 
 @implementer(IReadMapping)

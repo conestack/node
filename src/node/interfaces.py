@@ -1,14 +1,10 @@
-from zope.interface import (
-    Interface,
-    Attribute,
-)
+from zope.interface import Attribute
+from zope.interface import Interface
 from zope.interface.common.mapping import IFullMapping
-from zope.lifecycleevent import (
-    IObjectCreatedEvent,
-    IObjectAddedEvent,
-    IObjectModifiedEvent,
-    IObjectRemovedEvent,
-)
+from zope.lifecycleevent import IObjectAddedEvent
+from zope.lifecycleevent import IObjectCreatedEvent
+from zope.lifecycleevent import IObjectModifiedEvent
+from zope.lifecycleevent import IObjectRemovedEvent
 try:
     from zope.location.interfaces import ILocation
 except ImportError, e:
