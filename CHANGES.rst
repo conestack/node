@@ -5,6 +5,10 @@ Changes
 0.9.16 (unreleased)
 -------------------
 
+- Only encode name in ``node.behaviors.nodify.Nodify.__repr__`` and
+  ``node.behaviors.nodify.Nodify.noderepr`` if name is unicode instance.
+  [rnix, 2015-10-03]
+
 - Improve ``node.behaviors.nodify.Nodify.printtree``. None node children are
   printed with key.
   [rnix, 2015-10-03]

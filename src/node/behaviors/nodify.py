@@ -108,8 +108,11 @@ class Nodify(FullMapping):
         #else:
         #    class_ = self.__class__
         class_ = self.__class__
-
-        name = unicode(self.__name__).encode('ascii', 'replace')
+        name = self.__name__
+        if isinstance(name, unicode):
+            name = name.encode('ascii', 'replace')
+        else:
+            name = str(name)
         return str(class_) + ': ' + name[name.find(':') + 1:]
 
     @override
@@ -148,7 +151,11 @@ class Nodify(FullMapping):
         class_name = self.__class__.__name__
         # XXX: This is mainly used in doctest, I think
         #      doctest fails if we output utf-8
-        name = unicode(self.__name__).encode('ascii', 'replace')
+        name = self.__name__
+        if isinstance(name, unicode):
+            name = name.encode('ascii', 'replace')
+        else:
+            name = str(name)
         return "<%s object '%s' at %s>" % (class_name,
                                            name,
                                            hex(id(self))[:-1])

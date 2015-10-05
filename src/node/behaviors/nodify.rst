@@ -75,6 +75,16 @@ node.behaviors.Nodify
       <class 'Node'>: child
         <class 'Node'>: subchild
 
+    >>> root[u'ö'] = Node()
+    >>> root.printtree()
+    <class 'RootNode'>: root
+      <class 'Node'>: ??
+      <class 'Node'>: child
+        <class 'Node'>: subchild
+
+    >>> repr(root[u'ö'])
+    "<Node object '??' at ...>"
+
     >>> from zope.interface import Interface
     >>> from zope.interface import alsoProvides
     >>> from node.interfaces import INode
