@@ -3,7 +3,7 @@ from setuptools import setup
 import os
 
 
-version = '0.9.16.dev0'
+version = '0.9.16'
 shortdesc = "Building data structures as node trees"
 longdesc = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
 longdesc += open(os.path.join(os.path.dirname(__file__), 'CHANGES.rst')).read()

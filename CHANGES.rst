@@ -2,7 +2,7 @@
 Changes
 =======
 
-0.9.16 (unreleased)
+0.9.16 (2015-10-08)
 -------------------
 
 - Only encode name in ``node.behaviors.nodify.Nodify.__repr__`` and
