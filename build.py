@@ -2,7 +2,7 @@
 Building sdist::
 
     python build.py clean
-    python build.py -build_ext --inplace
+    python build.py build_ext --inplace
 
 Create binary distribution egg::
 
@@ -42,7 +42,7 @@ extensions = [
 def remove_files_by_extension(ext):
     print 'Delete {0} files'.format(ext)
     subprocess.Popen(
-        'find . -name "*.{0}" | xargs rm'.format(ext),
+        'find ./src -name "*.{0}" | xargs rm'.format(ext),
         shell=True,
         executable='/bin/bash'
     )

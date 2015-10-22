@@ -16,7 +16,8 @@
 /include/
 /lib/
 /local/
-.mrsd
-.project
-.pydevproject
-.pydevproject.bak
+/pip-selfcheck.json
+/.mrsd
+/.project
+/.pydevproject
+/.pydevproject.bak
