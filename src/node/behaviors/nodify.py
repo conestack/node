@@ -117,8 +117,6 @@ class Nodify(FullMapping):
 
     @override
     def printtree(self, indent=0):
-        """Uses ``values``.
-        """
         print "{0}{1}".format(indent * ' ', self.noderepr)
         for key, value in self.items():
             if INode.providedBy(value):
