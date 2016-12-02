@@ -14,6 +14,7 @@ TESTFILES = [
     'base.rst',
     'utils.rst',
     'locking.rst',
+    'serializer.rst',
     'behaviors/alias.rst',
     'behaviors/attributes.rst',
     'behaviors/cache.rst',
