@@ -170,7 +170,7 @@ class NodeDecoder(object):
             return data
         # decode data from list
         if isinstance(data, list):
-            return [self.decode(it) for it in data]
+            return [self.decode(it, parent=parent) for it in data]
         # return data as is if no dict
         if not isinstance(data, dict):
             return data

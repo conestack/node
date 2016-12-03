@@ -70,6 +70,38 @@ Deserialize using given root node::
         <class 'node.base.BaseNode'>: child
           <class 'node.base.BaseNode'>: sub
 
+Serialize list of nodes::
+
+    >>> node = BaseNode(name='base')
+    >>> node['child_1'] = BaseNode()
+    >>> node['child_2'] = BaseNode()
+    >>> node.printtree()
+    <class 'node.base.BaseNode'>: base
+      <class 'node.base.BaseNode'>: child_1
+      <class 'node.base.BaseNode'>: child_2
+
+    >>> json_data = serialize(node.values())
+    >>> json_data
+    '[{"__node__": 
+    {"class": "node.base.BaseNode", 
+    "name": "child_1"}}, 
+    {"__node__": 
+    {"class": "node.base.BaseNode", 
+    "name": "child_2"}}]'
+
+Deserialize list of nodes using given root node::
+
+    >>> root = BaseNode(name='root')
+    >>> nodes = deserialize(json_data, root=root)
+    >>> nodes
+    [<BaseNode object 'child_1' at ...>, 
+    <BaseNode object 'child_2' at ...>]
+
+    >>> root.printtree()
+    <class 'node.base.BaseNode'>: root
+      <class 'node.base.BaseNode'>: child_1
+      <class 'node.base.BaseNode'>: child_2
+
 
 Attribute serialization
 -----------------------
