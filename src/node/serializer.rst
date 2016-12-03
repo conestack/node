@@ -116,9 +116,52 @@ Deserialize node implementing ``IAttributes``::
 Referencing of classes, methods and functions
 ---------------------------------------------
 
-::
+Mock objects to reference::
 
-    XXX
+    >>> def referenced_function():
+    ...     pass
+
+    >>> base.referenced_function = referenced_function
+    >>> referenced_function.__module__ = 'node.base'
+
+    >>> class ReferencedClass(object):
+    ...     def foo(self):
+    ...         pass
+
+    >>> base.ReferencedClass = ReferencedClass
+    >>> ReferencedClass.__module__ = 'node.base'
+
+Serialize and deserialize references::
+
+    >>> node = AttributedNode()
+    >>> node.attrs['func'] = referenced_function
+    >>> node.attrs['class'] = ReferencedClass
+    >>> node.attrs['method'] = ReferencedClass.foo
+
+    >>> json_data = serialize(node)
+    >>> json_data
+    '{"__node__": 
+    {"attrs": 
+    {"class": {"__ob__": "node.base.ReferencedClass"}, 
+    "func": {"__ob__": "node.base.referenced_function"}, 
+    "method": {"__ob__": "node.base.ReferencedClass.foo"}}, 
+    "class": "node.base.AttributedNode", 
+    "name": null}}'
+
+    >>> node = deserialize(json_data)
+    >>> node.printtree()
+    <class 'node.base.AttributedNode'>: None
+
+    >>> node.attrs.printtree()
+    <class 'node.behaviors.attributes.NodeAttributes'>: __attrs__
+      class: <class 'node.base.ReferencedClass'>
+      func: <function referenced_function at ...>
+      method: <unbound method ReferencedClass.foo>
+
+Cleanup mock patches::
+
+    >>> del base.referenced_function
+    >>> del base.ReferencedClass
 
 
 Custom serializer

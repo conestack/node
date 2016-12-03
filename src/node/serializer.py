@@ -70,7 +70,14 @@ class NodeEncoder(json.JSONEncoder):
     def dotted_name(self, ob):
         """Return dotted name of object.
         """
-        return '.'.join([ob.__module__, ob.__class__.__name__])
+        if isclass(ob) or isfunction(ob):
+            return '.'.join([ob.__module__, ob.__name__])
+        elif ismethod(ob):
+            return '.'.join(
+                [ob.im_class.__module__, ob.im_class.__name__, ob.__name__]
+            )
+        else:
+            return '.'.join([ob.__module__, ob.__class__.__name__])
 
     def default(self, ob):
         # serialize UNSET
