@@ -1,9 +1,34 @@
+from inspect import isclass
+from inspect import isfunction
+from inspect import ismethod
 from node.interfaces import IAttributes
 from node.interfaces import INode
 from node.utils import UNSET
 from odict import odict
 from zope.interface import Interface
 import json
+import uuid
+
+
+###############################################################################
+# API
+###############################################################################
+
+def serialize(ob):
+    """Serialize ob.
+
+    Return JSON dump.
+    """
+    return json.dumps(ob, cls=NodeEncoder)
+
+
+def deserialize(json_data, root=None):
+    """Deserialize JSON dump.
+
+    Return deserialized data.
+    """
+    data = json.loads(json_data)
+    return NodeDecoder().decode(data, parent=root)
 
 
 ###############################################################################
@@ -37,7 +62,7 @@ class deserializer(_serializer_registry):
 
 
 ###############################################################################
-# encoding
+# encoder
 ###############################################################################
 
 class NodeEncoder(json.JSONEncoder):
@@ -50,25 +75,31 @@ class NodeEncoder(json.JSONEncoder):
     def default(self, ob):
         # serialize UNSET
         if ob is UNSET:
-            return {'__node_serializer__': 'node.utils.UNSET'}
-        # delegate encoding to super class
-        if not INode.providedBy(ob):
-            return json.JSONEncoder.default(self, ob)
-        # serialize node
-        ret = dict()
-        data = ret.setdefault('__node_serializer__', dict())
-        data['__class__'] = self.dotted_name(ob)
-        data['__name__'] = ob.name
-        for cls, callback in serializer.registry.items():
-            if issubclass(cls, Interface) and cls.providedBy(ob):
-                callback(self, ob, data)
-            elif isinstance(ob, cls):
-                callback(self, ob, data)
-        return ret
+            return '<UNSET>'
+        # serialize UUID
+        if isinstance(ob, uuid.UUID):
+            return '<UUID>:{}'.format(ob)
+        # serialize Node
+        if INode.providedBy(ob):
+            ret = dict()
+            data = ret.setdefault('__node__', dict())
+            data['__class__'] = self.dotted_name(ob)
+            data['__name__'] = ob.name
+            for cls, callback in serializer.registry.items():
+                if issubclass(cls, Interface) and cls.providedBy(ob):
+                    callback(self, ob, data)
+                elif isinstance(ob, cls):
+                    callback(self, ob, data)
+            return ret
+        # Serialize class, method or function
+        if isclass(ob) or ismethod(ob) or isfunction(ob):
+            return {'__ob__': self.dotted_name(ob)}
+        # no custom serialization required
+        return ob
 
 
 ###############################################################################
-# decoding
+# decoder
 ###############################################################################
 
 class NodeDecoder(object):
@@ -96,43 +127,37 @@ class NodeDecoder(object):
             node.__name__ = name
         return node
 
-    def decode(self, dct, parent=None):
-        # return as is if not serialized by ``NodeEncoder``
-        if not '__node_serializer__' in dct:
-            return dct
-        data = dct['__node_serializer__']
-        # string value mapping to a function, class, module or singleton
+    def decode(self, data, parent=None):
+        # decode data from string
         if isinstance(data, basestring):
-            return self.resolve(data)
-        # deserialize node
-        ob = self.node_factory(data, parent=parent)
-        for cls, callback in deserializer.registry.items():
-            if issubclass(cls, Interface) and cls.providedBy(ob):
-                callback(self, ob, data)
-            elif isinstance(ob, cls):
-                callback(self, ob, data)
-        return ob
-
-
-###############################################################################
-# API
-###############################################################################
-
-def serialize(ob):
-    """Serialize ob.
-
-    Return JSON dump.
-    """
-    return json.dumps(ob, cls=NodeEncoder)
-
-
-def deserialize(json_data, root=None):
-    """Deserialize JSON dump.
-
-    Return deserialized data.
-    """
-    data = json.loads(json_data)
-    return NodeDecoder().decode(data, parent=root)
+            # decode UNSET
+            if data == '<UNSET>':
+                return UNSET
+            # decode UUID
+            if data.startswith('<UUID>:'):
+                return uuid.UUID(data[7:])
+            return data
+        # decode data from list
+        if isinstance(data, list):
+            return [self.decode(it) for it in data]
+        # return data as is if no dict
+        if not isinstance(data, dict):
+            return data
+        # decode class, method or function
+        if '__ob__' in data:
+            return self.resolve(data['__ob__'])
+        # decode node
+        if '__node__' in data:
+            node_data = data['__node__']
+            node = self.node_factory(node_data, parent=parent)
+            for cls, callback in deserializer.registry.items():
+                if issubclass(cls, Interface) and cls.providedBy(node):
+                    callback(self, node, node_data)
+                elif isinstance(node, cls):
+                    callback(self, node, node_data)
+            return node
+        # no custom deserialization required
+        return data
 
 
 ###############################################################################
@@ -163,9 +188,15 @@ def deserialize_node(decoder, node, data):
 
 @serializer(IAttributes)
 def serialize_node_attributes(encoder, node, data):
-    pass
+    attrs = data.setdefault('__attrs__', dict())
+    for name, child in node.attrs.items():
+        attrs[name] = encoder.default(child)
 
 
 @deserializer(IAttributes)
 def deserialize_node_attributes(decoder, node, data):
-    pass
+    attrs = data.get('__attrs__')
+    if not attrs:
+        return
+    for attr, value in attrs.items():
+        node.attrs[attr] = decoder.decode(value)
