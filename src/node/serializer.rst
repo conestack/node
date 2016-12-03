@@ -3,29 +3,31 @@ JSON serialization
 
 Imports::
 
+    >>> from node import base
     >>> from node.base import AttributedNode
     >>> from node.base import BaseNode
     >>> from node.serializer import serialize
+    >>> from node.serializer import serializer
     >>> from node.serializer import deserialize
+    >>> from node.serializer import deserializer
     >>> from node.utils import UNSET
+    >>> from zope.interface import Attribute
+    >>> from zope.interface import Interface
+    >>> from zope.interface import implementer
     >>> import json
     >>> import uuid
 
-``UNSET`` serializition::
 
-    >>> json_data = serialize(UNSET)
-    >>> json_data
-    '"<UNSET>"'
-
-    >>> deserialize(json_data)
-    <UNSET>
+Node serialization
+------------------
 
 Basic ``INode`` implementing object serializition::
 
     >>> json_data = serialize(BaseNode())
     >>> json_data
     '{"__node__": 
-    {"__name__": null, "__class__": "node.base.BaseNode"}}'
+    {"class": "node.base.BaseNode", 
+    "name": null}}'
 
     >>> deserialize(json_data)
     <BaseNode object 'None' at ...>
@@ -43,13 +45,14 @@ Node children serializition::
     >>> json_data = serialize(node)
     >>> json_data
     '{"__node__": 
-    {"__name__": "base", 
-    "__class__": "node.base.BaseNode", 
-    "__children__": [{"__node__": 
-    {"__name__": "child", 
-    "__class__": "node.base.BaseNode", 
-    "__children__": [{"__node__": 
-    {"__name__": "sub", "__class__": "node.base.BaseNode"}}]}}]}}'
+    {"children": [{"__node__": 
+    {"children": [{"__node__": 
+    {"class": "node.base.BaseNode", 
+    "name": "sub"}}], 
+    "class": "node.base.BaseNode", 
+    "name": "child"}}], 
+    "class": "node.base.BaseNode", 
+    "name": "base"}}'
 
     >>> node = deserialize(json_data)
     >>> node.printtree()
@@ -67,6 +70,10 @@ Deserialize using given root node::
         <class 'node.base.BaseNode'>: child
           <class 'node.base.BaseNode'>: sub
 
+
+Attribute serialization
+-----------------------
+
 Serialize node implementing ``IAttributes``::
 
     >>> node = AttributedNode(name='base')
@@ -80,15 +87,15 @@ Serialize node implementing ``IAttributes``::
     >>> json_data = serialize(node)
     >>> json_data
     '{"__node__": 
-    {"__name__": "base", 
-    "__class__": "node.base.AttributedNode", 
-    "__attrs__": 
+    {"attrs": 
     {"uuid": "<UUID>:fcb30f5a-20c7-43aa-9537-2a25fef0248d", 
     "int": 0, 
     "float": 0.0, 
     "list": [0, 0.0, "str", "<UNSET>"], 
     "str": "str", 
-    "unset": "<UNSET>"}}}'
+    "unset": "<UNSET>"}, 
+    "class": "node.base.AttributedNode", 
+    "name": "base"}}'
 
 Deserialize node implementing ``IAttributes``::
 
@@ -104,3 +111,145 @@ Deserialize node implementing ``IAttributes``::
       list: [0, 0.0, u'str', <UNSET>]
       str: u'str'
       unset: <UNSET>
+
+
+Referencing of classes, methods and functions
+---------------------------------------------
+
+::
+
+    XXX
+
+
+Custom serializer
+-----------------
+
+Mock object used by class and interface bound serializers::
+
+    >>> class ICustomNode(Interface):
+    ...     iface_attr = Attribute('Custom Attribute')
+
+    >>> @implementer(ICustomNode)
+    ... class CustomNode(AttributedNode):
+    ...     iface_attr = None
+    ...     class_attr = None
+
+    >>> base.CustomNode = CustomNode
+    >>> CustomNode.__module__ = 'node.base'
+
+Interface bound custom serializer and deserializer::
+
+    >>> @serializer(ICustomNode)
+    ... def serialize_custom_node(encoder, node, data):
+    ...     data['iface_attr'] = node.iface_attr
+
+    >>> @deserializer(ICustomNode)
+    ... def deserialize_custom_node(encoder, node, data):
+    ...     node.iface_attr = data['iface_attr']
+
+    >>> node = base.CustomNode(name='custom')
+    >>> node.iface_attr = 'Iface Attr Value'
+    >>> json_data = serialize(node)
+    >>> json_data
+    '{"__node__": 
+    {"iface_attr": "Iface Attr Value", 
+    "attrs": {}, 
+    "class": "node.base.CustomNode", 
+    "name": "custom"}}'
+
+    >>> node = deserialize(json_data)
+    >>> node.printtree()
+    <class 'node.base.CustomNode'>: custom
+
+    >>> node.iface_attr
+    u'Iface Attr Value'
+
+    >>> node.class_attr
+
+Class bound custom serializer and deserializer::
+
+    >>> @serializer(CustomNode)
+    ... def serialize_custom_node(encoder, node, data):
+    ...     data['class_attr'] = node.class_attr
+
+    >>> @deserializer(CustomNode)
+    ... def deserialize_custom_node(encoder, node, data):
+    ...     node.class_attr = data['class_attr']
+
+    >>> node = base.CustomNode(name='custom')
+    >>> node.iface_attr = 'Iface Attr Value'
+    >>> node.class_attr = 'Class Attr Value'
+
+    >>> json_data = serialize(node)
+    >>> json_data
+    '{"__node__": 
+    {"class_attr": "Class Attr Value", 
+    "iface_attr": "Iface Attr Value", 
+    "attrs": {}, 
+    "class": "node.base.CustomNode", 
+    "name": "custom"}}'
+
+    >>> node = deserialize(json_data)
+    >>> node.printtree()
+    <class 'node.base.CustomNode'>: custom
+
+    >>> node.iface_attr
+    u'Iface Attr Value'
+
+    >>> node.class_attr
+    u'Class Attr Value'
+
+Custom node constructor. Patch new constructor to ``CustomNode``::
+
+    >>> def custom_init(self, a, b):
+    ...     self.a = a
+    ...     self.b = b
+
+    >>> CustomNode.__init__ = custom_init
+
+Override class based custom serializer to export constructor arguments::
+
+    >>> @serializer(CustomNode)
+    ... def serialize_custom_node(encoder, node, data):
+    ...     data['class_attr'] = node.class_attr
+    ...     data['kw'] = {
+    ...         'a': node.a,
+    ...         'b': node.b
+    ...     }
+
+Serialize and deserialize node with custom constructor::
+
+    >>> node = base.CustomNode(a='A', b='B')
+    >>> json_data = serialize(node)
+    >>> json_data
+    '{"__node__": 
+    {"name": null, 
+    "iface_attr": null, 
+    "class_attr": null, 
+    "kw": {"a": "A", "b": "B"}, 
+    "attrs": {}, 
+    "class": "node.base.CustomNode"}}'
+
+    >>> node = deserialize(json_data)
+    >>> node.printtree()
+    <class 'node.base.CustomNode'>: None
+
+    >>> node.a
+    u'A'
+
+    >>> node.b
+    u'B'
+
+Cleanup mock patch::
+
+    >>> del base.CustomNode
+
+
+Simplified serialization
+------------------------
+
+Serialize node trees without type information. Such data is not deserializable
+by default deserializer. Supposed to be used for domain specific
+(browser-) applications dealing with node data::
+
+    XXX

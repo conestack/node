@@ -83,8 +83,8 @@ class NodeEncoder(json.JSONEncoder):
         if INode.providedBy(ob):
             ret = dict()
             data = ret.setdefault('__node__', dict())
-            data['__class__'] = self.dotted_name(ob)
-            data['__name__'] = ob.name
+            data['class'] = self.dotted_name(ob)
+            data['name'] = ob.name
             for cls, callback in serializer.registry.items():
                 if issubclass(cls, Interface) and cls.providedBy(ob):
                     callback(self, ob, data)
@@ -117,9 +117,9 @@ class NodeDecoder(object):
         """Instanciate node by definitions from ``data``. New node gets set as
         child on ``parent`` if given.
         """
-        factory = self.resolve(data['__class__'])
-        kw = self.decode(data.get('__kw__', dict()))
-        name = data['__name__']
+        factory = self.resolve(data['class'])
+        kw = self.decode(data.get('kw', dict()))
+        name = data['name']
         if parent is not None:
             node = parent[name] = factory(**kw)
         else:
@@ -170,12 +170,12 @@ def serialize_node(encoder, node, data):
     for child in node.values():
         children.append(encoder.default(child))
     if children:
-        data['__children__'] = children
+        data['children'] = children
 
 
 @deserializer(INode)
 def deserialize_node(decoder, node, data):
-    children = data.get('__children__')
+    children = data.get('children')
     if not children:
         return
     for child in children:
@@ -188,14 +188,14 @@ def deserialize_node(decoder, node, data):
 
 @serializer(IAttributes)
 def serialize_node_attributes(encoder, node, data):
-    attrs = data.setdefault('__attrs__', dict())
+    attrs = data.setdefault('attrs', dict())
     for name, child in node.attrs.items():
         attrs[name] = encoder.default(child)
 
 
 @deserializer(IAttributes)
 def deserialize_node_attributes(decoder, node, data):
-    attrs = data.get('__attrs__')
+    attrs = data.get('attrs')
     if not attrs:
         return
     for attr, value in attrs.items():
