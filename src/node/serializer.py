@@ -14,12 +14,19 @@ import uuid
 # API
 ###############################################################################
 
-def serialize(ob):
+def serialize(ob, simple_mode=False, include_class=False):
     """Serialize ob.
 
     Return JSON dump.
     """
-    return json.dumps(ob, cls=NodeEncoder)
+    if simple_mode:
+        def encoder_factory(**kw):
+            kw['simple_mode'] = True
+            kw['include_class'] = include_class
+            return NodeEncoder(**kw)
+    else:
+        encoder_factory = NodeEncoder
+    return json.dumps(ob, cls=encoder_factory)
 
 
 def deserialize(json_data, root=None):
@@ -66,6 +73,17 @@ class deserializer(_serializer_registry):
 ###############################################################################
 
 class NodeEncoder(json.JSONEncoder):
+    # flag whether to serialize without type information
+    simple_mode = False
+    # include class has no effect in non simple mode
+    include_class = True
+
+    def __init__(self, **kw):
+        if 'simple_mode' in kw:
+            self.simple_mode = kw.pop('simple_mode')
+        if 'include_class' in kw:
+            self.include_class = kw.pop('include_class')
+        super(NodeEncoder, self).__init__(**kw)
 
     def dotted_name(self, ob):
         """Return dotted name of object.
@@ -89,8 +107,12 @@ class NodeEncoder(json.JSONEncoder):
         # serialize Node
         if INode.providedBy(ob):
             ret = dict()
-            data = ret.setdefault('__node__', dict())
-            data['class'] = self.dotted_name(ob)
+            if self.simple_mode:
+                data = ret
+            else:
+                data = ret.setdefault('__node__', dict())
+            if not self.simple_mode or self.include_class:
+                data['class'] = self.dotted_name(ob)
             data['name'] = ob.name
             for cls, callback in serializer.registry.items():
                 if issubclass(cls, Interface) and cls.providedBy(ob):
@@ -100,6 +122,8 @@ class NodeEncoder(json.JSONEncoder):
             return ret
         # Serialize class, method or function
         if isclass(ob) or ismethod(ob) or isfunction(ob):
+            if self.simple_mode:
+                return self.dotted_name(ob)
             return {'__ob__': self.dotted_name(ob)}
         # no custom serialization required
         return ob

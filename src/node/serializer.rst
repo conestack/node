@@ -293,6 +293,28 @@ Simplified serialization
 
 Serialize node trees without type information. Such data is not deserializable
 by default deserializer. Supposed to be used for domain specific
-(browser-) applications dealing with node data::
+(Browser-) applications dealing with node data::
 
-    XXX
+    >>> node = BaseNode(name='base')
+    >>> child = node['child'] = AttributedNode()
+    >>> child.attrs['foo'] = 'Foo'
+    >>> child.attrs['ref'] = base.AbstractNode
+
+If all nodes are the same type, call ``serialize`` with ``simple_mode=True``::
+
+    >>> serialize(node, simple_mode=True)
+    '{"name": "base", 
+    "children": 
+    [{"name": "child", 
+    "attrs": {"foo": "Foo", "ref": "node.base.AbstractNode"}}]}'
+
+If nodes are different types and you do not care about exposing the class name,
+pass ``include_class=True`` to ``serialize``::
+
+    >>> serialize(node, simple_mode=True, include_class=True)
+    '{"children": 
+    [{"attrs": {"foo": "Foo", "ref": "node.base.AbstractNode"}, 
+    "class": "node.base.AttributedNode", 
+    "name": "child"}], 
+    "class": "node.base.BaseNode", 
+    "name": "base"}'

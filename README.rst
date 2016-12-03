@@ -231,6 +231,22 @@ The ``node`` package provides several plumbing behaviors:
     See ``node.interfaces.IStorage``.
 
 
+JSON Serialization
+------------------
+
+Nodes can be serialized to and deserialized from JSON::
+
+    >>> from node.serializer import serialize
+    >>> json_dump = serialize(BaseNode(name='node'))
+
+    >>> from node.serializer import deserialize
+    >>> deserialize(json_dump)
+    <BaseNode object 'node' at ...>
+
+For details on serialization API please read tests in
+``src/node/serializer.rst``.
+
+
 Migration
 ---------
 
@@ -270,6 +286,7 @@ Summary of the test coverage report::
      18   100%   node.events
     124   100%   node.interfaces
      23   100%   node.locking
+    136   100%   node.serializer
       1   100%   node.testing.__init__
      62   100%   node.testing.base
      19   100%   node.testing.env

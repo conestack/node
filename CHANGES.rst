@@ -5,7 +5,8 @@ Changes
 0.9.17 (unreleased)
 -------------------
 
-- No changes yet.
+- Add basic JSON serializer and deserializer.
+  [rnix, 2016-12-03]
 
 
 0.9.16 (2015-10-08)
