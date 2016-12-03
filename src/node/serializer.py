@@ -42,7 +42,7 @@ class deserializer(_serializer_registry):
 
 class NodeEncoder(json.JSONEncoder):
 
-    def dottedname(self, ob):
+    def dotted_name(self, ob):
         """Return dotted name of object.
         """
         return '.'.join([ob.__module__, ob.__class__.__name__])
@@ -57,7 +57,7 @@ class NodeEncoder(json.JSONEncoder):
         # serialize node
         ret = dict()
         data = ret.setdefault('__node_serializer__', dict())
-        data['__class__'] = self.dottedname(ob)
+        data['__class__'] = self.dotted_name(ob)
         data['__name__'] = ob.name
         for cls, callback in serializer.registry.items():
             if issubclass(cls, Interface) and cls.providedBy(ob):
@@ -73,9 +73,6 @@ class NodeEncoder(json.JSONEncoder):
 
 class NodeDecoder(object):
 
-    def __init__(self, parent=None):
-        self.parent = parent
-
     def resolve(self, name):
         """Resolve dotted name to object.
         """
@@ -85,13 +82,13 @@ class NodeDecoder(object):
             ob = getattr(ob, comp)
         return ob
 
-    def instanciate_node(self, data):
-        """Instanciate node by definitions from data.
+    def node_factory(self, data, parent=None):
+        """Instanciate node by definitions from ``data``. New node gets set as
+        child on ``parent`` if given.
         """
         factory = self.resolve(data['__class__'])
-        kw = self(data.get('__kw__', dict()))
+        kw = self.decode(data.get('__kw__', dict()))
         name = data['__name__']
-        parent = self.parent
         if parent is not None:
             node = parent[name] = factory(**kw)
         else:
@@ -99,17 +96,17 @@ class NodeDecoder(object):
             node.__name__ = name
         return node
 
-    def __call__(self, dct):
+    def decode(self, dct, parent=None):
         # return as is if not serialized by ``NodeEncoder``
         if not '__node_serializer__' in dct:
             return dct
         data = dct['__node_serializer__']
-        # a string value directly maps to a function, class, module or singleton
+        # string value mapping to a function, class, module or singleton
         if isinstance(data, basestring):
             return self.resolve(data)
         # deserialize node
-        ob = self.instanciate_node(data)
-        for cls, callback in serializer.registry.items():
+        ob = self.node_factory(data, parent=parent)
+        for cls, callback in deserializer.registry.items():
             if issubclass(cls, Interface) and cls.providedBy(ob):
                 callback(self, ob, data)
             elif isinstance(ob, cls):
@@ -118,18 +115,51 @@ class NodeDecoder(object):
 
 
 ###############################################################################
-# serializer and deserializer callbacks
+# API
+###############################################################################
+
+def serialize(ob):
+    """Serialize ob.
+
+    Return JSON dump.
+    """
+    return json.dumps(ob, cls=NodeEncoder)
+
+
+def deserialize(json_data, root=None):
+    """Deserialize JSON dump.
+
+    Return deserialized data.
+    """
+    data = json.loads(json_data)
+    return NodeDecoder().decode(data, parent=root)
+
+
+###############################################################################
+# node serializer and deserializer
 ###############################################################################
 
 @serializer(INode)
 def serialize_node(encoder, node, data):
-    pass
+    children = list()
+    for child in node.values():
+        children.append(encoder.default(child))
+    if children:
+        data['__children__'] = children
 
 
 @deserializer(INode)
-def deserialize_node(decoder, parent, data):
-    pass
+def deserialize_node(decoder, node, data):
+    children = data.get('__children__')
+    if not children:
+        return
+    for child in children:
+        decoder.decode(child, parent=node)
 
+
+###############################################################################
+# attributes serializer and deserializer
+###############################################################################
 
 @serializer(IAttributes)
 def serialize_node_attributes(encoder, node, data):
@@ -137,5 +167,5 @@ def serialize_node_attributes(encoder, node, data):
 
 
 @deserializer(IAttributes)
-def deserialize_node_attributes(decoder, parent, data):
+def deserialize_node_attributes(decoder, node, data):
     pass

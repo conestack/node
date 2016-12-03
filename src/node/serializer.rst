@@ -5,8 +5,8 @@ Imports::
 
     >>> from node.base import AttributedNode
     >>> from node.base import BaseNode
-    >>> from node.serializer import NodeDecoder
-    >>> from node.serializer import NodeEncoder
+    >>> from node.serializer import serialize
+    >>> from node.serializer import deserialize
     >>> from node.utils import UNSET
     >>> import json
 
@@ -14,25 +14,62 @@ Imports::
 UNSET serialization
 -------------------
 
-``UNSET`` serializition and deserialization::
+``UNSET`` serializition::
 
-    >>> json_UNSET = json.dumps(UNSET, cls=NodeEncoder)
-    >>> json_UNSET
+    >>> json_data = serialize(UNSET)
+    >>> json_data
     '{"__node_serializer__": "node.utils.UNSET"}'
 
-    >>> json.loads(json_UNSET, object_hook=NodeDecoder())
+    >>> deserialize(json_data)
     <UNSET>
 
 
 Node serialization
 ------------------
 
-Basic ``BaseNode`` serializition and deserialization::
+Basic ``INode`` implementing object serializition::
 
-    >>> json_node = json.dumps(BaseNode(), cls=NodeEncoder)
-    >>> json_node
+    >>> json_data = serialize(BaseNode())
+    >>> json_data
     '{"__node_serializer__": 
     {"__name__": null, "__class__": "node.base.BaseNode"}}'
 
-    >>> json.loads(json_node, object_hook=NodeDecoder())
+    >>> deserialize(json_data)
     <BaseNode object 'None' at ...>
+
+Node children serializition::
+
+    >>> node = BaseNode(name='base')
+    >>> node['child'] = BaseNode()
+    >>> node['child']['sub'] = BaseNode()
+    >>> node.printtree()
+    <class 'node.base.BaseNode'>: base
+      <class 'node.base.BaseNode'>: child
+        <class 'node.base.BaseNode'>: sub
+
+    >>> json_data = serialize(node)
+    >>> json_data
+    '{"__node_serializer__": 
+    {"__name__": "base", 
+    "__class__": "node.base.BaseNode", 
+    "__children__": [{"__node_serializer__": 
+    {"__name__": "child", 
+    "__class__": "node.base.BaseNode", 
+    "__children__": [{"__node_serializer__": 
+    {"__name__": "sub", "__class__": "node.base.BaseNode"}}]}}]}}'
+
+    >>> node = deserialize(json_data)
+    >>> node.printtree()
+    <class 'node.base.BaseNode'>: base
+      <class 'node.base.BaseNode'>: child
+        <class 'node.base.BaseNode'>: sub
+
+Deserialize using diven root node::
+
+    >>> root = BaseNode(name='root')
+    >>> node = deserialize(json_data, root=root)
+    >>> root.printtree()
+    <class 'node.base.BaseNode'>: root
+      <class 'node.base.BaseNode'>: base
+        <class 'node.base.BaseNode'>: child
+          <class 'node.base.BaseNode'>: sub
