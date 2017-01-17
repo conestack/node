@@ -2,7 +2,7 @@
 Changes
 =======
 
-0.9.17 (unreleased)
+0.9.17 (2017-01-17)
 -------------------
 
 - Add basic JSON serializer and deserializer.
