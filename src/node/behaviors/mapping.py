@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from node.utils import UNSET
 from plumber import Behavior
 from plumber import default

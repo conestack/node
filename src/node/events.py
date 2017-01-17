@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from node.interfaces import INodeAddedEvent
 from node.interfaces import INodeCreatedEvent
 from node.interfaces import INodeDetachedEvent

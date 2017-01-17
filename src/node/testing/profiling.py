@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from node.base import Node
 
 import cProfile

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from node.interfaces import IOrdered
 from node.interfaces import IStorage
 from node.utils import instance_property

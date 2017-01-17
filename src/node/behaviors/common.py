@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from node.interfaces import IAdopt
 from node.interfaces import IAsAttrAccess
 from node.interfaces import IChildFactory

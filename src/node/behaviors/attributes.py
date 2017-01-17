@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from node.behaviors.common import Adopt
 from node.behaviors.common import NodeChildValidate
 from node.behaviors.nodify import Nodify
