@@ -46,7 +46,6 @@ setup(name='node',
           'test': [
               'interlude',
               'plone.testing',
-              'unittest2',
               'odict[test]',
               'plumber[test]',
           ]
