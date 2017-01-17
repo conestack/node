@@ -1,11 +1,14 @@
+# -*- coding: utf-8 -*-
 from interlude import interact
 from pprint import pprint
 import doctest
 import unittest
 
-optionflags = doctest.NORMALIZE_WHITESPACE | \
-              doctest.ELLIPSIS | \
-              doctest.REPORT_ONLY_FIRST_FAILURE
+optionflags = (
+    doctest.NORMALIZE_WHITESPACE |
+    doctest.ELLIPSIS |
+    doctest.REPORT_ONLY_FIRST_FAILURE
+)
 
 TESTFILES = [
     'testing/env.rst',
@@ -18,6 +21,7 @@ TESTFILES = [
     'behaviors/alias.rst',
     'behaviors/attributes.rst',
     'behaviors/cache.rst',
+    'behaviors/fallback.rst',
     'behaviors/lifecycle.rst',
     'behaviors/mapping.rst',
     'behaviors/nodespace.rst',
@@ -40,6 +44,7 @@ def test_suite():
                    'pprint': pprint},
         ) for file in TESTFILES
     ])
+
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')                 #pragma NO COVER

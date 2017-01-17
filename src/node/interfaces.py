@@ -515,3 +515,24 @@ class IStorage(Interface):
     def __iter__():
         """Iter throught storage keys.
         """
+
+
+class IFallback(Interface):
+    """Plumbin behavior providing a controlled way to define rootward nodes,
+    where a subtree as fallback value for the key (ans its sub=path) might be
+    found.
+
+    If a key was not found it looks in its parent if there is a
+    ``fallback_key`` was defined. Then it looks in the subtree if the key
+    is available there using the same subpath. If the key is there also
+    not defined, it looks further up the tree, traverses in the next subtree
+    and stops searching from there ans so on untils a key was found (or not).
+    """
+
+    fallback_key = Attribute(
+        u'Key to be used as fallback if an item was not found.'
+    )
+
+    def __getitem__(key):
+        """lookup fallback if item is not available on node.
+        """

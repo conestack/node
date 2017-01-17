@@ -5,7 +5,12 @@ Changes
 0.9.18 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Feature: ``fallback`` behavior. If a key was not found it looks in its parent
+  if there is a ``fallback_key`` was defined. Then it looks in the subtree if
+  the key is available there using the same subpath. If the key is there also
+  not defined, it looks further up the tree, traverses in the next subtree and
+  stops searching from there ans so on untils a key was found (or not)/
+  [jensens]
 
 
 0.9.17 (2017-01-17)

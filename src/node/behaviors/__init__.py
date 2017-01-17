@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from node.behaviors.alias import Alias
 from node.behaviors.attributes import Attributes
 from node.behaviors.attributes import NodeAttributes
@@ -10,9 +11,9 @@ from node.behaviors.common import ChildFactory
 from node.behaviors.common import FixedChildren
 from node.behaviors.common import GetattrChildren
 from node.behaviors.common import NodeChildValidate
-from node.behaviors.common import UUIDAware
 from node.behaviors.common import UnicodeAware
-# from node.behaviors.common import Wrap
+from node.behaviors.common import UUIDAware
+from node.behaviors.fallback import Fallback
 from node.behaviors.lifecycle import AttributesLifecycle
 from node.behaviors.lifecycle import Lifecycle
 from node.behaviors.mapping import ClonableMapping
