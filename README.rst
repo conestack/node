@@ -231,7 +231,7 @@ The ``node`` package provides several plumbing behaviors:
     See ``node.interfaces.IStorage``.
 
 **node.behaviors.Fallback**
-    Provide a way to fall back to values stored on an other node.
+    Provide a way to fall back to values by subpath stored on another node.
     See ``node.interfaces.IFallback``.
 
 
@@ -281,7 +281,7 @@ Summary of the test coverage report::
        42   100%   node.behaviors.attributes
        68   100%   node.behaviors.cache
       131   100%   node.behaviors.common
-       42   100%   node.behaviors.fallback
+       41   100%   node.behaviors.fallback
        56   100%   node.behaviors.lifecycle
       124   100%   node.behaviors.mapping
        34   100%   node.behaviors.nodespace
@@ -301,7 +301,6 @@ Summary of the test coverage report::
       131   100%   node.utils
 
 
-
 Contributors
 ============
 
@@ -310,4 +309,3 @@ Contributors
 - Florian Friesdorf <flo [at] chaoflow [dot] net>
 
 - Jens Klein <jens [at] bluedynamics [dot] com>
-

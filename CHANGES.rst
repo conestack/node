@@ -5,14 +5,10 @@ Changes
 0.9.18 (unreleased)
 -------------------
 
-- Cleanup: Do not depend on unittest2 since its is not used.
+- Do not depend on unittest2 since its is not used.
   [jensens, 2017-01-17]
 
-- Feature: ``fallback`` behavior. If a key was not found it looks in its parent
-  if there is a ``fallback_key`` was defined. Then it looks in the subtree if
-  the key is available there using the same subpath. If the key is there also
-  not defined, it looks further up the tree, traverses in the next subtree and
-  stops searching from there and so on, until a key was found (or not).
+- Add ``node.behaviors.Fallback`` behavior.
   [jensens, 2017-01-17]
 
 

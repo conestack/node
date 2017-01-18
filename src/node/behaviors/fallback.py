@@ -4,18 +4,16 @@ from plumber import Behavior
 from plumber import default
 from plumber import plumb
 from zope.interface import implementer
-
 import threading
+
 
 thread_data = threading.local()
 thread_data.in_fallback_processing = False
-
 _marker = dict()
 
 
 def _to_root(node, path, visited):
-    """go in direction root until node with fallback found.
-    or no more parent (breaks)
+    """Traverse to root searching next fallback key. If no more parent, break.
     """
     parent = node.__parent__
     if parent is None:
@@ -27,7 +25,8 @@ def _to_root(node, path, visited):
 
 
 def _to_leaf(node, path, visited):
-    """go to the leaf, is the key?"""
+    """Traverse children, searching for fallback key.
+    """
     current = node
     for name in path[len(current.path):]:
         new_current = current.get(name, _marker)
@@ -39,17 +38,14 @@ def _to_leaf(node, path, visited):
 
 @implementer(IFallback)
 class Fallback(Behavior):
-    """looks for a fallback_key in parent
-    (or in its parents in the same children path),
-    takes its children and looks there,
-    falls back to unvisited parents,
-    untils no fallback left
-    """
-
     fallback_key = default(_marker)
 
     @plumb
     def __getitem__(_next, self, key):
+        """If key not found, look for fallback_key on parent(s) with the same
+        subpath, take it's children and look there, fall back to unvisited
+        parents until no fallback left.
+        """
         try:
             value = _next(self, key)
         except KeyError:

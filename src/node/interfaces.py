@@ -519,15 +519,14 @@ class IStorage(Interface):
 
 
 class IFallback(Interface):
-    """Plumbin behavior providing a controlled way to define rootward nodes,
-    where a subtree as fallback value for the key (ans its sub=path) might be
-    found.
+    """Plumbing behavior providing a way to fall back to values by subpath
+    stored on sibling or parent nodes.
 
-    If a key was not found it looks in its parent if there is a
-    ``fallback_key`` was defined. Then it looks in the subtree if the key
-    is available there using the same subpath. If the key is there also
-    not defined, it looks further up the tree, traverses in the next subtree
-    and stops searching from there ans so on untils a key was found (or not).
+    If a key is not found, a lookup on parent is made if ``fallback_key`` is
+    defined. If so, it looks in the subtree defined by ``fallback_key`` if the
+    key is available there using the same subpath. If nothing is found by given
+    subpath in fallback subtree, it traverses rootwards repeating the procedure
+    until desired value is found.
     """
 
     fallback_key = Attribute(
@@ -535,5 +534,5 @@ class IFallback(Interface):
     )
 
     def __getitem__(key):
-        """lookup fallback if item is not available on node.
+        """Lookup fallback if item is not available on node.
         """
