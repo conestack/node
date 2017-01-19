@@ -1,3 +1,5 @@
+graft src/node
 include *.rst
-recursive-include src *
-recursive-exclude src *.pyc *.pyo
+exclude *.cfg
+exclude bootstrap.sh
+global-exclude *.pyc

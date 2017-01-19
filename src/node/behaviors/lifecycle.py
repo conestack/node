@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from node.events import NodeAddedEvent
 from node.events import NodeCreatedEvent
 from node.events import NodeDetachedEvent

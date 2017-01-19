@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from node.interfaces import ICache
 from node.interfaces import IInvalidate
 from node.utils import instance_property

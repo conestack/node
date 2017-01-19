@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from interfaces import IAttributeAccess
 from interfaces import INode
 from zope.interface import implementer

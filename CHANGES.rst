@@ -5,7 +5,11 @@ Changes
 0.9.18 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Do not depend on unittest2 since its is not used.
+  [jensens, 2017-01-17]
+
+- Add ``node.behaviors.Fallback`` behavior.
+  [jensens, 2017-01-17]
 
 
 0.9.17 (2017-01-17)

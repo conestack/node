@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from zope.interface import Attribute
 from zope.interface import Interface
 from zope.interface.common.mapping import IFullMapping
@@ -514,4 +515,24 @@ class IStorage(Interface):
 
     def __iter__():
         """Iter throught storage keys.
+        """
+
+
+class IFallback(Interface):
+    """Plumbing behavior providing a way to fall back to values by subpath
+    stored on sibling or parent nodes.
+
+    If a key is not found, a lookup on parent is made if ``fallback_key`` is
+    defined. If so, it looks in the subtree defined by ``fallback_key`` if the
+    key is available there using the same subpath. If nothing is found by given
+    subpath in fallback subtree, it traverses rootwards repeating the procedure
+    until desired value is found.
+    """
+
+    fallback_key = Attribute(
+        u'Key to be used as fallback if an item was not found.'
+    )
+
+    def __getitem__(key):
+        """Lookup fallback if item is not available on node.
         """

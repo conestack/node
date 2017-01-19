@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from zope.deprecation import deprecated
 import node.behaviors
 import sys

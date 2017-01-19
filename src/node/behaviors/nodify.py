@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from node.behaviors.mapping import FullMapping
 from node.interfaces import IDefaultInit
 from node.interfaces import INode

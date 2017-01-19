@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from node.interfaces import INode
 from node.interfaces import IReference
 from plumber import Behavior

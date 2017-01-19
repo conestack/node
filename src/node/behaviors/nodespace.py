@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from node.interfaces import INodespaces
 from odict import odict
 from plumber import Behavior

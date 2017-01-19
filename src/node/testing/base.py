@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from odict import odict
 
 

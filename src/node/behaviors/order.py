@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from node.interfaces import IOrder
 from odict.pyodict import _nil
 from plumber import Behavior

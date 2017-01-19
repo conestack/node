@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from setuptools import find_packages
 from setuptools import setup
 import os
@@ -20,8 +21,9 @@ setup(name='node',
           'Topic :: Software Development',
           'Operating System :: OS Independent',
           'Programming Language :: Python',
+          'Programming Language :: Python :: 2.7',
       ],
-      keywords='',
+      keywords='node tree fullmapping',
       author='BlueDynamics Alliance',
       author_email='dev@bluedynamics.com',
       url='http://github.com/bluedynamics/node',
@@ -46,7 +48,6 @@ setup(name='node',
           'test': [
               'interlude',
               'plone.testing',
-              'unittest2',
               'odict[test]',
               'plumber[test]',
           ]
