@@ -160,6 +160,67 @@ StrCodec decode and encode
     unexpected end of data
 
 
+Instance property decorator
+---------------------------
+
+::
+    >>> from node.utils import instance_property
+
+    >>> class InstancePropertyTest(object):
+    ... 
+    ...     @instance_property
+    ...     def property(self):
+    ...         print 'Computed only once'
+    ...         return 'value'
+
+    >>> obj = InstancePropertyTest()
+    >>> obj._property
+    Traceback (most recent call last):
+      ...
+    AttributeError: 'InstancePropertyTest' object has no attribute '_property'
+
+    >>> obj.property
+    Computed only once
+    'value'
+
+    >>> obj._property
+    'value'
+
+    >>> obj.property
+    'value'
+
+
+Node by path
+------------
+
+::
+    >>> from node.utils import node_by_path
+
+    >>> root = BaseNode()
+    >>> child = root['child'] = BaseNode()
+    >>> sub = child['sub'] = BaseNode()
+
+    >>> node_by_path(root, 'child')
+    <BaseNode object 'child' at ...>
+
+    >>> node_by_path(root, 'child/sub')
+    <BaseNode object 'sub' at ...>
+
+    >>> node_by_path(root, ['child'])
+    <BaseNode object 'child' at ...>
+
+    >>> node_by_path(root, ['child', 'sub'])
+    <BaseNode object 'sub' at ...>
+
+    >>> class CustomPathIterator(object):
+    ...     def __iter__(self):
+    ...         yield 'child'
+    ...         yield 'sub'
+
+    >>> node_by_path(root, CustomPathIterator())
+    <BaseNode object 'sub' at ...>
+
+
 Debug helper
 ------------
 

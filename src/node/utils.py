@@ -216,6 +216,17 @@ def instance_property(func):
     return property(wrapper)
 
 
+def node_by_path(root, path):
+    """Return node by path from root
+    """
+    if isinstance(path, basestring):
+        path = path.split('/')
+    node = root
+    for name in path:
+        node = node[name]
+    return node
+
+
 def debug(func):
     """Decorator for logging debug messages.
     """

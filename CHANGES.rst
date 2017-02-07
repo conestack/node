@@ -5,7 +5,10 @@ Changes
 0.9.18 (unreleased)
 -------------------
 
-- Do not depend on unittest2 since its is not used.
+- Add ``node.utils.node_by_path``.
+  [rnix, 2017-02-07]
+
+- Do not depend on ``unittest2`` since its is not used.
   [jensens, 2017-01-17]
 
 - Add ``node.behaviors.Fallback`` behavior.
