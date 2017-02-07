@@ -298,7 +298,7 @@ Summary of the test coverage report::
        24   100%   node.testing.env
       216   100%   node.testing.fullmapping
        31   100%   node.tests
-      131   100%   node.utils
+      138   100%   node.utils
 
 
 Contributors
