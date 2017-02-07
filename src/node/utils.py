@@ -220,7 +220,10 @@ def node_by_path(root, path):
     """Return node by path from root
     """
     if isinstance(path, basestring):
-        path = path.split('/')
+        path = path.strip('/')
+        path = path.split('/') if path else []
+    if not path:
+        return root
     node = root
     for name in path:
         node = node[name]

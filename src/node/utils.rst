@@ -196,11 +196,23 @@ Node by path
 ::
     >>> from node.utils import node_by_path
 
-    >>> root = BaseNode()
+    >>> root = BaseNode(name='root')
     >>> child = root['child'] = BaseNode()
     >>> sub = child['sub'] = BaseNode()
 
+    >>> node_by_path(root, '')
+    <BaseNode object 'root' at ...>
+
+    >>> node_by_path(root, '/')
+    <BaseNode object 'root' at ...>
+
+    >>> node_by_path(root, [])
+    <BaseNode object 'root' at ...>
+
     >>> node_by_path(root, 'child')
+    <BaseNode object 'child' at ...>
+
+    >>> node_by_path(root, '/child')
     <BaseNode object 'child' at ...>
 
     >>> node_by_path(root, 'child/sub')
