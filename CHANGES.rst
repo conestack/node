@@ -2,8 +2,8 @@
 Changes
 =======
 
-0.9.18 (unreleased)
--------------------
+0.9.18
+------
 
 - Add ``node.utils.node_by_path``.
   [rnix, 2017-02-07]
