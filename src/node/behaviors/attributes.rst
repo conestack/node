@@ -1,7 +1,7 @@
-node.behaviors.Attributes
-=========================
+Attributes
+==========
 
-::
+.. code-block:: pycon
 
     >>> from plumber import plumbing
     >>> from node.behaviors import NodeChildValidate

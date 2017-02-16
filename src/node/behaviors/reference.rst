@@ -1,7 +1,9 @@
-node.behaviors.Reference
-------------------------
+Reference
+---------
 
-Tree node index.::
+Tree node index:
+
+.. code-block:: pycon
 
     >>> import copy
     >>> from plumber import plumbing
@@ -30,7 +32,7 @@ Tree node index.::
 
     >>> node.index[node.uuid]
     <ReferenceNode object 'None' ...>
-    
+
     >>> node.index.get(node.uuid)
     <ReferenceNode object 'None' at ...>
 
@@ -40,7 +42,9 @@ Tree node index.::
     >>> len(node.index._index)
     1
 
-Add some children and check node containment stuff.::
+Add some children and check node containment stuff:
+
+.. code-block:: pycon
 
     >>> node.__name__ = 'root'
     >>> node['child'] = ReferenceNode()
@@ -67,7 +71,9 @@ Add some children and check node containment stuff.::
         <class 'ReferenceNode'>: subchild
         <class 'ReferenceNode'>: subchild2
 
-Adding in indexed Node with same uuid or the same node twice fails.::
+Adding in indexed Node with same uuid or the same node twice fails:
+
+.. code-block:: pycon
 
     >>> child = node['child']
     >>> node['child2'] = child
@@ -75,7 +81,9 @@ Adding in indexed Node with same uuid or the same node twice fails.::
       ...
     ValueError: Node with uuid already exists
 
-Check UUID stuff.::
+Check UUID stuff:
+
+.. code-block:: pycon
 
     >>> uuid = node['child']['subchild'].uuid
     >>> uuid
@@ -100,7 +108,9 @@ Check UUID stuff.::
     4
 
 Store the uuids of the nodes which are expected to be deleted from index if
-child is deleted.::
+child is deleted:
+
+.. code-block:: pycon
 
     >>> delindexes = [
     ...     int(node['child'].uuid),
@@ -108,7 +118,9 @@ child is deleted.::
     ...     int(node['child']['subchild2'].uuid),
     ... ]
 
-Read the uuid index and check containment in index.::
+Read the uuid index and check containment in index:
+
+.. code-block:: pycon
 
     >>> iuuids = node._index.keys()
     >>> len(iuuids)
@@ -123,7 +135,9 @@ Read the uuid index and check containment in index.::
     >>> delindexes[2] in iuuids
     True
 
-Delete child. All checked uuids above must be deleted from index.::
+Delete child. All checked uuids above must be deleted from index:
+
+.. code-block:: pycon
 
     >>> del node['child']
     >>> node.keys()

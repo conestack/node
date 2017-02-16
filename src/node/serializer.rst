@@ -1,7 +1,9 @@
 JSON serialization
 ==================
 
-Imports::
+Imports:
+
+.. code-block:: pycon
 
     >>> from node import base
     >>> from node.base import AttributedNode
@@ -21,7 +23,9 @@ Imports::
 Node serialization
 ------------------
 
-Basic ``INode`` implementing object serializition::
+Basic ``INode`` implementing object serializition:
+
+.. code-block:: pycon
 
     >>> json_data = serialize(BaseNode())
     >>> json_data
@@ -32,7 +36,9 @@ Basic ``INode`` implementing object serializition::
     >>> deserialize(json_data)
     <BaseNode object 'None' at ...>
 
-Node children serializition::
+Node children serializition:
+
+.. code-block:: pycon
 
     >>> node = BaseNode(name='base')
     >>> node['child'] = BaseNode()
@@ -60,7 +66,9 @@ Node children serializition::
       <class 'node.base.BaseNode'>: child
         <class 'node.base.BaseNode'>: sub
 
-Deserialize using given root node::
+Deserialize using given root node:
+
+.. code-block:: pycon
 
     >>> root = BaseNode(name='root')
     >>> node = deserialize(json_data, root=root)
@@ -70,7 +78,9 @@ Deserialize using given root node::
         <class 'node.base.BaseNode'>: child
           <class 'node.base.BaseNode'>: sub
 
-Serialize list of nodes::
+Serialize list of nodes:
+
+.. code-block:: pycon
 
     >>> node = BaseNode(name='base')
     >>> node['child_1'] = BaseNode()
@@ -89,7 +99,9 @@ Serialize list of nodes::
     {"class": "node.base.BaseNode", 
     "name": "child_2"}}]'
 
-Deserialize list of nodes using given root node::
+Deserialize list of nodes using given root node:
+
+.. code-block:: pycon
 
     >>> root = BaseNode(name='root')
     >>> nodes = deserialize(json_data, root=root)
@@ -106,7 +118,9 @@ Deserialize list of nodes using given root node::
 Attribute serialization
 -----------------------
 
-Serialize node implementing ``IAttributes``::
+Serialize node implementing ``IAttributes``:
+
+.. code-block:: pycon
 
     >>> node = AttributedNode(name='base')
     >>> node.attrs['int'] = 0
@@ -129,7 +143,9 @@ Serialize node implementing ``IAttributes``::
     "class": "node.base.AttributedNode", 
     "name": "base"}}'
 
-Deserialize node implementing ``IAttributes``::
+Deserialize node implementing ``IAttributes``:
+
+.. code-block:: pycon
 
     >>> node = deserialize(json_data)
     >>> node.printtree()
@@ -148,7 +164,9 @@ Deserialize node implementing ``IAttributes``::
 Referencing of classes, methods and functions
 ---------------------------------------------
 
-Mock objects to reference::
+Mock objects to reference:
+
+.. code-block:: pycon
 
     >>> def referenced_function():
     ...     pass
@@ -163,7 +181,9 @@ Mock objects to reference::
     >>> base.ReferencedClass = ReferencedClass
     >>> ReferencedClass.__module__ = 'node.base'
 
-Serialize and deserialize references::
+Serialize and deserialize references:
+
+.. code-block:: pycon
 
     >>> node = AttributedNode()
     >>> node.attrs['func'] = referenced_function
@@ -190,7 +210,9 @@ Serialize and deserialize references::
       func: <function referenced_function at ...>
       method: <unbound method ReferencedClass.foo>
 
-Cleanup mock patches::
+Cleanup mock patches:
+
+.. code-block:: pycon
 
     >>> del base.referenced_function
     >>> del base.ReferencedClass
@@ -199,7 +221,9 @@ Cleanup mock patches::
 Custom serializer
 -----------------
 
-Mock object used by class and interface bound serializers::
+Mock object used by class and interface bound serializers:
+
+.. code-block:: pycon
 
     >>> class ICustomNode(Interface):
     ...     iface_attr = Attribute('Custom Attribute')
@@ -212,7 +236,9 @@ Mock object used by class and interface bound serializers::
     >>> base.CustomNode = CustomNode
     >>> CustomNode.__module__ = 'node.base'
 
-Interface bound custom serializer and deserializer::
+Interface bound custom serializer and deserializer:
+
+.. code-block:: pycon
 
     >>> @serializer(ICustomNode)
     ... def serialize_custom_node(encoder, node, data):
@@ -241,7 +267,9 @@ Interface bound custom serializer and deserializer::
 
     >>> node.class_attr
 
-Class bound custom serializer and deserializer::
+Class bound custom serializer and deserializer:
+
+.. code-block:: pycon
 
     >>> @serializer(CustomNode)
     ... def serialize_custom_node(encoder, node, data):
@@ -274,7 +302,9 @@ Class bound custom serializer and deserializer::
     >>> node.class_attr
     u'Class Attr Value'
 
-Custom node constructor. Patch new constructor to ``CustomNode``::
+Custom node constructor. Patch new constructor to ``CustomNode``:
+
+.. code-block:: pycon
 
     >>> def custom_init(self, a, b):
     ...     self.a = a
@@ -282,7 +312,9 @@ Custom node constructor. Patch new constructor to ``CustomNode``::
 
     >>> CustomNode.__init__ = custom_init
 
-Override class based custom serializer to export constructor arguments::
+Override class based custom serializer to export constructor arguments:
+
+.. code-block:: pycon
 
     >>> @serializer(CustomNode)
     ... def serialize_custom_node(encoder, node, data):
@@ -292,7 +324,9 @@ Override class based custom serializer to export constructor arguments::
     ...         'b': node.b
     ...     }
 
-Serialize and deserialize node with custom constructor::
+Serialize and deserialize node with custom constructor:
+
+.. code-block:: pycon
 
     >>> node = base.CustomNode(a='A', b='B')
     >>> json_data = serialize(node)
@@ -315,7 +349,9 @@ Serialize and deserialize node with custom constructor::
     >>> node.b
     u'B'
 
-Cleanup mock patch::
+Cleanup mock patch:
+
+.. code-block:: pycon
 
     >>> del base.CustomNode
 
@@ -325,14 +361,18 @@ Simplified serialization
 
 Serialize node trees without type information. Such data is not deserializable
 by default deserializer. Supposed to be used for domain specific
-(Browser-) applications dealing with node data::
+(Browser-) applications dealing with node data:
+
+.. code-block:: pycon
 
     >>> node = BaseNode(name='base')
     >>> child = node['child'] = AttributedNode()
     >>> child.attrs['foo'] = 'Foo'
     >>> child.attrs['ref'] = base.AbstractNode
 
-If all nodes are the same type, call ``serialize`` with ``simple_mode=True``::
+If all nodes are the same type, call ``serialize`` with ``simple_mode=True``:
+
+.. code-block:: pycon
 
     >>> serialize(node, simple_mode=True)
     '{"name": "base", 
@@ -341,7 +381,9 @@ If all nodes are the same type, call ``serialize`` with ``simple_mode=True``::
     "attrs": {"foo": "Foo", "ref": "node.base.AbstractNode"}}]}'
 
 If nodes are different types and you do not care about exposing the class name,
-pass ``include_class=True`` to ``serialize``::
+pass ``include_class=True`` to ``serialize``:
+
+.. code-block:: pycon
 
     >>> serialize(node, simple_mode=True, include_class=True)
     '{"children": 

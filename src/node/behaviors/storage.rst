@@ -1,4 +1,7 @@
-Abstract storage::
+Abstract Storage
+----------------
+
+.. code-block:: pycon
 
     >>> from plumber import plumbing
     >>> from node.behaviors import Storage
@@ -13,7 +16,11 @@ Abstract storage::
       ...
     NotImplementedError: Abstract storage does not implement ``storage``
 
-Dict Storage::
+
+Dict Storage
+------------
+
+.. code-block:: pycon
 
     >>> from node.behaviors import DictStorage
 
@@ -39,7 +46,11 @@ Dict Storage::
     >>> obj.storage
     {}
 
-Odict Storage::
+
+Odict Storage
+-------------
+
+.. code-block:: pycon
 
     >>> from node.behaviors import OdictStorage
 

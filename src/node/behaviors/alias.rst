@@ -1,11 +1,13 @@
-node.behaviors.alias
-====================
+Alias
+=====
 
 
 DictAliaser
 -----------
 
-A dict aliaser takes a dictionary as base for aliasing::
+A dict aliaser takes a dictionary as base for aliasing:
+
+.. code-block:: pycon
 
     >>> from node.behaviors.alias import DictAliaser
     >>> da = DictAliaser([('alias1', 'key1'), ('alias2', 'key2')])
@@ -17,7 +19,9 @@ A dict aliaser takes a dictionary as base for aliasing::
     'key2'
 
 By default, aliasing is strict, which means that only key/value pairs set in
-aliaser are valid::
+aliaser are valid:
+
+.. code-block:: pycon
 
     >>> da.alias('foo')
     Traceback (most recent call last):
@@ -29,7 +33,9 @@ aliaser are valid::
     ...
     KeyError: 'foo'
 
-By setting strict to False, inexistent keys are returned as fallback::
+By setting strict to False, inexistent keys are returned as fallback:
+
+.. code-block:: pycon
 
     >>> da = DictAliaser([('alias1', 'key1'), ('alias2', 'key2')], strict=False)
     >>> da.alias('foo')
@@ -42,7 +48,9 @@ By setting strict to False, inexistent keys are returned as fallback::
 PrefixAliaser
 -------------
 
-An aliaser that simply prefixes all keys.::
+An aliaser that simply prefixes all keys:
+
+.. code-block:: pycon
 
     >>> from node.behaviors.alias import PrefixAliaser
     >>> pa = PrefixAliaser('prefix-')
@@ -62,7 +70,9 @@ An aliaser that simply prefixes all keys.::
 SuffixAliaser
 -------------
 
-An aliaser that simply suffixes all keys.::
+An aliaser that simply suffixes all keys:
+
+.. code-block:: pycon
 
     >>> from node.behaviors.alias import SuffixAliaser
     >>> sa = SuffixAliaser('-suffix')
@@ -82,7 +92,9 @@ An aliaser that simply suffixes all keys.::
 AliaserChain
 ------------
 
-A chain of aliasers.::
+A chain of aliasers:
+
+.. code-block:: pycon
 
     >>> from node.behaviors.alias import AliaserChain
     >>> aliaser = AliaserChain()
@@ -102,7 +114,9 @@ A chain of aliasers.::
 PrefixSuffixAliaser
 -------------------
 
-Combined prefix and suffix aliaser::
+Combined prefix and suffix aliaser:
+
+.. code-block:: pycon
 
     >>> from node.behaviors.alias import PrefixSuffixAliaser
     >>> psa = PrefixSuffixAliaser('prefix-', '-suffix')
@@ -117,7 +131,9 @@ Alias
 -----
 
 A dictionary that uses the alias plumbing but does not assign an aliaser.
-Therefore, no aliasing is happening::
+Therefore, no aliasing is happening:
+
+.. code-block:: pycon
 
     >>> from plumber import plumbing
     >>> from node.behaviors import Alias
@@ -138,7 +154,9 @@ Therefore, no aliasing is happening::
     >>> [x for x in ad]
     []
 
-Now the same but with a prefix aliaser::
+Now the same but with a prefix aliaser:
+
+.. code-block:: pycon
 
     >>> from node.behaviors.alias import PrefixAliaser
     >>> aliaser = PrefixAliaser(prefix="pre-")
@@ -156,7 +174,9 @@ Now the same but with a prefix aliaser::
     []
 
 KeyErrors in the backend are caught and re-raised with the value of the aliased
-key::
+key:
+
+.. code-block:: pycon
 
     >>> class FakeDict(object):
     ...     def __delitem__(self, key):
@@ -191,11 +211,13 @@ key::
 
 A prefix aliaser cannot raise a KeyError, nevertheless, if it does, that error
 must not be caught by the code that handle alias KeyErrors for whitelisting
-(see below)::
+(see below):
+
+.. code-block:: pycon
 
     >>> def failalias(key):
     ...     raise KeyError
-    
+
     >>> fail.aliaser.alias = failalias
     >>> [x for x in fail]
     Traceback (most recent call last):
@@ -213,7 +235,9 @@ must not be caught by the code that handle alias KeyErrors for whitelisting
 
 Let's put a key in the dict, that is not mapped by the dictionary aliaser. This
 is not possible through the plumbing ``__setitem__``, we need to use
-``dict.__setitem``::
+``dict.__setitem``:
+
+.. code-block:: pycon
 
     >>> ad['abc'] = 1
     Traceback (most recent call last):
@@ -225,7 +249,9 @@ is not possible through the plumbing ``__setitem__``, we need to use
     ['foo']
 
 To see the keys that are really in the dictionary, we use ``dict.__iter__``,
-not the plumbing ``__iter__``::
+not the plumbing ``__iter__``:
+
+.. code-block:: pycon
 
     >>> [x for x in dict.__iter__(ad)]
     ['abc', 'f00']

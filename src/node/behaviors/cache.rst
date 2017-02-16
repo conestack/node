@@ -1,7 +1,9 @@
-node.behaviors.invalidate
-=========================
+Invalidate
+==========
 
-Required Imports::
+Required Imports:
+
+.. code-block:: pycon
 
     >>> from plumber import plumbing
     >>> from node.interfaces import ICache
@@ -22,7 +24,9 @@ Default Invalidation
 When using default ``Invalidate``, Contents of node just gets deleted.
 Be aware this implementation must not be used on persisting nodes.
 
-Build invalidating node::
+Build invalidating node:
+
+.. code-block:: pycon
 
     >>> @plumbing(
     ...     Adopt,
@@ -33,7 +37,9 @@ Build invalidating node::
     ... class Node(object):
     ...     pass
 
-Test tree::
+Test tree:
+
+.. code-block:: pycon
 
     >>> root = Node()
     >>> root['c1'] = Node()
@@ -53,7 +59,9 @@ Test tree::
         <class 'Node'>: d1
         <class 'Node'>: d2
 
-Active invalidation of child by key::
+Active invalidation of child by key:
+
+.. code-block:: pycon
 
     >>> root.invalidate(key='c1')
     >>> root.printtree()
@@ -67,7 +75,9 @@ Active invalidation of child by key::
       ...
     KeyError: 'c1'
 
-Active invalidation of all children::
+Active invalidation of all children:
+
+.. code-block:: pycon
 
     >>> root['c2'].invalidate()
     >>> root.printtree()
@@ -79,7 +89,9 @@ Volatile Storage Invalidate
 ---------------------------
 
 When a node internally uses a volatile storage like ``DictStorage`` or
-``OdictStorage``, some can use ``VolatileStorageInvalidate`` for invalidation::
+``OdictStorage``, some can use ``VolatileStorageInvalidate`` for invalidation:
+
+.. code-block:: pycon
 
     >>> @plumbing(
     ...     Adopt,
@@ -90,7 +102,9 @@ When a node internally uses a volatile storage like ``DictStorage`` or
     ... class Node(object):
     ...     pass
 
-Test tree::
+Test tree:
+
+.. code-block:: pycon
 
     >>> root = Node()
     >>> root['c1'] = Node()
@@ -110,7 +124,9 @@ Test tree::
         <class 'Node'>: d1
         <class 'Node'>: d2
 
-Active invalidation of child by key::
+Active invalidation of child by key:
+
+.. code-block:: pycon
 
     >>> root.invalidate(key='c1')
     >>> root.printtree()
@@ -124,14 +140,18 @@ Active invalidation of child by key::
       ...
     KeyError: 'c1'
 
-Active invalidation of all children::
+Active invalidation of all children:
+
+.. code-block:: pycon
 
     >>> root['c2'].invalidate()
     >>> root.printtree()
     <class 'Node'>: None
       <class 'Node'>: c2
 
-Check for ChildFactory Node::
+Check for ChildFactory Node:
+
+.. code-block:: pycon
 
     >>> @plumbing(
     ...     Adopt,
@@ -174,7 +194,9 @@ Check for ChildFactory Node::
 Caching
 -------
 
-Build a node with active invalidation and cache functionality::
+Build a node with active invalidation and cache functionality:
+
+.. code-block:: pycon
 
     >>> @plumbing(
     ...     Adopt,
@@ -197,7 +219,9 @@ Build a node with active invalidation and cache functionality::
     >>> ICache.providedBy(root)
     True
 
-We just accessed 'c2' above, only cached value on root at the moment::
+We just accessed 'c2' above, only cached value on root at the moment:
+
+.. code-block:: pycon
 
     >>> root.cache
     {'c2': <Node object 'c2' at ...>}
@@ -205,13 +229,17 @@ We just accessed 'c2' above, only cached value on root at the moment::
     >>> root['c1']
     <Node object 'c1' at ...>
 
-After accessing 'c1', it is cached as well::
+After accessing 'c1', it is cached as well:
+
+.. code-block:: pycon
 
     >>> root.cache
     {'c2': <Node object 'c2' at ...>, 
     'c1': <Node object 'c1' at ...>}
 
-Invalidate plumbing removes item from cache::
+Invalidate plumbing removes item from cache:
+
+.. code-block:: pycon
 
     >>> root.invalidate(key='c1')
     >>> root.cache
@@ -224,7 +252,9 @@ Invalidate plumbing removes item from cache::
     >>> root.printtree()
     <class 'Node'>: None
 
-Test invalidation plumbing hook with missing cache values::
+Test invalidation plumbing hook with missing cache values:
+
+.. code-block:: pycon
 
     >>> root['x1'] = Node()
     >>> root['x2'] = Node()

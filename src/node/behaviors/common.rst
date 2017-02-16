@@ -4,13 +4,17 @@ Common Behaviors
 Adopt
 -----
 
-General imports.::
+General imports:
+
+.. code-block:: pycon
 
     >>> from plumber import plumbing
     >>> from node.testing.env import MockupNode
     >>> from node.testing.env import NoNode
 
-A dictionary is used as end point.::
+A dictionary is used as end point:
+
+.. code-block:: pycon
 
     >>> from node.behaviors import Adopt
 
@@ -20,7 +24,9 @@ A dictionary is used as end point.::
 
     >>> ad = AdoptingDict()
 
-The mockup node is adopted.::
+The mockup node is adopted:
+
+.. code-block:: pycon
 
     >>> node = MockupNode()
     >>> ad['foo'] = node
@@ -31,7 +37,9 @@ The mockup node is adopted.::
     >>> node.__parent__ is ad
     True
 
-The non-node object is not adopted.::
+The non-node object is not adopted:
+
+.. code-block:: pycon
 
     >>> nonode = NoNode()
     >>> ad['bar'] = nonode
@@ -52,7 +60,9 @@ Maybe it is also possible to have two __init__ one decorated one not, if the
 plumbing decorator could influence that all plumbing functions are stored under
 a different name. If the decorator cannot do that a Plumbing metaclass will
 work for sure, however, it is questionable whether it justifies a metaclass
-instead of just naming the plumbing init eg plumbing__init__.::
+instead of just naming the plumbing init eg plumbing__init__:
+
+.. code-block:: pycon
 
     >>> class FakeDict(object):
     ...     def __setitem__(self, key, val):
@@ -79,7 +89,7 @@ instead of just naming the plumbing init eg plumbing__init__.::
 UnicodeAware
 ------------
 
-::
+.. code-block:: pycon
 
     >>> from node.behaviors import UnicodeAware
     >>> from node.behaviors import OdictStorage
@@ -109,7 +119,7 @@ UnicodeAware
 ChildFactory
 ------------
 
-::
+.. code-block:: pycon
 
     >>> from node.behaviors import ChildFactory
 
@@ -131,7 +141,7 @@ ChildFactory
 FixedChildren
 -------------
 
-::
+.. code-block:: pycon
 
     >>> from node.behaviors import FixedChildren
 
@@ -169,13 +179,15 @@ FixedChildren
 UUIDAware
 ---------
 
-::
+.. code-block:: pycon
 
     >>> from node.behaviors import UUIDAware
     >>> from node.behaviors import DefaultInit
 
 Create a uid aware node. ``copy`` is not supported on UUIDAware node trees,
-``deepcopy`` must be used::
+``deepcopy`` must be used:
+
+.. code-block:: pycon
 
     >>> @plumbing(
     ...     Adopt,
@@ -186,20 +198,26 @@ Create a uid aware node. ``copy`` is not supported on UUIDAware node trees,
     ... class UUIDNode(object):
     ...     pass
 
-UUID is set at init time::
+UUID is set at init time:
+
+.. code-block:: pycon
 
     >>> root = UUIDNode(name='root')
     >>> root.uuid
     UUID('...')
 
-Shallow ``copy`` is prohibited for UUID aware nodes::
+Shallow ``copy`` is prohibited for UUID aware nodes:
+
+.. code-block:: pycon
 
     >>> root_cp = root.copy()
     Traceback (most recent call last):
       ...
     RuntimeError: Shallow copy useless on UUID aware node trees, use deepcopy.
 
-On ``deepcopy``, a new uid gets set::
+On ``deepcopy``, a new uid gets set:
+
+.. code-block:: pycon
 
     >>> root_cp = root.deepcopy()
     >>> root is root_cp
@@ -208,7 +226,9 @@ On ``deepcopy``, a new uid gets set::
     >>> root.uuid == root_cp.uuid
     False
 
-Create children, copy tree and check if all uuids have changed::
+Create children, copy tree and check if all uuids have changed:
+
+.. code-block:: pycon
 
     >>> c1 = root['c1'] = UUIDNode()
     >>> s1 = c1['s1'] = UUIDNode()
@@ -232,7 +252,9 @@ Create children, copy tree and check if all uuids have changed::
     >>> root['c1']['s1'].uuid == root_cp['c1']['s1'].uuid
     False
 
-When detaching part of a tree, uid's are not changed::
+When detaching part of a tree, uid's are not changed:
+
+.. code-block:: pycon
 
     >>> c1_uid = root['c1'].uuid
     >>> s1_uid = root['c1']['s1'].uuid
@@ -255,7 +277,7 @@ When detaching part of a tree, uid's are not changed::
 NodeChildValidate
 -----------------
 
-::
+.. code-block:: pycon
 
     >>> from node.behaviors import NodeChildValidate
     >>> from node.behaviors import Nodify
@@ -291,7 +313,9 @@ NodeChildValidate
 GetattrChildren
 ---------------
 
-XXX: this test breaks coverage recording!!!::
+XXX: this test breaks coverage recording!!!:
+
+.. code-block:: pycon
 
     >>> from node.base import BaseNode
     >>> from node.behaviors import GetattrChildren
@@ -313,7 +337,9 @@ XXX: this test breaks coverage recording!!!::
     >>> assert(node['baseattr'] == 20)
     >>> assert(node['ourattr'] == 30)
 
-Only children not shadowed by real attributes can be accessed via getattr::
+Only children not shadowed by real attributes can be accessed via getattr:
+
+.. code-block:: pycon
 
     >>> assert(node.foo == 10)
     >>> assert(node.baseattr == 1)

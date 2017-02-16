@@ -38,7 +38,9 @@ Usage
 ``node`` ships with some "ready-to-import-and-use" nodes.
 
 An unordered node. This can be used as base for trees where order of items
-doesn't matter::
+doesn't matter:
+
+.. code-block:: pycon
 
     >>> from node.base import BaseNode
     >>> root = BaseNode(name='root')
@@ -47,7 +49,9 @@ doesn't matter::
     <class 'node.base.BaseNode'>: root
       <class 'node.base.BaseNode'>: child
 
-An ordered node. The order of items is preserved::
+An ordered node. The order of items is preserved:
+
+.. code-block:: pycon
 
     >>> from node.base import OrderedNode
     >>> root = OrderedNode(name='orderedroot')
@@ -72,7 +76,9 @@ A more fine granular control of node functionality
 ``node`` utilizes the `plumber <http://pypi.python.org/pypi/plumber>`_ package.
 
 Thus, different behaviors of nodes are provided by ``plumbing behaviors``. Read
-the documentation of ``plumber`` for details about the plumbing system::
+the documentation of ``plumber`` for details about the plumbing system:
+
+.. code-block:: pycon
 
     >>> from plumber import plumbing
     >>> from node.behaviors import (
@@ -117,7 +123,9 @@ the documentation of ``plumber`` for details about the plumbing system::
 
 As the ``dir`` call shows, the ``CustomNode`` class was plumbed using given behaviors,
 so defining a complete ``INode`` implementation with some additional
-behaviours and is now easily done::
+behaviours and is now easily done:
+
+.. code-block:: pycon
 
     >>> node = CustomNode()
     >>> node['child'] = CustomNode()
@@ -238,7 +246,9 @@ The ``node`` package provides several plumbing behaviors:
 JSON Serialization
 ------------------
 
-Nodes can be serialized to and deserialized from JSON::
+Nodes can be serialized to and deserialized from JSON:
+
+.. code-block:: pycon
 
     >>> from node.serializer import serialize
     >>> json_dump = serialize(BaseNode(name='node'))

@@ -1,10 +1,12 @@
-node.behaviors.Order
-====================
+Order
+=====
 
 Order without References
 ------------------------
 
-Node insertion. ``insertbefore`` and ``insertafter``::
+Node insertion. ``insertbefore`` and ``insertafter``:
+
+.. code-block:: pycon
 
     >>> from plumber import plumbing
     >>> from node.behaviors import Adopt
@@ -69,10 +71,12 @@ Node insertion. ``insertbefore`` and ``insertafter``::
       <class 'OrderableNode'>: child4
       <class 'OrderableNode'>: child2
       <class 'OrderableNode'>: child5
-   
+
 Move a node. Therefor we first need to detach the node we want to move from
 tree. Then insert the detached node elsewhere. In general, you can insert the
-detached node or subtree to a complete different tree::
+detached node or subtree to a complete different tree:
+
+.. code-block:: pycon
 
     >>> detached = node.detach('child4')
     >>> node.insertbefore(detached, node['child1'])
@@ -84,7 +88,9 @@ detached node or subtree to a complete different tree::
       <class 'OrderableNode'>: child2
       <class 'OrderableNode'>: child5
 
-``insertfirst`` and ``insertlast``::
+Test ``insertfirst`` and ``insertlast``:
+
+.. code-block:: pycon
 
     >>> new = OrderableNode(name='first')
     >>> node.insertfirst(new)
@@ -122,7 +128,9 @@ detached node or subtree to a complete different tree::
     <class 'OrderableNode'>: root
       <class 'OrderableNode'>: new
 
-``swap``::
+Test ``swap``:
+
+.. code-block:: pycon
 
     >>> node.clear()
     >>> node['0'] = OrderableNode()
@@ -133,73 +141,97 @@ detached node or subtree to a complete different tree::
     >>> node.keys()
     ['0', '1', '2', '3', '4']
 
-Case first 2, a < b::
+Case first 2, a < b:
+
+.. code-block:: pycon
 
     >>> node.swap(node['0'], node['1'])
     >>> node.keys()
     ['1', '0', '2', '3', '4']
 
-Case first 2, a > b::
+Case first 2, a > b:
+
+.. code-block:: pycon
 
     >>> node.swap(node['0'], node['1'])
     >>> node.keys()
     ['0', '1', '2', '3', '4']
 
-Case last 2, a < b::
+Case last 2, a < b:
+
+.. code-block:: pycon
 
     >>> node.swap(node['3'], node['4'])
     >>> node.keys()
     ['0', '1', '2', '4', '3']
 
-Case last 2, a > b::
+Case last 2, a > b:
+
+.. code-block:: pycon
 
     >>> node.swap(node['3'], node['4'])
     >>> node.keys()
     ['0', '1', '2', '3', '4']
 
-Case neighbors, a < b::
+Case neighbors, a < b:
+
+.. code-block:: pycon
 
     >>> node.swap(node['1'], node['2'])
     >>> node.keys()
     ['0', '2', '1', '3', '4']
 
-Case neighbors, a > b::
+Case neighbors, a > b:
+
+.. code-block:: pycon
 
     >>> node.swap(node['1'], node['2'])
     >>> node.keys()
     ['0', '1', '2', '3', '4']
 
-Case non neighbors, one node first, a < b::
+Case non neighbors, one node first, a < b:
+
+.. code-block:: pycon
 
     >>> node.swap(node['0'], node['2'])
     >>> node.keys()
     ['2', '1', '0', '3', '4']
 
-Case non neighbors, one node first, a > b::
+Case non neighbors, one node first, a > b:
+
+.. code-block:: pycon
 
     >>> node.swap(node['0'], node['2'])
     >>> node.keys()
     ['0', '1', '2', '3', '4']
 
-Case non neighbors, one node last, a < b::
+Case non neighbors, one node last, a < b:
+
+.. code-block:: pycon
 
     >>> node.swap(node['2'], node['4'])
     >>> node.keys()
     ['0', '1', '4', '3', '2']
 
-Case non neighbors, one node last, a > b::
+Case non neighbors, one node last, a > b:
+
+.. code-block:: pycon
 
     >>> node.swap(node['2'], node['4'])
     >>> node.keys()
     ['0', '1', '2', '3', '4']
 
-Case non neighbors, a < b::
+Case non neighbors, a < b:
+
+.. code-block:: pycon
 
     >>> node.swap(node['1'], node['3'])
     >>> node.keys()
     ['0', '3', '2', '1', '4']
 
-Case non neighbors, a > b::
+Case non neighbors, a > b:
+
+.. code-block:: pycon
 
     >>> node.swap(node['1'], node['3'])
     >>> node.keys()
@@ -209,7 +241,7 @@ Case non neighbors, a > b::
 Order with References
 ---------------------
 
-::
+.. code-block:: pycon
 
     >>> @plumbing(
     ...     Adopt,
@@ -256,7 +288,9 @@ Order with References
       <class 'OrderReferenceNode'>: child2
       <class 'OrderReferenceNode'>: child5
 
-Merge 2 Node Trees::
+Merge 2 Node Trees:
+
+.. code-block:: pycon
 
     >>> tree1 = OrderReferenceNode()
     >>> tree1['a'] = OrderReferenceNode()
@@ -300,7 +334,9 @@ Merge 2 Node Trees::
         <class 'OrderReferenceNode'>: d
         <class 'OrderReferenceNode'>: e
 
-Detach subtree and insert elsewhere::
+Detach subtree and insert elsewhere:
+
+.. code-block:: pycon
 
     >>> sub = tree1.detach('c')
     >>> sub.printtree()
@@ -345,14 +381,14 @@ Detach subtree and insert elsewhere::
     Traceback (most recent call last):
       ...
     KeyError: u'Given node already contained in tree.'
-    
+
     >>> tree2.printtree()
     <class 'OrderReferenceNode'>: x
       <class 'OrderReferenceNode'>: d
       <class 'OrderReferenceNode'>: e
-   
+
     >>> tree2['d'].allow_non_node_childs = True
-    >>> tree2['d']['a'] = object() 
+    >>> tree2['d']['a'] = object()
     >>> tree2.printtree()
     <class 'OrderReferenceNode'>: x
       <class 'OrderReferenceNode'>: d

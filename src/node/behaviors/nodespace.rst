@@ -1,7 +1,7 @@
-node.behaviors.Nodespaces
--------------------------
+Nodespaces
+----------
 
-::
+.. code-block:: pycon
 
     >>> from odict import odict
     >>> from plumber import plumbing
@@ -12,9 +12,9 @@ node.behaviors.Nodespaces
     >>> from node.behaviors import OdictStorage
 
     >>> @plumbing(
-    ...     Adopt, 
-    ...     Nodespaces, 
-    ...     Nodify, 
+    ...     Adopt,
+    ...     Nodespaces,
+    ...     Nodify,
     ...     OdictStorage)
     ... class NodespacesNode(odict):
     ...     pass
@@ -24,8 +24,8 @@ node.behaviors.Nodespaces
     odict([('__children__', <NodespacesNode object 'None' at ...>)])
 
     >>> @plumbing(
-    ...     Adopt, 
-    ...     Nodify, 
+    ...     Adopt,
+    ...     Nodify,
     ...     DefaultInit,
     ...     OdictStorage)
     ... class SomeNode(object):

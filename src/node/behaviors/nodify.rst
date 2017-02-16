@@ -1,7 +1,7 @@
-node.behaviors.Nodify
----------------------
+Nodify
+------
 
-::
+.. code-block:: pycon
 
     >>> from plumber import plumbing
 

@@ -1,13 +1,17 @@
-node.behaviors.FullMapping
---------------------------
+FullMapping
+-----------
 
-Plumber and FullMappingTester.::
+Plumber and FullMappingTester:
+
+.. code-block:: pycon
 
     >>> from plumber import plumbing
     >>> from node.testing import FullMappingTester
 
 A full mapping that is going to fail, because nobody takes care of
-``__delitem__``, ``__getitem__``, ``__iter__`` and ``__setitem__``.::
+``__delitem__``, ``__getitem__``, ``__iter__`` and ``__setitem__``:
+
+.. code-block:: pycon
 
     >>> from node.behaviors import FullMapping
 
@@ -40,7 +44,9 @@ A full mapping that is going to fail, because nobody takes care of
     ``values``: failed: NotImplementedError()
 
 All methods are defined on the class by the FullMapping behavior, none are
-inherited from base classes.::
+inherited from base classes:
+
+.. code-block:: pycon
 
     >>> tester.wherefrom
     __contains__:  MyFullMapping
@@ -64,7 +70,9 @@ inherited from base classes.::
     update:  MyFullMapping
     values:  MyFullMapping
 
-Use a storage.::
+Use a storage:
+
+.. code-block:: pycon
 
     >>> from node.behaviors import DictStorage
 
@@ -99,7 +107,9 @@ Use a storage.::
     ``values``: OK
 
 Only the Four were taken from the base class, the others were filled in by the
-FullMapping behavior.::
+FullMapping behavior:
+
+.. code-block:: pycon
 
     >>> tester.wherefrom
     __contains__:  MyFullMapping

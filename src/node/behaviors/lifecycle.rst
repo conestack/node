@@ -1,7 +1,9 @@
-node.behaviors.Lifecycle
-------------------------
+Lifecycle
+---------
 
-Check NodeCreation.::
+Check NodeCreation:
+
+.. code-block:: pycon
 
     >>> import zope.component
     >>> from plumber import plumbing
@@ -61,7 +63,9 @@ Check NodeCreation.::
     >>> handler.handled
     [<node.events.NodeCreatedEvent object at ...>]
 
-Check Node adding.::
+Check Node adding:
+
+.. code-block:: pycon
 
     >>> del handler.handled[0]
     >>> child1 = LifecycleNode()
@@ -70,46 +74,58 @@ Check Node adding.::
     [<node.events.NodeCreatedEvent object at ...>, 
     <node.events.NodeAddedEvent object at ...>]
 
-Check Node modification.::
+Check Node modification:
+
+.. code-block:: pycon
 
     >>> del handler.handled[0]
     >>> del handler.handled[0]
 
     >>> ignore = child1.attrs
 
-No event, despite the node creation for the attributes nodespace.::
+No event, despite the node creation for the attributes nodespace:
+
+.. code-block:: pycon
 
     >>> handler.handled
     []
 
-Node modified events if the attributes nodespace is changed.::
+Node modified events if the attributes nodespace is changed:
+
+.. code-block:: pycon
 
     >>> child1.attrs['foo'] = 1
     >>> handler.handled
     [<node.events.NodeModifiedEvent object at ...>]
 
     >>> del handler.handled[0]
-    >>> del child1.attrs['foo']  
+    >>> del child1.attrs['foo']
     >>> handler.handled
     [<node.events.NodeModifiedEvent object at ...>]
 
-Check Node Deletion.:: 
+Check Node Deletion:
+
+.. code-block:: pycon
 
     >>> handler.handled = []
     >>> del root['child1']
     >>> handler.handled
     [<node.events.NodeRemovedEvent object at ...>]
 
-Check Node Detach.:: 
+Check Node Detach:
+
+.. code-block:: pycon
 
     >>> child2 = LifecycleNode()
     >>> root['child2'] = child2
     >>> handler.handled = []
-    >>> detached = root.detach('child2')    
+    >>> detached = root.detach('child2')
     >>> handler.handled
     [<node.events.NodeDetachedEvent object at ...>]
 
-Check notify suppress on __setitem__::
+Check notify suppress on ``__setitem__``:
+
+.. code-block:: pycon
 
     >>> handler.handled = []
     >>> root._notify_suppress = True
@@ -117,7 +133,9 @@ Check notify suppress on __setitem__::
     >>> handler.handled
     []
 
-Check notify suppress on attributes manipulation::
+Check notify suppress on attributes manipulation:
+
+.. code-block:: pycon
 
     >>> attrs = root.attrs
     >>> attrs
