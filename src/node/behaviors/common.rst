@@ -296,16 +296,12 @@ XXX: this test breaks coverage recording!!!::
     >>> from node.base import BaseNode
     >>> from node.behaviors import GetattrChildren
 
-    >>> class Base(BaseNode):
+    >>> class GetattrBase(BaseNode):
     ...     allow_non_node_childs = True
     ...     baseattr = 1
-    ...     def __getattr__(self, name):
-    ...         if name is not "baseblend":
-    ...             raise AttributeError("baseblend")
-    ...         return "42"
 
     >>> @plumbing(GetattrChildren)
-    ... class GetattrNode(Base):
+    ... class GetattrNode(GetattrBase):
     ...     ourattr = 2
 
     >>> node = GetattrNode()
@@ -313,26 +309,12 @@ XXX: this test breaks coverage recording!!!::
     >>> node['baseattr'] = 20
     >>> node['ourattr'] = 30
 
-    >>> node['foo']
-    10
-    >>> node['baseattr']
-    20
-    >>> node['ourattr']
-    30
+    >>> assert(node['foo'] == 10)
+    >>> assert(node['baseattr'] == 20)
+    >>> assert(node['ourattr'] == 30)
 
 Only children not shadowed by real attributes can be accessed via getattr::
 
-    >>> node.foo
-    10
-    >>> node.baseattr
-    1
-    >>> node.ourattr
-    2
-
-XXX: The base class' getattr does not work anymore. plumber directive
-     plumber override could solve this together with support for multiple
-     behaviors hooking into __getattr__. -cfl
-
-     Thats why i prefer AttributeAccess explicit for attribute access on node
-     children. overwriting __getattr__ and/or __getattribue__ cause too many
-     side effects imo. -rn
+    >>> assert(node.foo == 10)
+    >>> assert(node.baseattr == 1)
+    >>> assert(node.ourattr == 2)

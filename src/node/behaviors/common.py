@@ -126,7 +126,7 @@ class FixedChildren(Behavior):
 class GetattrChildren(Behavior):
     """Access children via ``__getattr__``, given the attribute name is unused.
 
-    XXX: Similar behavior as AsAttrAccess. harmonize.
+    XXX: Similar behavior as ``AsAttrAccess``. consolidate.
     """
 
     @finalize
@@ -134,7 +134,7 @@ class GetattrChildren(Behavior):
         """For new-style classes __getattr__ is called, if the
         attribute could not be found via MRO
         """
-        return self.__getitem__(name)
+        return self[name]
 
 
 @implementer(INodeChildValidate)
