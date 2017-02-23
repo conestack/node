@@ -2,10 +2,11 @@
 Changes
 =======
 
-0.9.19 (unreleased)
--------------------
+0.9.18.1
+--------
 
-- No changes yet.
+- Fix permissions.
+  [rnix, 2017-02-23]
 
 
 0.9.18 (2017-02-14)
