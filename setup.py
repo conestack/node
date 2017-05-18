@@ -49,7 +49,7 @@ setup(
         'test': [
             'interlude',
             'plone.testing',
-            'odict[test]',
+            'odict',
             'plumber[test]',
         ]
     },
