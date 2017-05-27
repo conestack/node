@@ -7,6 +7,8 @@ Building sdist::
 Create binary distribution egg::
 
     python setup.py bdist_egg --exclude-source-files
+
+    pip install dist/node-0.9.16.dev0-py2-none-any.whl
 """
 
 
