@@ -53,6 +53,7 @@ setup(
             'plumber[test]',
         ]
     },
+    test_suite='node.tests',
     entry_points="""
     """
 )
