@@ -10,6 +10,10 @@ from plumber import default
 from plumber import finalize
 from plumber import plumbing
 from zope.interface import implementer
+import sys
+
+
+IS_PY2 = sys.version_info[0] < 3
 
 
 @plumbing(
@@ -27,7 +31,10 @@ class NodeAttributes(object):
         self._node = parent    # BBB 2011-01-31
 
     def __repr__(self):
-        name = unicode(self.parent.name).encode('ascii', 'replace')
+        if IS_PY2:
+            name = unicode(self.parent.name).encode('ascii', 'replace')
+        else:
+            name = self.parent.name
         return "<%s object '%s' at %s>" % (self.__class__.__name__,
                                            name,
                                            hex(id(self))[:-1])

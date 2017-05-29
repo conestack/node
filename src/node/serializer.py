@@ -8,7 +8,11 @@ from node.utils import UNSET
 from odict import odict
 from zope.interface import Interface
 import json
+import sys
 import uuid
+
+
+STR_TYPE = basestring if sys.version_info[0] < 3 else str
 
 
 ###############################################################################
@@ -161,7 +165,7 @@ class NodeDecoder(object):
 
     def decode(self, data, parent=None):
         # decode data from string
-        if isinstance(data, basestring):
+        if isinstance(data, STR_TYPE):
             # decode UNSET
             if data == '<UNSET>':
                 return UNSET

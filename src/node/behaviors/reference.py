@@ -40,7 +40,7 @@ class Reference(Behavior):
     def __setitem__(_next, self, key, val):
         if INode.providedBy(val):
             try:
-                val.iterkeys().next()
+                next(val.iterkeys())
                 keys = set(self._index.keys())
                 if keys.intersection(val._index.keys()):
                     raise ValueError(u"Node with uuid already exists")

@@ -25,7 +25,7 @@ class DictAliaser(odict):
     def alias(self, key):
         try:
             return ReverseMapping(self)[key]
-        except KeyError, e:
+        except KeyError as e:
             if not self.strict:
                 return key
             raise e
@@ -33,7 +33,7 @@ class DictAliaser(odict):
     def unalias(self, aliased_key):
         try:
             return self[aliased_key]
-        except KeyError, e:
+        except KeyError as e:
             if not self.strict:
                 return aliased_key
             raise e

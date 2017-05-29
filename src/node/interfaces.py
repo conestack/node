@@ -8,7 +8,7 @@ from zope.lifecycleevent import IObjectModifiedEvent
 from zope.lifecycleevent import IObjectRemovedEvent
 try:
     from zope.location.interfaces import ILocation
-except ImportError, e:
+except ImportError as e:
     class ILocation(Interface):
         """Objects that can be located in a hierachy.
 

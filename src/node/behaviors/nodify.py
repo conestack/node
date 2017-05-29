@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 from node.behaviors.mapping import FullMapping
 from node.interfaces import IDefaultInit
 from node.interfaces import INode
@@ -10,6 +11,10 @@ from plumber import override
 from plumber import plumb
 from zope.interface import implementer
 from zope.interface.interfaces import IInterface
+import sys
+
+
+IS_PY2 = sys.version_info[0] < 3
 
 
 @implementer(IDefaultInit)
@@ -68,9 +73,9 @@ class Nodify(FullMapping):
     def acquire(self, interface):
         node = self.parent
         while node:
-            if (IInterface.providedBy(interface) \
-              and interface.providedBy(node)) \
-              or isinstance(node, interface):
+            if (IInterface.providedBy(interface) and
+                    interface.providedBy(node)) or \
+                    isinstance(node, interface):
                 return node
             node = node.parent
 
@@ -103,14 +108,9 @@ class Nodify(FullMapping):
         XXX: do we really need the difference or can we just override __repr__
         in subclasses and use __repr__ in printtree?
         """
-        # XXX: is this a relict from plumber prototyping? -rn
-        #if hasattr(self.__class__, '_wrapped'):
-        #    class_ = self.__class__._wrapped
-        #else:
-        #    class_ = self.__class__
         class_ = self.__class__
         name = self.__name__
-        if isinstance(name, unicode):
+        if IS_PY2 and isinstance(name, unicode):
             name = name.encode('ascii', 'replace')
         else:
             name = str(name)
@@ -118,23 +118,16 @@ class Nodify(FullMapping):
 
     @override
     def printtree(self, indent=0):
-        print "{0}{1}".format(indent * ' ', self.noderepr)
+        print('{}{}'.format(indent * ' ', self.noderepr))
         for key, value in self.items():
             if INode.providedBy(value):
                 value.printtree(indent + 2)
             else:
-                print "{0}{1}: {2}".format(
+                print('{}{}: {}'.format(
                     (indent + 2) * ' ',
                     key,
                     repr(value)
-                )
-
-    # XXX: tricky one: If a base class provides a __nonzero__ and that
-    # base class is nodified, should the base class' __nonzero__ be
-    # used or this one? Please write your thoughts here -cfl
-    #
-    # I think @default is fine, leaves most possible flexibility to the user.
-    # Other thoughts? -rn
+                ))
 
     @default
     def __nonzero__(self):
@@ -142,16 +135,9 @@ class Nodify(FullMapping):
 
     @override
     def __repr__(self):
-        # XXX: is this a relict from plumber prototyping? -rn
-        #if hasattr(self.__class__, '_wrapped'):
-        #    class_name = self.__class__._wrapped.__name__
-        #else:
-        #    class_name = self.__class__.__name__
         class_name = self.__class__.__name__
-        # XXX: This is mainly used in doctest, I think
-        #      doctest fails if we output utf-8
         name = self.__name__
-        if isinstance(name, unicode):
+        if IS_PY2 and isinstance(name, unicode):
             name = name.encode('ascii', 'replace')
         else:
             name = str(name)

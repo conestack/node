@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 from odict import odict
 
 
 def create_tree(class_):
-        root = class_()
-        for i in range(3):
-            root['child_%i' % i] = class_()
-            for j in range(2):
-                root['child_%i' % i]['subchild_%i' % j] = class_()
-        return root
+    root = class_()
+    for i in range(3):
+        root['child_%i' % i] = class_()
+        for j in range(2):
+            root['child_%i' % i]['subchild_%i' % j] = class_()
+    return root
 
 
 class ResultWriter(object):
@@ -59,20 +60,20 @@ class BaseTester(object):
     @property
     def combined(self):
         for key, val in sorted(self.writer().results.iteritems()):
-            print '``%s``: %s' % (key, val)
+            print('``%s``: %s' % (key, val))
 
     @property
     def wherefrom(self):
         for name in sorted(self.iface_contract):
-            print name + ": ",
+            print(name + ": ")
             if name in self.class_.__dict__:
-                print self.class_.__name__
+                print(self.class_.__name__)
             else:
                 for base in self.class_.__bases__:
                     if name in base.__dict__:
-                        print base.__name__
+                        print(base.__name__)
                         continue
-                    print "function not found on object"
+                    print('function not found on object')
 
     def run(self):
         for name in self.iface_contract:
@@ -89,7 +90,7 @@ class BaseTester(object):
             try:
                 func()
                 writer.success()
-            except Exception, e:
+            except Exception as e:
                 writer.failed(e)
 
     def writer(self, key=None):

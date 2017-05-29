@@ -14,6 +14,10 @@ from zope.interface.common.mapping import IMapping
 from zope.interface.common.mapping import IReadMapping
 from zope.interface.common.mapping import IWriteMapping
 import copy
+import sys
+
+
+ITER_FUNC = 'iteritems' if sys.version_info[0] < 3 else 'items'
 
 
 @implementer(IItemMapping)
@@ -179,15 +183,16 @@ class ExtendedWriteMapping(WriteMapping):
     @default
     def update(self, *args, **kw):
         if len(args) > 1:
-            raise TypeError("At most one positional argument, not: %s." % \
-                    (len(args),))
+            raise TypeError(
+                "At most one positional argument, not: %s." % len(args)
+            )
         if args:
             data = args[0]
-            if hasattr(data, 'iteritems'):
-                data = data.iteritems()
+            if hasattr(data, ITER_FUNC):
+                data = getattr(data, ITER_FUNC)()
             for key, val in data:
                 self[key] = val
-        for key, val in kw.iteritems():
+        for key, val in getattr(kw, ITER_FUNC)():
             self[key] = val
 
     @default
