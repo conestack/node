@@ -145,7 +145,10 @@ class TestFullmapping(unittest.TestCase):
             def get(self, key, default=None):
                 return object()
 
-        fmtester = FullMappingTester(TestMappingGet, include_node_checks=False)
+        fmtester = FullMappingTester(
+            TestMappingGet,
+            include_node_checks=False
+        )
         fmtester.test___setitem__()
         err = self.except_error(Exception, fmtester.test_get)
         self.assertTrue(
@@ -156,7 +159,10 @@ class TestFullmapping(unittest.TestCase):
             def get(self, key, default=None):
                 return default
 
-        fmtester = FullMappingTester(TestMappingGet, include_node_checks=False)
+        fmtester = FullMappingTester(
+            TestMappingGet,
+            include_node_checks=False
+        )
         fmtester.test___setitem__()
         err = self.except_error(Exception, fmtester.test_get)
         self.assertEqual(
@@ -168,7 +174,10 @@ class TestFullmapping(unittest.TestCase):
             def get(self, key, default=None):
                 return self.data.get(key, default)
 
-        fmtester = FullMappingTester(TestMappingGet, include_node_checks=False)
+        fmtester = FullMappingTester(
+            TestMappingGet,
+            include_node_checks=False
+        )
         fmtester.test___setitem__()
         fmtester.test_get()
 
@@ -448,79 +457,131 @@ class TestFullmapping(unittest.TestCase):
         fmtester.test___setitem__()
         fmtester.test_itervalues()
 
+    def test_items(self):
+        class TestMappingSetItem(TestMapping):
+            def __setitem__(self, key, value):
+                self.data[key] = value
+
+        class TestMappingGetItem(TestMappingSetItem):
+            def __getitem__(self, key):
+                return self.data[key]
+
+        class TestMappingGet(TestMappingGetItem):
+            def get(self, key, default=None):
+                return self.data.get(key, default)
+
+        class TestMappingIter(TestMappingGet):
+            def __iter__(self):
+                return self.data.__iter__()
+
+        class TestMappingKeys(TestMappingIter):
+            def keys(self):
+                return [k for k in self.data]
+
+        class TestMappingIterKeys(TestMappingKeys):
+            def iterkeys(self):
+                return self.data.__iter__()
+
+        class TestMappingValues(TestMappingIterKeys):
+            def values(self):
+                return self.data.values()
+
+        class TestMappingIterValues(TestMappingValues):
+            def itervalues(self):
+                return iter(self.data.values())
+
+        fmtester = FullMappingTester(
+            TestMappingIterValues,
+            include_node_checks=False
+        )
+        err = self.except_error(AttributeError, fmtester.test_items)
+        self.assertEqual(
+            str(err),
+            '\'TestMappingIterValues\' object has no attribute \'items\''
+        )
+
+        class TestMappingItems(TestMappingIterValues):
+            def items(self):
+                return list()
+
+        fmtester = FullMappingTester(
+            TestMappingItems,
+            include_node_checks=False
+        )
+        err = self.except_error(Exception, fmtester.test_items)
+        self.assertEqual(
+            str(err),
+            'Expected 2-length result. Got ``0``'
+        )
+
+        class TestMappingItems(TestMappingIterValues):
+            def items(self):
+                return [('foo', object()), ('b', object())]
+
+        fmtester = FullMappingTester(
+            TestMappingItems,
+            include_node_checks=False
+        )
+        fmtester.test___setitem__()
+
+        err = self.except_error(Exception, fmtester.test_items)
+        self.assertEqual(
+            str(err),
+            'Expected keys ``[\'foo\', \'bar\']``. Got ``b``'
+        )
+
+        class TestMappingItems(TestMappingIterValues):
+            def items(self):
+                return [('foo', object()), ('bar', object())]
+
+        fmtester = FullMappingTester(
+            TestMappingItems,
+            include_node_checks=False
+        )
+        fmtester.test___setitem__()
+
+        err = self.except_error(Exception, fmtester.test_items)
+        self.assertTrue(str(err).find('Expected <object object at') > -1)
+        self.assertTrue(str(err).find('got <node.', 26) > -1)
+        self.assertTrue(str(err).find('TestMappingItems object at', 38) > -1)
+
+        class TestMappingItems(TestMappingIterValues):
+            def items(self):
+                return self.data.items()
+
+        fmtester = FullMappingTester(
+            TestMappingItems,
+            include_node_checks=False
+        )
+        fmtester.test___setitem__()
+        fmtester.test_items()
+
+        class TestNodeItems(TestNode, TestMappingItems):
+            pass
+
+        fmtester = FullMappingTester(TestNodeItems)
+        fmtester.test___setitem__()
+
+        err = self.except_error(Exception, fmtester.test_items)
+        self.assertEqual(
+            str(err),
+            'Expected same value for ``key`` "foo" and ``__name__`` "None"'
+        )
+
+        class TestNodeSetItem(TestNode, TestMappingSetItem):
+            def __setitem__(self, name, value):
+                value.__parent__ = self
+                value.__name__ = name
+                self.data[name] = value
+
+        class TestNodeItems(TestNodeSetItem, TestMappingItems):
+            pass
+
+        fmtester = FullMappingTester(TestNodeItems)
+        fmtester.test___setitem__()
+        fmtester.test_items()
+
 """
-
-items
-~~~~~
-
-.. code-block:: pycon
-
-    >>> fmtester.test_items()
-    Traceback (most recent call last):
-      ...
-    AttributeError: 'TestMappingIterValues' object has no attribute 'items'
-
-    >>> class TestMappingItems(TestMappingIterValues):
-    ...     def items(self):
-    ...         return list()
-
-    >>> fmtester = FullMappingTester(TestMappingItems,
-    ...                              include_node_checks=False)
-    >>> fmtester.test_items()
-    Traceback (most recent call last):
-      ...
-    Exception: Expected 2-length result. Got ``0``
-
-    >>> class TestMappingItems(TestMappingIterValues):
-    ...     def items(self):
-    ...         return [('foo', object()), ('b', object())]
-
-    >>> fmtester = FullMappingTester(TestMappingItems,
-    ...                              include_node_checks=False)
-    >>> fmtester.test___setitem__()
-    >>> fmtester.test_items()
-    Traceback (most recent call last):
-      ...
-    Exception: Expected keys ``['foo', 'bar']``. Got ``b``
-
-    >>> class TestMappingItems(TestMappingIterValues):
-    ...     def items(self):
-    ...         return [('foo', object()), ('bar', object())]
-
-    >>> fmtester = FullMappingTester(TestMappingItems,
-    ...                              include_node_checks=False)
-    >>> fmtester.test___setitem__()
-    >>> fmtester.test_items()
-    Traceback (most recent call last):
-      ...
-    Exception: Expected <object object at ...>, got <TestMappingItems object at ...>
-
-    >>> class TestMappingItems(TestMappingIterValues):
-    ...     def items(self):
-    ...         return self.data.items()
-
-    >>> fmtester = FullMappingTester(TestMappingItems,
-    ...                              include_node_checks=False)
-    >>> fmtester.test___setitem__()
-    >>> fmtester.test_items()
-
-    >>> class TestNodeItems(TestNode, TestMappingItems):
-    ...     pass
-
-    >>> fmtester = FullMappingTester(TestNodeItems)
-    >>> fmtester.test___setitem__()
-    >>> fmtester.test_items()
-    Traceback (most recent call last):
-      ...
-    Exception: Expected same value for ``key`` "foo" and ``__name__`` "None"
-
-    >>> class TestNodeItems(TestNodeSetItem, TestMappingItems):
-    ...     pass
-
-    >>> fmtester = FullMappingTester(TestNodeItems)
-    >>> fmtester.test___setitem__()
-    >>> fmtester.test_items()
-
 
 iteritems
 ~~~~~~~~~

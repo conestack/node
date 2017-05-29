@@ -105,6 +105,11 @@ class FullMappingTester(BaseTester):
             msg = 'Expected %i-length result. Got ``%i``'
             msg = msg % (len(expected), len(items))
             raise Exception(msg)
+        items = sorted(
+            items,
+            key=lambda x: '' if x[0] is None else x[0],
+            reverse=True
+        )
         for key, value in items:
             if key not in expected:
                 msg = 'Expected keys ``%s``. Got ``%s``' % (str(expected), key)
