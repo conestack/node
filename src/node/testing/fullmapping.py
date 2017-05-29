@@ -83,6 +83,10 @@ class FullMappingTester(BaseTester):
             msg = msg % (len(expected), len(values))
             raise Exception(msg)
         if self.include_node_checks:
+            values = sorted(
+                values,
+                key=lambda x: '' if x.__name__ is None else x.__name__
+            )
             for value in values:
                 if value.__name__ not in expected:
                     msg = 'Expected __name__ of value invalid. Got ``%s``'
@@ -101,6 +105,11 @@ class FullMappingTester(BaseTester):
             msg = 'Expected %i-length result. Got ``%i``'
             msg = msg % (len(expected), len(items))
             raise Exception(msg)
+        items = sorted(
+            items,
+            key=lambda x: '' if x[0] is None else x[0],
+            reverse=True
+        )
         for key, value in items:
             if key not in expected:
                 msg = 'Expected keys ``%s``. Got ``%s``' % (str(expected), key)
