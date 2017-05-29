@@ -10,7 +10,8 @@ else:                                                        # pragma: no cover
 
 class TestEnv(unittest.TestCase):
 
-    def test_fullmapping(self):
+    def test_MyNode(self):
+        # test IFullMapping contract on MyNode
         mynode = MyNode()
         self.assertIsInstance(mynode, MyNode)
         # __setitem__
