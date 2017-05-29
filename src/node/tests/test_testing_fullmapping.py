@@ -581,27 +581,62 @@ class TestFullmapping(unittest.TestCase):
         fmtester.test___setitem__()
         fmtester.test_items()
 
+    def test_iteritems(self):
+        class TestMappingSetItem(TestMapping):
+            def __setitem__(self, key, value):
+                self.data[key] = value
+
+        class TestMappingGetItem(TestMappingSetItem):
+            def __getitem__(self, key):
+                return self.data[key]
+
+        class TestMappingGet(TestMappingGetItem):
+            def get(self, key, default=None):
+                return self.data.get(key, default)
+
+        class TestMappingIter(TestMappingGet):
+            def __iter__(self):
+                return self.data.__iter__()
+
+        class TestMappingKeys(TestMappingIter):
+            def keys(self):
+                return [k for k in self.data]
+
+        class TestMappingIterKeys(TestMappingKeys):
+            def iterkeys(self):
+                return self.data.__iter__()
+
+        class TestMappingValues(TestMappingIterKeys):
+            def values(self):
+                return self.data.values()
+
+        class TestMappingIterValues(TestMappingValues):
+            def itervalues(self):
+                return iter(self.data.values())
+
+        class TestMappingItems(TestMappingIterValues):
+            def items(self):
+                return self.data.items()
+
+        fmtester = FullMappingTester(TestMappingItems)
+        err = self.except_error(AttributeError, fmtester.test_iteritems)
+        self.assertEqual(
+            str(err),
+            '\'TestMappingItems\' object has no attribute \'iteritems\''
+        )
+
+        class TestMappingIterItems(TestMappingItems):
+            def iteritems(self):
+                return iter(self.data.items())
+
+        fmtester = FullMappingTester(
+            TestMappingIterItems,
+            include_node_checks=False
+        )
+        fmtester.test___setitem__()
+        fmtester.test_iteritems()
+
 """
-
-iteritems
-~~~~~~~~~
-
-.. code-block:: pycon
-
-    >>> fmtester.test_iteritems()
-    Traceback (most recent call last):
-      ...
-    AttributeError: 'TestNodeItems' object has no attribute 'iteritems'
-
-    >>> class TestMappingIterItems(TestMappingItems):
-    ...     def iteritems(self):
-    ...         return iter(self.data.items())
-
-    >>> fmtester = FullMappingTester(TestMappingIterItems,
-    ...                              include_node_checks=False)
-    >>> fmtester.test___setitem__()
-    >>> fmtester.test_iteritems()
-
 
 __contains__
 ~~~~~~~~~~~~
