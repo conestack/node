@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
-from interfaces import IAttributeAccess
-from interfaces import INode
+from node.interfaces import IAttributeAccess
+from node.interfaces import INode
 from zope.interface import implementer
 from zope.interface.common.mapping import IEnumerableMapping
 import logging
+import sys
+
+
+IS_PY2 = sys.version_info[0] < 3
 
 
 logger = logging.getLogger('node')
@@ -31,15 +35,15 @@ class Unset(object):
 UNSET = Unset()
 
 
-def LocationIterator(object):
+def LocationIterator(obj):
     """Iterate over an object and all of its parents.
 
     Copied from ``zope.location.LocationIterator``.
 
     """
-    while object is not None:
-        yield object
-        object = getattr(object, '__parent__', None)
+    while obj is not None:
+        yield obj
+        obj = getattr(obj, '__parent__', None)
 
 
 @implementer(IEnumerableMapping)
@@ -183,7 +187,7 @@ class StrCodec(object):
             arg = arg.__class__(map(self.decode, arg))
         elif isinstance(arg, dict):
             arg = dict([self.decode(t) for t in arg.iteritems()])
-        elif isinstance(arg, str):
+        elif IS_PY2 and isinstance(arg, str):
             try:
                 arg = arg.decode(self._encoding)
             except UnicodeDecodeError:

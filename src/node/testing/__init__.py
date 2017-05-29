@@ -1,2 +1,2 @@
 # -*- coding: utf-8 -*-
-from fullmapping import FullMappingTester
+from node.testing.fullmapping import FullMappingTester

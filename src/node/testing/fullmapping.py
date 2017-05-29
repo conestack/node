@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from base import BaseTester
+from node.testing.base import BaseTester
 
 
 class FullMappingTester(BaseTester):
@@ -41,7 +41,7 @@ class FullMappingTester(BaseTester):
             self.context['bar'] = self.class_()
 
     def test___getitem__(self):
-        child = self.context['foo']
+        self.context['foo']
         if self.include_node_checks:
             if self.context['bar'].__name__ != 'bar':
                 raise Exception('Child ``bar`` has wrong ``__name__``')
@@ -51,7 +51,7 @@ class FullMappingTester(BaseTester):
         if self.context.get('foo', default) is default:
             raise Exception('Expected value, got default')
         value = self.context.get('xxx', default)
-        if not value is default:
+        if value is not default:
             raise Exception('Expected default, got %s' % str(value))
 
     def _check_keys(self, keys, expected):
@@ -60,7 +60,7 @@ class FullMappingTester(BaseTester):
             msg = msg % (len(expected), len(keys))
             raise Exception(msg)
         for key in keys:
-            if not key in expected:
+            if key not in expected:
                 msg = 'Expected ``%s`` as keys. Got ``%s``'
                 msg = msg % (str(keys), str(expected))
                 raise Exception(msg)
@@ -84,7 +84,7 @@ class FullMappingTester(BaseTester):
             raise Exception(msg)
         if self.include_node_checks:
             for value in values:
-                if not value.__name__ in expected:
+                if value.__name__ not in expected:
                     msg = 'Expected __name__ of value invalid. Got ``%s``'
                     raise Exception(msg % value.__name__)
 
@@ -102,7 +102,7 @@ class FullMappingTester(BaseTester):
             msg = msg % (len(expected), len(items))
             raise Exception(msg)
         for key, value in items:
-            if not key in expected:
+            if key not in expected:
                 msg = 'Expected keys ``%s``. Got ``%s``' % (str(expected), key)
                 raise Exception(msg)
             if self.include_node_checks:
@@ -112,7 +112,7 @@ class FullMappingTester(BaseTester):
                     msg = msg % (str(key), str(value.__name__))
                     raise Exception(msg)
         for key, value in items:
-            if not value is self.context[key]:
+            if value is not self.context[key]:
                 msg = 'Expected %s, got %s' % (str(value),
                                                str(self.context[key]))
                 raise Exception(msg)
@@ -125,7 +125,7 @@ class FullMappingTester(BaseTester):
         self._check_items(items, ['foo', 'bar'])
 
     def test___contains__(self):
-        if not 'foo' in self.context or not 'bar' in self.context:
+        if 'foo' not in self.context or 'bar' not in self.context:
             msg = 'Expected ``foo`` and ``bar`` return ``True`` by ' + \
                   '``__contains__``'
             raise Exception(msg)
@@ -135,7 +135,7 @@ class FullMappingTester(BaseTester):
 
     def test_has_key(self):
         if not self.context.has_key('foo') \
-          or not self.context.has_key('bar'):
+                or not self.context.has_key('bar'):
             msg = 'Expected ``foo`` and ``bar`` return ``True`` by ' + \
                   '``has_key``'
             raise Exception(msg)
@@ -151,7 +151,6 @@ class FullMappingTester(BaseTester):
         # if update maps to odict update, kw's fail
         self.context.update(baz)
         self.context.update((('baz', baz),), blub=blub)
-        #self.context.update((('baz', baz), ('blub', blub)))
         try:
             self.context['baz']
             self.context['blub']
@@ -198,7 +197,7 @@ class FullMappingTester(BaseTester):
         if self.include_node_checks:
             if copied.__name__ != self.context.__name__:
                 raise Exception('__name__ of copied does not match')
-            if not copied.__parent__ is self.context.__parent__:
+            if copied.__parent__ is not self.context.__parent__:
                 raise Exception('__parent__ of copied does not match')
             self.context.__name__ = old_name
             self.context.__parent__ = old_parent

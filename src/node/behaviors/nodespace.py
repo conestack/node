@@ -6,6 +6,10 @@ from plumber import default
 from plumber import finalize
 from plumber import plumb
 from zope.interface import implementer
+import sys
+
+
+STR_TYPE = basestring if sys.version_info[0] < 3 else str
 
 
 @implementer(INodespaces)
@@ -29,7 +33,7 @@ class Nodespaces(Behavior):
         # blend in our nodespaces as children, with name __<name>__
         # isinstance check is required because odict tries to get item possibly
         # with ``_nil`` key, which is actually an object
-        if isinstance(key, basestring) \
+        if isinstance(key, STR_TYPE) \
           and key.startswith('__') \
           and key.endswith('__'):
             # a reserved child key mapped to the nodespace behind

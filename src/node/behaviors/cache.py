@@ -23,6 +23,8 @@ class Invalidate(Behavior):
         if key is not None:
             del self[key]
         else:
+            # XXX: in py 3 keys() returns an iterator, this dict modification
+            #      results in an error
             for key in self.keys():
                 del self[key]
 
@@ -39,14 +41,18 @@ class VolatileStorageInvalidate(Behavior):
         """
         storage = self.storage
         if key is not None:
+            # XXX: in py 3 keys() returns an iterator, this dict modification
+            #      results in an error
             if key in self.keys():
                 try:
                     del storage[key]
-                except KeyError, e:
-                    pass # ignore, key is valid, but not on storage right now
+                except KeyError:
+                    pass  # ignore, key is valid, but not on storage right now
             else:
                 raise KeyError(key)
         else:
+            # XXX: in py 3 keys() returns an iterator, this dict modification
+            #      results in an error
             for key in storage.keys():
                 del storage[key]
 
@@ -70,6 +76,8 @@ class Cache(Behavior):
             except KeyError:
                 pass
         else:
+            # XXX: in py 3 keys() returns an iterator, this dict modification
+            #      results in an error
             for key in cache.keys():
                 del cache[key]
         _next(self, key=key)
