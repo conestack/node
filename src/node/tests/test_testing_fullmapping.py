@@ -298,62 +298,101 @@ class TestFullmapping(unittest.TestCase):
             def iterkeys(self):
                 return self.data.__iter__()
 
-        fmtester = FullMappingTester(TestMappingIterKeys,
-                                     include_node_checks=False)
+        fmtester = FullMappingTester(
+            TestMappingIterKeys,
+            include_node_checks=False
+        )
         fmtester.test___setitem__()
         fmtester.test_iterkeys()
 
+    def test_values(self):
+        class TestMappingSetItem(TestMapping):
+            def __setitem__(self, key, value):
+                self.data[key] = value
+
+        class TestMappingGetItem(TestMappingSetItem):
+            def __getitem__(self, key):
+                return self.data[key]
+
+        class TestMappingGet(TestMappingGetItem):
+            def get(self, key, default=None):
+                return self.data.get(key, default)
+
+        class TestMappingIter(TestMappingGet):
+            def __iter__(self):
+                return self.data.__iter__()
+
+        class TestMappingKeys(TestMappingIter):
+            def keys(self):
+                return [k for k in self.data]
+
+        class TestMappingIterKeys(TestMappingKeys):
+            def iterkeys(self):
+                return self.data.__iter__()
+
+        fmtester = FullMappingTester(
+            TestMappingIterKeys,
+            include_node_checks=False
+        )
+        err = self.except_error(AttributeError, fmtester.test_values)
+        self.assertEqual(
+            str(err),
+            '\'TestMappingIterKeys\' object has no attribute \'values\''
+        )
+
+        class TestMappingValues(TestMappingIterKeys):
+            def values(self):
+                return self.data.values()
+
+        fmtester = FullMappingTester(
+            TestMappingValues,
+            include_node_checks=False
+        )
+        err = self.except_error(Exception, fmtester.test_values)
+        self.assertEqual(
+            str(err),
+            'Expected 2-length result. Got ``0``'
+        )
+
+        fmtester.test___setitem__()
+        fmtester.test_values()
+
+        fmtester = FullMappingTester(TestMappingValues)
+        fmtester.context['foo'] = TestMappingValues()
+        fmtester.context['bar'] = TestMappingValues()
+
+        err = self.except_error(AttributeError, fmtester.test_values)
+        self.assertEqual(
+            str(err),
+            '\'TestMappingValues\' object has no attribute \'__name__\''
+        )
+
+        class TestNodeValues(TestNode, TestMappingValues):
+            pass
+
+        fmtester = FullMappingTester(TestNodeValues)
+        fmtester.test___setitem__()
+
+        err = self.except_error(Exception, fmtester.test_values)
+        self.assertEqual(
+            str(err),
+            'Expected __name__ of value invalid. Got ``None``'
+        )
+
+        class TestNodeSetItem(TestNode, TestMappingSetItem):
+            def __setitem__(self, name, value):
+                value.__parent__ = self
+                value.__name__ = name
+                self.data[name] = value
+
+        class TestNodeValues(TestNodeSetItem, TestMappingValues):
+            pass
+
+        fmtester = FullMappingTester(TestNodeValues)
+        fmtester.test___setitem__()
+        fmtester.test_values()
+
 """
-
-values
-~~~~~~
-
-.. code-block:: pycon
-
-    >>> fmtester.test_values()
-    Traceback (most recent call last):
-      ...
-    AttributeError: 'TestMappingIterKeys' object has no attribute 'values'
-
-    >>> class TestMappingValues(TestMappingIterKeys):
-    ...     def values(self):
-    ...         return self.data.values()
-
-    >>> fmtester = FullMappingTester(TestMappingValues,
-    ...                              include_node_checks=False)
-    >>> fmtester.test_values()
-    Traceback (most recent call last):
-      ...
-    Exception: Expected 2-length result. Got ``0``
-
-    >>> fmtester.test___setitem__()
-    >>> fmtester.test_values()
-
-    >>> fmtester = FullMappingTester(TestMappingValues)
-    >>> fmtester.context['foo'] = TestMappingValues()
-    >>> fmtester.context['bar'] = TestMappingValues()
-    >>> fmtester.test_values()
-    Traceback (most recent call last):
-      ...
-    AttributeError: 'TestMappingValues' object has no attribute '__name__'
-
-    >>> class TestNodeValues(TestNode, TestMappingValues):
-    ...     pass
-
-    >>> fmtester = FullMappingTester(TestNodeValues)
-    >>> fmtester.test___setitem__()
-    >>> fmtester.test_values()
-    Traceback (most recent call last):
-      ...
-    Exception: Expected __name__ of value invalid. Got ``None``
-
-    >>> class TestNodeValues(TestNodeSetItem, TestMappingValues):
-    ...     pass
-
-    >>> fmtester = FullMappingTester(TestNodeValues)
-    >>> fmtester.test___setitem__()
-    >>> fmtester.test_values()
-
 
 itervalues
 ~~~~~~~~~~
