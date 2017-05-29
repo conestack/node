@@ -8,6 +8,9 @@ else:                                                        # pragma: no cover
     import unittest
 
 
+IS_PY2 = sys.version_info[0] < 3
+
+
 ###############################################################################
 # Mock objects
 ###############################################################################
@@ -720,39 +723,91 @@ class TestFullmapping(unittest.TestCase):
         fmtester.test___setitem__()
         fmtester.test___contains__()
 
+    def test_has_key(self):
+        class TestMappingSetItem(TestMapping):
+            def __setitem__(self, key, value):
+                self.data[key] = value
+
+        class TestMappingGetItem(TestMappingSetItem):
+            def __getitem__(self, key):
+                return self.data[key]
+
+        class TestMappingGet(TestMappingGetItem):
+            def get(self, key, default=None):
+                return self.data.get(key, default)
+
+        class TestMappingIter(TestMappingGet):
+            def __iter__(self):
+                return self.data.__iter__()
+
+        class TestMappingKeys(TestMappingIter):
+            def keys(self):
+                return [k for k in self.data]
+
+        class TestMappingIterKeys(TestMappingKeys):
+            def iterkeys(self):
+                return self.data.__iter__()
+
+        class TestMappingValues(TestMappingIterKeys):
+            def values(self):
+                return self.data.values()
+
+        class TestMappingIterValues(TestMappingValues):
+            def itervalues(self):
+                return iter(self.data.values())
+
+        class TestMappingItems(TestMappingIterValues):
+            def items(self):
+                return self.data.items()
+
+        class TestMappingIterItems(TestMappingItems):
+            def iteritems(self):
+                return iter(self.data.items())
+
+        class TestMappingContains(TestMappingIterItems):
+            def __contains__(self, key):
+                return key in self.data
+
+        fmtester = FullMappingTester(
+            TestMappingContains,
+            include_node_checks=False
+        )
+        err = self.except_error(AttributeError, fmtester.test_has_key)
+        self.assertEqual(
+            str(err),
+            '\'TestMappingContains\' object has no attribute \'has_key\''
+        )
+
+        class TestMappingHasKey(TestMappingContains):
+            def has_key(self, key):
+                return False
+
+        fmtester = FullMappingTester(
+            TestMappingHasKey,
+            include_node_checks=False
+        )
+        fmtester.test___setitem__()
+
+        err = self.except_error(Exception, fmtester.test_has_key)
+        self.assertEqual(
+            str(err),
+            'Expected ``foo`` and ``bar`` return ``True`` by ``has_key``'
+        )
+
+        class TestMappingHasKey(TestMappingContains):
+            def has_key(self, key):
+                if IS_PY2:
+                    return self.data.has_key(key)
+                return key in self.data
+
+        fmtester = FullMappingTester(
+            TestMappingHasKey,
+            include_node_checks=False
+        )
+        fmtester.test___setitem__()
+        fmtester.test_has_key()
+
 """
-
-has_key
-~~~~~~~
-
-.. code-block:: pycon
-
-    >>> fmtester.test_has_key()
-    Traceback (most recent call last):
-      ...
-    AttributeError: 'TestMappingContains' object has no attribute 'has_key'
-
-    >>> class TestMappingHasKey(TestMappingContains):
-    ...     def has_key(self, key):
-    ...         return False
-
-    >>> fmtester = FullMappingTester(TestMappingHasKey,
-    ...                              include_node_checks=False)
-    >>> fmtester.test___setitem__()
-    >>> fmtester.test_has_key()
-    Traceback (most recent call last):
-      ...
-    Exception: Expected ``foo`` and ``bar`` return ``True`` by ``has_key``
-
-    >>> class TestMappingHasKey(TestMappingContains):
-    ...     def has_key(self, key):
-    ...         return self.data.has_key(key)
-
-    >>> fmtester = FullMappingTester(TestMappingHasKey,
-    ...                              include_node_checks=False)
-    >>> fmtester.test___setitem__()
-    >>> fmtester.test_has_key()
-
 
 __len__
 ~~~~~~~
