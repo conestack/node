@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
 from odict import odict
 
 
@@ -59,21 +58,26 @@ class BaseTester(object):
 
     @property
     def combined(self):
+        res = list()
         for key, val in sorted(self.writer().results.iteritems()):
-            print('``%s``: %s' % (key, val))
+            res.append('``%s``: %s' % (key, val))
+        return '\n'.join(res)
 
     @property
     def wherefrom(self):
+        res = list()
         for name in sorted(self.iface_contract):
-            print(name + ": ")
+            line = name + ': '
             if name in self.class_.__dict__:
-                print(self.class_.__name__)
+                line += self.class_.__name__
             else:
                 for base in self.class_.__bases__:
                     if name in base.__dict__:
-                        print(base.__name__)
+                        line += base.__name__
                         continue
-                    print('function not found on object')
+                    line += 'function not found on object'
+            res.append(line)
+        return '\n'.join(res)
 
     def run(self):
         for name in self.iface_contract:
