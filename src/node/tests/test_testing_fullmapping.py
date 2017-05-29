@@ -392,27 +392,63 @@ class TestFullmapping(unittest.TestCase):
         fmtester.test___setitem__()
         fmtester.test_values()
 
+    def test_itervalues(self):
+        class TestMappingSetItem(TestMapping):
+            def __setitem__(self, key, value):
+                self.data[key] = value
+
+        class TestMappingGetItem(TestMappingSetItem):
+            def __getitem__(self, key):
+                return self.data[key]
+
+        class TestMappingGet(TestMappingGetItem):
+            def get(self, key, default=None):
+                return self.data.get(key, default)
+
+        class TestMappingIter(TestMappingGet):
+            def __iter__(self):
+                return self.data.__iter__()
+
+        class TestMappingKeys(TestMappingIter):
+            def keys(self):
+                return [k for k in self.data]
+
+        class TestMappingIterKeys(TestMappingKeys):
+            def iterkeys(self):
+                return self.data.__iter__()
+
+        class TestMappingValues(TestMappingIterKeys):
+            def values(self):
+                return self.data.values()
+
+        class TestNodeSetItem(TestNode, TestMappingSetItem):
+            def __setitem__(self, name, value):
+                value.__parent__ = self
+                value.__name__ = name
+                self.data[name] = value
+
+        class TestNodeValues(TestNodeSetItem, TestMappingValues):
+            pass
+
+        fmtester = FullMappingTester(TestNodeValues)
+        err = self.except_error(AttributeError, fmtester.test_itervalues)
+        self.assertEqual(
+            str(err),
+            '\'TestNodeValues\' object has no attribute \'itervalues\''
+        )
+
+        class TestMappingIterValues(TestMappingValues):
+            def itervalues(self):
+                return iter(self.data.values())
+
+        fmtester = FullMappingTester(
+            TestMappingIterValues,
+            include_node_checks=False
+        )
+        fmtester.test___setitem__()
+        fmtester.test_itervalues()
+
 """
-
-itervalues
-~~~~~~~~~~
-
-.. code-block:: pycon
-
-    >>> fmtester.test_itervalues()
-    Traceback (most recent call last):
-      ...
-    AttributeError: 'TestNodeValues' object has no attribute 'itervalues'
-
-    >>> class TestMappingIterValues(TestMappingValues):
-    ...     def itervalues(self):
-    ...         return iter(self.data.values())
-
-    >>> fmtester = FullMappingTester(TestMappingIterValues,
-    ...                              include_node_checks=False)
-    >>> fmtester.test___setitem__()
-    >>> fmtester.test_itervalues()
-
 
 items
 ~~~~~
