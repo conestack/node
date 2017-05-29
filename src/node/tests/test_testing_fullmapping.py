@@ -636,45 +636,91 @@ class TestFullmapping(unittest.TestCase):
         fmtester.test___setitem__()
         fmtester.test_iteritems()
 
+    def test___contains__(self):
+        class TestMappingSetItem(TestMapping):
+            def __setitem__(self, key, value):
+                self.data[key] = value
+
+        class TestMappingGetItem(TestMappingSetItem):
+            def __getitem__(self, key):
+                return self.data[key]
+
+        class TestMappingGet(TestMappingGetItem):
+            def get(self, key, default=None):
+                return self.data.get(key, default)
+
+        class TestMappingIter(TestMappingGet):
+            def __iter__(self):
+                return self.data.__iter__()
+
+        class TestMappingKeys(TestMappingIter):
+            def keys(self):
+                return [k for k in self.data]
+
+        class TestMappingIterKeys(TestMappingKeys):
+            def iterkeys(self):
+                return self.data.__iter__()
+
+        class TestMappingValues(TestMappingIterKeys):
+            def values(self):
+                return self.data.values()
+
+        class TestMappingIterValues(TestMappingValues):
+            def itervalues(self):
+                return iter(self.data.values())
+
+        class TestMappingItems(TestMappingIterValues):
+            def items(self):
+                return self.data.items()
+
+        class TestMappingIterItems(TestMappingItems):
+            def iteritems(self):
+                return iter(self.data.items())
+
+        class TestMappingContains(TestMappingIterItems):
+            def __contains__(self, key):
+                return False
+
+        fmtester = FullMappingTester(
+            TestMappingContains,
+            include_node_checks=False
+        )
+        fmtester.test___setitem__()
+
+        err = self.except_error(Exception, fmtester.test___contains__)
+        self.assertEqual(
+            str(err),
+            'Expected ``foo`` and ``bar`` return ``True`` by ``__contains__``'
+        )
+
+        class TestMappingContains(TestMappingIterItems):
+            def __contains__(self, key):
+                return True
+
+        fmtester = FullMappingTester(
+            TestMappingContains,
+            include_node_checks=False
+        )
+        fmtester.test___setitem__()
+
+        err = self.except_error(Exception, fmtester.test___contains__)
+        self.assertEqual(
+            str(err),
+            'Expected __contains__ to return False for non-existent key'
+        )
+
+        class TestMappingContains(TestMappingIterItems):
+            def __contains__(self, key):
+                return key in self.data
+
+        fmtester = FullMappingTester(
+            TestMappingContains,
+            include_node_checks=False
+        )
+        fmtester.test___setitem__()
+        fmtester.test___contains__()
+
 """
-
-__contains__
-~~~~~~~~~~~~
-
-.. code-block:: pycon
-
-    >>> class TestMappingContains(TestMappingIterItems):
-    ...     def __contains__(self, key):
-    ...         return False
-
-    >>> fmtester = FullMappingTester(TestMappingContains,
-    ...                              include_node_checks=False)
-    >>> fmtester.test___setitem__()
-    >>> fmtester.test___contains__()
-    Traceback (most recent call last):
-      ...
-    Exception: Expected ``foo`` and ``bar`` return ``True`` by ``__contains__``
-
-    >>> class TestMappingContains(TestMappingIterItems):
-    ...     def __contains__(self, key):
-    ...         return True
-    >>> fmtester = FullMappingTester(TestMappingContains,
-    ...                              include_node_checks=False)
-    >>> fmtester.test___setitem__()
-    >>> fmtester.test___contains__()
-    Traceback (most recent call last):
-      ...
-    Exception: Expected __contains__ to return False for non-existent key
-
-    >>> class TestMappingContains(TestMappingIterItems):
-    ...     def __contains__(self, key):
-    ...         return key in self.data
-
-    >>> fmtester = FullMappingTester(TestMappingContains,
-    ...                              include_node_checks=False)
-    >>> fmtester.test___setitem__()
-    >>> fmtester.test___contains__()
-
 
 has_key
 ~~~~~~~
