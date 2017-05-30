@@ -1606,85 +1606,6 @@ class TestFullmapping(unittest.TestCase):
         fmtester.test_setdefault()
 
     def test_pop(self):
-        class TestMappingSetItem(TestMapping):
-            def __setitem__(self, key, value):
-                self.data[key] = value
-
-        class TestMappingGetItem(TestMappingSetItem):
-            def __getitem__(self, key):
-                return self.data[key]
-
-        class TestMappingGet(TestMappingGetItem):
-            def get(self, key, default=None):
-                return self.data.get(key, default)
-
-        class TestMappingIter(TestMappingGet):
-            def __iter__(self):
-                return self.data.__iter__()
-
-        class TestMappingKeys(TestMappingIter):
-            def keys(self):
-                return [k for k in self.data]
-
-        class TestMappingIterKeys(TestMappingKeys):
-            def iterkeys(self):
-                return self.data.__iter__()
-
-        class TestMappingValues(TestMappingIterKeys):
-            def values(self):
-                return self.data.values()
-
-        class TestMappingIterValues(TestMappingValues):
-            def itervalues(self):
-                return iter(self.data.values())
-
-        class TestMappingItems(TestMappingIterValues):
-            def items(self):
-                return self.data.items()
-
-        class TestMappingIterItems(TestMappingItems):
-            def iteritems(self):
-                return iter(self.data.items())
-
-        class TestMappingContains(TestMappingIterItems):
-            def __contains__(self, key):
-                return key in self.data
-
-        class TestMappingHasKey(TestMappingContains):
-            def has_key(self, key):
-                if IS_PY2:
-                    return self.data.has_key(key)
-                return key in self.data
-
-        class TestMappingLen(TestMappingHasKey):
-            def __len__(self):
-                return len(self.data)
-
-        class TestMappingUpdate(TestMappingLen):
-            def update(self, data=(), **kw):
-                for key, value in data:
-                    self[key] = value
-                for key, value in getattr(kw, ITER_FUNC)():
-                    self[key] = value
-
-        class TestMappingDelItem(TestMappingUpdate):
-            def __delitem__(self, key):
-                del self.data[key]
-
-        class TestMappingCopy(TestMappingDelItem):
-            def copy(self):
-                new = self.__class__()
-                new.update(self.items())
-                return new
-
-        class TestMappingSetDefault(TestMappingCopy):
-            def setdefault(self, key, value=None):
-                try:
-                    return self[key]
-                except KeyError:
-                    self[key] = value
-                    return value
-
         fmtester = FullMappingTester(
             TestMappingSetDefault,
             include_node_checks=False
@@ -1695,12 +1616,12 @@ class TestFullmapping(unittest.TestCase):
             '\'TestMappingSetDefault\' object has no attribute \'pop\''
         )
 
-        class TestMappingPop(TestMappingSetDefault):
+        class FailingTestMappingPop(TestMappingSetDefault):
             def pop(self, key, default=None):
                 return object()
 
         fmtester = FullMappingTester(
-            TestMappingPop,
+            FailingTestMappingPop,
             include_node_checks=False
         )
         err = self.except_error(Exception, fmtester.test_pop)
@@ -1709,14 +1630,14 @@ class TestFullmapping(unittest.TestCase):
             'Expected ``KeyError`` for inexistent item.'
         )
 
-        class TestMappingPop(TestMappingSetDefault):
+        class FailingTestMappingPop2(TestMappingSetDefault):
             def pop(self, key, default=None):
                 if default is not None:
                     return object()
                 raise KeyError
 
         fmtester = FullMappingTester(
-            TestMappingPop,
+            FailingTestMappingPop2,
             include_node_checks=False
         )
         err = self.except_error(Exception, fmtester.test_pop)
@@ -1725,7 +1646,7 @@ class TestFullmapping(unittest.TestCase):
             'Returned default is not same instance'
         )
 
-        class TestMappingPop(TestMappingSetDefault):
+        class FailingTestMappingPop3(TestMappingSetDefault):
             def pop(self, key, default=None):
                 if key == 'foo':
                     return object()
@@ -1734,18 +1655,17 @@ class TestFullmapping(unittest.TestCase):
                 raise KeyError
 
         fmtester = FullMappingTester(
-            TestMappingPop,
+            FailingTestMappingPop3,
             include_node_checks=False
         )
         fmtester.test___setitem__()
-
         err = self.except_error(Exception, fmtester.test_pop)
         self.assertEqual(
             str(err),
             'Popped item not same instance'
         )
 
-        class TestMappingPop(TestMappingSetDefault):
+        class FailingTestMappingPop4(TestMappingSetDefault):
             def pop(self, key, default=None):
                 if key == 'foo':
                     return self.data['foo']
@@ -1754,22 +1674,15 @@ class TestFullmapping(unittest.TestCase):
                 raise KeyError
 
         fmtester = FullMappingTester(
-            TestMappingPop,
+            FailingTestMappingPop4,
             include_node_checks=False
         )
         fmtester.test___setitem__()
-
         err = self.except_error(Exception, fmtester.test_pop)
         self.assertEqual(
             str(err),
             'Invalid mapping length after ``pop``'
         )
-
-        class TestMappingPop(TestMappingSetDefault):
-            def pop(self, key, default=None):
-                if default is not None:
-                    return self.data.pop(key, default)
-                return self.data.pop(key)
 
         fmtester = FullMappingTester(
             TestMappingPop,
