@@ -1907,37 +1907,132 @@ class TestFullmapping(unittest.TestCase):
         )
         fmtester.test_clear()
 
+    def test_mapping(self):
+        class TestMappingSetItem(TestMapping):
+            def __setitem__(self, key, value):
+                self.data[key] = value
+
+        class TestMappingGetItem(TestMappingSetItem):
+            def __getitem__(self, key):
+                return self.data[key]
+
+        class TestMappingGet(TestMappingGetItem):
+            def get(self, key, default=None):
+                return self.data.get(key, default)
+
+        class TestMappingIter(TestMappingGet):
+            def __iter__(self):
+                return self.data.__iter__()
+
+        class TestMappingKeys(TestMappingIter):
+            def keys(self):
+                return [k for k in self.data]
+
+        class TestMappingIterKeys(TestMappingKeys):
+            def iterkeys(self):
+                return self.data.__iter__()
+
+        class TestMappingValues(TestMappingIterKeys):
+            def values(self):
+                return self.data.values()
+
+        class TestMappingIterValues(TestMappingValues):
+            def itervalues(self):
+                return iter(self.data.values())
+
+        class TestMappingItems(TestMappingIterValues):
+            def items(self):
+                return self.data.items()
+
+        class TestMappingIterItems(TestMappingItems):
+            def iteritems(self):
+                return iter(self.data.items())
+
+        class TestMappingContains(TestMappingIterItems):
+            def __contains__(self, key):
+                return key in self.data
+
+        class TestMappingHasKey(TestMappingContains):
+            def has_key(self, key):
+                if IS_PY2:
+                    return self.data.has_key(key)
+                return key in self.data
+
+        class TestMappingLen(TestMappingHasKey):
+            def __len__(self):
+                return len(self.data)
+
+        class TestMappingUpdate(TestMappingLen):
+            def update(self, data=(), **kw):
+                for key, value in data:
+                    self[key] = value
+                for key, value in getattr(kw, ITER_FUNC)():
+                    self[key] = value
+
+        class TestMappingDelItem(TestMappingUpdate):
+            def __delitem__(self, key):
+                del self.data[key]
+
+        class TestMappingCopy(TestMappingDelItem):
+            def copy(self):
+                new = self.__class__()
+                new.update(self.items())
+                return new
+
+        class TestMappingSetDefault(TestMappingCopy):
+            def setdefault(self, key, value=None):
+                try:
+                    return self[key]
+                except KeyError:
+                    self[key] = value
+                    return value
+
+        class TestMappingPop(TestMappingSetDefault):
+            def pop(self, key, default=None):
+                if default is not None:
+                    return self.data.pop(key, default)
+                return self.data.pop(key)
+
+        class TestMappingPopItem(TestMappingPop):
+            def popitem(self):
+                return self.data.popitem()
+
+        class TestMappingClear(TestMappingPopItem):
+            def clear(self):
+                self.data.clear()
+
+        class TestMappingAll(TestMappingClear):
+            pass
+
+        fmtester = FullMappingTester(
+            TestMappingAll,
+            include_node_checks=False
+        )
+        fmtester.run()
+        self.assertEqual(fmtester.combined.split('\n'), [
+            '``__contains__``: OK',
+            '``__delitem__``: OK',
+            '``__getitem__``: OK',
+            '``__iter__``: OK',
+            '``__len__``: OK',
+            '``__setitem__``: OK',
+            '``clear``: OK',
+            '``copy``: OK',
+            '``get``: OK',
+            '``has_key``: OK',
+            '``items``: OK',
+            '``iteritems``: OK',
+            '``iterkeys``: OK',
+            '``itervalues``: OK',
+            '``keys``: OK',
+            '``pop``: OK',
+            '``popitem``: OK',
+            '``setdefault``: OK',
+            '``update``: OK',
+            '``values``: OK'
+        ])
+
 """
-
-Run tester on mapping:
-
-.. code-block:: pycon
-
-    >>> class TestMappingAll(TestMappingClear): pass
-    >>> fmtester = FullMappingTester(TestMappingAll,
-    ...                              include_node_checks=False)
-    >>> fmtester.run()
-    >>> fmtester.combined
-    ``__contains__``: OK
-    ``__delitem__``: OK
-    ``__getitem__``: OK
-    ``__iter__``: OK
-    ``__len__``: OK
-    ``__setitem__``: OK
-    ``clear``: OK
-    ``copy``: OK
-    ``get``: OK
-    ``has_key``: OK
-    ``items``: OK
-    ``iteritems``: OK
-    ``iterkeys``: OK
-    ``itervalues``: OK
-    ``keys``: OK
-    ``pop``: OK
-    ``popitem``: OK
-    ``setdefault``: OK
-    ``update``: OK
-    ``values``: OK
 
 Run tester on node:
 
