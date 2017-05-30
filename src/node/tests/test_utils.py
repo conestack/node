@@ -1,8 +1,17 @@
+from node.base import BaseNode
 from node.tests import NodeTestCase
 from node.utils import AttributeAccess
 from node.utils import ReverseMapping
+from node.utils import StrCodec
 from node.utils import UNSET
+from node.utils import debug
+from node.utils import decode
+from node.utils import encode
+from node.utils import instance_property
+from node.utils import logger
+from node.utils import node_by_path
 from odict import odict
+import logging
 
 
 class TestUtils(NodeTestCase):
@@ -57,166 +66,119 @@ class TestUtils(NodeTestCase):
             ['foo', 'baz', 'x']
         )
 
-"""
+    def test_encode(self):
+        self.assertEqual(
+            encode(
+                '\x01\x05\x00\x00\x00\x00\x00\x05\x15\x00\x00\x00\xd4'
+                '\xa0\xff\xff\xaeW\x82\xa9P\xcf8\xaf&\x0e\x00\x00'
+            ), (
+                '\x01\x05\x00\x00\x00\x00\x00\x05\x15\x00\x00\x00\xd4'
+                '\xa0\xff\xff\xaeW\x82\xa9P\xcf8\xaf&\x0e\x00\x00'
+            )
+        )
+        self.assertEqual(encode(u'\xe4'), '\xc3\xa4')
+        self.assertEqual(encode([u'\xe4']), ['\xc3\xa4'])
+        self.assertEqual(encode({u'\xe4': u'\xe4'}), {'\xc3\xa4': '\xc3\xa4'})
+        self.assertEqual(encode('\xc3\xa4'), '\xc3\xa4')
 
-StrCodec decode and encode
---------------------------
+        node = BaseNode()
+        node.allow_non_node_childs = True
+        node['foo'] = u'\xe4'
+        self.assertEqual(encode(node), {'foo': '\xc3\xa4'})
 
-.. code-block:: pycon
+    def test_decode(self):
+        self.assertEqual(decode('foo'), u'foo')
+        self.assertEqual(decode(('foo', 'bar')), (u'foo', u'bar'))
+        self.assertEqual(decode({'foo': 'bar'}), {u'foo': u'bar'})
+        self.assertEqual(decode('fo\xe4'), 'fo\xe4')
 
-    >>> from node.base import BaseNode
-    >>> from node.utils import StrCodec
-    >>> from node.utils import encode
-    >>> from node.utils import decode
+        node = BaseNode()
+        node.allow_non_node_childs = True
+        node['foo'] = '\xc3\xa4'
+        self.assertEqual(decode(node), {u'foo': u'\xe4'})
 
-    >>> encode('\x01\x05\x00\x00\x00\x00\x00\x05\x15\x00\x00\x00\xd4'
-    ...        '\xa0\xff\xff\xaeW\x82\xa9P\xcf8\xaf&\x0e\x00\x00')
-    '\x01\x05\x00\x00\x00\x00\x00\x05\x15\x00\x00\x00\xd4\xa0\xff\xff\xaeW\x82\xa9P\xcf8\xaf&\x0e\x00\x00'
+    def test_StrCodec(self):
+        codec = StrCodec(soft=False)
+        expected = ('\'utf8\' codec can\'t decode byte 0xe4 in position 2: '
+                    'unexpected end of data')
+        err = self.except_error(UnicodeDecodeError,
+                                lambda: codec.decode('fo\xe4'))
+        self.assertEqual(str(err), expected)
 
-    >>> encode(u'\xe4')
-    '\xc3\xa4'
+    def test_instance_property(self):
+        computed = list()
 
-    >>> encode([u'\xe4'])
-    ['\xc3\xa4']
+        class InstancePropertyTest(object):
 
-    >>> encode({u'\xe4': u'\xe4'})
-    {'\xc3\xa4': '\xc3\xa4'}
+            @instance_property
+            def property(self):
+                computed.append('Computed')
+                return 'value'
 
-    >>> encode('\xc3\xa4')
-    '\xc3\xa4'
+        obj = InstancePropertyTest()
+        expected = '\'InstancePropertyTest\' object has no attribute ' \
+                   '\'_property\''
+        err = self.except_error(AttributeError, lambda: obj._property)
+        self.assertEqual(str(err), expected)
 
-    >>> node = BaseNode()
-    >>> node.allow_non_node_childs = True
-    >>> node['foo'] = u'\xe4'
-    >>> encode(node)
-    {'foo': '\xc3\xa4'}
+        self.assertEqual(obj.property, 'value')
+        self.assertEqual(computed, ['Computed'])
+        computed = list()
 
-    >>> decode('foo')
-    u'foo'
+        self.assertEqual(obj._property, 'value')
 
-    >>> decode(('foo', 'bar'))
-    (u'foo', u'bar')
+        self.assertEqual(obj.property, 'value')
+        self.assertEqual(computed, [])
 
-    >>> decode({'foo': 'bar'})
-    {u'foo': u'bar'}
+    def test_node_by_path(self):
+        root = BaseNode(name='root')
+        child = root['child'] = BaseNode()
+        sub = child['sub'] = BaseNode()
 
-    >>> decode('fo\xe4')
-    'fo\xe4'
+        self.assertEqual(node_by_path(root, ''), root)
+        self.assertEqual(node_by_path(root, '/'), root)
+        self.assertEqual(node_by_path(root, []), root)
 
-    >>> node = BaseNode()
-    >>> node.allow_non_node_childs = True
-    >>> node['foo'] = '\xc3\xa4'
-    >>> decode(node)
-    {u'foo': u'\xe4'}
+        self.assertEqual(node_by_path(root, 'child'), child)
+        self.assertEqual(node_by_path(root, '/child'), child)
 
-    >>> codec = StrCodec(soft=False)
-    >>> codec.decode('fo\xe4')
-    Traceback (most recent call last):
-      ...
-    UnicodeDecodeError: 'utf8' codec can't decode byte 0xe4 in position 2: 
-    unexpected end of data
+        self.assertEqual(node_by_path(root, 'child/sub'), sub)
 
+        self.assertEqual(node_by_path(root, ['child']), child)
 
-Instance property decorator
----------------------------
+        self.assertEqual(node_by_path(root, ['child', 'sub']), sub)
 
-.. code-block:: pycon
+        class CustomPathIterator(object):
+            def __iter__(self):
+                yield 'child'
+                yield 'sub'
 
-    >>> from node.utils import instance_property
+        self.assertEqual(node_by_path(root, CustomPathIterator()), sub)
 
-    >>> class InstancePropertyTest(object):
-    ... 
-    ...     @instance_property
-    ...     def property(self):
-    ...         print 'Computed only once'
-    ...         return 'value'
+    def test_debug_helper(self):
+        messages = list()
 
-    >>> obj = InstancePropertyTest()
-    >>> obj._property
-    Traceback (most recent call last):
-      ...
-    AttributeError: 'InstancePropertyTest' object has no attribute '_property'
+        class TestHandler(logging.StreamHandler):
+            def handle(self, record):
+                messages.append(str(record))
 
-    >>> obj.property
-    Computed only once
-    'value'
+        handler = TestHandler()
+        logger.addHandler(handler)
+        logger.setLevel(logging.DEBUG)
 
-    >>> obj._property
-    'value'
+        @debug
+        def test_search(a, b=42):
+            pass
 
-    >>> obj.property
-    'value'
+        test_search(21)
 
+        self.assertTrue(str(messages[0]).find('LogRecord: node, 10,') > -1)
+        self.assertTrue(str(messages[0]).find('utils.py') > -1)
+        self.assertTrue(str(messages[0]).find('"test_search: args=(21,), kws={}">') > -1)
 
-Node by path
-------------
+        self.assertTrue(str(messages[1]).find('LogRecord: node, 10,') > -1)
+        self.assertTrue(str(messages[1]).find('utils.py') > -1)
+        self.assertTrue(str(messages[1]).find('"test_search: --> None">') > -1)
 
-.. code-block:: pycon
-
-    >>> from node.utils import node_by_path
-
-    >>> root = BaseNode(name='root')
-    >>> child = root['child'] = BaseNode()
-    >>> sub = child['sub'] = BaseNode()
-
-    >>> node_by_path(root, '')
-    <BaseNode object 'root' at ...>
-
-    >>> node_by_path(root, '/')
-    <BaseNode object 'root' at ...>
-
-    >>> node_by_path(root, [])
-    <BaseNode object 'root' at ...>
-
-    >>> node_by_path(root, 'child')
-    <BaseNode object 'child' at ...>
-
-    >>> node_by_path(root, '/child')
-    <BaseNode object 'child' at ...>
-
-    >>> node_by_path(root, 'child/sub')
-    <BaseNode object 'sub' at ...>
-
-    >>> node_by_path(root, ['child'])
-    <BaseNode object 'child' at ...>
-
-    >>> node_by_path(root, ['child', 'sub'])
-    <BaseNode object 'sub' at ...>
-
-    >>> class CustomPathIterator(object):
-    ...     def __iter__(self):
-    ...         yield 'child'
-    ...         yield 'sub'
-
-    >>> node_by_path(root, CustomPathIterator())
-    <BaseNode object 'sub' at ...>
-
-
-Debug helper
-------------
-
-.. code-block:: pycon
-
-    >>> import logging
-    >>> from node.utils import logger
-    >>> from node.utils import debug
-
-    >>> class TestHandler(logging.StreamHandler):
-    ...     def handle(self, record):
-    ...         print record
-    >>> handler = TestHandler()
-    >>> logger.addHandler(handler)
-    >>> logger.setLevel(logging.DEBUG)
-
-    >>> @debug
-    ... def test_search(a, b=42):
-    ...     pass
-
-    >>> test_search(21)
-    <LogRecord: node, 10, ...utils.py, ..., "test_search: args=(21,), kws={}">
-    <LogRecord: node, 10, ...utils.py, ..., "test_search: --> None">
-
-    >>> logger.setLevel(logging.INFO)
-    >>> logger.removeHandler(handler)
-
-"""
+        logger.setLevel(logging.INFO)
+        logger.removeHandler(handler)
