@@ -1,16 +1,8 @@
 from node.testing import FullMappingTester
-import sys
-
-
-if sys.version_info < (2, 7):                                # pragma: no cover
-    import unittest2 as unittest
-else:                                                        # pragma: no cover
-    import unittest
-
-
-IS_PY2 = sys.version_info[0] < 3
-IS_PYPY = '__pypy__' in sys.builtin_module_names
-ITER_FUNC = 'iteritems' if IS_PY2 else 'items'
+from node.tests import NodeTestCase
+from node.tests import IS_PY2
+from node.tests import IS_PYPY
+from node.tests import ITER_FUNC
 
 
 ###############################################################################
@@ -180,7 +172,7 @@ class MockNodeAll(MockNodeCopy, MockMappingAll):
 # Tests
 ###############################################################################
 
-class TestFullmapping(unittest.TestCase):
+class TestFullmapping(NodeTestCase):
 
     def except_error(self, exc, func, *args, **kw):
         try:
@@ -866,7 +858,3 @@ class TestFullmapping(unittest.TestCase):
             '``update``: OK',
             '``values``: OK'
         ])
-
-
-if __name__ == '__main__':
-    unittest.main()                                          # pragma: no cover
