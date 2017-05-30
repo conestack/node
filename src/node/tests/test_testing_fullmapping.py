@@ -154,6 +154,10 @@ class TestNodeSetItem(TestNode, TestMappingSetItem):
         self.data[name] = value
 
 
+class TestNodeGetItem(TestNodeSetItem, TestMappingGetItem):
+    pass
+
+
 class TestNodeValues(TestNodeSetItem, TestMappingValues):
     pass
 
@@ -268,23 +272,6 @@ class TestFullmapping(unittest.TestCase):
         fmtester.test___getitem__()
 
     def test_get(self):
-        class TestMappingSetItem(TestMapping):
-            def __setitem__(self, key, value):
-                self.data[key] = value
-
-        class TestMappingGetItem(TestMappingSetItem):
-            def __getitem__(self, key):
-                return self.data[key]
-
-        class TestNodeSetItem(TestNode, TestMappingSetItem):
-            def __setitem__(self, name, value):
-                value.__parent__ = self
-                value.__name__ = name
-                self.data[name] = value
-
-        class TestNodeGetItem(TestNodeSetItem, TestMappingGetItem):
-            pass
-
         fmtester = FullMappingTester(TestNodeGetItem)
         err = self.except_error(AttributeError, fmtester.test_get)
         self.assertEqual(
@@ -292,12 +279,12 @@ class TestFullmapping(unittest.TestCase):
             '\'TestNodeGetItem\' object has no attribute \'get\''
         )
 
-        class TestMappingGet(TestMappingGetItem):
+        class FailingTestMappingGet(TestMappingGetItem):
             def get(self, key, default=None):
                 return object()
 
         fmtester = FullMappingTester(
-            TestMappingGet,
+            FailingTestMappingGet,
             include_node_checks=False
         )
         fmtester.test___setitem__()
@@ -306,12 +293,12 @@ class TestFullmapping(unittest.TestCase):
             str(err).startswith('Expected default, got <object object at')
         )
 
-        class TestMappingGet(TestMappingGetItem):
+        class FailingTestMappingGet2(TestMappingGetItem):
             def get(self, key, default=None):
                 return default
 
         fmtester = FullMappingTester(
-            TestMappingGet,
+            FailingTestMappingGet2,
             include_node_checks=False
         )
         fmtester.test___setitem__()
@@ -320,10 +307,6 @@ class TestFullmapping(unittest.TestCase):
             str(err),
             'Expected value, got default'
         )
-
-        class TestMappingGet(TestMappingGetItem):
-            def get(self, key, default=None):
-                return self.data.get(key, default)
 
         fmtester = FullMappingTester(
             TestMappingGet,
