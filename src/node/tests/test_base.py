@@ -2,13 +2,14 @@ from node.base import AbstractNode
 from node.base import BaseNode
 from node.base import OrderedNode
 from node.testing import FullMappingTester
+from node.testing.base import create_tree
 from node.testing.env import MyNode
 from node.tests import NodeTestCase
-from node.testing.base import create_tree
 from node.utils import AttributeAccess
 from zope.interface import Interface
 from zope.interface import directlyProvides
 from zope.interface import noLongerProvides
+import copy
 import pickle
 
 
@@ -433,107 +434,68 @@ class TestBase(NodeTestCase):
         expected = 'It isn\'t allowed to use classes as values.'
         self.assertEqual(str(err), expected)
 
-"""
+    def test_copy(self):
+        node = BaseNode()
+        node['child'] = BaseNode()
 
-Copy testing
-============
+        # Shallow copy of BaseNode
+        copied_node = node.copy()
+        self.check_output("""\
+        <class 'node.base.BaseNode'>: None
+          <class 'node.base.BaseNode'>: child
+        """, copied_node.treerepr())
 
-Shallow copy of BaseNode:
+        self.assertFalse(node is copied_node)
+        self.assertTrue(node['child'] is copied_node['child'])
 
-.. code-block:: pycon
+        copied_node = copy.copy(node)
+        self.assertFalse(node is copied_node)
+        self.assertTrue(node['child'] is copied_node['child'])
 
-    >>> import copy
-    >>> node = BaseNode()
-    >>> node['child'] = BaseNode()
+        # Deep copy of base node
+        copied_node = node.deepcopy()
+        self.check_output("""\
+        <class 'node.base.BaseNode'>: None
+          <class 'node.base.BaseNode'>: child
+        """, copied_node.treerepr())
 
-    >>> copied_node = node.copy()
-    >>> copied_node.printtree()
-    <class 'node.base.BaseNode'>: None
-      <class 'node.base.BaseNode'>: child
+        self.assertFalse(node is copied_node)
+        self.assertFalse(node['child'] is copied_node['child'])
 
-    >>> node is copied_node
-    False
+        copied_node = copy.deepcopy(node)
+        self.assertFalse(node is copied_node)
+        self.assertFalse(node['child'] is copied_node['child'])
 
-    >>> node['child'] is copied_node['child']
-    True
+        # Shallow copy of ordered node
+        node = OrderedNode()
+        node['child'] = OrderedNode()
 
-    >>> copied_node = copy.copy(node)
-    >>> node is copied_node
-    False
+        copied_node = node.copy()
+        self.check_output("""\
+        <class 'node.base.OrderedNode'>: None
+          <class 'node.base.OrderedNode'>: child
+        """, copied_node.treerepr())
 
-    >>> node['child'] is copied_node['child']
-    True
+        self.assertFalse(node is copied_node)
+        self.assertTrue(node['child'] is copied_node['child'])
 
-Deep copy of base node:
+        copied_node = copy.copy(node)
+        self.assertFalse(node is copied_node)
+        self.assertTrue(node['child'] is copied_node['child'])
 
-.. code-block:: pycon
+        # Deep copy of ordered node
+        node = OrderedNode()
+        node['child'] = OrderedNode()
 
-    >>> copied_node = node.deepcopy()
-    >>> copied_node.printtree()
-    <class 'node.base.BaseNode'>: None
-      <class 'node.base.BaseNode'>: child
+        copied_node = node.deepcopy()
+        self.check_output("""\
+        <class 'node.base.OrderedNode'>: None
+          <class 'node.base.OrderedNode'>: child
+        """, copied_node.treerepr())
 
-    >>> node is copied_node
-    False
+        self.assertFalse(node is copied_node)
+        self.assertFalse(node['child'] is copied_node['child'])
 
-    >>> node['child'] is copied_node['child']
-    False
-
-    >>> copied_node = copy.deepcopy(node)
-    >>> node is copied_node
-    False
-
-    >>> node['child'] is copied_node['child']
-    False
-
-Shallow copy of ordered node:
-
-.. code-block:: pycon
-
-    >>> node = OrderedNode()
-    >>> node['child'] = OrderedNode()
-
-    >>> copied_node = node.copy()
-    >>> copied_node.printtree()
-    <class 'node.base.OrderedNode'>: None
-      <class 'node.base.OrderedNode'>: child
-
-    >>> node is copied_node
-    False
-
-    >>> node['child'] is copied_node['child']
-    True
-
-    >>> copied_node = copy.copy(node)
-    >>> node is copied_node
-    False
-
-    >>> node['child'] is copied_node['child']
-    True
-
-Deep copy of ordered node:
-
-.. code-block:: pycon
-
-    >>> node = OrderedNode()
-    >>> node['child'] = OrderedNode()
-
-    >>> copied_node = node.deepcopy()
-    >>> copied_node.printtree()
-    <class 'node.base.OrderedNode'>: None
-      <class 'node.base.OrderedNode'>: child
-
-    >>> node is copied_node
-    False
-
-    >>> node['child'] is copied_node['child']
-    False
-
-    >>> copied_node = copy.deepcopy(node)
-    >>> node is copied_node
-    False
-
-    >>> node['child'] is copied_node['child']
-    False
-
-"""
+        copied_node = copy.deepcopy(node)
+        self.assertFalse(node is copied_node)
+        self.assertFalse(node['child'] is copied_node['child'])
