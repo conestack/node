@@ -5,6 +5,7 @@ from node.testing import FullMappingTester
 from node.testing.env import MyNode
 from node.tests import NodeTestCase
 from node.testing.base import create_tree
+from node.utils import AttributeAccess
 from zope.interface import Interface
 from zope.interface import directlyProvides
 from zope.interface import noLongerProvides
@@ -395,61 +396,44 @@ class TestBase(NodeTestCase):
         self.assertEqual(list(orderednode.filtereditervalues(IFilter)), [])
         self.assertEqual(orderednode.filteredvalues(IFilter), [])
 
+        # as_attribute_access
+        myattrs = mynode.as_attribute_access()
+        self.assertEqual(myattrs.__class__, AttributeAccess)
+        self.assertEqual(myattrs.child_1, mynode['child_1'])
+        myattrs.child_3 = MyNode()
+        self.assertEqual(mynode['child_3'], myattrs.child_3)
+
+        def no_classes_as_values_allowed4():
+            myattrs.child_4 = object
+        err = self.except_error(ValueError, no_classes_as_values_allowed4)
+        expected = 'It isn\'t allowed to use classes as values.'
+        self.assertEqual(str(err), expected)
+
+        baseattrs = basenode.as_attribute_access()
+        self.assertEqual(baseattrs.__class__, AttributeAccess)
+        self.assertEqual(baseattrs.child_1, basenode['child_1'])
+        baseattrs.child_3 = BaseNode()
+        self.assertEqual(basenode['child_3'], baseattrs.child_3)
+
+        def no_classes_as_values_allowed5():
+            baseattrs.child_4 = object
+        err = self.except_error(ValueError, no_classes_as_values_allowed5)
+        expected = 'It isn\'t allowed to use classes as values.'
+        self.assertEqual(str(err), expected)
+
+        orderedattrs = orderednode.as_attribute_access()
+        self.assertEqual(orderedattrs.__class__, AttributeAccess)
+        self.assertEqual(orderedattrs.child_1, orderednode['child_1'])
+        orderedattrs.child_3 = OrderedNode()
+        self.assertEqual(orderednode['child_3'], orderedattrs.child_3)
+
+        def no_classes_as_values_allowed6():
+            orderedattrs.child_4 = object
+        err = self.except_error(ValueError, no_classes_as_values_allowed6)
+        expected = 'It isn\'t allowed to use classes as values.'
+        self.assertEqual(str(err), expected)
+
 """
-
-as_attribute_access
-~~~~~~~~~~~~~~~~~~~
-
-.. code-block:: pycon
-
-    >>> myattrs = mynode.as_attribute_access()
-    >>> myattrs
-    <node.utils.AttributeAccess object at ...>
-
-    >>> myattrs.child_1
-    <MyNode object 'child_1' at ...>
-
-    >>> myattrs.child_3 = MyNode()
-    >>> mynode['child_3']
-    <MyNode object 'child_3' at ...>
-
-    >>> myattrs.child_4 = object
-    Traceback (most recent call last):
-      ...
-    ValueError: It isn't allowed to use classes as values.
-
-    >>> baseattrs = basenode.as_attribute_access()
-    >>> baseattrs
-    <node.utils.AttributeAccess object at ...>
-
-    >>> baseattrs.child_1
-    <BaseNode object 'child_1' at ...>
-
-    >>> baseattrs.child_3 = BaseNode()
-    >>> basenode['child_3']
-    <BaseNode object 'child_3' at ...>
-
-    >>> baseattrs.child_4 = object
-    Traceback (most recent call last):
-      ...
-    ValueError: It isn't allowed to use classes as values.
-
-    >>> orderedattrs = orderednode.as_attribute_access()
-    >>> orderedattrs
-    <node.utils.AttributeAccess object at ...>
-
-    >>> orderedattrs.child_1
-    <OrderedNode object 'child_1' at ...>
-
-    >>> orderedattrs.child_3 = OrderedNode()
-    >>> orderednode['child_3']
-    <OrderedNode object 'child_3' at ...>
-
-    >>> orderedattrs.child_4 = object
-    Traceback (most recent call last):
-      ...
-    ValueError: It isn't allowed to use classes as values.
-
 
 Copy testing
 ============
