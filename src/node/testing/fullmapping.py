@@ -29,20 +29,20 @@ class FullMappingTester(BaseTester):
         'clear',
     ]
 
-    def __init__(self, class_, context=None, include_node_checks=True):
+    def __init__(self, class_, context=None, node_checks=True):
         super(FullMappingTester, self).__init__(class_, context=context)
-        self.include_node_checks = include_node_checks
+        self.node_checks = node_checks
 
     def test___setitem__(self):
         self.context['foo'] = self.class_()
-        if self.include_node_checks:
+        if self.node_checks:
             self.context['bar'] = self.class_(name='xxx')
         else:
             self.context['bar'] = self.class_()
 
     def test___getitem__(self):
         self.context['foo']
-        if self.include_node_checks:
+        if self.node_checks:
             if self.context['bar'].__name__ != 'bar':
                 raise Exception('Child ``bar`` has wrong ``__name__``')
 
@@ -82,7 +82,7 @@ class FullMappingTester(BaseTester):
             msg = 'Expected %i-length result. Got ``%i``'
             msg = msg % (len(expected), len(values))
             raise Exception(msg)
-        if self.include_node_checks:
+        if self.node_checks:
             values = sorted(
                 values,
                 key=lambda x: '' if x.__name__ is None else x.__name__
@@ -114,7 +114,7 @@ class FullMappingTester(BaseTester):
             if key not in expected:
                 msg = 'Expected keys ``%s``. Got ``%s``' % (str(expected), key)
                 raise Exception(msg)
-            if self.include_node_checks:
+            if self.node_checks:
                 if key != value.__name__:
                     msg = 'Expected same value for ``key`` "%s" and ' + \
                           '``__name__`` "%s"'
@@ -193,7 +193,7 @@ class FullMappingTester(BaseTester):
 
     def test_copy(self):
         PARENT_MARKER = object()
-        if self.include_node_checks:
+        if self.node_checks:
             old_name = self.context.__name__
             old_parent = self.context.__parent__
             self.context.__name__ = 'nametopcopy'
@@ -203,7 +203,7 @@ class FullMappingTester(BaseTester):
             raise Exception('``copied`` is ``context``')
         if not copied['foo'] is self.context['foo']:
             raise Exception("``copied['foo']`` is not ``context['foo']``")
-        if self.include_node_checks:
+        if self.node_checks:
             if copied.__name__ != self.context.__name__:
                 raise Exception('__name__ of copied does not match')
             if copied.__parent__ is not self.context.__parent__:

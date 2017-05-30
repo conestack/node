@@ -102,7 +102,7 @@ get
     ...     def get(self, key, default=None):
     ...         return object()
 
-    >>> fmtester = FullMappingTester(TestMappingGet, include_node_checks=False)
+    >>> fmtester = FullMappingTester(TestMappingGet, node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.test_get()
     Traceback (most recent call last):
@@ -113,7 +113,7 @@ get
     ...     def get(self, key, default=None):
     ...         return default
 
-    >>> fmtester = FullMappingTester(TestMappingGet, include_node_checks=False)
+    >>> fmtester = FullMappingTester(TestMappingGet, node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.test_get()
     Traceback (most recent call last):
@@ -124,7 +124,7 @@ get
     ...     def get(self, key, default=None):
     ...         return self.data.get(key, default)
 
-    >>> fmtester = FullMappingTester(TestMappingGet, include_node_checks=False)
+    >>> fmtester = FullMappingTester(TestMappingGet, node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.test_get()
 
@@ -164,7 +164,7 @@ __iter__
     ...     def __iter__(self):
     ...         return self.data.__iter__()
 
-    >>> fmtester = FullMappingTester(TestMappingIter, include_node_checks=False)
+    >>> fmtester = FullMappingTester(TestMappingIter, node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.test___iter__()
 
@@ -183,7 +183,7 @@ keys
     ...     def keys(self):
     ...         return [k for k in self.data]
 
-    >>> fmtester = FullMappingTester(TestMappingKeys, include_node_checks=False)
+    >>> fmtester = FullMappingTester(TestMappingKeys, node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.test_keys()
 
@@ -203,7 +203,7 @@ iterkeys
     ...         return self.data.__iter__()
 
     >>> fmtester = FullMappingTester(TestMappingIterKeys,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.test_iterkeys()
 
@@ -223,7 +223,7 @@ values
     ...         return self.data.values()
 
     >>> fmtester = FullMappingTester(TestMappingValues,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test_values()
     Traceback (most recent call last):
       ...
@@ -273,7 +273,7 @@ itervalues
     ...         return iter(self.data.values())
 
     >>> fmtester = FullMappingTester(TestMappingIterValues,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.test_itervalues()
 
@@ -293,7 +293,7 @@ items
     ...         return list()
 
     >>> fmtester = FullMappingTester(TestMappingItems,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test_items()
     Traceback (most recent call last):
       ...
@@ -304,7 +304,7 @@ items
     ...         return [('foo', object()), ('b', object())]
 
     >>> fmtester = FullMappingTester(TestMappingItems,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.test_items()
     Traceback (most recent call last):
@@ -316,7 +316,7 @@ items
     ...         return [('foo', object()), ('bar', object())]
 
     >>> fmtester = FullMappingTester(TestMappingItems,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.test_items()
     Traceback (most recent call last):
@@ -328,7 +328,7 @@ items
     ...         return self.data.items()
 
     >>> fmtester = FullMappingTester(TestMappingItems,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.test_items()
 
@@ -365,7 +365,7 @@ iteritems
     ...         return iter(self.data.items())
 
     >>> fmtester = FullMappingTester(TestMappingIterItems,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.test_iteritems()
 
@@ -380,7 +380,7 @@ __contains__
     ...         return False
 
     >>> fmtester = FullMappingTester(TestMappingContains,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.test___contains__()
     Traceback (most recent call last):
@@ -391,7 +391,7 @@ __contains__
     ...     def __contains__(self, key):
     ...         return True
     >>> fmtester = FullMappingTester(TestMappingContains,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.test___contains__()
     Traceback (most recent call last):
@@ -403,7 +403,7 @@ __contains__
     ...         return key in self.data
 
     >>> fmtester = FullMappingTester(TestMappingContains,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.test___contains__()
 
@@ -423,7 +423,7 @@ has_key
     ...         return False
 
     >>> fmtester = FullMappingTester(TestMappingHasKey,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.test_has_key()
     Traceback (most recent call last):
@@ -435,7 +435,7 @@ has_key
     ...         return self.data.has_key(key)
 
     >>> fmtester = FullMappingTester(TestMappingHasKey,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.test_has_key()
 
@@ -455,7 +455,7 @@ __len__
     ...         return 0
 
     >>> fmtester = FullMappingTester(TestMappingLen,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.test___len__()
     Traceback (most recent call last):
@@ -467,7 +467,7 @@ __len__
     ...         return len(self.data)
 
     >>> fmtester = FullMappingTester(TestMappingLen,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.test___len__()
 
@@ -577,7 +577,7 @@ __delitem__
     ...         del self.data[key]
 
     >>> fmtester = FullMappingTester(TestMappingDelItem,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test___delitem__()
     Traceback (most recent call last):
       ...
@@ -609,7 +609,7 @@ copy
     ...         return self
 
     >>> fmtester = FullMappingTester(TestMappingCopy,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test_copy()
     Traceback (most recent call last):
       ...
@@ -620,7 +620,7 @@ copy
     ...         return self.__class__()
 
     >>> fmtester = FullMappingTester(TestMappingCopy,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.test_copy()
     Traceback (most recent call last):
@@ -634,7 +634,7 @@ copy
     ...         return new
 
     >>> fmtester = FullMappingTester(TestMappingCopy,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.test_copy()
     Traceback (most recent call last):
@@ -648,7 +648,7 @@ copy
     ...         return new
 
     >>> fmtester = FullMappingTester(TestMappingCopy,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.test_copy()
 
@@ -700,7 +700,7 @@ setdefault
     ...         return value
 
     >>> fmtester = FullMappingTester(TestMappingSetDefault,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.test_setdefault()
     Traceback (most recent call last):
@@ -713,7 +713,7 @@ setdefault
     ...         return self[key]
 
     >>> fmtester = FullMappingTester(TestMappingSetDefault,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.test_setdefault()
     Traceback (most recent call last):
@@ -729,7 +729,7 @@ setdefault
     ...             return value
 
     >>> fmtester = FullMappingTester(TestMappingSetDefault,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.context['foo'] = TestMappingSetDefault()
     >>> fmtester.context['baz'] = TestMappingSetDefault()
     >>> fmtester.test_setdefault()
@@ -750,7 +750,7 @@ pop
     ...         return object()
 
     >>> fmtester = FullMappingTester(TestMappingPop,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test_pop()
     Traceback (most recent call last):
       ...
@@ -763,7 +763,7 @@ pop
     ...         raise KeyError
 
     >>> fmtester = FullMappingTester(TestMappingPop,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test_pop()
     Traceback (most recent call last):
       ...
@@ -778,7 +778,7 @@ pop
     ...         raise KeyError
 
     >>> fmtester = FullMappingTester(TestMappingPop,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.test_pop()
     Traceback (most recent call last):
@@ -794,7 +794,7 @@ pop
     ...         raise KeyError
 
     >>> fmtester = FullMappingTester(TestMappingPop,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.test_pop()
     Traceback (most recent call last):
@@ -808,7 +808,7 @@ pop
     ...         return self.data.pop(key)
 
     >>> fmtester = FullMappingTester(TestMappingPop,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.context['baz'] = TestMappingSetDefault()
     >>> fmtester.test_pop()
@@ -829,7 +829,7 @@ popitem
     ...          return
 
     >>> fmtester = FullMappingTester(TestMappingPopItem,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.test_popitem()
     Traceback (most recent call last):
@@ -844,7 +844,7 @@ popitem
     ...              pass
 
     >>> fmtester = FullMappingTester(TestMappingPopItem,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.test_popitem()
     Traceback (most recent call last):
@@ -856,7 +856,7 @@ popitem
     ...          return self.data.popitem()
 
     >>> fmtester = FullMappingTester(TestMappingPopItem,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test___setitem__()
     >>> fmtester.test_popitem()
 
@@ -876,7 +876,7 @@ clear
     ...          pass
 
     >>> fmtester = FullMappingTester(TestMappingClear,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test_clear()
     Traceback (most recent call last):
       ...
@@ -887,7 +887,7 @@ clear
     ...          self.data.clear()
 
     >>> fmtester = FullMappingTester(TestMappingClear,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.test_clear()
 
 Run tester on mapping:
@@ -896,7 +896,7 @@ Run tester on mapping:
 
     >>> class TestMappingAll(TestMappingClear): pass
     >>> fmtester = FullMappingTester(TestMappingAll,
-    ...                              include_node_checks=False)
+    ...                              node_checks=False)
     >>> fmtester.run()
     >>> fmtester.combined
     ``__contains__``: OK
