@@ -1035,60 +1035,6 @@ class TestFullmapping(unittest.TestCase):
         fmtester.test___len__()
 
     def test_update(self):
-        class TestMappingSetItem(TestMapping):
-            def __setitem__(self, key, value):
-                self.data[key] = value
-
-        class TestMappingGetItem(TestMappingSetItem):
-            def __getitem__(self, key):
-                return self.data[key]
-
-        class TestMappingGet(TestMappingGetItem):
-            def get(self, key, default=None):
-                return self.data.get(key, default)
-
-        class TestMappingIter(TestMappingGet):
-            def __iter__(self):
-                return self.data.__iter__()
-
-        class TestMappingKeys(TestMappingIter):
-            def keys(self):
-                return [k for k in self.data]
-
-        class TestMappingIterKeys(TestMappingKeys):
-            def iterkeys(self):
-                return self.data.__iter__()
-
-        class TestMappingValues(TestMappingIterKeys):
-            def values(self):
-                return self.data.values()
-
-        class TestMappingIterValues(TestMappingValues):
-            def itervalues(self):
-                return iter(self.data.values())
-
-        class TestMappingItems(TestMappingIterValues):
-            def items(self):
-                return self.data.items()
-
-        class TestMappingIterItems(TestMappingItems):
-            def iteritems(self):
-                return iter(self.data.items())
-
-        class TestMappingContains(TestMappingIterItems):
-            def __contains__(self, key):
-                return key in self.data
-
-        class TestMappingHasKey(TestMappingContains):
-            def has_key(self, key):
-                if IS_PY2:
-                    return self.data.has_key(key)
-                return key in self.data
-
-        class TestMappingLen(TestMappingHasKey):
-            def __len__(self):
-                return len(self.data)
-
         fmtester = FullMappingTester(
             TestMappingLen,
             include_node_checks=False
@@ -1099,39 +1045,39 @@ class TestFullmapping(unittest.TestCase):
             '\'TestMappingLen\' object has no attribute \'update\''
         )
 
-        class TestMappingUpdate(TestMappingLen):
+        class FailingTestMappingUpdate(TestMappingLen):
             def update(self, data=(), **kw):
                 pass
 
-        fmtester = FullMappingTester(TestMappingUpdate)
+        fmtester = FullMappingTester(FailingTestMappingUpdate)
         err = self.except_error(Exception, fmtester.test_update)
         self.assertEqual(
             str(err),
             'KeyError, Expected ``baz`` and ``blub`` after update'
         )
 
-        class TestMappingUpdate(TestMappingLen):
+        class FailingTestMappingUpdate2(TestMappingLen):
             def update(self, data=(), **kw):
                 for key, value in data:
                     self[key] = object()
                 for key, value in getattr(kw, ITER_FUNC)():
                     self[key] = object()
 
-        fmtester = FullMappingTester(TestMappingUpdate)
+        fmtester = FullMappingTester(FailingTestMappingUpdate2)
         err = self.except_error(Exception, fmtester.test_update)
         self.assertEqual(
             str(err),
             'Object at ``baz`` not expected one after update'
         )
 
-        class TestMappingUpdate(TestMappingLen):
+        class FailingTestMappingUpdate3(TestMappingLen):
             def update(self, data=(), **kw):
                 for key, value in data:
                     self[key] = value
                 for key, value in getattr(kw, ITER_FUNC)():
                     self[key] = object()
 
-        fmtester = FullMappingTester(TestMappingUpdate)
+        fmtester = FullMappingTester(FailingTestMappingUpdate3)
         err = self.except_error(Exception, fmtester.test_update)
         self.assertEqual(
             str(err),
@@ -1143,7 +1089,7 @@ class TestFullmapping(unittest.TestCase):
                 if key == 'blub':
                     raise Exception(u"Broken implementation")
 
-        class TestMappingUpdate(TestMappingLen):
+        class FailingTestMappingUpdate4(TestMappingLen):
             def __init__(self):
                 self.data = BrokenData()
 
@@ -1153,34 +1099,27 @@ class TestFullmapping(unittest.TestCase):
                 for key, value in getattr(kw, ITER_FUNC)():
                     self[key] = value
 
-        fmtester = FullMappingTester(TestMappingUpdate)
+        fmtester = FullMappingTester(FailingTestMappingUpdate4)
         err = self.except_error(RuntimeError, fmtester.test_update)
         self.assertEqual(
             str(err),
             'Cannot del test key.'
         )
 
-        class TestMappingUpdate(TestMappingLen):
+        class FailingTestMappingUpdate5(TestMappingLen):
             def update(self, data=(), data1=(), **kw):
                 for key, value in data:
                     self[key] = value
                 for key, value in getattr(kw, ITER_FUNC)():
                     self[key] = value
 
-        fmtester = FullMappingTester(TestMappingUpdate)
+        fmtester = FullMappingTester(FailingTestMappingUpdate5)
         err = self.except_error(Exception, fmtester.test_update)
         self.assertEqual(
             str(err),
             'Expected TypeError for update with more than one positional '
             'argument.'
         )
-
-        class TestMappingUpdate(TestMappingLen):
-            def update(self, data=(), **kw):
-                for key, value in data:
-                    self[key] = value
-                for key, value in getattr(kw, ITER_FUNC)():
-                    self[key] = value
 
         fmtester = FullMappingTester(TestMappingUpdate)
         fmtester.test_update()
