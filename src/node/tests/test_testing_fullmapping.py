@@ -1780,91 +1780,6 @@ class TestFullmapping(unittest.TestCase):
         fmtester.test_pop()
 
     def test_popitem(self):
-        class TestMappingSetItem(TestMapping):
-            def __setitem__(self, key, value):
-                self.data[key] = value
-
-        class TestMappingGetItem(TestMappingSetItem):
-            def __getitem__(self, key):
-                return self.data[key]
-
-        class TestMappingGet(TestMappingGetItem):
-            def get(self, key, default=None):
-                return self.data.get(key, default)
-
-        class TestMappingIter(TestMappingGet):
-            def __iter__(self):
-                return self.data.__iter__()
-
-        class TestMappingKeys(TestMappingIter):
-            def keys(self):
-                return [k for k in self.data]
-
-        class TestMappingIterKeys(TestMappingKeys):
-            def iterkeys(self):
-                return self.data.__iter__()
-
-        class TestMappingValues(TestMappingIterKeys):
-            def values(self):
-                return self.data.values()
-
-        class TestMappingIterValues(TestMappingValues):
-            def itervalues(self):
-                return iter(self.data.values())
-
-        class TestMappingItems(TestMappingIterValues):
-            def items(self):
-                return self.data.items()
-
-        class TestMappingIterItems(TestMappingItems):
-            def iteritems(self):
-                return iter(self.data.items())
-
-        class TestMappingContains(TestMappingIterItems):
-            def __contains__(self, key):
-                return key in self.data
-
-        class TestMappingHasKey(TestMappingContains):
-            def has_key(self, key):
-                if IS_PY2:
-                    return self.data.has_key(key)
-                return key in self.data
-
-        class TestMappingLen(TestMappingHasKey):
-            def __len__(self):
-                return len(self.data)
-
-        class TestMappingUpdate(TestMappingLen):
-            def update(self, data=(), **kw):
-                for key, value in data:
-                    self[key] = value
-                for key, value in getattr(kw, ITER_FUNC)():
-                    self[key] = value
-
-        class TestMappingDelItem(TestMappingUpdate):
-            def __delitem__(self, key):
-                del self.data[key]
-
-        class TestMappingCopy(TestMappingDelItem):
-            def copy(self):
-                new = self.__class__()
-                new.update(self.items())
-                return new
-
-        class TestMappingSetDefault(TestMappingCopy):
-            def setdefault(self, key, value=None):
-                try:
-                    return self[key]
-                except KeyError:
-                    self[key] = value
-                    return value
-
-        class TestMappingPop(TestMappingSetDefault):
-            def pop(self, key, default=None):
-                if default is not None:
-                    return self.data.pop(key, default)
-                return self.data.pop(key)
-
         fmtester = FullMappingTester(
             TestMappingPop,
             include_node_checks=False
@@ -1875,23 +1790,22 @@ class TestFullmapping(unittest.TestCase):
             '\'TestMappingPop\' object has no attribute \'popitem\''
         )
 
-        class TestMappingPopItem(TestMappingPop):
+        class FailingTestMappingPopItem(TestMappingPop):
             def popitem(self):
                 return
 
         fmtester = FullMappingTester(
-            TestMappingPopItem,
+            FailingTestMappingPopItem,
             include_node_checks=False
         )
         fmtester.test___setitem__()
-
         err = self.except_error(Exception, fmtester.test_popitem)
         self.assertEqual(
             str(err),
             'Expected 1-length result. Got ``2``'
         )
 
-        class TestMappingPopItem(TestMappingPop):
+        class FailingTestMappingPopItem2(TestMappingPop):
             def popitem(self):
                 try:
                     return self.data.popitem()
@@ -1899,20 +1813,15 @@ class TestFullmapping(unittest.TestCase):
                     pass
 
         fmtester = FullMappingTester(
-            TestMappingPopItem,
+            FailingTestMappingPopItem2,
             include_node_checks=False
         )
         fmtester.test___setitem__()
-
         err = self.except_error(Exception, fmtester.test_popitem)
         self.assertEqual(
             str(err),
             'Expected ``KeyError`` when called on empty mapping'
         )
-
-        class TestMappingPopItem(TestMappingPop):
-            def popitem(self):
-                return self.data.popitem()
 
         fmtester = FullMappingTester(
             TestMappingPopItem,
@@ -1932,12 +1841,12 @@ class TestFullmapping(unittest.TestCase):
             '\'TestMappingPopItem\' object has no attribute \'clear\''
         )
 
-        class TestMappingClear(TestMappingPopItem):
+        class FailingTestMappingClear(TestMappingClear):
             def clear(self):
                 pass
 
         fmtester = FullMappingTester(
-            TestMappingClear,
+            FailingTestMappingClear,
             include_node_checks=False
         )
         err = self.except_error(Exception, fmtester.test_clear)
@@ -1945,10 +1854,6 @@ class TestFullmapping(unittest.TestCase):
             str(err),
             'Expected 0-length result. Got ``2``'
         )
-
-        class TestMappingClear(TestMappingPopItem):
-            def clear(self):
-                self.data.clear()
 
         fmtester = FullMappingTester(
             TestMappingClear,
