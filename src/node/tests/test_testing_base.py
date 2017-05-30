@@ -1,14 +1,8 @@
 from node.testing.base import BaseTester
 from node.testing.base import ContractError
 from node.testing.base import create_tree
+from node.tests import unittest
 from odict import odict
-import sys
-
-
-if sys.version_info < (2, 7):                                # pragma: no cover
-    import unittest2 as unittest
-else:                                                        # pragma: no cover
-    import unittest
 
 
 class TestBase(unittest.TestCase):
@@ -114,7 +108,3 @@ class TestBase(unittest.TestCase):
                 str(err),
                 '``BrokenTester`` does not provide ``test_test_me``'
             )
-
-
-if __name__ == '__main__':
-    unittest.main()                                          # pragma: no cover

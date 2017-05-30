@@ -1,11 +1,5 @@
 from node.testing.env import MyNode
-import sys
-
-
-if sys.version_info < (2, 7):                                # pragma: no cover
-    import unittest2 as unittest
-else:                                                        # pragma: no cover
-    import unittest
+from node.tests import unittest
 
 
 class TestEnv(unittest.TestCase):
@@ -86,7 +80,3 @@ class TestEnv(unittest.TestCase):
         mynode.clear()
         self.assertEqual(mynode.keys(), [])
         self.assertRaises(KeyError, mynode.popitem)
-
-
-if __name__ == '__main__':
-    unittest.main()                                          # pragma: no cover
