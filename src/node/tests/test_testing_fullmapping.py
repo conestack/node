@@ -1186,77 +1186,12 @@ class TestFullmapping(unittest.TestCase):
         fmtester.test_update()
 
     def test___delitem__(self):
-        class TestMappingSetItem(TestMapping):
-            def __setitem__(self, key, value):
-                self.data[key] = value
-
-        class TestMappingGetItem(TestMappingSetItem):
-            def __getitem__(self, key):
-                return self.data[key]
-
-        class TestMappingGet(TestMappingGetItem):
-            def get(self, key, default=None):
-                return self.data.get(key, default)
-
-        class TestMappingIter(TestMappingGet):
-            def __iter__(self):
-                return self.data.__iter__()
-
-        class TestMappingKeys(TestMappingIter):
-            def keys(self):
-                return [k for k in self.data]
-
-        class TestMappingIterKeys(TestMappingKeys):
-            def iterkeys(self):
-                return self.data.__iter__()
-
-        class TestMappingValues(TestMappingIterKeys):
-            def values(self):
-                return self.data.values()
-
-        class TestMappingIterValues(TestMappingValues):
-            def itervalues(self):
-                return iter(self.data.values())
-
-        class TestMappingItems(TestMappingIterValues):
-            def items(self):
-                return self.data.items()
-
-        class TestMappingIterItems(TestMappingItems):
-            def iteritems(self):
-                return iter(self.data.items())
-
-        class TestMappingContains(TestMappingIterItems):
-            def __contains__(self, key):
-                return key in self.data
-
-        class TestMappingHasKey(TestMappingContains):
-            def has_key(self, key):
-                if IS_PY2:
-                    return self.data.has_key(key)
-                return key in self.data
-
-        class TestMappingLen(TestMappingHasKey):
-            def __len__(self):
-                return len(self.data)
-
-        class TestMappingUpdate(TestMappingLen):
-            def update(self, data=(), **kw):
-                for key, value in data:
-                    self[key] = value
-                for key, value in getattr(kw, ITER_FUNC)():
-                    self[key] = value
-
         fmtester = FullMappingTester(TestMappingUpdate)
         expected = '__delitem__' if not IS_PYPY else \
             '\'TestMappingUpdate\' object does not support item deletion'
         exc = TypeError if IS_PYPY else AttributeError
         err = self.except_error(exc, fmtester.test___delitem__)
         self.assertEqual(str(err), expected)
-
-        class TestMappingDelItem(TestMappingUpdate):
-            def __delitem__(self, key):
-                del self.data[key]
 
         fmtester = FullMappingTester(
             TestMappingDelItem,
@@ -1269,7 +1204,6 @@ class TestFullmapping(unittest.TestCase):
         )
 
         fmtester.test___setitem__()
-
         err = self.except_error(Exception, fmtester.test___delitem__)
         self.assertEqual(
             str(err),
