@@ -1142,98 +1142,190 @@ class TestFullmapping(unittest.TestCase):
         fmtester.test_update()
         fmtester.test___delitem__()
 
+    def test_copy(self):
+        class TestMappingSetItem(TestMapping):
+            def __setitem__(self, key, value):
+                self.data[key] = value
+
+        class TestMappingGetItem(TestMappingSetItem):
+            def __getitem__(self, key):
+                return self.data[key]
+
+        class TestMappingGet(TestMappingGetItem):
+            def get(self, key, default=None):
+                return self.data.get(key, default)
+
+        class TestMappingIter(TestMappingGet):
+            def __iter__(self):
+                return self.data.__iter__()
+
+        class TestMappingKeys(TestMappingIter):
+            def keys(self):
+                return [k for k in self.data]
+
+        class TestMappingIterKeys(TestMappingKeys):
+            def iterkeys(self):
+                return self.data.__iter__()
+
+        class TestMappingValues(TestMappingIterKeys):
+            def values(self):
+                return self.data.values()
+
+        class TestMappingIterValues(TestMappingValues):
+            def itervalues(self):
+                return iter(self.data.values())
+
+        class TestMappingItems(TestMappingIterValues):
+            def items(self):
+                return self.data.items()
+
+        class TestMappingIterItems(TestMappingItems):
+            def iteritems(self):
+                return iter(self.data.items())
+
+        class TestMappingContains(TestMappingIterItems):
+            def __contains__(self, key):
+                return key in self.data
+
+        class TestMappingHasKey(TestMappingContains):
+            def has_key(self, key):
+                if IS_PY2:
+                    return self.data.has_key(key)
+                return key in self.data
+
+        class TestMappingLen(TestMappingHasKey):
+            def __len__(self):
+                return len(self.data)
+
+        class TestMappingUpdate(TestMappingLen):
+            def update(self, data=(), **kw):
+                for key, value in data:
+                    self[key] = value
+                for key, value in getattr(kw, ITER_FUNC)():
+                    self[key] = value
+
+        class TestMappingDelItem(TestMappingUpdate):
+            def __delitem__(self, key):
+                del self.data[key]
+
+        fmtester = FullMappingTester(
+            TestMappingDelItem,
+            include_node_checks=False
+        )
+        err = self.except_error(AttributeError, fmtester.test_copy)
+        self.assertEqual(
+            str(err),
+            '\'TestMappingDelItem\' object has no attribute \'copy\''
+        )
+
+        class TestMappingCopy(TestMappingDelItem):
+            def copy(self):
+                return self
+
+        fmtester = FullMappingTester(
+            TestMappingCopy,
+            include_node_checks=False
+        )
+        err = self.except_error(Exception, fmtester.test_copy)
+        self.assertEqual(
+            str(err),
+            '``copied`` is ``context``'
+        )
+
+        class TestMappingCopy(TestMappingDelItem):
+            def copy(self):
+                return self.__class__()
+
+        fmtester = FullMappingTester(
+            TestMappingCopy,
+            include_node_checks=False
+        )
+        fmtester.test___setitem__()
+
+        err = self.except_error(KeyError, fmtester.test_copy)
+        self.assertEqual(
+            str(err),
+            '\'foo\''
+        )
+
+        class TestMappingCopy(TestMappingDelItem):
+            def copy(self):
+                new = self.__class__()
+                new.update([('foo', object())])
+                return new
+
+        fmtester = FullMappingTester(
+            TestMappingCopy,
+            include_node_checks=False
+        )
+        fmtester.test___setitem__()
+
+        err = self.except_error(Exception, fmtester.test_copy)
+        self.assertEqual(
+            str(err),
+            '``copied[\'foo\']`` is not ``context[\'foo\']``'
+        )
+
+        class TestMappingCopy(TestMappingDelItem):
+            def copy(self):
+                new = self.__class__()
+                new.update(self.items())
+                return new
+
+        fmtester = FullMappingTester(
+            TestMappingCopy,
+            include_node_checks=False
+        )
+        fmtester.test___setitem__()
+        fmtester.test_copy()
+
+        class TestNodeSetItem(TestNode, TestMappingSetItem):
+            def __setitem__(self, name, value):
+                value.__parent__ = self
+                value.__name__ = name
+                self.data[name] = value
+
+        class TestNodeCopy(TestNodeSetItem, TestMappingCopy):
+            pass
+
+        fmtester = FullMappingTester(TestNodeCopy)
+        fmtester.test___setitem__()
+
+        err = self.except_error(Exception, fmtester.test_copy)
+        self.assertEqual(
+            str(err),
+            '__name__ of copied does not match'
+        )
+
+        class TestNodeCopy(TestNodeSetItem, TestMappingCopy):
+            def copy(self):
+                new = self.__class__()
+                new.__name__ = self.__name__
+                new.update(self.items())
+                return new
+
+        fmtester = FullMappingTester(TestNodeCopy)
+        fmtester.test___setitem__()
+
+        err = self.except_error(Exception, fmtester.test_copy)
+        self.assertEqual(
+            str(err),
+            '__parent__ of copied does not match'
+        )
+
+        class TestNodeCopy(TestNodeSetItem, TestMappingCopy):
+            def copy(self):
+                new = self.__class__()
+                new.__name__ = self.__name__
+                new.__parent__ = self.__parent__
+                new.update(self.items())
+                return new
+
+        fmtester = FullMappingTester(TestNodeCopy)
+        fmtester.test___setitem__()
+        fmtester.test_copy()
+
 """
-
-copy
-~~~~
-
-.. code-block:: pycon
-
-    >>> fmtester.test_copy()
-    Traceback (most recent call last):
-      ...
-    AttributeError: 'TestMappingDelItem' object has no attribute 'copy'
-
-    >>> class TestMappingCopy(TestMappingDelItem):
-    ...     def copy(self):
-    ...         return self
-
-    >>> fmtester = FullMappingTester(TestMappingCopy,
-    ...                              include_node_checks=False)
-    >>> fmtester.test_copy()
-    Traceback (most recent call last):
-      ...
-    Exception: ``copied`` is ``context``
-
-    >>> class TestMappingCopy(TestMappingDelItem):
-    ...     def copy(self):
-    ...         return self.__class__()
-
-    >>> fmtester = FullMappingTester(TestMappingCopy,
-    ...                              include_node_checks=False)
-    >>> fmtester.test___setitem__()
-    >>> fmtester.test_copy()
-    Traceback (most recent call last):
-      ...
-    KeyError: 'foo'
-
-    >>> class TestMappingCopy(TestMappingDelItem):
-    ...     def copy(self):
-    ...         new = self.__class__()
-    ...         new.update([('foo', object())])
-    ...         return new
-
-    >>> fmtester = FullMappingTester(TestMappingCopy,
-    ...                              include_node_checks=False)
-    >>> fmtester.test___setitem__()
-    >>> fmtester.test_copy()
-    Traceback (most recent call last):
-      ...
-    Exception: ``copied['foo']`` is not ``context['foo']``
-
-    >>> class TestMappingCopy(TestMappingDelItem):
-    ...     def copy(self):
-    ...         new = self.__class__()
-    ...         new.update(self.items())
-    ...         return new
-
-    >>> fmtester = FullMappingTester(TestMappingCopy,
-    ...                              include_node_checks=False)
-    >>> fmtester.test___setitem__()
-    >>> fmtester.test_copy()
-
-    >>> class TestNodeCopy(TestNodeSetItem, TestMappingCopy):
-    ...     pass
-
-    >>> fmtester = FullMappingTester(TestNodeCopy)
-    >>> fmtester.test___setitem__()
-    >>> fmtester.test_copy()
-    Traceback (most recent call last):
-      ...
-    Exception: __name__ of copied does not match
-
-    >>> class TestNodeCopy(TestNodeSetItem, TestMappingCopy):
-    ...     def copy(self):
-    ...         new = self.__class__()
-    ...         new.__name__ = self.__name__
-    ...         new.update(self.items())
-    ...         return new
-
-    >>> fmtester = FullMappingTester(TestNodeCopy)
-    >>> fmtester.test___setitem__()
-    >>> fmtester.test_copy()
-    Traceback (most recent call last):
-      ...
-    Exception: __parent__ of copied does not match
-
-    >>> class TestNodeCopy(TestNodeSetItem, TestMappingCopy):
-    ...     def copy(self):
-    ...         new = self.__class__()
-    ...         new.__name__ = self.__name__
-    ...         new.__parent__ = self.__parent__
-    ...         new.update(self.items())
-    ...         return new
-
 
 setdefault
 ~~~~~~~~~~
