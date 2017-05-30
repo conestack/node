@@ -948,56 +948,6 @@ class TestFullmapping(unittest.TestCase):
         fmtester.test_has_key()
 
     def test___len__(self):
-        class TestMappingSetItem(TestMapping):
-            def __setitem__(self, key, value):
-                self.data[key] = value
-
-        class TestMappingGetItem(TestMappingSetItem):
-            def __getitem__(self, key):
-                return self.data[key]
-
-        class TestMappingGet(TestMappingGetItem):
-            def get(self, key, default=None):
-                return self.data.get(key, default)
-
-        class TestMappingIter(TestMappingGet):
-            def __iter__(self):
-                return self.data.__iter__()
-
-        class TestMappingKeys(TestMappingIter):
-            def keys(self):
-                return [k for k in self.data]
-
-        class TestMappingIterKeys(TestMappingKeys):
-            def iterkeys(self):
-                return self.data.__iter__()
-
-        class TestMappingValues(TestMappingIterKeys):
-            def values(self):
-                return self.data.values()
-
-        class TestMappingIterValues(TestMappingValues):
-            def itervalues(self):
-                return iter(self.data.values())
-
-        class TestMappingItems(TestMappingIterValues):
-            def items(self):
-                return self.data.items()
-
-        class TestMappingIterItems(TestMappingItems):
-            def iteritems(self):
-                return iter(self.data.items())
-
-        class TestMappingContains(TestMappingIterItems):
-            def __contains__(self, key):
-                return key in self.data
-
-        class TestMappingHasKey(TestMappingContains):
-            def has_key(self, key):
-                if IS_PY2:
-                    return self.data.has_key(key)
-                return key in self.data
-
         fmtester = FullMappingTester(
             TestMappingHasKey,
             include_node_checks=False
@@ -1007,25 +957,20 @@ class TestFullmapping(unittest.TestCase):
         err = self.except_error(TypeError, fmtester.test___len__)
         self.assertEqual(str(err), expected)
 
-        class TestMappingLen(TestMappingHasKey):
+        class FailingTestMappingLen(TestMappingHasKey):
             def __len__(self):
                 return 0
 
         fmtester = FullMappingTester(
-            TestMappingLen,
+            FailingTestMappingLen,
             include_node_checks=False
         )
         fmtester.test___setitem__()
-
         err = self.except_error(Exception, fmtester.test___len__)
         self.assertEqual(
             str(err),
             'Expected 2-length result. Got ``0``'
         )
-
-        class TestMappingLen(TestMappingHasKey):
-            def __len__(self):
-                return len(self.data)
 
         fmtester = FullMappingTester(
             TestMappingLen,
