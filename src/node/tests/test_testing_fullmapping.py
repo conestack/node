@@ -340,43 +340,27 @@ class TestFullmapping(unittest.TestCase):
             '\'TestMapping\' object is not iterable'
         )
 
-        class TestMappingSetItem(TestMapping):
-            def __setitem__(self, key, value):
-                self.data[key] = value
-
-        class TestMappingGetItem(TestMappingSetItem):
-            def __getitem__(self, key):
-                return self.data[key]
-
-        class TestMappingGet(TestMappingGetItem):
-            def get(self, key, default=None):
-                return self.data.get(key, default)
-
-        class TestMappingIter(TestMappingGet):
+        class FailingTestMappingIter(TestMappingGet):
             def __iter__(self):
                 return iter(list())
 
-        fmtester = FullMappingTester(TestMappingIter)
+        fmtester = FullMappingTester(FailingTestMappingIter)
         err = self.except_error(Exception, fmtester.test___iter__)
         self.assertEqual(
             str(err),
             'Expected 2-length result. Got ``0``'
         )
 
-        class TestMappingIter(TestMappingGet):
+        class FailingTestMappingIter2(TestMappingGet):
             def __iter__(self):
                 return iter(['a', 'b'])
 
-        fmtester = FullMappingTester(TestMappingIter)
+        fmtester = FullMappingTester(FailingTestMappingIter2)
         err = self.except_error(Exception, fmtester.test___iter__)
         self.assertEqual(
             str(err),
             'Expected ``[\'a\', \'b\']`` as keys. Got ``[\'foo\', \'bar\']``'
         )
-
-        class TestMappingIter(TestMappingGet):
-            def __iter__(self):
-                return self.data.__iter__()
 
         fmtester = FullMappingTester(
             TestMappingIter,
