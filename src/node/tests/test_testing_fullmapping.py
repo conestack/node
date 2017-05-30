@@ -191,6 +191,29 @@ class TestFullmapping(unittest.TestCase):
             msg = 'Expected \'{}\' when calling \'{}\''.format(exc, func)
             raise Exception(msg)
 
+    def test_except_error(self):
+        def func_raises():
+            raise Exception('Function raises')
+        err = self.except_error(Exception, func_raises)
+        self.assertEqual(str(err), 'Function raises')
+
+        def func_passes():
+            pass
+        err = None
+        try:
+            self.except_error(Exception, func_passes)
+        except Exception as e:
+            err = e
+        finally:
+            expected = (
+                'Expected \'<type \'exceptions.Exception\'>\' when calling'
+                ' \'<function func_passes at '
+            ) if IS_PY2 else (
+                'Expected \'<class \'Exception\'>\' when calling \'<function '
+                'TestFullmapping.test_except_error.<locals>.func_passes at'
+            )
+            self.assertTrue(str(err).startswith(expected))
+
     def test___setitem__(self):
         fmtester = FullMappingTester(MockMapping)
         err = self.except_error(TypeError, fmtester.test___setitem__)
@@ -433,7 +456,8 @@ class TestFullmapping(unittest.TestCase):
                                      node_checks=False)
         fmtester.test___setitem__()
         err = self.except_error(Exception, fmtester.test___contains__)
-        exp = 'Expected ``foo`` and ``bar`` return ``True`` by ``__contains__``'
+        exp = 'Expected ``foo`` and ``bar`` return ``True`` by ' \
+              '``__contains__``'
         self.assertEqual(str(err), exp)
 
         class FailingMockMappingContains2(MockMappingIterItems):
@@ -509,9 +533,9 @@ class TestFullmapping(unittest.TestCase):
 
         class FailingMockMappingUpdate2(MockMappingLen):
             def update(self, data=(), **kw):
-                for key, value in data:
+                for key, _ in data:
                     self[key] = object()
-                for key, value in getattr(kw, ITER_FUNC)():
+                for key, _ in getattr(kw, ITER_FUNC)():
                     self[key] = object()
 
         fmtester = FullMappingTester(FailingMockMappingUpdate2)

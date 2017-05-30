@@ -5,8 +5,10 @@
 /.pydevproject.bak
 /.installed.cfg
 /.mr.developer.cfg
-/.settings/
 /pip-selfcheck.json
+/.coverage
+/.settings/
+/htmlcov/
 /py2/
 /py3/
 /pypy/
