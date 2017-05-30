@@ -1,5 +1,6 @@
 from node.testing.base import BaseTester
 from node.testing.base import ContractError
+from node.testing.base import create_tree
 from odict import odict
 import sys
 
@@ -11,6 +12,22 @@ else:                                                        # pragma: no cover
 
 
 class TestBase(unittest.TestCase):
+
+    def test_create_tree(self):
+        self.assertEqual(create_tree(odict), odict([
+            ('child_0', odict([
+                ('subchild_0', odict()),
+                ('subchild_1', odict())
+            ])),
+            ('child_1', odict([
+                ('subchild_0', odict()),
+                ('subchild_1', odict())
+            ])),
+            ('child_2', odict([
+                ('subchild_0', odict()),
+                ('subchild_1', odict())
+            ]))
+        ]))
 
     def test_BaseTester(self):
         # BaseTester is used to write testing code for an interface contract.
