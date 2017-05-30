@@ -222,18 +222,11 @@ class TestFullmapping(unittest.TestCase):
 
     def test___getitem__(self):
         fmtester = FullMappingTester(TestMapping)
-        # Python 2: 'TestMapping' object has no attribute '__getitem__'
-        # Python 3: 'TestMapping' object is not subscriptable
+        expected = '\'TestMapping\' object has no attribute \'__getitem__\'' \
+            if (IS_PY2 and not IS_PYPY) else \
+            '\'TestMapping\' object is not subscriptable'
         err = self.except_error(TypeError, fmtester.test___getitem__)
-        self.assertTrue(str(err).startswith('\'TestMapping\' object'))
-
-        class TestMappingSetItem(TestMapping):
-            def __setitem__(self, key, value):
-                self.data[key] = value
-
-        class TestMappingGetItem(TestMappingSetItem):
-            def __getitem__(self, key):
-                return self.data[key]
+        self.assertEqual(str(err), expected)
 
         fmtester = FullMappingTester(TestMappingGetItem)
         fmtester.context['foo'] = TestMappingGetItem()
@@ -244,28 +237,20 @@ class TestFullmapping(unittest.TestCase):
             '\'TestMappingGetItem\' object has no attribute \'__name__\''
         )
 
-        class TestNodeSetItem(TestNode, TestMappingSetItem):
+        class FailingTestNodeSetItem(TestNode, TestMappingSetItem):
             pass
 
-        class TestNodeGetItem(TestNodeSetItem, TestMappingGetItem):
+        class FailingTestNodeGetItem(FailingTestNodeSetItem,
+                                     TestMappingGetItem):
             pass
 
-        fmtester = FullMappingTester(TestNodeGetItem)
+        fmtester = FullMappingTester(FailingTestNodeGetItem)
         fmtester.test___setitem__()
         err = self.except_error(Exception, fmtester.test___getitem__)
         self.assertEqual(
             str(err),
             'Child ``bar`` has wrong ``__name__``'
         )
-
-        class TestNodeSetItem(TestNodeSetItem):
-            def __setitem__(self, name, value):
-                value.__parent__ = self
-                value.__name__ = name
-                self.data[name] = value
-
-        class TestNodeGetItem(TestNodeSetItem, TestMappingGetItem):
-            pass
 
         fmtester = FullMappingTester(TestNodeGetItem)
         fmtester.test___setitem__()
