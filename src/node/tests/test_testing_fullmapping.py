@@ -864,50 +864,6 @@ class TestFullmapping(unittest.TestCase):
         fmtester.test___contains__()
 
     def test_has_key(self):
-        class TestMappingSetItem(TestMapping):
-            def __setitem__(self, key, value):
-                self.data[key] = value
-
-        class TestMappingGetItem(TestMappingSetItem):
-            def __getitem__(self, key):
-                return self.data[key]
-
-        class TestMappingGet(TestMappingGetItem):
-            def get(self, key, default=None):
-                return self.data.get(key, default)
-
-        class TestMappingIter(TestMappingGet):
-            def __iter__(self):
-                return self.data.__iter__()
-
-        class TestMappingKeys(TestMappingIter):
-            def keys(self):
-                return [k for k in self.data]
-
-        class TestMappingIterKeys(TestMappingKeys):
-            def iterkeys(self):
-                return self.data.__iter__()
-
-        class TestMappingValues(TestMappingIterKeys):
-            def values(self):
-                return self.data.values()
-
-        class TestMappingIterValues(TestMappingValues):
-            def itervalues(self):
-                return iter(self.data.values())
-
-        class TestMappingItems(TestMappingIterValues):
-            def items(self):
-                return self.data.items()
-
-        class TestMappingIterItems(TestMappingItems):
-            def iteritems(self):
-                return iter(self.data.items())
-
-        class TestMappingContains(TestMappingIterItems):
-            def __contains__(self, key):
-                return key in self.data
-
         fmtester = FullMappingTester(
             TestMappingContains,
             include_node_checks=False
@@ -918,27 +874,20 @@ class TestFullmapping(unittest.TestCase):
             '\'TestMappingContains\' object has no attribute \'has_key\''
         )
 
-        class TestMappingHasKey(TestMappingContains):
+        class FailingTestMappingHasKey(TestMappingContains):
             def has_key(self, key):
                 return False
 
         fmtester = FullMappingTester(
-            TestMappingHasKey,
+            FailingTestMappingHasKey,
             include_node_checks=False
         )
         fmtester.test___setitem__()
-
         err = self.except_error(Exception, fmtester.test_has_key)
         self.assertEqual(
             str(err),
             'Expected ``foo`` and ``bar`` return ``True`` by ``has_key``'
         )
-
-        class TestMappingHasKey(TestMappingContains):
-            def has_key(self, key):
-                if IS_PY2:
-                    return self.data.has_key(key)
-                return key in self.data
 
         fmtester = FullMappingTester(
             TestMappingHasKey,
