@@ -1464,91 +1464,6 @@ class TestFullmapping(unittest.TestCase):
         fmtester.test_copy()
 
     def test_setdefault(self):
-        class TestMappingSetItem(TestMapping):
-            def __setitem__(self, key, value):
-                self.data[key] = value
-
-        class TestMappingGetItem(TestMappingSetItem):
-            def __getitem__(self, key):
-                return self.data[key]
-
-        class TestMappingGet(TestMappingGetItem):
-            def get(self, key, default=None):
-                return self.data.get(key, default)
-
-        class TestMappingIter(TestMappingGet):
-            def __iter__(self):
-                return self.data.__iter__()
-
-        class TestMappingKeys(TestMappingIter):
-            def keys(self):
-                return [k for k in self.data]
-
-        class TestMappingIterKeys(TestMappingKeys):
-            def iterkeys(self):
-                return self.data.__iter__()
-
-        class TestMappingValues(TestMappingIterKeys):
-            def values(self):
-                return self.data.values()
-
-        class TestMappingIterValues(TestMappingValues):
-            def itervalues(self):
-                return iter(self.data.values())
-
-        class TestMappingItems(TestMappingIterValues):
-            def items(self):
-                return self.data.items()
-
-        class TestMappingIterItems(TestMappingItems):
-            def iteritems(self):
-                return iter(self.data.items())
-
-        class TestMappingContains(TestMappingIterItems):
-            def __contains__(self, key):
-                return key in self.data
-
-        class TestMappingHasKey(TestMappingContains):
-            def has_key(self, key):
-                if IS_PY2:
-                    return self.data.has_key(key)
-                return key in self.data
-
-        class TestMappingLen(TestMappingHasKey):
-            def __len__(self):
-                return len(self.data)
-
-        class TestMappingUpdate(TestMappingLen):
-            def update(self, data=(), **kw):
-                for key, value in data:
-                    self[key] = value
-                for key, value in getattr(kw, ITER_FUNC)():
-                    self[key] = value
-
-        class TestMappingDelItem(TestMappingUpdate):
-            def __delitem__(self, key):
-                del self.data[key]
-
-        class TestMappingCopy(TestMappingDelItem):
-            def copy(self):
-                new = self.__class__()
-                new.update(self.items())
-                return new
-
-        class TestNodeSetItem(TestNode, TestMappingSetItem):
-            def __setitem__(self, name, value):
-                value.__parent__ = self
-                value.__name__ = name
-                self.data[name] = value
-
-        class TestNodeCopy(TestNodeSetItem, TestMappingCopy):
-            def copy(self):
-                new = self.__class__()
-                new.__name__ = self.__name__
-                new.__parent__ = self.__parent__
-                new.update(self.items())
-                return new
-
         fmtester = FullMappingTester(TestNodeCopy)
         err = self.except_error(AttributeError, fmtester.test_setdefault)
         self.assertEqual(
@@ -1556,46 +1471,36 @@ class TestFullmapping(unittest.TestCase):
             '\'TestNodeCopy\' object has no attribute \'setdefault\''
         )
 
-        class TestMappingSetDefault(TestMappingCopy):
+        class FailingTestMappingSetDefault(TestMappingCopy):
             def setdefault(self, key, value=None):
                 return value
 
         fmtester = FullMappingTester(
-            TestMappingSetDefault,
+            FailingTestMappingSetDefault,
             include_node_checks=False
         )
         fmtester.test___setitem__()
-
         err = self.except_error(Exception, fmtester.test_setdefault)
         self.assertEqual(
             str(err),
             'Replaced already existing item.'
         )
 
-        class TestMappingSetDefault(TestMappingCopy):
+        class FailingTestMappingSetDefault2(TestMappingCopy):
             def setdefault(self, key, value=None):
                 self[key] = object()
                 return self[key]
 
         fmtester = FullMappingTester(
-            TestMappingSetDefault,
+            FailingTestMappingSetDefault2,
             include_node_checks=False
         )
         fmtester.test___setitem__()
-
         err = self.except_error(Exception, fmtester.test_setdefault)
         self.assertEqual(
             str(err),
             'Inserted item not same instance.'
         )
-
-        class TestMappingSetDefault(TestMappingCopy):
-            def setdefault(self, key, value=None):
-                try:
-                    return self[key]
-                except KeyError:
-                    self[key] = value
-                    return value
 
         fmtester = FullMappingTester(
             TestMappingSetDefault,
