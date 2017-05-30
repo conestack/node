@@ -5,6 +5,9 @@ from node.testing import FullMappingTester
 from node.testing.env import MyNode
 from node.tests import NodeTestCase
 from node.testing.base import create_tree
+from zope.interface import Interface
+from zope.interface import directlyProvides
+from zope.interface import noLongerProvides
 import pickle
 
 
@@ -259,173 +262,140 @@ class TestBase(NodeTestCase):
             <class 'node.base.OrderedNode'>: subchild_1
         """, orderednode.treerepr())
 
+        # path
+        mynode.__name__ = 'root'
+        self.assertEqual(mynode.path, ['root'])
+        self.assertEqual(
+            mynode['child_1']['subchild_1'].path,
+            ['root', 'child_1', 'subchild_1']
+        )
+
+        basenode.__name__ = 'root'
+        self.assertEqual(basenode.path, ['root'])
+        self.assertEqual(
+            basenode['child_1']['subchild_1'].path,
+            ['root', 'child_1', 'subchild_1']
+        )
+
+        orderednode.__name__ = 'root'
+        self.assertEqual(orderednode.path, ['root'])
+        self.assertEqual(
+            orderednode['child_1']['subchild_1'].path,
+            ['root', 'child_1', 'subchild_1']
+        )
+
+        # root
+        self.assertTrue(mynode['child_1']['subchild_1'].root is mynode)
+        self.assertTrue(basenode['child_1']['subchild_1'].root is basenode)
+        self.assertTrue(
+            orderednode['child_1']['subchild_1'].root is orderednode
+        )
+
+        # allow_non_node_childs
+        self.assertFalse(mynode.allow_non_node_childs)
+
+        def non_node_childs_not_allowed():
+            mynode['foo'] = object()
+        err = self.except_error(ValueError, non_node_childs_not_allowed)
+        self.assertEqual(str(err), 'Non-node childs are not allowed.')
+
+        def no_classes_as_values_allowed():
+            mynode['foo'] = object
+        err = self.except_error(ValueError, no_classes_as_values_allowed)
+        expected = 'It isn\'t allowed to use classes as values.'
+        self.assertEqual(str(err), expected)
+
+        mynode.allow_non_node_childs = True
+        obj = mynode['foo'] = object()
+        self.assertEqual(mynode['foo'], obj)
+
+        del mynode['foo']
+        mynode.allow_non_node_childs = False
+
+        self.assertFalse(basenode.allow_non_node_childs)
+
+        def non_node_childs_not_allowed2():
+            basenode['foo'] = object()
+        err = self.except_error(ValueError, non_node_childs_not_allowed2)
+        self.assertEqual(str(err), 'Non-node childs are not allowed.')
+
+        def no_classes_as_values_allowed2():
+            basenode['foo'] = object
+        err = self.except_error(ValueError, no_classes_as_values_allowed2)
+        expected = 'It isn\'t allowed to use classes as values.'
+        self.assertEqual(str(err), expected)
+
+        basenode.allow_non_node_childs = True
+        obj = basenode['foo'] = object()
+        self.assertEqual(basenode['foo'], obj)
+
+        del basenode['foo']
+        basenode.allow_non_node_childs = False
+
+        self.assertFalse(orderednode.allow_non_node_childs)
+
+        def non_node_childs_not_allowed3():
+            orderednode['foo'] = object()
+        err = self.except_error(ValueError, non_node_childs_not_allowed3)
+        self.assertEqual(str(err), 'Non-node childs are not allowed.')
+
+        def no_classes_as_values_allowed3():
+            orderednode['foo'] = object
+        err = self.except_error(ValueError, no_classes_as_values_allowed3)
+        expected = 'It isn\'t allowed to use classes as values.'
+        self.assertEqual(str(err), expected)
+
+        orderednode.allow_non_node_childs = True
+        obj = orderednode['foo'] = object()
+        self.assertEqual(orderednode['foo'], obj)
+
+        del orderednode['foo']
+        orderednode.allow_non_node_childs = False
+
+        # filteredvalues and filtereditervalues
+        class IFilter(Interface):
+            pass
+
+        directlyProvides(mynode['child_2'], IFilter)
+        self.assertEqual(
+            list(mynode.filtereditervalues(IFilter)),
+            [mynode['child_2']]
+        )
+        self.assertEqual(
+            mynode.filteredvalues(IFilter),
+            [mynode['child_2']]
+        )
+        noLongerProvides(mynode['child_2'], IFilter)
+        self.assertEqual(list(mynode.filtereditervalues(IFilter)), [])
+        self.assertEqual(mynode.filteredvalues(IFilter), [])
+
+        directlyProvides(basenode['child_2'], IFilter)
+        self.assertEqual(
+            list(basenode.filtereditervalues(IFilter)),
+            [basenode['child_2']]
+        )
+        self.assertEqual(
+            basenode.filteredvalues(IFilter),
+            [basenode['child_2']]
+        )
+        noLongerProvides(basenode['child_2'], IFilter)
+        self.assertEqual(list(basenode.filtereditervalues(IFilter)), [])
+        self.assertEqual(basenode.filteredvalues(IFilter), [])
+
+        directlyProvides(orderednode['child_2'], IFilter)
+        self.assertEqual(
+            list(orderednode.filtereditervalues(IFilter)),
+            [orderednode['child_2']]
+        )
+        self.assertEqual(
+            orderednode.filteredvalues(IFilter),
+            [orderednode['child_2']]
+        )
+        noLongerProvides(orderednode['child_2'], IFilter)
+        self.assertEqual(list(orderednode.filtereditervalues(IFilter)), [])
+        self.assertEqual(orderednode.filteredvalues(IFilter), [])
+
 """
-
-path
-~~~~
-
-.. code-block:: pycon
-
-    >>> mynode.__name__ = 'root'
-    >>> mynode.path
-    ['root']
-
-    >>> mynode['child_1']['subchild_1'].path
-    ['root', 'child_1', 'subchild_1']
-
-    >>> basenode.__name__ = 'root'
-    >>> basenode.path
-    ['root']
-
-    >>> basenode['child_1']['subchild_1'].path
-    ['root', 'child_1', 'subchild_1']
-
-    >>> orderednode.__name__ = 'root'
-    >>> orderednode.path
-    ['root']
-
-    >>> orderednode['child_1']['subchild_1'].path
-    ['root', 'child_1', 'subchild_1']
-
-
-root
-~~~~
-
-.. code-block:: pycon
-
-    >>> mynode['child_1']['subchild_1'].root is mynode
-    True
-
-    >>> basenode['child_1']['subchild_1'].root is basenode
-    True
-
-    >>> orderednode['child_1']['subchild_1'].root is orderednode
-    True
-
-
-allow_non_node_childs
-~~~~~~~~~~~~~~~~~~~~~
-
-.. code-block:: pycon
-
-    >>> mynode.allow_non_node_childs
-    False
-
-    >>> mynode['foo'] = object()
-    Traceback (most recent call last):
-      ...
-    ValueError: Non-node childs are not allowed.
-
-    >>> mynode['foo'] = object
-    Traceback (most recent call last):
-      ...
-    ValueError: It isn't allowed to use classes as values.
-
-    >>> mynode.allow_non_node_childs = True
-    >>> mynode['foo'] = object()
-    >>> mynode['foo']
-    <object object at ...>
-
-    >>> del mynode['foo']
-    >>> mynode.allow_non_node_childs = False
-
-    >>> basenode.allow_non_node_childs
-    False
-
-    >>> basenode['foo'] = object()
-    Traceback (most recent call last):
-      ...
-    ValueError: Non-node childs are not allowed.
-
-    >>> basenode['foo'] = object
-    Traceback (most recent call last):
-      ...
-    ValueError: It isn't allowed to use classes as values.
-
-    >>> basenode.allow_non_node_childs = True
-    >>> basenode['foo'] = object()
-    >>> basenode['foo']
-    <object object at ...>
-
-    >>> del basenode['foo']
-    >>> basenode.allow_non_node_childs = False
-
-    >>> orderednode.allow_non_node_childs
-    False
-
-    >>> orderednode['foo'] = object()
-    Traceback (most recent call last):
-      ...
-    ValueError: Non-node childs are not allowed.
-
-    >>> orderednode['foo'] = object
-    Traceback (most recent call last):
-      ...
-    ValueError: It isn't allowed to use classes as values.
-
-    >>> orderednode.allow_non_node_childs = True
-    >>> orderednode['foo'] = object()
-    >>> orderednode['foo']
-    <object object at ...>
-
-    >>> del orderednode['foo']
-    >>> orderednode.allow_non_node_childs = False
-
-
-filteredvalues
-~~~~~~~~~~~~~~
-
-.. code-block:: pycon
-
-    >>> from zope.interface import Interface
-    >>> from zope.interface import directlyProvides
-    >>> from zope.interface import noLongerProvides
-
-    >>> class IFilter(Interface):
-    ...     pass
-
-    >>> directlyProvides(mynode['child_2'], IFilter)
-    >>> list(mynode.filtereditervalues(IFilter))
-    [<MyNode object 'child_2' at ...>]
-
-    >>> mynode.filteredvalues(IFilter)
-    [<MyNode object 'child_2' at ...>]
-
-    >>> noLongerProvides(mynode['child_2'], IFilter)
-    >>> list(mynode.filtereditervalues(IFilter))
-    []
-
-    >>> mynode.filteredvalues(IFilter)
-    []
-
-    >>> directlyProvides(basenode['child_2'], IFilter)
-    >>> list(basenode.filtereditervalues(IFilter))
-    [<BaseNode object 'child_2' at ...>]
-
-    >>> basenode.filteredvalues(IFilter)
-    [<BaseNode object 'child_2' at ...>]
-
-    >>> noLongerProvides(basenode['child_2'], IFilter)
-    >>> list(basenode.filtereditervalues(IFilter))
-    []
-
-    >>> basenode.filteredvalues(IFilter)
-    []
-
-    >>> directlyProvides(orderednode['child_2'], IFilter)
-    >>> list(orderednode.filtereditervalues(IFilter))
-    [<OrderedNode object 'child_2' at ...>]
-
-    >>> orderednode.filteredvalues(IFilter)
-    [<OrderedNode object 'child_2' at ...>]
-
-    >>> noLongerProvides(orderednode['child_2'], IFilter)
-    >>> list(orderednode.filtereditervalues(IFilter))
-    []
-
-    >>> orderednode.filteredvalues(IFilter)
-    []
-
 
 as_attribute_access
 ~~~~~~~~~~~~~~~~~~~
