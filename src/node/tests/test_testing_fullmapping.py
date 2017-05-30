@@ -10,6 +10,7 @@ else:                                                        # pragma: no cover
 
 IS_PY2 = sys.version_info[0] < 3
 IS_PYPY = '__pypy__' in sys.builtin_module_names
+ITER_FUNC = 'iteritems' if IS_PY2 else 'items'
 
 
 ###############################################################################
@@ -895,97 +896,158 @@ class TestFullmapping(unittest.TestCase):
         fmtester.test___setitem__()
         fmtester.test___len__()
 
+    def test_update(self):
+        class TestMappingSetItem(TestMapping):
+            def __setitem__(self, key, value):
+                self.data[key] = value
+
+        class TestMappingGetItem(TestMappingSetItem):
+            def __getitem__(self, key):
+                return self.data[key]
+
+        class TestMappingGet(TestMappingGetItem):
+            def get(self, key, default=None):
+                return self.data.get(key, default)
+
+        class TestMappingIter(TestMappingGet):
+            def __iter__(self):
+                return self.data.__iter__()
+
+        class TestMappingKeys(TestMappingIter):
+            def keys(self):
+                return [k for k in self.data]
+
+        class TestMappingIterKeys(TestMappingKeys):
+            def iterkeys(self):
+                return self.data.__iter__()
+
+        class TestMappingValues(TestMappingIterKeys):
+            def values(self):
+                return self.data.values()
+
+        class TestMappingIterValues(TestMappingValues):
+            def itervalues(self):
+                return iter(self.data.values())
+
+        class TestMappingItems(TestMappingIterValues):
+            def items(self):
+                return self.data.items()
+
+        class TestMappingIterItems(TestMappingItems):
+            def iteritems(self):
+                return iter(self.data.items())
+
+        class TestMappingContains(TestMappingIterItems):
+            def __contains__(self, key):
+                return key in self.data
+
+        class TestMappingHasKey(TestMappingContains):
+            def has_key(self, key):
+                if IS_PY2:
+                    return self.data.has_key(key)
+                return key in self.data
+
+        class TestMappingLen(TestMappingHasKey):
+            def __len__(self):
+                return len(self.data)
+
+        fmtester = FullMappingTester(
+            TestMappingLen,
+            include_node_checks=False
+        )
+        err = self.except_error(AttributeError, fmtester.test_update)
+        self.assertEqual(
+            str(err),
+            '\'TestMappingLen\' object has no attribute \'update\''
+        )
+
+        class TestMappingUpdate(TestMappingLen):
+            def update(self, data=(), **kw):
+                pass
+
+        fmtester = FullMappingTester(TestMappingUpdate)
+        err = self.except_error(Exception, fmtester.test_update)
+        self.assertEqual(
+            str(err),
+            'KeyError, Expected ``baz`` and ``blub`` after update'
+        )
+
+        class TestMappingUpdate(TestMappingLen):
+            def update(self, data=(), **kw):
+                for key, value in data:
+                    self[key] = object()
+                for key, value in getattr(kw, ITER_FUNC)():
+                    self[key] = object()
+
+        fmtester = FullMappingTester(TestMappingUpdate)
+        err = self.except_error(Exception, fmtester.test_update)
+        self.assertEqual(
+            str(err),
+            'Object at ``baz`` not expected one after update'
+        )
+
+        class TestMappingUpdate(TestMappingLen):
+            def update(self, data=(), **kw):
+                for key, value in data:
+                    self[key] = value
+                for key, value in getattr(kw, ITER_FUNC)():
+                    self[key] = object()
+
+        fmtester = FullMappingTester(TestMappingUpdate)
+        err = self.except_error(Exception, fmtester.test_update)
+        self.assertEqual(
+            str(err),
+            'Object at ``blub`` not expected one after update'
+        )
+
+        class BrokenData(dict):
+            def __delitem__(self, key):
+                if key == 'blub':
+                    raise Exception(u"Broken implementation")
+
+        class TestMappingUpdate(TestMappingLen):
+            def __init__(self):
+                self.data = BrokenData()
+
+            def update(self, data=(), **kw):
+                for key, value in data:
+                    self[key] = value
+                for key, value in getattr(kw, ITER_FUNC)():
+                    self[key] = value
+
+        fmtester = FullMappingTester(TestMappingUpdate)
+        err = self.except_error(RuntimeError, fmtester.test_update)
+        self.assertEqual(
+            str(err),
+            'Cannot del test key.'
+        )
+
+        class TestMappingUpdate(TestMappingLen):
+            def update(self, data=(), data1=(), **kw):
+                for key, value in data:
+                    self[key] = value
+                for key, value in getattr(kw, ITER_FUNC)():
+                    self[key] = value
+
+        fmtester = FullMappingTester(TestMappingUpdate)
+        err = self.except_error(Exception, fmtester.test_update)
+        self.assertEqual(
+            str(err),
+            'Expected TypeError for update with more than one positional '
+            'argument.'
+        )
+
+        class TestMappingUpdate(TestMappingLen):
+            def update(self, data=(), **kw):
+                for key, value in data:
+                    self[key] = value
+                for key, value in getattr(kw, ITER_FUNC)():
+                    self[key] = value
+
+        fmtester = FullMappingTester(TestMappingUpdate)
+        fmtester.test_update()
+
 """
-
-update
-~~~~~~
-
-.. code-block:: pycon
-
-    >>> fmtester.test_update()
-    Traceback (most recent call last):
-      ...
-    AttributeError: 'TestMappingLen' object has no attribute 'update'
-
-    >>> class TestMappingUpdate(TestMappingLen):
-    ...     def update(self, data=(), **kw):
-    ...         pass
-
-    >>> fmtester = FullMappingTester(TestMappingUpdate)
-    >>> fmtester.test_update()
-    Traceback (most recent call last):
-      ...
-    Exception: KeyError, Expected ``baz`` and ``blub`` after update
-
-    >>> class TestMappingUpdate(TestMappingLen):
-    ...     def update(self, data=(), **kw):
-    ...         for key, value in data:
-    ...             self[key] = object()
-    ...         for key, value in kw.iteritems():
-    ...             self[key] = object()
-
-    >>> fmtester = FullMappingTester(TestMappingUpdate)
-    >>> fmtester.test_update()
-    Traceback (most recent call last):
-      ...
-    Exception: Object at ``baz`` not expected one after update
-
-    >>> class TestMappingUpdate(TestMappingLen):
-    ...     def update(self, data=(), **kw):
-    ...         for key, value in data:
-    ...             self[key] = value
-    ...         for key, value in kw.iteritems():
-    ...             self[key] = object()
-
-    >>> fmtester = FullMappingTester(TestMappingUpdate)
-    >>> fmtester.test_update()
-    Traceback (most recent call last):
-      ...
-    Exception: Object at ``blub`` not expected one after update
-
-    >>> class BrokenData(dict):
-    ...     def __delitem__(self, key):
-    ...         if key == 'blub':
-    ...             raise Exception(u"Broken implementation")
-
-    >>> class TestMappingUpdate(TestMappingLen):
-    ...     def __init__(self):
-    ...         self.data = BrokenData()
-    ...     def update(self, data=(), **kw):
-    ...         for key, value in data:
-    ...             self[key] = value
-    ...         for key, value in kw.iteritems():
-    ...             self[key] = value
-
-    >>> fmtester = FullMappingTester(TestMappingUpdate)
-    >>> fmtester.test_update()
-    Traceback (most recent call last):
-      ...
-    RuntimeError: Cannot del test key.
-
-    >>> class TestMappingUpdate(TestMappingLen):
-    ...     def update(self, data=(), data1=(), **kw):
-    ...         for key, value in data:
-    ...             self[key] = value
-    ...         for key, value in kw.iteritems():
-    ...             self[key] = value
-
-    >>> fmtester = FullMappingTester(TestMappingUpdate)
-    >>> fmtester.test_update()
-    Traceback (most recent call last):
-      ...
-    Exception: Expected TypeError for update with more than one positional argument.
-
-    >>> class TestMappingUpdate(TestMappingLen):
-    ...     def update(self, data=(), **kw):
-    ...         for key, value in data:
-    ...             self[key] = value
-    ...         for key, value in kw.iteritems():
-    ...             self[key] = value
-
-    >>> fmtester = FullMappingTester(TestMappingUpdate)
-    >>> fmtester.test_update()
-
 
 __delitem__
 ~~~~~~~~~~~
