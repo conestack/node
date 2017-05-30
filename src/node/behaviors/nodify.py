@@ -117,17 +117,22 @@ class Nodify(FullMapping):
         return str(class_) + ': ' + name[name.find(':') + 1:]
 
     @override
-    def printtree(self, indent=0):
-        print('{}{}'.format(indent * ' ', self.noderepr))
+    def treerepr(self, indent=0):
+        res = '{}{}\n'.format(indent * ' ', self.noderepr)
         for key, value in self.items():
             if INode.providedBy(value):
-                value.printtree(indent + 2)
+                res += value.treerepr(indent + 2)
             else:
-                print('{}{}: {}'.format(
+                res += '{}{}: {}\n'.format(
                     (indent + 2) * ' ',
                     key,
                     repr(value)
-                ))
+                )
+        return res
+
+    @override
+    def printtree(self):
+        print(self.treerepr())
 
     @default
     def __nonzero__(self):
