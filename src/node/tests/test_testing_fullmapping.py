@@ -188,17 +188,14 @@ class TestFullmapping(unittest.TestCase):
         except exc as e:
             return e
         else:
-            raise Exception(
-                'Expected \'{}\' when calling \'{}\''.format(exc, func)
-            )
+            msg = 'Expected \'{}\' when calling \'{}\''.format(exc, func)
+            raise Exception(msg)
 
     def test___setitem__(self):
         fmtester = FullMappingTester(MockMapping)
         err = self.except_error(TypeError, fmtester.test___setitem__)
-        self.assertEqual(
-            str(err),
-            '\'MockMapping\' object does not support item assignment'
-        )
+        exp = '\'MockMapping\' object does not support item assignment'
+        self.assertEqual(str(err), exp)
 
         class FailingMockMappingSetItem(MockMapping):
             def __setitem__(self, key, value):
@@ -206,30 +203,26 @@ class TestFullmapping(unittest.TestCase):
 
         fmtester = FullMappingTester(FailingMockMappingSetItem)
         err = self.except_error(TypeError, fmtester.test___setitem__)
-        self.assertEqual(
-            str(err),
-            '__init__() got an unexpected keyword argument \'name\''
-        )
+        exp = '__init__() got an unexpected keyword argument \'name\''
+        self.assertEqual(str(err), exp)
 
         fmtester = FullMappingTester(MockNodeSetItem)
         fmtester.test___setitem__()
 
     def test___getitem__(self):
         fmtester = FullMappingTester(MockMapping)
-        expected = '\'MockMapping\' object has no attribute \'__getitem__\'' \
+        err = self.except_error(TypeError, fmtester.test___getitem__)
+        exp = '\'MockMapping\' object has no attribute \'__getitem__\'' \
             if (IS_PY2 and not IS_PYPY) else \
             '\'MockMapping\' object is not subscriptable'
-        err = self.except_error(TypeError, fmtester.test___getitem__)
-        self.assertEqual(str(err), expected)
+        self.assertEqual(str(err), exp)
 
         fmtester = FullMappingTester(MockMappingGetItem)
         fmtester.context['foo'] = MockMappingGetItem()
         fmtester.context['bar'] = MockMappingGetItem()
         err = self.except_error(AttributeError, fmtester.test___getitem__)
-        self.assertEqual(
-            str(err),
-            '\'MockMappingGetItem\' object has no attribute \'__name__\''
-        )
+        exp = '\'MockMappingGetItem\' object has no attribute \'__name__\''
+        self.assertEqual(str(err), exp)
 
         class FailingMockNodeSetItem(MockNode, MockMappingSetItem):
             pass
@@ -241,10 +234,7 @@ class TestFullmapping(unittest.TestCase):
         fmtester = FullMappingTester(FailingMockNodeGetItem)
         fmtester.test___setitem__()
         err = self.except_error(Exception, fmtester.test___getitem__)
-        self.assertEqual(
-            str(err),
-            'Child ``bar`` has wrong ``__name__``'
-        )
+        self.assertEqual(str(err), 'Child ``bar`` has wrong ``__name__``')
 
         fmtester = FullMappingTester(MockNodeGetItem)
         fmtester.test___setitem__()
@@ -253,54 +243,36 @@ class TestFullmapping(unittest.TestCase):
     def test_get(self):
         fmtester = FullMappingTester(MockNodeGetItem)
         err = self.except_error(AttributeError, fmtester.test_get)
-        self.assertEqual(
-            str(err),
-            '\'MockNodeGetItem\' object has no attribute \'get\''
-        )
+        exp = '\'MockNodeGetItem\' object has no attribute \'get\''
+        self.assertEqual(str(err), exp)
 
         class FailingMockMappingGet(MockMappingGetItem):
             def get(self, key, default=None):
                 return object()
 
-        fmtester = FullMappingTester(
-            FailingMockMappingGet,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(FailingMockMappingGet, node_checks=False)
         fmtester.test___setitem__()
         err = self.except_error(Exception, fmtester.test_get)
-        self.assertTrue(
-            str(err).startswith('Expected default, got <object object at')
-        )
+        exp = 'Expected default, got <object object at'
+        self.assertTrue(str(err).startswith(exp))
 
         class FailingMockMappingGet2(MockMappingGetItem):
             def get(self, key, default=None):
                 return default
 
-        fmtester = FullMappingTester(
-            FailingMockMappingGet2,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(FailingMockMappingGet2, node_checks=False)
         fmtester.test___setitem__()
         err = self.except_error(Exception, fmtester.test_get)
-        self.assertEqual(
-            str(err),
-            'Expected value, got default'
-        )
+        self.assertEqual(str(err), 'Expected value, got default')
 
-        fmtester = FullMappingTester(
-            MockMappingGet,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(MockMappingGet, node_checks=False)
         fmtester.test___setitem__()
         fmtester.test_get()
 
     def test___iter__(self):
         fmtester = FullMappingTester(MockMapping)
         err = self.except_error(TypeError, fmtester.test___iter__)
-        self.assertEqual(
-            str(err),
-            '\'MockMapping\' object is not iterable'
-        )
+        self.assertEqual(str(err), '\'MockMapping\' object is not iterable')
 
         class FailingMockMappingIter(MockMappingGet):
             def __iter__(self):
@@ -308,10 +280,7 @@ class TestFullmapping(unittest.TestCase):
 
         fmtester = FullMappingTester(FailingMockMappingIter)
         err = self.except_error(Exception, fmtester.test___iter__)
-        self.assertEqual(
-            str(err),
-            'Expected 2-length result. Got ``0``'
-        )
+        self.assertEqual(str(err), 'Expected 2-length result. Got ``0``')
 
         class FailingMockMappingIter2(MockMappingGet):
             def __iter__(self):
@@ -319,74 +288,42 @@ class TestFullmapping(unittest.TestCase):
 
         fmtester = FullMappingTester(FailingMockMappingIter2)
         err = self.except_error(Exception, fmtester.test___iter__)
-        self.assertEqual(
-            str(err),
-            'Expected ``[\'a\', \'b\']`` as keys. Got ``[\'foo\', \'bar\']``'
-        )
+        exp = 'Expected ``[\'a\', \'b\']`` as keys. Got ``[\'foo\', \'bar\']``'
+        self.assertEqual(str(err), exp)
 
-        fmtester = FullMappingTester(
-            MockMappingIter,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(MockMappingIter, node_checks=False)
         fmtester.test___setitem__()
         fmtester.test___iter__()
 
     def test_keys(self):
-        fmtester = FullMappingTester(
-            MockMappingIter,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(MockMappingIter, node_checks=False)
         err = self.except_error(AttributeError, fmtester.test_keys)
-        self.assertEqual(
-            str(err),
-            '\'MockMappingIter\' object has no attribute \'keys\''
-        )
+        exp = '\'MockMappingIter\' object has no attribute \'keys\''
+        self.assertEqual(str(err), exp)
 
-        fmtester = FullMappingTester(
-            MockMappingKeys,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(MockMappingKeys, node_checks=False)
         fmtester.test___setitem__()
         fmtester.test_keys()
 
     def test_iterkeys(self):
-        fmtester = FullMappingTester(
-            MockMappingKeys,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(MockMappingKeys, node_checks=False)
         err = self.except_error(AttributeError, fmtester.test_iterkeys)
-        self.assertEqual(
-            str(err),
-            '\'MockMappingKeys\' object has no attribute \'iterkeys\''
-        )
+        exp = '\'MockMappingKeys\' object has no attribute \'iterkeys\''
+        self.assertEqual(str(err), exp)
 
-        fmtester = FullMappingTester(
-            MockMappingIterKeys,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(MockMappingIterKeys, node_checks=False)
         fmtester.test___setitem__()
         fmtester.test_iterkeys()
 
     def test_values(self):
-        fmtester = FullMappingTester(
-            MockMappingIterKeys,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(MockMappingIterKeys, node_checks=False)
         err = self.except_error(AttributeError, fmtester.test_values)
-        self.assertEqual(
-            str(err),
-            '\'MockMappingIterKeys\' object has no attribute \'values\''
-        )
+        exp = '\'MockMappingIterKeys\' object has no attribute \'values\''
+        self.assertEqual(str(err), exp)
 
-        fmtester = FullMappingTester(
-            MockMappingValues,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(MockMappingValues, node_checks=False)
         err = self.except_error(Exception, fmtester.test_values)
-        self.assertEqual(
-            str(err),
-            'Expected 2-length result. Got ``0``'
-        )
+        self.assertEqual(str(err), 'Expected 2-length result. Got ``0``')
 
         fmtester.test___setitem__()
         fmtester.test_values()
@@ -396,10 +333,8 @@ class TestFullmapping(unittest.TestCase):
         fmtester.context['bar'] = MockMappingValues()
 
         err = self.except_error(AttributeError, fmtester.test_values)
-        self.assertEqual(
-            str(err),
-            '\'MockMappingValues\' object has no attribute \'__name__\''
-        )
+        exp = '\'MockMappingValues\' object has no attribute \'__name__\''
+        self.assertEqual(str(err), exp)
 
         class FailingMockNodeValues(MockNode, MockMappingValues):
             pass
@@ -407,10 +342,8 @@ class TestFullmapping(unittest.TestCase):
         fmtester = FullMappingTester(FailingMockNodeValues)
         fmtester.test___setitem__()
         err = self.except_error(Exception, fmtester.test_values)
-        self.assertEqual(
-            str(err),
-            'Expected __name__ of value invalid. Got ``None``'
-        )
+        exp = 'Expected __name__ of value invalid. Got ``None``'
+        self.assertEqual(str(err), exp)
 
         fmtester = FullMappingTester(MockNodeValues)
         fmtester.test___setitem__()
@@ -419,76 +352,52 @@ class TestFullmapping(unittest.TestCase):
     def test_itervalues(self):
         fmtester = FullMappingTester(MockNodeValues)
         err = self.except_error(AttributeError, fmtester.test_itervalues)
-        self.assertEqual(
-            str(err),
-            '\'MockNodeValues\' object has no attribute \'itervalues\''
-        )
+        exp = '\'MockNodeValues\' object has no attribute \'itervalues\''
+        self.assertEqual(str(err), exp)
 
-        fmtester = FullMappingTester(
-            MockMappingIterValues,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(MockMappingIterValues, node_checks=False)
         fmtester.test___setitem__()
         fmtester.test_itervalues()
 
     def test_items(self):
-        fmtester = FullMappingTester(
-            MockMappingIterValues,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(MockMappingIterValues, node_checks=False)
         err = self.except_error(AttributeError, fmtester.test_items)
-        self.assertEqual(
-            str(err),
-            '\'MockMappingIterValues\' object has no attribute \'items\''
-        )
+        exp = '\'MockMappingIterValues\' object has no attribute \'items\''
+        self.assertEqual(str(err), exp)
 
         class FailingMockMappingItems(MockMappingIterValues):
             def items(self):
                 return list()
 
-        fmtester = FullMappingTester(
-            FailingMockMappingItems,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(FailingMockMappingItems,
+                                     node_checks=False)
         err = self.except_error(Exception, fmtester.test_items)
-        self.assertEqual(
-            str(err),
-            'Expected 2-length result. Got ``0``'
-        )
+        self.assertEqual(str(err), 'Expected 2-length result. Got ``0``')
 
         class FailingMockMappingItems2(MockMappingIterValues):
             def items(self):
                 return [('foo', object()), ('b', object())]
 
-        fmtester = FullMappingTester(
-            FailingMockMappingItems2,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(FailingMockMappingItems2,
+                                     node_checks=False)
         fmtester.test___setitem__()
         err = self.except_error(Exception, fmtester.test_items)
-        self.assertEqual(
-            str(err),
-            'Expected keys ``[\'foo\', \'bar\']``. Got ``b``'
-        )
+        exp = 'Expected keys ``[\'foo\', \'bar\']``. Got ``b``'
+        self.assertEqual(str(err), exp)
 
         class FailingMockMappingItems3(MockMappingIterValues):
             def items(self):
                 return [('foo', object()), ('bar', object())]
 
-        fmtester = FullMappingTester(
-            FailingMockMappingItems3,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(FailingMockMappingItems3,
+                                     node_checks=False)
         fmtester.test___setitem__()
         err = self.except_error(Exception, fmtester.test_items)
         self.assertTrue(str(err).find('Expected <object object at') > -1)
         self.assertTrue(str(err).find('got <node.', 26) > -1)
         self.assertTrue(str(err).find('FailingMockMappingItems3', 38) > -1)
 
-        fmtester = FullMappingTester(
-            MockMappingItems,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(MockMappingItems, node_checks=False)
         fmtester.test___setitem__()
         fmtester.test_items()
 
@@ -498,10 +407,8 @@ class TestFullmapping(unittest.TestCase):
         fmtester = FullMappingTester(FailingMockNodeItems)
         fmtester.test___setitem__()
         err = self.except_error(Exception, fmtester.test_items)
-        self.assertEqual(
-            str(err),
-            'Expected same value for ``key`` "foo" and ``__name__`` "None"'
-        )
+        exp = 'Expected same value for ``key`` "foo" and ``__name__`` "None"'
+        self.assertEqual(str(err), exp)
 
         fmtester = FullMappingTester(MockNodeItems)
         fmtester.test___setitem__()
@@ -510,15 +417,10 @@ class TestFullmapping(unittest.TestCase):
     def test_iteritems(self):
         fmtester = FullMappingTester(MockMappingItems)
         err = self.except_error(AttributeError, fmtester.test_iteritems)
-        self.assertEqual(
-            str(err),
-            '\'MockMappingItems\' object has no attribute \'iteritems\''
-        )
+        exp = '\'MockMappingItems\' object has no attribute \'iteritems\''
+        self.assertEqual(str(err), exp)
 
-        fmtester = FullMappingTester(
-            MockMappingIterItems,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(MockMappingIterItems, node_checks=False)
         fmtester.test___setitem__()
         fmtester.test_iteritems()
 
@@ -527,114 +429,74 @@ class TestFullmapping(unittest.TestCase):
             def __contains__(self, key):
                 return False
 
-        fmtester = FullMappingTester(
-            FailingMockMappingContains,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(FailingMockMappingContains,
+                                     node_checks=False)
         fmtester.test___setitem__()
         err = self.except_error(Exception, fmtester.test___contains__)
-        self.assertEqual(
-            str(err),
-            'Expected ``foo`` and ``bar`` return ``True`` by ``__contains__``'
-        )
+        exp = 'Expected ``foo`` and ``bar`` return ``True`` by ``__contains__``'
+        self.assertEqual(str(err), exp)
 
         class FailingMockMappingContains2(MockMappingIterItems):
             def __contains__(self, key):
                 return True
 
-        fmtester = FullMappingTester(
-            FailingMockMappingContains2,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(FailingMockMappingContains2,
+                                     node_checks=False)
         fmtester.test___setitem__()
         err = self.except_error(Exception, fmtester.test___contains__)
-        self.assertEqual(
-            str(err),
-            'Expected __contains__ to return False for non-existent key'
-        )
+        exp = 'Expected __contains__ to return False for non-existent key'
+        self.assertEqual(str(err), exp)
 
-        fmtester = FullMappingTester(
-            MockMappingContains,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(MockMappingContains, node_checks=False)
         fmtester.test___setitem__()
         fmtester.test___contains__()
 
     def test_has_key(self):
-        fmtester = FullMappingTester(
-            MockMappingContains,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(MockMappingContains, node_checks=False)
         err = self.except_error(AttributeError, fmtester.test_has_key)
-        self.assertEqual(
-            str(err),
-            '\'MockMappingContains\' object has no attribute \'has_key\''
-        )
+        exp = '\'MockMappingContains\' object has no attribute \'has_key\''
+        self.assertEqual(str(err), exp)
 
         class FailingMockMappingHasKey(MockMappingContains):
             def has_key(self, key):
                 return False
 
-        fmtester = FullMappingTester(
-            FailingMockMappingHasKey,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(FailingMockMappingHasKey,
+                                     node_checks=False)
         fmtester.test___setitem__()
         err = self.except_error(Exception, fmtester.test_has_key)
-        self.assertEqual(
-            str(err),
-            'Expected ``foo`` and ``bar`` return ``True`` by ``has_key``'
-        )
+        exp = 'Expected ``foo`` and ``bar`` return ``True`` by ``has_key``'
+        self.assertEqual(str(err), exp)
 
-        fmtester = FullMappingTester(
-            MockMappingHasKey,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(MockMappingHasKey, node_checks=False)
         fmtester.test___setitem__()
         fmtester.test_has_key()
 
     def test___len__(self):
-        fmtester = FullMappingTester(
-            MockMappingHasKey,
-            include_node_checks=False
-        )
-        expected = '\'MockMappingHasKey\' has no length' if IS_PYPY else \
-            'object of type \'MockMappingHasKey\' has no len()'
+        fmtester = FullMappingTester(MockMappingHasKey, node_checks=False)
         err = self.except_error(TypeError, fmtester.test___len__)
-        self.assertEqual(str(err), expected)
+        exp = '\'MockMappingHasKey\' has no length' if IS_PYPY else \
+            'object of type \'MockMappingHasKey\' has no len()'
+        self.assertEqual(str(err), exp)
 
         class FailingMockMappingLen(MockMappingHasKey):
             def __len__(self):
                 return 0
 
-        fmtester = FullMappingTester(
-            FailingMockMappingLen,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(FailingMockMappingLen, node_checks=False)
         fmtester.test___setitem__()
         err = self.except_error(Exception, fmtester.test___len__)
-        self.assertEqual(
-            str(err),
-            'Expected 2-length result. Got ``0``'
-        )
+        self.assertEqual(str(err), 'Expected 2-length result. Got ``0``')
 
-        fmtester = FullMappingTester(
-            MockMappingLen,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(MockMappingLen, node_checks=False)
         fmtester.test___setitem__()
         fmtester.test___len__()
 
     def test_update(self):
-        fmtester = FullMappingTester(
-            MockMappingLen,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(MockMappingLen, node_checks=False)
         err = self.except_error(AttributeError, fmtester.test_update)
-        self.assertEqual(
-            str(err),
-            '\'MockMappingLen\' object has no attribute \'update\''
-        )
+        exp = '\'MockMappingLen\' object has no attribute \'update\''
+        self.assertEqual(str(err), exp)
 
         class FailingMockMappingUpdate(MockMappingLen):
             def update(self, data=(), **kw):
@@ -642,10 +504,8 @@ class TestFullmapping(unittest.TestCase):
 
         fmtester = FullMappingTester(FailingMockMappingUpdate)
         err = self.except_error(Exception, fmtester.test_update)
-        self.assertEqual(
-            str(err),
-            'KeyError, Expected ``baz`` and ``blub`` after update'
-        )
+        exp = 'KeyError, Expected ``baz`` and ``blub`` after update'
+        self.assertEqual(str(err), exp)
 
         class FailingMockMappingUpdate2(MockMappingLen):
             def update(self, data=(), **kw):
@@ -656,10 +516,8 @@ class TestFullmapping(unittest.TestCase):
 
         fmtester = FullMappingTester(FailingMockMappingUpdate2)
         err = self.except_error(Exception, fmtester.test_update)
-        self.assertEqual(
-            str(err),
-            'Object at ``baz`` not expected one after update'
-        )
+        exp = 'Object at ``baz`` not expected one after update'
+        self.assertEqual(str(err), exp)
 
         class FailingMockMappingUpdate3(MockMappingLen):
             def update(self, data=(), **kw):
@@ -670,10 +528,8 @@ class TestFullmapping(unittest.TestCase):
 
         fmtester = FullMappingTester(FailingMockMappingUpdate3)
         err = self.except_error(Exception, fmtester.test_update)
-        self.assertEqual(
-            str(err),
-            'Object at ``blub`` not expected one after update'
-        )
+        exp = 'Object at ``blub`` not expected one after update'
+        self.assertEqual(str(err), exp)
 
         class BrokenData(dict):
             def __delitem__(self, key):
@@ -692,10 +548,7 @@ class TestFullmapping(unittest.TestCase):
 
         fmtester = FullMappingTester(FailingMockMappingUpdate4)
         err = self.except_error(RuntimeError, fmtester.test_update)
-        self.assertEqual(
-            str(err),
-            'Cannot del test key.'
-        )
+        self.assertEqual(str(err), 'Cannot del test key.')
 
         class FailingMockMappingUpdate5(MockMappingLen):
             def update(self, data=(), data1=(), **kw):
@@ -706,83 +559,56 @@ class TestFullmapping(unittest.TestCase):
 
         fmtester = FullMappingTester(FailingMockMappingUpdate5)
         err = self.except_error(Exception, fmtester.test_update)
-        self.assertEqual(
-            str(err),
-            'Expected TypeError for update with more than one positional '
-            'argument.'
-        )
+        exp = 'Expected TypeError for update with more than one positional ' \
+              'argument.'
+        self.assertEqual(str(err), exp)
 
         fmtester = FullMappingTester(MockMappingUpdate)
         fmtester.test_update()
 
     def test___delitem__(self):
         fmtester = FullMappingTester(MockMappingUpdate)
-        expected = '__delitem__' if not IS_PYPY else \
+        exp = '__delitem__' if not IS_PYPY else \
             '\'MockMappingUpdate\' object does not support item deletion'
         exc = TypeError if IS_PYPY else AttributeError
         err = self.except_error(exc, fmtester.test___delitem__)
-        self.assertEqual(str(err), expected)
+        self.assertEqual(str(err), exp)
 
-        fmtester = FullMappingTester(
-            MockMappingDelItem,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(MockMappingDelItem, node_checks=False)
         err = self.except_error(Exception, fmtester.test___delitem__)
-        self.assertEqual(
-            str(err),
-            'KeyError, expected ``bar``'
-        )
+        self.assertEqual(str(err), 'KeyError, expected ``bar``')
 
         fmtester.test___setitem__()
         err = self.except_error(Exception, fmtester.test___delitem__)
-        self.assertEqual(
-            str(err),
-            'Expected 2-length result. Got ``1``'
-        )
+        self.assertEqual(str(err), 'Expected 2-length result. Got ``1``')
 
         fmtester.test___setitem__()
         fmtester.test_update()
         fmtester.test___delitem__()
 
     def test_copy(self):
-        fmtester = FullMappingTester(
-            MockMappingDelItem,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(MockMappingDelItem, node_checks=False)
         err = self.except_error(AttributeError, fmtester.test_copy)
-        self.assertEqual(
-            str(err),
-            '\'MockMappingDelItem\' object has no attribute \'copy\''
-        )
+        exp = '\'MockMappingDelItem\' object has no attribute \'copy\''
+        self.assertEqual(str(err), exp)
 
         class FailingMockMappingCopy(MockMappingDelItem):
             def copy(self):
                 return self
 
-        fmtester = FullMappingTester(
-            FailingMockMappingCopy,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(FailingMockMappingCopy, node_checks=False)
         err = self.except_error(Exception, fmtester.test_copy)
-        self.assertEqual(
-            str(err),
-            '``copied`` is ``context``'
-        )
+        self.assertEqual(str(err), '``copied`` is ``context``')
 
         class FailingMockMappingCopy2(MockMappingDelItem):
             def copy(self):
                 return self.__class__()
 
-        fmtester = FullMappingTester(
-            FailingMockMappingCopy2,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(FailingMockMappingCopy2,
+                                     node_checks=False)
         fmtester.test___setitem__()
         err = self.except_error(KeyError, fmtester.test_copy)
-        self.assertEqual(
-            str(err),
-            '\'foo\''
-        )
+        self.assertEqual(str(err), '\'foo\'')
 
         class FailingMockMappingCopy3(MockMappingDelItem):
             def copy(self):
@@ -790,21 +616,14 @@ class TestFullmapping(unittest.TestCase):
                 new.update([('foo', object())])
                 return new
 
-        fmtester = FullMappingTester(
-            FailingMockMappingCopy3,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(FailingMockMappingCopy3,
+                                     node_checks=False)
         fmtester.test___setitem__()
         err = self.except_error(Exception, fmtester.test_copy)
-        self.assertEqual(
-            str(err),
-            '``copied[\'foo\']`` is not ``context[\'foo\']``'
-        )
+        exp = '``copied[\'foo\']`` is not ``context[\'foo\']``'
+        self.assertEqual(str(err), exp)
 
-        fmtester = FullMappingTester(
-            MockMappingCopy,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(MockMappingCopy, node_checks=False)
         fmtester.test___setitem__()
         fmtester.test_copy()
 
@@ -814,10 +633,7 @@ class TestFullmapping(unittest.TestCase):
         fmtester = FullMappingTester(FailingMockNodeCopy)
         fmtester.test___setitem__()
         err = self.except_error(Exception, fmtester.test_copy)
-        self.assertEqual(
-            str(err),
-            '__name__ of copied does not match'
-        )
+        self.assertEqual(str(err), '__name__ of copied does not match')
 
         class FailingMockNodeCopy2(MockNodeSetItem, MockMappingCopy):
             def copy(self):
@@ -829,10 +645,7 @@ class TestFullmapping(unittest.TestCase):
         fmtester = FullMappingTester(FailingMockNodeCopy2)
         fmtester.test___setitem__()
         err = self.except_error(Exception, fmtester.test_copy)
-        self.assertEqual(
-            str(err),
-            '__parent__ of copied does not match'
-        )
+        self.assertEqual(str(err), '__parent__ of copied does not match')
 
         fmtester = FullMappingTester(MockNodeCopy)
         fmtester.test___setitem__()
@@ -841,74 +654,49 @@ class TestFullmapping(unittest.TestCase):
     def test_setdefault(self):
         fmtester = FullMappingTester(MockNodeCopy)
         err = self.except_error(AttributeError, fmtester.test_setdefault)
-        self.assertEqual(
-            str(err),
-            '\'MockNodeCopy\' object has no attribute \'setdefault\''
-        )
+        exp = '\'MockNodeCopy\' object has no attribute \'setdefault\''
+        self.assertEqual(str(err), exp)
 
         class FailingMockMappingSetDefault(MockMappingCopy):
             def setdefault(self, key, value=None):
                 return value
 
-        fmtester = FullMappingTester(
-            FailingMockMappingSetDefault,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(FailingMockMappingSetDefault,
+                                     node_checks=False)
         fmtester.test___setitem__()
         err = self.except_error(Exception, fmtester.test_setdefault)
-        self.assertEqual(
-            str(err),
-            'Replaced already existing item.'
-        )
+        self.assertEqual(str(err), 'Replaced already existing item.')
 
         class FailingMockMappingSetDefault2(MockMappingCopy):
             def setdefault(self, key, value=None):
                 self[key] = object()
                 return self[key]
 
-        fmtester = FullMappingTester(
-            FailingMockMappingSetDefault2,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(FailingMockMappingSetDefault2,
+                                     node_checks=False)
         fmtester.test___setitem__()
         err = self.except_error(Exception, fmtester.test_setdefault)
-        self.assertEqual(
-            str(err),
-            'Inserted item not same instance.'
-        )
+        self.assertEqual(str(err), 'Inserted item not same instance.')
 
-        fmtester = FullMappingTester(
-            MockMappingSetDefault,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(MockMappingSetDefault, node_checks=False)
         fmtester.context['foo'] = MockMappingSetDefault()
         fmtester.context['baz'] = MockMappingSetDefault()
         fmtester.test_setdefault()
 
     def test_pop(self):
-        fmtester = FullMappingTester(
-            MockMappingSetDefault,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(MockMappingSetDefault, node_checks=False)
         err = self.except_error(AttributeError, fmtester.test_pop)
-        self.assertEqual(
-            str(err),
-            '\'MockMappingSetDefault\' object has no attribute \'pop\''
-        )
+        exp = '\'MockMappingSetDefault\' object has no attribute \'pop\''
+        self.assertEqual(str(err), exp)
 
         class FailingMockMappingPop(MockMappingSetDefault):
             def pop(self, key, default=None):
                 return object()
 
-        fmtester = FullMappingTester(
-            FailingMockMappingPop,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(FailingMockMappingPop, node_checks=False)
         err = self.except_error(Exception, fmtester.test_pop)
-        self.assertEqual(
-            str(err),
-            'Expected ``KeyError`` for inexistent item.'
-        )
+        exp = 'Expected ``KeyError`` for inexistent item.'
+        self.assertEqual(str(err), exp)
 
         class FailingMockMappingPop2(MockMappingSetDefault):
             def pop(self, key, default=None):
@@ -916,15 +704,9 @@ class TestFullmapping(unittest.TestCase):
                     return object()
                 raise KeyError
 
-        fmtester = FullMappingTester(
-            FailingMockMappingPop2,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(FailingMockMappingPop2, node_checks=False)
         err = self.except_error(Exception, fmtester.test_pop)
-        self.assertEqual(
-            str(err),
-            'Returned default is not same instance'
-        )
+        self.assertEqual(str(err), 'Returned default is not same instance')
 
         class FailingMockMappingPop3(MockMappingSetDefault):
             def pop(self, key, default=None):
@@ -934,16 +716,10 @@ class TestFullmapping(unittest.TestCase):
                     return default
                 raise KeyError
 
-        fmtester = FullMappingTester(
-            FailingMockMappingPop3,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(FailingMockMappingPop3, node_checks=False)
         fmtester.test___setitem__()
         err = self.except_error(Exception, fmtester.test_pop)
-        self.assertEqual(
-            str(err),
-            'Popped item not same instance'
-        )
+        self.assertEqual(str(err), 'Popped item not same instance')
 
         class FailingMockMappingPop4(MockMappingSetDefault):
             def pop(self, key, default=None):
@@ -953,50 +729,31 @@ class TestFullmapping(unittest.TestCase):
                     return default
                 raise KeyError
 
-        fmtester = FullMappingTester(
-            FailingMockMappingPop4,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(FailingMockMappingPop4, node_checks=False)
         fmtester.test___setitem__()
         err = self.except_error(Exception, fmtester.test_pop)
-        self.assertEqual(
-            str(err),
-            'Invalid mapping length after ``pop``'
-        )
+        self.assertEqual(str(err), 'Invalid mapping length after ``pop``')
 
-        fmtester = FullMappingTester(
-            MockMappingPop,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(MockMappingPop, node_checks=False)
         fmtester.test___setitem__()
         fmtester.context['baz'] = MockMappingSetDefault()
         fmtester.test_pop()
 
     def test_popitem(self):
-        fmtester = FullMappingTester(
-            MockMappingPop,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(MockMappingPop, node_checks=False)
         err = self.except_error(AttributeError, fmtester.test_popitem)
-        self.assertEqual(
-            str(err),
-            '\'MockMappingPop\' object has no attribute \'popitem\''
-        )
+        exp = '\'MockMappingPop\' object has no attribute \'popitem\''
+        self.assertEqual(str(err), exp)
 
         class FailingMockMappingPopItem(MockMappingPop):
             def popitem(self):
                 return
 
-        fmtester = FullMappingTester(
-            FailingMockMappingPopItem,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(FailingMockMappingPopItem,
+                                     node_checks=False)
         fmtester.test___setitem__()
         err = self.except_error(Exception, fmtester.test_popitem)
-        self.assertEqual(
-            str(err),
-            'Expected 1-length result. Got ``2``'
-        )
+        self.assertEqual(str(err), 'Expected 1-length result. Got ``2``')
 
         class FailingMockMappingPopItem2(MockMappingPop):
             def popitem(self):
@@ -1005,60 +762,37 @@ class TestFullmapping(unittest.TestCase):
                 except Exception:
                     pass
 
-        fmtester = FullMappingTester(
-            FailingMockMappingPopItem2,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(FailingMockMappingPopItem2,
+                                     node_checks=False)
         fmtester.test___setitem__()
         err = self.except_error(Exception, fmtester.test_popitem)
-        self.assertEqual(
-            str(err),
-            'Expected ``KeyError`` when called on empty mapping'
-        )
+        exp = 'Expected ``KeyError`` when called on empty mapping'
+        self.assertEqual(str(err), exp)
 
-        fmtester = FullMappingTester(
-            MockMappingPopItem,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(MockMappingPopItem, node_checks=False)
         fmtester.test___setitem__()
         fmtester.test_popitem()
 
     def test_clear(self):
-        fmtester = FullMappingTester(
-            MockMappingPopItem,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(MockMappingPopItem, node_checks=False)
         err = self.except_error(AttributeError, fmtester.test_clear)
-        self.assertEqual(
-            str(err),
-            '\'MockMappingPopItem\' object has no attribute \'clear\''
-        )
+        exp = '\'MockMappingPopItem\' object has no attribute \'clear\''
+        self.assertEqual(str(err), exp)
 
         class FailingMockMappingClear(MockMappingClear):
             def clear(self):
                 pass
 
-        fmtester = FullMappingTester(
-            FailingMockMappingClear,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(FailingMockMappingClear,
+                                     node_checks=False)
         err = self.except_error(Exception, fmtester.test_clear)
-        self.assertEqual(
-            str(err),
-            'Expected 0-length result. Got ``2``'
-        )
+        self.assertEqual(str(err), 'Expected 0-length result. Got ``2``')
 
-        fmtester = FullMappingTester(
-            MockMappingClear,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(MockMappingClear, node_checks=False)
         fmtester.test_clear()
 
     def test_mapping(self):
-        fmtester = FullMappingTester(
-            MockMappingAll,
-            include_node_checks=False
-        )
+        fmtester = FullMappingTester(MockMappingAll, node_checks=False)
         fmtester.run()
         self.assertEqual(fmtester.combined.split('\n'), [
             '``__contains__``: OK',

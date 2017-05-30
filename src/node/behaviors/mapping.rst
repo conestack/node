@@ -19,7 +19,7 @@ A full mapping that is going to fail, because nobody takes care of
     ... class MyFullMapping(object):
     ...     pass
 
-    >>> tester = FullMappingTester(MyFullMapping, include_node_checks=False)
+    >>> tester = FullMappingTester(MyFullMapping, node_checks=False)
     >>> tester.run()
     >>> tester.combined
     ``__contains__``: failed: NotImplementedError()
@@ -82,7 +82,7 @@ Use a storage:
     ... class MyFullMapping(object):
     ...     pass
 
-    >>> tester = FullMappingTester(MyFullMapping, include_node_checks=False)
+    >>> tester = FullMappingTester(MyFullMapping, node_checks=False)
     >>> tester.run()
     >>> tester.combined
     ``__contains__``: OK
