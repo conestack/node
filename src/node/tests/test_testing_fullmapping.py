@@ -79,10 +79,7 @@ class TestMappingContains(TestMappingIterItems):
 
 class TestMappingHasKey(TestMappingContains):
     def has_key(self, key):
-        # XXX: return self.data.has_key(key) if IS_PY2 else key in self.data
-        if IS_PY2:
-            return self.data.has_key(key)
-        return key in self.data
+        return self.data.has_key(key) if IS_PY2 else key in self.data
 
 
 class TestMappingLen(TestMappingHasKey):
@@ -203,19 +200,16 @@ class TestFullmapping(unittest.TestCase):
             '\'TestMapping\' object does not support item assignment'
         )
 
-        class TestMappingSetItem(TestMapping):
+        class FailingTestMappingSetItem(TestMapping):
             def __setitem__(self, key, value):
                 self.data[key] = value
 
-        fmtester = FullMappingTester(TestMappingSetItem)
+        fmtester = FullMappingTester(FailingTestMappingSetItem)
         err = self.except_error(TypeError, fmtester.test___setitem__)
         self.assertEqual(
             str(err),
             '__init__() got an unexpected keyword argument \'name\''
         )
-
-        class TestNodeSetItem(TestNode, TestMappingSetItem):
-            pass
 
         fmtester = FullMappingTester(TestNodeSetItem)
         fmtester.test___setitem__()
