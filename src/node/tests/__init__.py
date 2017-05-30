@@ -1,3 +1,4 @@
+import doctest
 import sys
 
 
@@ -12,7 +13,26 @@ IS_PYPY = '__pypy__' in sys.builtin_module_names
 ITER_FUNC = 'iteritems' if IS_PY2 else 'items'
 
 
+class Example(object):
+
+    def __init__(self, want):
+        self.want = want + '\n'
+
+
+class Failure(Exception):
+    pass
+
+
 class NodeTestCase(unittest.TestCase):
+
+    def __init__(self, *args, **kw):
+        unittest.TestCase.__init__(self, *args, **kw)
+        self._checker = doctest.OutputChecker()
+        self._optionflags = (
+            doctest.NORMALIZE_WHITESPACE |
+            doctest.ELLIPSIS |
+            doctest.REPORT_ONLY_FIRST_FAILURE
+        )
 
     def except_error(self, exc, func, *args, **kw):
         try:
@@ -22,6 +42,19 @@ class NodeTestCase(unittest.TestCase):
         else:
             msg = 'Expected \'{}\' when calling \'{}\''.format(exc, func)
             raise Exception(msg)
+
+    def check_output(self, want, got, optionflags=None):
+        if optionflags is None:
+            optionflags = self._optionflags
+        success = self._checker.check_output(want, got, optionflags)
+        if not success:
+            raise Failure(self._checker.output_difference(
+                Example(want),
+                got, optionflags
+            ))
+
+
+class TestNodeTestCase(NodeTestCase):
 
     def test_except_error(self):
         def func_raises():
@@ -46,6 +79,19 @@ class NodeTestCase(unittest.TestCase):
             )
             self.assertTrue(str(err).startswith(expected))
 
+    def test_check_output(self):
+        want = '...Hello...'
+        got = 'Leading Hello Trailing'
+        self.check_output(want, got)
+        want = 'Hello'
+        err = self.except_error(Failure, self.check_output, want, got)
+        self.assertEqual(str(err).split('\n'), [
+            'Expected:',
+            '    Hello',
+            'Got:',
+            '    Leading Hello Trailing'
+        ])
+
 
 def test_suite():
     from node.tests import test_base
@@ -55,13 +101,15 @@ def test_suite():
     from node.tests import test_utils
 
     suite = unittest.TestSuite()
+    suite.addTest(TestNodeTestCase('test_except_error'))
+    suite.addTest(TestNodeTestCase('test_check_output'))
     suite.addTest(unittest.findTestCases(test_testing_env))
     suite.addTest(unittest.findTestCases(test_testing_base))
     suite.addTest(unittest.findTestCases(test_testing_fullmapping))
 
     suite.addTest(unittest.findTestCases(test_utils))
 
-    #suite.addTest(unittest.findTestCases(test_base))
+    suite.addTest(unittest.findTestCases(test_base))
 
     return suite
 

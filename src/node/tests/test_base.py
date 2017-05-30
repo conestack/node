@@ -1,341 +1,265 @@
-import sys
+from node.base import AbstractNode
+from node.base import BaseNode
+from node.base import OrderedNode
+from node.testing import FullMappingTester
+from node.testing.env import MyNode
+from node.tests import NodeTestCase
+from node.testing.base import create_tree
+import pickle
 
 
-if sys.version_info < (2, 7):                                # pragma: no cover
-    import unittest2 as unittest
-else:                                                        # pragma: no cover
-    import unittest
+class TestBase(NodeTestCase):
 
+    def test_AbstractNode(self):
+        self.assertEquals(AbstractNode.__bases__, (object,))
+        abstract = AbstractNode()
+        self.assertTrue(
+            str(abstract).startswith('<AbstractNode object \'None\' at')
+        )
 
-class TestBase(unittest.TestCase):
+        # Storage related operations of ``AbstractNode`` raises
+        # ``NotImplementedError``:
 
-    def test_foo(self):
-        self.assertFalse(False)
+        def __getitem__fails():
+            abstract['foo']
+        self.except_error(NotImplementedError, __getitem__fails)
+
+        def __delitem__fails():
+            del abstract['foo']
+        self.except_error(NotImplementedError, __delitem__fails)
+
+        def __setitem__fails():
+            abstract['foo'] = 'bar'
+        self.except_error(NotImplementedError, __setitem__fails)
+
+        def __iter__fails():
+            [key for key in abstract]
+        self.except_error(NotImplementedError, __iter__fails)
+
+        def clear_fails():
+            abstract.clear()
+        self.except_error(NotImplementedError, clear_fails)
+
+        def update_fails():
+            abstract.update((('foo', 'bar'),))
+        self.except_error(NotImplementedError, update_fails)
+
+        def setdefaut_fails():
+            abstract.setdefault('foo', 'bar')
+        self.except_error(NotImplementedError, setdefaut_fails)
+
+        def pop_fails():
+            abstract.pop('foo')
+        self.except_error(NotImplementedError, pop_fails)
+
+        def popitem_fails():
+            abstract.popitem()
+        self.except_error(NotImplementedError, popitem_fails)
+
+    def test_MyNode(self):
+        # ``node.testing.env`` contains a base node implementation inheriting
+        # from ``AbstractNode`` for illustration purposes:
+        mynode = MyNode()
+        self.assertTrue(
+            str(mynode).startswith('<MyNode object \'None\' at')
+        )
+        fmtester = FullMappingTester(MyNode)
+        fmtester.run()
+        self.check_output("""\
+        ``__contains__``: OK
+        ``__delitem__``: OK
+        ``__getitem__``: OK
+        ``__iter__``: OK
+        ``__len__``: OK
+        ``__setitem__``: OK
+        ``clear``: OK
+        ``copy``: OK
+        ``get``: OK
+        ``has_key``: OK
+        ``items``: OK
+        ``iteritems``: OK
+        ``iterkeys``: OK
+        ``itervalues``: OK
+        ``keys``: OK
+        ``pop``: OK
+        ``popitem``: OK
+        ``setdefault``: OK
+        ``update``: OK
+        ``values``: OK
+        """, fmtester.combined)
+
+    def test_BaseNode(self):
+        self.assertEquals(BaseNode.__bases__, (object,))
+        basenode = BaseNode()
+        self.assertTrue(
+            str(basenode).startswith('<BaseNode object \'None\' at')
+        )
+        fmtester = FullMappingTester(BaseNode)
+        fmtester.run()
+        self.check_output("""\
+        ``__contains__``: OK
+        ``__delitem__``: OK
+        ``__getitem__``: OK
+        ``__iter__``: OK
+        ``__len__``: OK
+        ``__setitem__``: OK
+        ``clear``: OK
+        ``copy``: OK
+        ``get``: OK
+        ``has_key``: OK
+        ``items``: OK
+        ``iteritems``: OK
+        ``iterkeys``: OK
+        ``itervalues``: OK
+        ``keys``: OK
+        ``pop``: OK
+        ``popitem``: OK
+        ``setdefault``: OK
+        ``update``: OK
+        ``values``: OK
+        """, fmtester.combined)
+
+    def test_OrderedNode(self):
+        self.assertEquals(OrderedNode.__bases__, (object,))
+        orderednode = OrderedNode()
+        self.assertTrue(
+            str(orderednode).startswith('<OrderedNode object \'None\' at')
+        )
+        fmtester = FullMappingTester(OrderedNode)
+        fmtester.run()
+        self.check_output("""\
+        ``__contains__``: OK
+        ``__delitem__``: OK
+        ``__getitem__``: OK
+        ``__iter__``: OK
+        ``__len__``: OK
+        ``__setitem__``: OK
+        ``clear``: OK
+        ``copy``: OK
+        ``get``: OK
+        ``has_key``: OK
+        ``items``: OK
+        ``iteritems``: OK
+        ``iterkeys``: OK
+        ``itervalues``: OK
+        ``keys``: OK
+        ``pop``: OK
+        ``popitem``: OK
+        ``setdefault``: OK
+        ``update``: OK
+        ``values``: OK
+        """, fmtester.combined)
+
+        orderednode['child'] = OrderedNode()
+        self.check_output("""\
+        <class 'node.base.OrderedNode'>: None
+          <class 'node.base.OrderedNode'>: child
+        """, orderednode.treerepr())
+
+        unpickled = pickle.loads(pickle.dumps(orderednode))
+        self.check_output("""\
+        <class 'node.base.OrderedNode'>: None
+          <class 'node.base.OrderedNode'>: child
+        """, unpickled.treerepr())
+
+    def test_ILocation(self):
+        # XXX: make tester object for ``ILocation`` contract.
+
+        # ``ILocations`` promises ``__name__`` and ``__parent__`` attributes.
+        # They are used to define tree hierarchy. As read only arguments they
+        # are available at ``name`` and ``parent`` on nodes:
+        mynode = create_tree(MyNode)
+        self.assertTrue(
+            str(mynode).startswith('<MyNode object \'None\' at')
+        )
+        self.assertEqual(mynode.__name__, None)
+        self.assertEqual(mynode.__parent__, None)
+        self.assertEqual(mynode.name, None)
+        self.assertEqual(mynode.parent, None)
+        self.assertEqual(mynode['child_1'].name, 'child_1')
+        self.assertTrue(mynode['child_1'].parent is mynode)
+        self.assertEqual(mynode['child_1']['subchild_1'].name, 'subchild_1')
+        self.assertTrue(
+            mynode['child_1']['subchild_1'].parent.parent is mynode
+        )
+
+        basenode = create_tree(BaseNode)
+        self.assertTrue(
+            str(basenode).startswith('<BaseNode object \'None\' at')
+        )
+        self.assertEqual(basenode.name, None)
+        self.assertEqual(basenode.parent, None)
+        self.assertEqual(basenode['child_1'].name, 'child_1')
+        self.assertTrue(basenode['child_1'].parent is basenode)
+        self.assertEqual(basenode['child_1']['subchild_1'].name, 'subchild_1')
+        self.assertTrue(
+            basenode['child_1']['subchild_1'].parent.parent is basenode
+        )
+
+        orderednode = create_tree(OrderedNode)
+        self.assertTrue(
+            str(orderednode).startswith('<OrderedNode object \'None\' at')
+        )
+        self.assertEqual(orderednode.name, None)
+        self.assertEqual(orderednode.parent, None)
+        self.assertEqual(orderednode['child_1'].name, 'child_1')
+        self.assertTrue(orderednode['child_1'].parent is orderednode)
+        self.assertEqual(
+            orderednode['child_1']['subchild_1'].name, 'subchild_1'
+        )
+        self.assertTrue(
+            orderednode['child_1']['subchild_1'].parent.parent is orderednode
+        )
+
+    def test_INode(self):
+        # XXX: make tester object for INode contract
+        # XXX: decide wether ``aliases`` or ``aliaser`` (still dunno) should be
+        #      kept in base interface.
+
+        # printtree
+        mynode = create_tree(MyNode)
+        self.check_output("""\
+        <class 'node.testing.env.MyNode'>: None
+          <class 'node.testing.env.MyNode'>: child_0
+            <class 'node.testing.env.MyNode'>: subchild_0
+            <class 'node.testing.env.MyNode'>: subchild_1
+          <class 'node.testing.env.MyNode'>: child_1
+            <class 'node.testing.env.MyNode'>: subchild_0
+            <class 'node.testing.env.MyNode'>: subchild_1
+          <class 'node.testing.env.MyNode'>: child_2
+            <class 'node.testing.env.MyNode'>: subchild_0
+            <class 'node.testing.env.MyNode'>: subchild_1
+        """, mynode.treerepr())
+
+        basenode = create_tree(BaseNode)
+        self.check_output("""\
+        <class 'node.base.BaseNode'>: None
+          <class 'node.base.BaseNode'>: child_...
+            <class 'node.base.BaseNode'>: subchild_...
+            <class 'node.base.BaseNode'>: subchild_...
+          <class 'node.base.BaseNode'>: child_...
+            <class 'node.base.BaseNode'>: subchild_...
+            <class 'node.base.BaseNode'>: subchild_...
+          <class 'node.base.BaseNode'>: child_...
+            <class 'node.base.BaseNode'>: subchild_...
+            <class 'node.base.BaseNode'>: subchild_...
+        """, basenode.treerepr())
+
+        orderednode = create_tree(OrderedNode)
+        self.check_output("""\
+        <class 'node.base.OrderedNode'>: None
+          <class 'node.base.OrderedNode'>: child_0
+            <class 'node.base.OrderedNode'>: subchild_0
+            <class 'node.base.OrderedNode'>: subchild_1
+          <class 'node.base.OrderedNode'>: child_1
+            <class 'node.base.OrderedNode'>: subchild_0
+            <class 'node.base.OrderedNode'>: subchild_1
+          <class 'node.base.OrderedNode'>: child_2
+            <class 'node.base.OrderedNode'>: subchild_0
+            <class 'node.base.OrderedNode'>: subchild_1
+        """, orderednode.treerepr())
 
 """
-node.base
-=========
-
-.. code-block:: pycon
-
-    >>> from node.testing import FullMappingTester
-
-
-AbstractNode
-------------
-
-.. code-block:: pycon
-
-    >>> from node.base import AbstractNode
-    >>> AbstractNode
-    <class 'node.base.AbstractNode'>
-
-    >>> AbstractNode.__bases__
-    (<type 'object'>,)
-
-    >>> abstract = AbstractNode()
-    >>> abstract
-    <AbstractNode object 'None' at ...>
-
-Storage related operations of AbstractNode raise ``NotImplementedError``:
-
-.. code-block:: pycon
-
-    >>> abstract['foo']
-    Traceback (most recent call last):
-      ...
-    NotImplementedError
-
-    >>> del abstract['foo']
-    Traceback (most recent call last):
-      ...
-    NotImplementedError
-
-    >>> abstract['foo'] = 'bar'
-    Traceback (most recent call last):
-      ...
-    NotImplementedError
-
-    >>> [key for key in abstract]
-    Traceback (most recent call last):
-      ...
-    NotImplementedError
-
-    >>> abstract.clear()
-    Traceback (most recent call last):
-      ...
-    NotImplementedError
-
-    >>> abstract.update((('foo', 'bar'),))
-    Traceback (most recent call last):
-      ...
-    NotImplementedError
-
-    >>> abstract.setdefault('foo', 'bar')
-    Traceback (most recent call last):
-      ...
-    NotImplementedError
-
-    >>> abstract.pop('foo')
-    Traceback (most recent call last):
-      ...
-    NotImplementedError
-
-    >>> abstract.popitem()
-    Traceback (most recent call last):
-      ...
-    NotImplementedError
-
-``node.testing.env`` contains a base node implementation inheriting from
-``AbstractNode`` for illustration purposes:
-
-.. code-block:: pycon
-
-    >>> from node.testing.env import MyNode
-    >>> mynode = MyNode()
-    >>> mynode
-    <MyNode object 'None' at ...>
-
-    >>> tester = FullMappingTester(MyNode)
-    >>> tester.run()
-    >>> tester.combined
-    ``__contains__``: OK
-    ``__delitem__``: OK
-    ``__getitem__``: OK
-    ``__iter__``: OK
-    ``__len__``: OK
-    ``__setitem__``: OK
-    ``clear``: OK
-    ``copy``: OK
-    ``get``: OK
-    ``has_key``: OK
-    ``items``: OK
-    ``iteritems``: OK
-    ``iterkeys``: OK
-    ``itervalues``: OK
-    ``keys``: OK
-    ``pop``: OK
-    ``popitem``: OK
-    ``setdefault``: OK
-    ``update``: OK
-    ``values``: OK
-
-
-BaseNode
---------
-
-.. code-block:: pycon
-
-    >>> from node.base import BaseNode
-    >>> BaseNode
-    <class 'node.base.BaseNode'>
-
-    >>> BaseNode.__bases__
-    (<type 'object'>,)
-
-    >>> basenode = BaseNode()
-    >>> basenode
-    <BaseNode object 'None' at ...>
-
-    >>> tester = FullMappingTester(BaseNode)
-    >>> tester.run()
-    >>> tester.combined
-    ``__contains__``: OK
-    ``__delitem__``: OK
-    ``__getitem__``: OK
-    ``__iter__``: OK
-    ``__len__``: OK
-    ``__setitem__``: OK
-    ``clear``: OK
-    ``copy``: OK
-    ``get``: OK
-    ``has_key``: OK
-    ``items``: OK
-    ``iteritems``: OK
-    ``iterkeys``: OK
-    ``itervalues``: OK
-    ``keys``: OK
-    ``pop``: OK
-    ``popitem``: OK
-    ``setdefault``: OK
-    ``update``: OK
-    ``values``: OK
-
-OrderedNode
------------
-
-.. code-block:: pycon
-
-    >>> from node.base import OrderedNode
-    >>> OrderedNode
-    <class 'node.base.OrderedNode'>
-
-    >>> OrderedNode.__bases__
-    (<type 'object'>,)
-
-    >>> orderednode = OrderedNode()
-    >>> orderednode
-    <OrderedNode object 'None' at ...>
-
-    >>> tester = FullMappingTester(OrderedNode)
-    >>> tester.run()
-    >>> tester.combined
-    ``__contains__``: OK
-    ``__delitem__``: OK
-    ``__getitem__``: OK
-    ``__iter__``: OK
-    ``__len__``: OK
-    ``__setitem__``: OK
-    ``clear``: OK
-    ``copy``: OK
-    ``get``: OK
-    ``has_key``: OK
-    ``items``: OK
-    ``iteritems``: OK
-    ``iterkeys``: OK
-    ``itervalues``: OK
-    ``keys``: OK
-    ``pop``: OK
-    ``popitem``: OK
-    ``setdefault``: OK
-    ``update``: OK
-    ``values``: OK
-
-    >>> orderednode['child'] = OrderedNode()
-    >>> orderednode.printtree()
-    <class 'node.base.OrderedNode'>: None
-      <class 'node.base.OrderedNode'>: child
-
-    >>> import pickle
-    >>> unpickled = pickle.loads(pickle.dumps(orderednode))
-    >>> unpickled.printtree()
-    <class 'node.base.OrderedNode'>: None
-      <class 'node.base.OrderedNode'>: child
-
-
-ILocation contract
-------------------
-
-XXX: make tester object for ``ILocation`` contract.
-
-``ILocations`` promises ``__name__`` and ``__parent__`` attributes. They are
-used to define tree hierarchy. As read only arguments they are available
-at ``name`` and ``parent`` on nodes:
-
-.. code-block:: pycon
-
-    >>> from node.testing.base import create_tree
-    >>> mynode = create_tree(MyNode)
-    >>> mynode
-    <MyNode object 'None' at ...>
-
-    >>> mynode.__name__
-    >>> mynode.__parent__
-
-    >>> mynode.name
-    >>> mynode.parent
-
-    >>> mynode['child_1'].name
-    'child_1'
-
-    >>> mynode['child_1'].parent is mynode
-    True
-
-    >>> mynode['child_1']['subchild_1'].name
-    'subchild_1'
-
-    >>> mynode['child_1']['subchild_1'].parent.parent is mynode
-    True
-
-    >>> basenode = create_tree(BaseNode)
-    >>> basenode
-    <BaseNode object 'None' at ...>
-
-    >>> basenode.name
-    >>> basenode.parent
-
-    >>> basenode['child_1'].name
-    'child_1'
-
-    >>> basenode['child_1'].parent is basenode
-    True
-
-    >>> basenode['child_1']['subchild_1'].name
-    'subchild_1'
-
-    >>> basenode['child_1']['subchild_1'].parent.parent is basenode
-    True
-
-    >>> orderednode = create_tree(OrderedNode)
-    >>> orderednode
-    <OrderedNode object 'None' at ...>
-
-    >>> orderednode.name
-    >>> orderednode.parent
-
-    >>> orderednode['child_1'].name
-    'child_1'
-
-    >>> orderednode['child_1'].parent is orderednode
-    True
-
-    >>> orderednode['child_1']['subchild_1'].name
-    'subchild_1'
-
-    >>> orderednode['child_1']['subchild_1'].parent.parent is orderednode
-    True
-
-
-INode contract
---------------
-
-XXX: make tester object for INode contract
-
-XXX: decide wether ``aliases`` or ``aliaser`` (still dunno) should be kept in
-     base interface.
-
-
-printtree
-~~~~~~~~~
-
-.. code-block:: pycon
-
-    >>> mynode.printtree()
-    <class 'node.testing.env.MyNode'>: None
-      <class 'node.testing.env.MyNode'>: child_0
-        <class 'node.testing.env.MyNode'>: subchild_0
-        <class 'node.testing.env.MyNode'>: subchild_1
-      <class 'node.testing.env.MyNode'>: child_1
-        <class 'node.testing.env.MyNode'>: subchild_0
-        <class 'node.testing.env.MyNode'>: subchild_1
-      <class 'node.testing.env.MyNode'>: child_2
-        <class 'node.testing.env.MyNode'>: subchild_0
-        <class 'node.testing.env.MyNode'>: subchild_1
-
-    >>> basenode.printtree()
-    <class 'node.base.BaseNode'>: None
-      <class 'node.base.BaseNode'>: child_...
-        <class 'node.base.BaseNode'>: subchild_...
-        <class 'node.base.BaseNode'>: subchild_...
-      <class 'node.base.BaseNode'>: child_...
-        <class 'node.base.BaseNode'>: subchild_...
-        <class 'node.base.BaseNode'>: subchild_...
-      <class 'node.base.BaseNode'>: child_...
-        <class 'node.base.BaseNode'>: subchild_...
-        <class 'node.base.BaseNode'>: subchild_...
-
-    >>> orderednode.printtree()
-    <class 'node.base.OrderedNode'>: None
-      <class 'node.base.OrderedNode'>: child_0
-        <class 'node.base.OrderedNode'>: subchild_0
-        <class 'node.base.OrderedNode'>: subchild_1
-      <class 'node.base.OrderedNode'>: child_1
-        <class 'node.base.OrderedNode'>: subchild_0
-        <class 'node.base.OrderedNode'>: subchild_1
-      <class 'node.base.OrderedNode'>: child_2
-        <class 'node.base.OrderedNode'>: subchild_0
-        <class 'node.base.OrderedNode'>: subchild_1
-
 
 path
 ~~~~
