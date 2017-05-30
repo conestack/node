@@ -154,6 +154,10 @@ class TestNodeSetItem(TestNode, TestMappingSetItem):
         self.data[name] = value
 
 
+class TestNodeValues(TestNodeSetItem, TestMappingValues):
+    pass
+
+
 class TestNodeItems(TestNodeSetItem, TestMappingItems):
     pass
 
@@ -462,30 +466,6 @@ class TestFullmapping(unittest.TestCase):
         fmtester.test_iterkeys()
 
     def test_values(self):
-        class TestMappingSetItem(TestMapping):
-            def __setitem__(self, key, value):
-                self.data[key] = value
-
-        class TestMappingGetItem(TestMappingSetItem):
-            def __getitem__(self, key):
-                return self.data[key]
-
-        class TestMappingGet(TestMappingGetItem):
-            def get(self, key, default=None):
-                return self.data.get(key, default)
-
-        class TestMappingIter(TestMappingGet):
-            def __iter__(self):
-                return self.data.__iter__()
-
-        class TestMappingKeys(TestMappingIter):
-            def keys(self):
-                return [k for k in self.data]
-
-        class TestMappingIterKeys(TestMappingKeys):
-            def iterkeys(self):
-                return self.data.__iter__()
-
         fmtester = FullMappingTester(
             TestMappingIterKeys,
             include_node_checks=False
@@ -495,10 +475,6 @@ class TestFullmapping(unittest.TestCase):
             str(err),
             '\'TestMappingIterKeys\' object has no attribute \'values\''
         )
-
-        class TestMappingValues(TestMappingIterKeys):
-            def values(self):
-                return self.data.values()
 
         fmtester = FullMappingTester(
             TestMappingValues,
@@ -523,79 +499,28 @@ class TestFullmapping(unittest.TestCase):
             '\'TestMappingValues\' object has no attribute \'__name__\''
         )
 
-        class TestNodeValues(TestNode, TestMappingValues):
+        class FailingTestNodeValues(TestNode, TestMappingValues):
             pass
 
-        fmtester = FullMappingTester(TestNodeValues)
+        fmtester = FullMappingTester(FailingTestNodeValues)
         fmtester.test___setitem__()
-
         err = self.except_error(Exception, fmtester.test_values)
         self.assertEqual(
             str(err),
             'Expected __name__ of value invalid. Got ``None``'
         )
 
-        class TestNodeSetItem(TestNode, TestMappingSetItem):
-            def __setitem__(self, name, value):
-                value.__parent__ = self
-                value.__name__ = name
-                self.data[name] = value
-
-        class TestNodeValues(TestNodeSetItem, TestMappingValues):
-            pass
-
         fmtester = FullMappingTester(TestNodeValues)
         fmtester.test___setitem__()
         fmtester.test_values()
 
     def test_itervalues(self):
-        class TestMappingSetItem(TestMapping):
-            def __setitem__(self, key, value):
-                self.data[key] = value
-
-        class TestMappingGetItem(TestMappingSetItem):
-            def __getitem__(self, key):
-                return self.data[key]
-
-        class TestMappingGet(TestMappingGetItem):
-            def get(self, key, default=None):
-                return self.data.get(key, default)
-
-        class TestMappingIter(TestMappingGet):
-            def __iter__(self):
-                return self.data.__iter__()
-
-        class TestMappingKeys(TestMappingIter):
-            def keys(self):
-                return [k for k in self.data]
-
-        class TestMappingIterKeys(TestMappingKeys):
-            def iterkeys(self):
-                return self.data.__iter__()
-
-        class TestMappingValues(TestMappingIterKeys):
-            def values(self):
-                return self.data.values()
-
-        class TestNodeSetItem(TestNode, TestMappingSetItem):
-            def __setitem__(self, name, value):
-                value.__parent__ = self
-                value.__name__ = name
-                self.data[name] = value
-
-        class TestNodeValues(TestNodeSetItem, TestMappingValues):
-            pass
-
         fmtester = FullMappingTester(TestNodeValues)
         err = self.except_error(AttributeError, fmtester.test_itervalues)
         self.assertEqual(
             str(err),
             '\'TestNodeValues\' object has no attribute \'itervalues\''
         )
-
-        class TestMappingIterValues(TestMappingValues):
-            def itervalues(self):
-                return iter(self.data.values())
 
         fmtester = FullMappingTester(
             TestMappingIterValues,
