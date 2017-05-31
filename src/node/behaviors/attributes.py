@@ -3,6 +3,7 @@ from node.behaviors.common import Adopt
 from node.behaviors.common import NodeChildValidate
 from node.behaviors.nodify import Nodify
 from node.behaviors.storage import OdictStorage
+from node.compat import IS_PY2
 from node.interfaces import IAttributes
 from node.utils import AttributeAccess
 from plumber import Behavior
@@ -10,10 +11,6 @@ from plumber import default
 from plumber import finalize
 from plumber import plumbing
 from zope.interface import implementer
-import sys
-
-
-IS_PY2 = sys.version_info[0] < 3
 
 
 @plumbing(

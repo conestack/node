@@ -1,8 +1,8 @@
 from node.testing import FullMappingTester
 from node.tests import NodeTestCase
-from node.tests import IS_PY2
-from node.tests import IS_PYPY
-from node.tests import ITER_FUNC
+from node.compat import IS_PY2
+from node.compat import IS_PYPY
+from node.compat import iteritems
 
 
 ###############################################################################
@@ -83,7 +83,7 @@ class MockMappingUpdate(MockMappingLen):
     def update(self, data=(), **kw):
         for key, value in data:
             self[key] = value
-        for key, value in getattr(kw, ITER_FUNC)():
+        for key, value in iteritems(kw):
             self[key] = value
 
 
@@ -527,7 +527,7 @@ class TestFullmapping(NodeTestCase):
             def update(self, data=(), **kw):
                 for key, _ in data:
                     self[key] = object()
-                for key, _ in getattr(kw, ITER_FUNC)():
+                for key, _ in iteritems(kw):
                     self[key] = object()
 
         fmtester = FullMappingTester(FailingMockMappingUpdate2)
@@ -539,7 +539,7 @@ class TestFullmapping(NodeTestCase):
             def update(self, data=(), **kw):
                 for key, value in data:
                     self[key] = value
-                for key, value in getattr(kw, ITER_FUNC)():
+                for key, value in iteritems(kw):
                     self[key] = object()
 
         fmtester = FullMappingTester(FailingMockMappingUpdate3)
@@ -559,7 +559,7 @@ class TestFullmapping(NodeTestCase):
             def update(self, data=(), **kw):
                 for key, value in data:
                     self[key] = value
-                for key, value in getattr(kw, ITER_FUNC)():
+                for key, value in iteritems(kw):
                     self[key] = value
 
         fmtester = FullMappingTester(FailingMockMappingUpdate4)
@@ -570,7 +570,7 @@ class TestFullmapping(NodeTestCase):
             def update(self, data=(), data1=(), **kw):
                 for key, value in data:
                     self[key] = value
-                for key, value in getattr(kw, ITER_FUNC)():
+                for key, value in iteritems(kw):
                     self[key] = value
 
         fmtester = FullMappingTester(FailingMockMappingUpdate5)

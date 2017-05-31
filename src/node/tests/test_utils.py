@@ -1,4 +1,6 @@
 from node.base import BaseNode
+from node.compat import IS_PY2
+from node.compat import IS_PYPY
 from node.tests import NodeTestCase
 from node.utils import AttributeAccess
 from node.utils import ReverseMapping
@@ -69,40 +71,45 @@ class TestUtils(NodeTestCase):
     def test_encode(self):
         self.assertEqual(
             encode(
-                '\x01\x05\x00\x00\x00\x00\x00\x05\x15\x00\x00\x00\xd4'
-                '\xa0\xff\xff\xaeW\x82\xa9P\xcf8\xaf&\x0e\x00\x00'
+                b'\x01\x05\x00\x00\x00\x00\x00\x05\x15\x00\x00\x00\xd4'
+                b'\xa0\xff\xff\xaeW\x82\xa9P\xcf8\xaf&\x0e\x00\x00'
             ), (
-                '\x01\x05\x00\x00\x00\x00\x00\x05\x15\x00\x00\x00\xd4'
-                '\xa0\xff\xff\xaeW\x82\xa9P\xcf8\xaf&\x0e\x00\x00'
+                b'\x01\x05\x00\x00\x00\x00\x00\x05\x15\x00\x00\x00\xd4'
+                b'\xa0\xff\xff\xaeW\x82\xa9P\xcf8\xaf&\x0e\x00\x00'
             )
         )
-        self.assertEqual(encode(u'\xe4'), '\xc3\xa4')
-        self.assertEqual(encode([u'\xe4']), ['\xc3\xa4'])
-        self.assertEqual(encode({u'\xe4': u'\xe4'}), {'\xc3\xa4': '\xc3\xa4'})
-        self.assertEqual(encode('\xc3\xa4'), '\xc3\xa4')
+        self.assertEqual(encode(u'\xe4'), b'\xc3\xa4')
+        self.assertEqual(encode([u'\xe4']), [b'\xc3\xa4'])
+        self.assertEqual(encode({u'\xe4': u'\xe4'}), {b'\xc3\xa4': b'\xc3\xa4'})
+        self.assertEqual(encode(b'\xc3\xa4'), b'\xc3\xa4')
 
         node = BaseNode()
         node.allow_non_node_childs = True
         node['foo'] = u'\xe4'
-        self.assertEqual(encode(node), {'foo': '\xc3\xa4'})
+        self.assertEqual(encode(node), {b'foo': b'\xc3\xa4'})
 
     def test_decode(self):
         self.assertEqual(decode('foo'), u'foo')
         self.assertEqual(decode(('foo', 'bar')), (u'foo', u'bar'))
         self.assertEqual(decode({'foo': 'bar'}), {u'foo': u'bar'})
-        self.assertEqual(decode('fo\xe4'), 'fo\xe4')
+        self.assertEqual(decode(b'fo\xe4'), b'fo\xe4')
 
         node = BaseNode()
         node.allow_non_node_childs = True
-        node['foo'] = '\xc3\xa4'
+        node['foo'] = b'\xc3\xa4'
         self.assertEqual(decode(node), {u'foo': u'\xe4'})
 
     def test_StrCodec(self):
         codec = StrCodec(soft=False)
-        expected = ('\'utf8\' codec can\'t decode byte 0xe4 in position 2: '
-                    'unexpected end of data')
+        expected = (
+            '\'utf8\' codec can\'t decode byte 0xe4 in position 2: '
+            'unexpected end of data'
+        ) if IS_PY2 and not IS_PYPY else (
+            '\'utf-8\' codec can\'t decode byte 0xe4 in position 2: '
+            'unexpected end of data'
+        )
         err = self.except_error(UnicodeDecodeError,
-                                lambda: codec.decode('fo\xe4'))
+                                lambda: codec.decode(b'fo\xe4'))
         self.assertEqual(str(err), expected)
 
     def test_instance_property(self):

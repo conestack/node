@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
+from node.compat import IS_PY2
+from node.compat import STR_TYPE
+from node.compat import UNICODE_TYPE
+from node.compat import func_name
+from node.compat import iteritems
 from node.interfaces import IAttributeAccess
 from node.interfaces import INode
 from zope.interface import implementer
 from zope.interface.common.mapping import IEnumerableMapping
 import logging
-import sys
-
-
-IS_PY2 = sys.version_info[0] < 3
 
 
 logger = logging.getLogger('node')
@@ -39,7 +40,6 @@ def LocationIterator(obj):
     """Iterate over an object and all of its parents.
 
     Copied from ``zope.location.LocationIterator``.
-
     """
     while obj is not None:
         yield obj
@@ -169,25 +169,25 @@ class StrCodec(object):
         if isinstance(arg, (list, tuple)):
             arg = arg.__class__(map(self.encode, arg))
         elif isinstance(arg, dict):
-            arg = dict([self.encode(t) for t in arg.iteritems()])
-        elif isinstance(arg, str):
+            arg = dict([self.encode(t) for t in iteritems(arg)])
+        elif isinstance(arg, bytes):
             arg = self.decode(arg)
             # If UnicodeDecodeError, binary data is expected. Return value
             # as is.
-            if not isinstance(arg, str):
+            if not isinstance(arg, bytes):
                 arg = self.encode(arg)
-        elif isinstance(arg, unicode):
+        elif isinstance(arg, UNICODE_TYPE):
             arg = arg.encode(self._encoding)
         elif INode.providedBy(arg):
-            arg = dict([self.encode(t) for t in arg.iteritems()])
+            arg = dict([self.encode(t) for t in iteritems(arg)])
         return arg
 
     def decode(self, arg):
         if isinstance(arg, (list, tuple)):
             arg = arg.__class__(map(self.decode, arg))
         elif isinstance(arg, dict):
-            arg = dict([self.decode(t) for t in arg.iteritems()])
-        elif IS_PY2 and isinstance(arg, str):
+            arg = dict([self.decode(t) for t in iteritems(arg)])
+        elif isinstance(arg, bytes):
             try:
                 arg = arg.decode(self._encoding)
             except UnicodeDecodeError:
@@ -196,7 +196,7 @@ class StrCodec(object):
                 if not self._soft:
                     raise
         elif INode.providedBy(arg):
-            arg = dict([self.decode(t) for t in arg.iteritems()])
+            arg = dict([self.decode(t) for t in iteritems(arg)])
         return arg
 
 
@@ -223,7 +223,7 @@ def instance_property(func):
 def node_by_path(root, path):
     """Return node by path from root
     """
-    if isinstance(path, basestring):
+    if isinstance(path, STR_TYPE):
         path = path.strip('/')
         path = path.split('/') if path else []
     if not path:
@@ -238,11 +238,16 @@ def debug(func):
     """Decorator for logging debug messages.
     """
     def wrapped(*args, **kws):
-        logger.debug(
-            u'%s: args=%s, kws=%s' % (
-                func.func_name, unicode(args), unicode(kws)))
+        logger.debug(u'{}: args={}, kws={}'.format(
+            func_name(func),
+            UNICODE_TYPE(args),
+            UNICODE_TYPE(kws)
+        ))
         f_result = func(*args, **kws)
-        logger.debug(u'%s: --> %s' % (func.func_name, unicode(f_result)))
+        logger.debug(u'{}: --> {}'.format(
+            func_name(func),
+            UNICODE_TYPE(f_result)
+        ))
         return f_result
     wrapped.__doc__ = func.__doc__
     return wrapped
