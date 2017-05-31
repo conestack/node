@@ -16,7 +16,7 @@ import pickle
 class TestBase(NodeTestCase):
 
     def test_AbstractNode(self):
-        self.assertEquals(AbstractNode.__bases__, (object,))
+        self.assertEqual(AbstractNode.__bases__, (object,))
         abstract = AbstractNode()
         self.assertTrue(
             str(abstract).startswith('<AbstractNode object \'None\' at')
@@ -94,7 +94,7 @@ class TestBase(NodeTestCase):
         """, fmtester.combined)
 
     def test_BaseNode(self):
-        self.assertEquals(BaseNode.__bases__, (object,))
+        self.assertEqual(BaseNode.__bases__, (object,))
         basenode = BaseNode()
         self.assertTrue(
             str(basenode).startswith('<BaseNode object \'None\' at')
@@ -125,7 +125,7 @@ class TestBase(NodeTestCase):
         """, fmtester.combined)
 
     def test_OrderedNode(self):
-        self.assertEquals(OrderedNode.__bases__, (object,))
+        self.assertEqual(OrderedNode.__bases__, (object,))
         orderednode = OrderedNode()
         self.assertTrue(
             str(orderednode).startswith('<OrderedNode object \'None\' at')
