@@ -105,7 +105,7 @@ def test_suite():
 
     suite.addTest(unittest.findTestCases(test_utils))
 
-    #suite.addTest(unittest.findTestCases(test_base))
+    suite.addTest(unittest.findTestCases(test_base))
 
     return suite
 
