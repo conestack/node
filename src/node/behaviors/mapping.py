@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from node.compat import ITER_FUNC
+from node.compat import iteritems
 from node.utils import UNSET
 from plumber import Behavior
 from plumber import default
@@ -14,10 +16,6 @@ from zope.interface.common.mapping import IMapping
 from zope.interface.common.mapping import IReadMapping
 from zope.interface.common.mapping import IWriteMapping
 import copy
-import sys
-
-
-ITER_FUNC = 'iteritems' if sys.version_info[0] < 3 else 'items'
 
 
 @implementer(IItemMapping)
@@ -189,10 +187,10 @@ class ExtendedWriteMapping(WriteMapping):
         if args:
             data = args[0]
             if hasattr(data, ITER_FUNC):
-                data = getattr(data, ITER_FUNC)()
+                data = iteritems(data)
             for key, val in data:
                 self[key] = val
-        for key, val in getattr(kw, ITER_FUNC)():
+        for key, val in iteritems(kw):
             self[key] = val
 
     @default

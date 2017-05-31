@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 from node.behaviors.mapping import FullMapping
+from node.compat import IS_PY2
 from node.interfaces import IDefaultInit
 from node.interfaces import INode
 from node.interfaces import INodify
@@ -11,10 +12,6 @@ from plumber import override
 from plumber import plumb
 from zope.interface import implementer
 from zope.interface.interfaces import IInterface
-import sys
-
-
-IS_PY2 = sys.version_info[0] < 3
 
 
 @implementer(IDefaultInit)
