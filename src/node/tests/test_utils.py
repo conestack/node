@@ -89,14 +89,14 @@ class TestUtils(NodeTestCase):
         self.assertEqual(encode(node), {b'foo': b'\xc3\xa4'})
 
     def test_decode(self):
-        self.assertEqual(decode('foo'), u'foo')
-        self.assertEqual(decode(('foo', 'bar')), (u'foo', u'bar'))
-        self.assertEqual(decode({'foo': 'bar'}), {u'foo': u'bar'})
+        self.assertEqual(decode(b'foo'), u'foo')
+        self.assertEqual(decode((b'foo', u'bar')), (u'foo', u'bar'))
+        self.assertEqual(decode({b'foo': b'bar'}), {u'foo': u'bar'})
         self.assertEqual(decode(b'fo\xe4'), b'fo\xe4')
 
         node = BaseNode()
         node.allow_non_node_childs = True
-        node['foo'] = b'\xc3\xa4'
+        node[b'foo'] = b'\xc3\xa4'
         self.assertEqual(decode(node), {u'foo': u'\xe4'})
 
     def test_StrCodec(self):
