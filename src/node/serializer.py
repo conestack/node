@@ -2,6 +2,7 @@
 from inspect import isclass
 from inspect import isfunction
 from inspect import ismethod
+from node.compat import IS_PY2
 from node.interfaces import IAttributes
 from node.interfaces import INode
 from node.utils import UNSET
@@ -94,7 +95,9 @@ class NodeEncoder(json.JSONEncoder):
         """Return dotted name of object.
         """
         if isclass(ob) or isfunction(ob):
-            return '.'.join([ob.__module__, ob.__name__])
+            return '.'.join(
+                [ob.__module__, ob.__name__ if IS_PY2 else ob.__qualname__]
+            )
         elif ismethod(ob):
             return '.'.join(
                 [ob.im_class.__module__, ob.im_class.__name__, ob.__name__]

@@ -15,6 +15,23 @@ import json
 import uuid
 
 
+###############################################################################
+# Mock objects
+###############################################################################
+
+def referenced_function():
+    pass
+
+
+class ReferencedClass(object):
+    def foo(self):
+        pass
+
+
+###############################################################################
+# Tests
+###############################################################################
+
 class TestSerializer(NodeTestCase):
 
     ###########################################################################
@@ -25,11 +42,14 @@ class TestSerializer(NodeTestCase):
         # Basic ``INode`` implementing object serialization
         json_data = serialize(BaseNode())
         data = json.loads(json_data)
+
         self.assertEqual(list(data.keys()), ['__node__'])
+
         node_data = data['__node__']
         self.assertEqual(list(sorted(node_data.keys())), ['class', 'name'])
         self.assertEqual(node_data['class'], 'node.base.BaseNode')
         self.assertEqual(node_data['name'], None)
+
         node = deserialize(json_data)
         self.assertTrue(str(node).startswith('<BaseNode object \'None\' at'))
 
@@ -127,110 +147,112 @@ class TestSerializer(NodeTestCase):
             '  <class \'node.base.OrderedNode\'>: child_2\n'
         ))
 
+    ###########################################################################
+    # Attribute serialization
+    ###########################################################################
+
+    def test_IAttributes_serialize_deserialize(self):
+        # Serialize node implementing ``IAttributes``
+        node = AttributedNode(name='base')
+        node.attrs['int'] = 0
+        node.attrs['float'] = 0.0
+        node.attrs['str'] = 'str'
+        node.attrs['unset'] = UNSET
+        node.attrs['uuid'] = uuid.UUID('fcb30f5a-20c7-43aa-9537-2a25fef0248d')
+        node.attrs['list'] = [0, 0.0, 'str', UNSET]
+
+        json_data = serialize(node)
+        data = json.loads(json_data)
+
+        self.assertEqual(list(data.keys()), ['__node__'])
+
+        node_data = data['__node__']
+        self.assertEqual(
+            list(sorted(node_data.keys())),
+            ['attrs', 'class', 'name']
+        )
+        self.assertEqual(node_data['class'], 'node.base.AttributedNode')
+        self.assertEqual(node_data['name'], 'base')
+
+        attrs_data = node_data['attrs']
+        self.assertEqual(
+            list(sorted(attrs_data.keys())),
+            ['float', 'int', 'list', 'str', 'unset', 'uuid']
+        )
+        self.assertEqual(attrs_data['int'], 0)
+        self.assertEqual(attrs_data['float'], 0.0)
+        self.assertEqual(attrs_data['str'], 'str')
+        self.assertEqual(attrs_data['list'], [0, 0.0, 'str', '<UNSET>'])
+        self.assertEqual(attrs_data['unset'], '<UNSET>')
+        self.assertEqual(
+            attrs_data['uuid'],
+            '<UUID>:fcb30f5a-20c7-43aa-9537-2a25fef0248d'
+        )
+
+        # Deserialize node implementing ``IAttributes``
+        node = deserialize(json_data)
+        expected = '<AttributedNode object \'base\' at'
+        self.assertTrue(str(node).startswith(expected))
+        self.assertEqual(node.attrs['int'], 0)
+        self.assertEqual(node.attrs['float'], 0.0)
+        self.assertEqual(node.attrs['str'], 'str')
+        self.assertEqual(node.attrs['list'], [0, 0.0, 'str', UNSET])
+        self.assertEqual(node.attrs['unset'], UNSET)
+        self.assertEqual(
+            node.attrs['uuid'],
+            uuid.UUID('fcb30f5a-20c7-43aa-9537-2a25fef0248d')
+        )
+
+    ###########################################################################
+    # Referencing of classes, methods and functions
+    ###########################################################################
+
+    def test_referencing(self):
+        # Serialize and deserialize references
+        node = AttributedNode()
+        node.attrs['func'] = referenced_function
+        node.attrs['class'] = ReferencedClass
+        node.attrs['method'] = ReferencedClass.foo
+
+        json_data = serialize(node)
+        data = json.loads(json_data)
+
+        self.assertEqual(list(data.keys()), ['__node__'])
+
+        node_data = data['__node__']
+        self.assertEqual(
+            list(sorted(node_data.keys())),
+            ['attrs', 'class', 'name']
+        )
+        self.assertEqual(node_data['class'], 'node.base.AttributedNode')
+        self.assertEqual(node_data['name'], None)
+
+        attrs_data = node_data['attrs']
+        self.assertEqual(
+            list(sorted(attrs_data.keys())),
+            ['class', 'func', 'method']
+        )
+        self.assertEqual(
+            attrs_data['class']['__ob__'],
+            'node.tests.test_serializer.ReferencedClass'
+        )
+        self.assertEqual(
+            attrs_data['func']['__ob__'],
+            'node.tests.test_serializer.referenced_function'
+        )
+        self.assertEqual(
+            attrs_data['method']['__ob__'],
+            'node.tests.test_serializer.ReferencedClass.foo'
+        )
+
+        node = deserialize(json_data)
+        expected = '<AttributedNode object \'None\' at'
+        self.assertTrue(str(node).startswith(expected))
+        self.assertEqual(node.attrs['func'], referenced_function)
+        self.assertEqual(node.attrs['class'], ReferencedClass)
+        self.assertEqual(node.attrs['method'], ReferencedClass.foo)
+
 """
-Attribute serialization
------------------------
-
-Serialize node implementing ``IAttributes``:
-
-.. code-block:: pycon
-
-    >>> node = AttributedNode(name='base')
-    >>> node.attrs['int'] = 0
-    >>> node.attrs['float'] = 0.0
-    >>> node.attrs['str'] = 'str'
-    >>> node.attrs['unset'] = UNSET
-    >>> node.attrs['uuid'] = uuid.UUID('fcb30f5a-20c7-43aa-9537-2a25fef0248d')
-    >>> node.attrs['list'] = [0, 0.0, 'str', UNSET]
-
-    >>> json_data = serialize(node)
-    >>> json_data
-    '{"__node__": 
-    {"attrs": 
-    {"uuid": "<UUID>:fcb30f5a-20c7-43aa-9537-2a25fef0248d", 
-    "int": 0, 
-    "float": 0.0, 
-    "list": [0, 0.0, "str", "<UNSET>"], 
-    "str": "str", 
-    "unset": "<UNSET>"}, 
-    "class": "node.base.AttributedNode", 
-    "name": "base"}}'
-
-Deserialize node implementing ``IAttributes``:
-
-.. code-block:: pycon
-
-    >>> node = deserialize(json_data)
-    >>> node.printtree()
-    <class 'node.base.AttributedNode'>: base
-
-    >>> node.attrs.printtree()
-    <class 'node.behaviors.attributes.NodeAttributes'>: __attrs__
-      uuid: UUID('fcb30f5a-20c7-43aa-9537-2a25fef0248d')
-      int: 0
-      float: 0.0
-      list: [0, 0.0, u'str', <UNSET>]
-      str: u'str'
-      unset: <UNSET>
-
-
-Referencing of classes, methods and functions
----------------------------------------------
-
-Mock objects to reference:
-
-.. code-block:: pycon
-
-    >>> def referenced_function():
-    ...     pass
-
-    >>> base.referenced_function = referenced_function
-    >>> referenced_function.__module__ = 'node.base'
-
-    >>> class ReferencedClass(object):
-    ...     def foo(self):
-    ...         pass
-
-    >>> base.ReferencedClass = ReferencedClass
-    >>> ReferencedClass.__module__ = 'node.base'
-
-Serialize and deserialize references:
-
-.. code-block:: pycon
-
-    >>> node = AttributedNode()
-    >>> node.attrs['func'] = referenced_function
-    >>> node.attrs['class'] = ReferencedClass
-    >>> node.attrs['method'] = ReferencedClass.foo
-
-    >>> json_data = serialize(node)
-    >>> json_data
-    '{"__node__": 
-    {"attrs": 
-    {"class": {"__ob__": "node.base.ReferencedClass"}, 
-    "func": {"__ob__": "node.base.referenced_function"}, 
-    "method": {"__ob__": "node.base.ReferencedClass.foo"}}, 
-    "class": "node.base.AttributedNode", 
-    "name": null}}'
-
-    >>> node = deserialize(json_data)
-    >>> node.printtree()
-    <class 'node.base.AttributedNode'>: None
-
-    >>> node.attrs.printtree()
-    <class 'node.behaviors.attributes.NodeAttributes'>: __attrs__
-      class: <class 'node.base.ReferencedClass'>
-      func: <function referenced_function at ...>
-      method: <unbound method ReferencedClass.foo>
-
-Cleanup mock patches:
-
-.. code-block:: pycon
-
-    >>> del base.referenced_function
-    >>> del base.ReferencedClass
-
-
 Custom serializer
 -----------------
 
