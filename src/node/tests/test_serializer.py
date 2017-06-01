@@ -28,6 +28,52 @@ class ReferencedClass(object):
         pass
 
 
+class ICustomNode(Interface):
+    iface_attr = Attribute('Custom Attribute')
+
+
+@implementer(ICustomNode)
+class CustomNode(AttributedNode):
+    iface_attr = None
+    class_attr = None
+
+
+class CustomInitNode(CustomNode):
+    def __init__(self, a, b):
+        self.a = a
+        self.b = b
+
+
+@serializer(ICustomNode)
+def iface_bound_serialize_custom_node(encoder, node, data):
+    data['iface_attr'] = node.iface_attr
+
+
+@deserializer(ICustomNode)
+def iface_bound_deserialize_custom_node(encoder, node, data):
+    node.iface_attr = data['iface_attr']
+
+
+@serializer(CustomNode)
+def class_bound_serialize_custom_node(encoder, node, data):
+    data['class_attr'] = node.class_attr
+
+
+@deserializer(CustomNode)
+@deserializer(CustomInitNode)
+def class_bound_deserialize_custom_node(encoder, node, data):
+    node.class_attr = data['class_attr']
+
+
+@serializer(CustomInitNode)
+def serialize_custom_node(encoder, node, data):
+    class_bound_serialize_custom_node(encoder, node, data)
+    data['kw'] = {
+        'a': node.a,
+        'b': node.b
+    }
+
+
 ###############################################################################
 # Tests
 ###############################################################################
@@ -38,7 +84,7 @@ class TestSerializer(NodeTestCase):
     # Node serialization
     ###########################################################################
 
-    def test_INode_serialize_deserialize(self):
+    def test_INode(self):
         # Basic ``INode`` implementing object serialization
         json_data = serialize(BaseNode())
         data = json.loads(json_data)
@@ -53,7 +99,7 @@ class TestSerializer(NodeTestCase):
         node = deserialize(json_data)
         self.assertTrue(str(node).startswith('<BaseNode object \'None\' at'))
 
-    def test_children_serialize_deserialize(self):
+    def test_children(self):
         # Node children serializition
         node = OrderedNode(name='base')
         node['child'] = OrderedNode()
@@ -105,7 +151,7 @@ class TestSerializer(NodeTestCase):
             '      <class \'node.base.OrderedNode\'>: sub\n'
         ))
 
-    def test_children_serialize_deserialize_as_list(self):
+    def test_children_as_list(self):
         # Serialize list of nodes
         node = OrderedNode(name='base')
         node['child_1'] = OrderedNode()
@@ -151,7 +197,7 @@ class TestSerializer(NodeTestCase):
     # Attribute serialization
     ###########################################################################
 
-    def test_IAttributes_serialize_deserialize(self):
+    def test_IAttributes(self):
         # Serialize node implementing ``IAttributes``
         node = AttributedNode(name='base')
         node.attrs['int'] = 0
@@ -252,145 +298,72 @@ class TestSerializer(NodeTestCase):
         self.assertEqual(node.attrs['class'], ReferencedClass)
         self.assertEqual(node.attrs['method'], ReferencedClass.foo)
 
+    ###########################################################################
+    # Custom serializer
+    ###########################################################################
+
+    def test_custom_bound(self):
+        node = CustomNode(name='custom')
+        # Interface bound custom serializer and deserializer handles iface_attr
+        node.iface_attr = 'Iface Attr Value'
+        # Class bound custom serializer and deserializer handles class_attr
+        node.class_attr = 'Class Attr Value'
+        json_data = serialize(node)
+        data = json.loads(json_data)
+
+        self.assertEqual(list(data.keys()), ['__node__'])
+
+        node_data = data['__node__']
+        self.assertEqual(
+            list(sorted(node_data.keys())),
+            ['attrs', 'class', 'class_attr', 'iface_attr', 'name']
+        )
+        self.assertEqual(
+            node_data['class'],
+            'node.tests.test_serializer.CustomNode'
+        )
+        self.assertEqual(node_data['name'], 'custom')
+        self.assertEqual(node_data['attrs'], {})
+        self.assertEqual(node_data['iface_attr'], 'Iface Attr Value')
+        self.assertEqual(node_data['class_attr'], 'Class Attr Value')
+
+        node = deserialize(json_data)
+        expected = '<CustomNode object \'custom\' at'
+        self.assertTrue(str(node).startswith(expected))
+        self.assertEqual(node.iface_attr, 'Iface Attr Value')
+        self.assertEqual(node.class_attr, 'Class Attr Value')
+
+    def test_custom_init(self):
+        # Serialize and deserialize node with custom constructor
+        node = CustomInitNode(a='A', b='B')
+        json_data = serialize(node)
+        data = json.loads(json_data)
+
+        self.assertEqual(list(data.keys()), ['__node__'])
+
+        node_data = data['__node__']
+        self.assertEqual(
+            list(sorted(node_data.keys())),
+            ['attrs', 'class', 'class_attr', 'iface_attr', 'kw', 'name']
+        )
+        self.assertEqual(
+            node_data['class'],
+            'node.tests.test_serializer.CustomInitNode'
+        )
+        self.assertEqual(node_data['name'], None)
+        self.assertEqual(node_data['attrs'], {})
+        self.assertEqual(node_data['kw'], {'a': 'A', 'b': 'B'})
+        self.assertEqual(node_data['iface_attr'], None)
+        self.assertEqual(node_data['class_attr'], None)
+
+        node = deserialize(json_data)
+        node = deserialize(json_data)
+        expected = '<CustomInitNode object \'None\' at'
+        self.assertTrue(str(node).startswith(expected))
+        self.assertEqual(node.a, 'A')
+        self.assertEqual(node.b, 'B')
+
 """
-Custom serializer
------------------
-
-Mock object used by class and interface bound serializers:
-
-.. code-block:: pycon
-
-    >>> class ICustomNode(Interface):
-    ...     iface_attr = Attribute('Custom Attribute')
-
-    >>> @implementer(ICustomNode)
-    ... class CustomNode(AttributedNode):
-    ...     iface_attr = None
-    ...     class_attr = None
-
-    >>> base.CustomNode = CustomNode
-    >>> CustomNode.__module__ = 'node.base'
-
-Interface bound custom serializer and deserializer:
-
-.. code-block:: pycon
-
-    >>> @serializer(ICustomNode)
-    ... def serialize_custom_node(encoder, node, data):
-    ...     data['iface_attr'] = node.iface_attr
-
-    >>> @deserializer(ICustomNode)
-    ... def deserialize_custom_node(encoder, node, data):
-    ...     node.iface_attr = data['iface_attr']
-
-    >>> node = base.CustomNode(name='custom')
-    >>> node.iface_attr = 'Iface Attr Value'
-    >>> json_data = serialize(node)
-    >>> json_data
-    '{"__node__": 
-    {"iface_attr": "Iface Attr Value", 
-    "attrs": {}, 
-    "class": "node.base.CustomNode", 
-    "name": "custom"}}'
-
-    >>> node = deserialize(json_data)
-    >>> node.printtree()
-    <class 'node.base.CustomNode'>: custom
-
-    >>> node.iface_attr
-    u'Iface Attr Value'
-
-    >>> node.class_attr
-
-Class bound custom serializer and deserializer:
-
-.. code-block:: pycon
-
-    >>> @serializer(CustomNode)
-    ... def serialize_custom_node(encoder, node, data):
-    ...     data['class_attr'] = node.class_attr
-
-    >>> @deserializer(CustomNode)
-    ... def deserialize_custom_node(encoder, node, data):
-    ...     node.class_attr = data['class_attr']
-
-    >>> node = base.CustomNode(name='custom')
-    >>> node.iface_attr = 'Iface Attr Value'
-    >>> node.class_attr = 'Class Attr Value'
-
-    >>> json_data = serialize(node)
-    >>> json_data
-    '{"__node__": 
-    {"class_attr": "Class Attr Value", 
-    "iface_attr": "Iface Attr Value", 
-    "attrs": {}, 
-    "class": "node.base.CustomNode", 
-    "name": "custom"}}'
-
-    >>> node = deserialize(json_data)
-    >>> node.printtree()
-    <class 'node.base.CustomNode'>: custom
-
-    >>> node.iface_attr
-    u'Iface Attr Value'
-
-    >>> node.class_attr
-    u'Class Attr Value'
-
-Custom node constructor. Patch new constructor to ``CustomNode``:
-
-.. code-block:: pycon
-
-    >>> def custom_init(self, a, b):
-    ...     self.a = a
-    ...     self.b = b
-
-    >>> CustomNode.__init__ = custom_init
-
-Override class based custom serializer to export constructor arguments:
-
-.. code-block:: pycon
-
-    >>> @serializer(CustomNode)
-    ... def serialize_custom_node(encoder, node, data):
-    ...     data['class_attr'] = node.class_attr
-    ...     data['kw'] = {
-    ...         'a': node.a,
-    ...         'b': node.b
-    ...     }
-
-Serialize and deserialize node with custom constructor:
-
-.. code-block:: pycon
-
-    >>> node = base.CustomNode(a='A', b='B')
-    >>> json_data = serialize(node)
-    >>> json_data
-    '{"__node__": 
-    {"name": null, 
-    "iface_attr": null, 
-    "class_attr": null, 
-    "kw": {"a": "A", "b": "B"}, 
-    "attrs": {}, 
-    "class": "node.base.CustomNode"}}'
-
-    >>> node = deserialize(json_data)
-    >>> node.printtree()
-    <class 'node.base.CustomNode'>: None
-
-    >>> node.a
-    u'A'
-
-    >>> node.b
-    u'B'
-
-Cleanup mock patch:
-
-.. code-block:: pycon
-
-    >>> del base.CustomNode
-
-
 Simplified serialization
 ------------------------
 
