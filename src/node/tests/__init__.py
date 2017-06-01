@@ -81,6 +81,7 @@ class NodeTestCase(unittest.TestCase):
 
 def test_suite():
     from node.tests import test_alias
+    from node.tests import test_attributes
     from node.tests import test_base
     from node.tests import test_locking
     from node.tests import test_serializer
@@ -99,6 +100,7 @@ def test_suite():
     suite.addTest(unittest.findTestCases(test_serializer))
 
     suite.addTest(unittest.findTestCases(test_alias))
+    suite.addTest(unittest.findTestCases(test_attributes))
     return suite
 
 

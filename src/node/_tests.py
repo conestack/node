@@ -19,7 +19,7 @@ TESTFILES = [
     #'locking.rst',
     #'serializer.rst',
     #'behaviors/alias.rst',
-    'behaviors/attributes.rst',
+    #'behaviors/attributes.rst',
     'behaviors/cache.rst',
     'behaviors/fallback.rst',
     'behaviors/lifecycle.rst',
