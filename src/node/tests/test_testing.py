@@ -1,8 +1,14 @@
-from node.testing import FullMappingTester
-from node.tests import NodeTestCase
 from node.compat import IS_PY2
 from node.compat import IS_PYPY
 from node.compat import iteritems
+from node.testing import FullMappingTester
+from node.testing.base import BaseTester
+from node.testing.base import ContractError
+from node.testing.base import create_tree
+from node.testing.env import MyNode
+from node.tests import NodeTestCase
+from node.tests import unittest
+from odict import odict
 
 
 ###############################################################################
@@ -171,6 +177,191 @@ class MockNodeAll(MockNodeCopy, MockMappingAll):
 ###############################################################################
 # Tests
 ###############################################################################
+
+class TestEnv(unittest.TestCase):
+
+    def test_MyNode(self):
+        # test IFullMapping contract on MyNode
+        mynode = MyNode()
+        self.assertIsInstance(mynode, MyNode)
+        # __setitem__
+        foo = mynode['foo'] = MyNode()
+        bar = mynode['bar'] = MyNode(name='xxx')
+        # __getitem__
+        self.assertEqual(mynode['foo'], foo)
+        self.assertEqual(mynode['bar'].__name__, 'bar')
+        # get
+        self.assertEqual(mynode.get('bar'), bar)
+        self.assertEqual(mynode.get('xxx', 'default'), 'default')
+        # __iter__
+        self.assertEqual([key for key in mynode], ['foo', 'bar'])
+        # keys
+        self.assertEqual(mynode.keys(), ['foo', 'bar'])
+        # iterkeys
+        self.assertEqual([key for key in mynode.iterkeys()], ['foo', 'bar'])
+        # values
+        self.assertEqual(mynode.values(), [foo, bar])
+        # itervalues
+        self.assertEqual([val for val in mynode.itervalues()], [foo, bar])
+        # items
+        self.assertEqual(mynode.items(), [
+            ('foo', foo),
+            ('bar', bar)
+        ])
+        # iteritems
+        self.assertEqual([item for item in mynode.iteritems()], [
+            ('foo', foo),
+            ('bar', bar)
+        ])
+        # __contains__
+        self.assertTrue('bar' in mynode)
+        # has_key
+        self.assertTrue(mynode.has_key('foo'))
+        # __len__
+        self.assertEqual(len(mynode), 2)
+        # update
+        baz = MyNode()
+        mynode.update((('baz', baz),))
+        self.assertEqual(mynode['baz'], baz)
+        # __delitem__
+        del mynode['bar']
+        self.assertEqual(mynode.keys(), ['foo', 'baz'])
+        # copy
+        mycopied = mynode.copy()
+        self.assertTrue(str(mycopied).find('<MyNode object \'None\' at ') > -1)
+        self.assertFalse(mycopied is mynode)
+        self.assertTrue(mycopied['foo'] is foo)
+        self.assertTrue(mycopied['baz'] is baz)
+        self.assertEqual(mycopied.items(), [
+            ('foo', foo),
+            ('baz', baz)
+        ])
+        # setdefault
+        mynew = MyNode()
+        self.assertFalse(mynode.setdefault('foo', mynew) is mynew)
+        self.assertTrue(mynode.setdefault('bar', mynew) is mynew)
+        self.assertEqual(mynode.items(), [
+            ('foo', foo),
+            ('baz', baz),
+            ('bar', mynew)
+        ])
+        # pop
+        self.assertRaises(KeyError, mynode.pop, 'xxx')
+        self.assertEqual(mynode.pop('xxx', 'default'), 'default')
+        self.assertEqual(mynode.pop('foo'), foo)
+        self.assertEqual(mynode.keys(), ['baz', 'bar'])
+        # popitem and clear
+        self.assertEqual(mynode.popitem(), ('bar', mynew))
+        self.assertEqual(mynode.keys(), ['baz'])
+        mynode.clear()
+        self.assertEqual(mynode.keys(), [])
+        self.assertRaises(KeyError, mynode.popitem)
+
+
+class TestBase(unittest.TestCase):
+
+    def test_create_tree(self):
+        self.assertEqual(create_tree(odict), odict([
+            ('child_0', odict([
+                ('subchild_0', odict()),
+                ('subchild_1', odict())
+            ])),
+            ('child_1', odict([
+                ('subchild_0', odict()),
+                ('subchild_1', odict())
+            ])),
+            ('child_2', odict([
+                ('subchild_0', odict()),
+                ('subchild_1', odict())
+            ]))
+        ]))
+
+    def test_BaseTester(self):
+        # BaseTester is used to write testing code for an interface contract.
+        # A subclass must define ``iface_contract`` containing the functions
+        # names of interface to be tested and a testing function for each
+        # contract function prefixed with 'test_'
+        class DummyTester(BaseTester):
+            iface_contract = ['func_a', 'func_b', 'func_c']
+
+            def test_func_a(self):
+                self.context.func_a()
+
+            def test_func_b(self):
+                self.context.func_b()
+
+            def test_func_c(self):
+                self.context.func_c()
+
+        # Test implementations
+        class FuncAImpl(object):
+
+            def func_a(self):
+                pass
+
+        class FuncBImpl(FuncAImpl):
+
+            def func_b(self):
+                raise Exception('func_b failed')
+
+        # Tester object expects the implementation class on init, and optional
+        # a already instantiated testing instance. If context is not given,
+        # it is instantiated by given class without arguments
+        tester = DummyTester(FuncBImpl)
+
+        # Run and print combined results
+        tester.run()
+        self.assertEqual(tester.combined.split('\n'), [
+            '``func_a``: OK',
+            '``func_b``: failed: Exception(\'func_b failed\',)',
+            '``func_c``: failed: AttributeError("\'FuncBImpl\' object has no '
+            'attribute \'func_c\'",)'
+        ])
+
+        # Get results of testing as odict
+        res = odict([
+            ('func_a', 'OK'),
+            ('func_b', 'failed: Exception(\'func_b failed\',)'),
+            ('func_c', 'failed: AttributeError("\'FuncBImpl\' object has no '
+                       'attribute \'func_c\'",)')
+        ])
+        self.assertEqual(tester.results, res)
+
+        # Print classes which actually provides the function implementation
+        self.assertEqual(tester.wherefrom.split('\n'), [
+            'func_a: FuncAImpl',
+            'func_b: FuncBImpl',
+            'func_c: function not found on object'
+        ])
+
+        # A tester can be forced to raise exceptions directly instead of
+        # collecting them
+        tester.direct_error = True
+        err = None
+        try:
+            tester.run()
+        except Exception as e:
+            err = e
+        finally:
+            self.assertEqual(str(err), 'func_b failed')
+
+        # If tester does define a function to test in ``iface_contract`` but
+        # not implements the related testing function, ``run`` will fail
+        class BrokenTester(BaseTester):
+            iface_contract = ['test_me']
+
+        err = None
+        try:
+            tester = BrokenTester(FuncBImpl)
+            tester.run()
+        except ContractError as e:
+            err = e
+        finally:
+            self.assertEqual(
+                str(err),
+                '``BrokenTester`` does not provide ``test_test_me``'
+            )
+
 
 class TestFullmapping(NodeTestCase):
 
