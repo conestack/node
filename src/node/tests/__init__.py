@@ -80,6 +80,7 @@ class NodeTestCase(unittest.TestCase):
 
 
 def test_suite():
+    from node.tests import test_alias
     from node.tests import test_base
     from node.tests import test_locking
     from node.tests import test_serializer
@@ -88,12 +89,16 @@ def test_suite():
     from node.tests import test_utils
 
     suite = unittest.TestSuite()
+
     suite.addTest(unittest.findTestCases(test_tests))
     suite.addTest(unittest.findTestCases(test_testing))
+
     suite.addTest(unittest.findTestCases(test_base))
     suite.addTest(unittest.findTestCases(test_utils))
     suite.addTest(unittest.findTestCases(test_locking))
     suite.addTest(unittest.findTestCases(test_serializer))
+
+    suite.addTest(unittest.findTestCases(test_alias))
     return suite
 
 

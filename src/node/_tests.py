@@ -11,14 +11,14 @@ optionflags = (
 )
 
 TESTFILES = [
-    'testing/env.rst',
-    'testing/base.rst',
-    'testing/fullmapping.rst',
-    'base.rst',
-    'utils.rst',
-    'locking.rst',
-    'serializer.rst',
-    'behaviors/alias.rst',
+    #'testing/env.rst',
+    #'testing/base.rst',
+    #'testing/fullmapping.rst',
+    #'base.rst',
+    #'utils.rst',
+    #'locking.rst',
+    #'serializer.rst',
+    #'behaviors/alias.rst',
     'behaviors/attributes.rst',
     'behaviors/cache.rst',
     'behaviors/fallback.rst',
