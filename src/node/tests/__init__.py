@@ -1,4 +1,5 @@
 from node.compat import IS_PY2
+from node.testing import env
 import doctest
 import sys
 
@@ -7,6 +8,69 @@ if sys.version_info < (2, 7):                                # pragma: no cover
     import unittest2 as unittest
 else:                                                        # pragma: no cover
     import unittest
+
+
+class patch(object):
+
+    def __init__(self, module, name, ob):
+        self.module = module
+        self.name = name
+        self.ob = ob
+
+    def __call__(self, ob):
+        wrap = False
+        if not hasattr(ob, '__test_patches__'):
+            ob.__test_patches__ = list()
+            wrap = True
+        ob.__test_patches__.append((self.module, self.name, self.ob))
+        if wrap:
+            def _wrapped(*args, **kw):
+                orgin = list()
+                for module, name, obj in ob.__test_patches__:
+                    orgin.append((module, name, getattr(module, name)))
+                    setattr(module, name, obj)
+                try:
+                    ob(*args, **kw)
+                except Exception as e:
+                    raise e
+                finally:
+                    for module, name, obj in orgin:
+                        setattr(module, name, obj)
+            return _wrapped
+        return ob
+
+
+class PatchedMockupNode(object):
+    pass
+
+
+class PatchedNoNode(object):
+    pass
+
+
+class TestPatch(unittest.TestCase):
+
+    @patch(env, 'MockupNode', PatchedMockupNode)
+    def test_patch(self):
+        self.assertEqual(env.MockupNode, PatchedMockupNode)
+
+    @patch(env, 'MockupNode', PatchedMockupNode)
+    @patch(env, 'NoNode', PatchedNoNode)
+    def test_multi_patch(self):
+        self.assertEqual(env.MockupNode, PatchedMockupNode)
+        self.assertEqual(env.NoNode, PatchedNoNode)
+
+    def test_patched_raises(self):
+        def raises():
+            raise Exception()
+
+        @patch(env, 'NoNode', PatchedNoNode)
+        def test_raises():
+            self.assertEqual(env.NoNode.__name__, 'PatchedNoNode')
+            raises()
+
+        self.assertRaises(Exception, test_raises)
+        self.assertEqual(env.NoNode.__name__, 'NoNode')
 
 
 class Example(object):
@@ -95,17 +159,23 @@ def test_suite():
     from node.tests import test_testing_base
     from node.tests import test_testing_fullmapping
     from node.tests import test_utils
+    from node.tests import test_locking
 
     suite = unittest.TestSuite()
+
+    suite.addTest(TestPatch('test_patch'))
+    suite.addTest(TestPatch('test_multi_patch'))
+    suite.addTest(TestPatch('test_patched_raises'))
     suite.addTest(TestNodeTestCase('test_except_error'))
     suite.addTest(TestNodeTestCase('test_check_output'))
+
     suite.addTest(unittest.findTestCases(test_testing_env))
     suite.addTest(unittest.findTestCases(test_testing_base))
     suite.addTest(unittest.findTestCases(test_testing_fullmapping))
 
-    suite.addTest(unittest.findTestCases(test_utils))
-
     suite.addTest(unittest.findTestCases(test_base))
+    suite.addTest(unittest.findTestCases(test_utils))
+    suite.addTest(unittest.findTestCases(test_locking))
 
     return suite
 
