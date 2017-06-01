@@ -1,4 +1,4 @@
-from node import base
+from node.base import AbstractNode
 from node.base import AttributedNode
 from node.base import BaseNode
 from node.base import OrderedNode
@@ -88,7 +88,6 @@ class TestSerializer(NodeTestCase):
         # Basic ``INode`` implementing object serialization
         json_data = serialize(BaseNode())
         data = json.loads(json_data)
-
         self.assertEqual(list(data.keys()), ['__node__'])
 
         node_data = data['__node__']
@@ -112,7 +111,6 @@ class TestSerializer(NodeTestCase):
 
         json_data = serialize(node)
         data = json.loads(json_data)
-
         self.assertEqual(list(data.keys()), ['__node__'])
 
         node_data = data['__node__']
@@ -163,7 +161,6 @@ class TestSerializer(NodeTestCase):
         ))
 
         json_data = serialize(node.values())
-        json_data
         data = json.loads(json_data)
         self.assertTrue(isinstance(data, list))
         self.assertEqual(len(data), 2)
@@ -209,7 +206,6 @@ class TestSerializer(NodeTestCase):
 
         json_data = serialize(node)
         data = json.loads(json_data)
-
         self.assertEqual(list(data.keys()), ['__node__'])
 
         node_data = data['__node__']
@@ -262,7 +258,6 @@ class TestSerializer(NodeTestCase):
 
         json_data = serialize(node)
         data = json.loads(json_data)
-
         self.assertEqual(list(data.keys()), ['__node__'])
 
         node_data = data['__node__']
@@ -308,9 +303,9 @@ class TestSerializer(NodeTestCase):
         node.iface_attr = 'Iface Attr Value'
         # Class bound custom serializer and deserializer handles class_attr
         node.class_attr = 'Class Attr Value'
+
         json_data = serialize(node)
         data = json.loads(json_data)
-
         self.assertEqual(list(data.keys()), ['__node__'])
 
         node_data = data['__node__']
@@ -336,9 +331,9 @@ class TestSerializer(NodeTestCase):
     def test_custom_init(self):
         # Serialize and deserialize node with custom constructor
         node = CustomInitNode(a='A', b='B')
+
         json_data = serialize(node)
         data = json.loads(json_data)
-
         self.assertEqual(list(data.keys()), ['__node__'])
 
         node_data = data['__node__']
@@ -357,48 +352,62 @@ class TestSerializer(NodeTestCase):
         self.assertEqual(node_data['class_attr'], None)
 
         node = deserialize(json_data)
-        node = deserialize(json_data)
         expected = '<CustomInitNode object \'None\' at'
         self.assertTrue(str(node).startswith(expected))
         self.assertEqual(node.a, 'A')
         self.assertEqual(node.b, 'B')
 
-"""
-Simplified serialization
-------------------------
+    ###########################################################################
+    # Simplified serialization
+    ###########################################################################
 
-Serialize node trees without type information. Such data is not deserializable
-by default deserializer. Supposed to be used for domain specific
-(Browser-) applications dealing with node data:
+    def test_simplified(self):
+        # Serialize node trees without type information. Such data is not
+        # deserializable by default deserializer. Supposed to be used for
+        # domain specific (Browser-) applications dealing with node data
+        node = BaseNode(name='base')
+        child = node['child'] = AttributedNode()
+        child.attrs['foo'] = 'Foo'
+        child.attrs['ref'] = AbstractNode
 
-.. code-block:: pycon
+        # If all nodes are the same type, call ``serialize`` with
+        # ``simple_mode=True``
+        json_data = serialize(node, simple_mode=True)
+        data = json.loads(json_data)
+        self.assertEqual(sorted(list(data.keys())), ['children', 'name'])
+        self.assertEqual(data['name'], 'base')
+        self.assertEqual(len(data['children']), 1)
 
-    >>> node = BaseNode(name='base')
-    >>> child = node['child'] = AttributedNode()
-    >>> child.attrs['foo'] = 'Foo'
-    >>> child.attrs['ref'] = base.AbstractNode
+        child_data = data['children'][0]
+        self.assertEqual(sorted(list(child_data.keys())), ['attrs', 'name'])
+        self.assertEqual(child_data['name'], 'child')
 
-If all nodes are the same type, call ``serialize`` with ``simple_mode=True``:
+        child_attrs = child_data['attrs']
+        self.assertEqual(sorted(list(child_attrs.keys())), ['foo', 'ref'])
+        self.assertEqual(child_attrs['foo'], 'Foo')
+        self.assertEqual(child_attrs['ref'], 'node.base.AbstractNode')
 
-.. code-block:: pycon
+        # If nodes are different types and you do not care about exposing the
+        # class name, pass ``include_class=True`` to ``serialize``
+        json_data = serialize(node, simple_mode=True, include_class=True)
+        data = json.loads(json_data)
+        self.assertEqual(
+            sorted(list(data.keys())),
+            ['children', 'class', 'name']
+        )
+        self.assertEqual(data['class'], 'node.base.BaseNode')
+        self.assertEqual(data['name'], 'base')
+        self.assertEqual(len(data['children']), 1)
 
-    >>> serialize(node, simple_mode=True)
-    '{"name": "base", 
-    "children": 
-    [{"name": "child", 
-    "attrs": {"foo": "Foo", "ref": "node.base.AbstractNode"}}]}'
+        child_data = data['children'][0]
+        self.assertEqual(
+            sorted(list(child_data.keys())),
+            ['attrs', 'class', 'name']
+        )
+        self.assertEqual(child_data['class'], 'node.base.AttributedNode')
+        self.assertEqual(child_data['name'], 'child')
 
-If nodes are different types and you do not care about exposing the class name,
-pass ``include_class=True`` to ``serialize``:
-
-.. code-block:: pycon
-
-    >>> serialize(node, simple_mode=True, include_class=True)
-    '{"children": 
-    [{"attrs": {"foo": "Foo", "ref": "node.base.AbstractNode"}, 
-    "class": "node.base.AttributedNode", 
-    "name": "child"}], 
-    "class": "node.base.BaseNode", 
-    "name": "base"}'
-
-"""
+        child_attrs = child_data['attrs']
+        self.assertEqual(sorted(list(child_attrs.keys())), ['foo', 'ref'])
+        self.assertEqual(child_attrs['foo'], 'Foo')
+        self.assertEqual(child_attrs['ref'], 'node.base.AbstractNode')
