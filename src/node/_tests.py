@@ -21,7 +21,7 @@ TESTFILES = [
     # 'behaviors/alias.rst',
     # 'behaviors/attributes.rst',
     # 'behaviors/cache.rst',
-    'behaviors/fallback.rst',
+    # 'behaviors/fallback.rst',
     'behaviors/lifecycle.rst',
     'behaviors/mapping.rst',
     'behaviors/nodespace.rst',
