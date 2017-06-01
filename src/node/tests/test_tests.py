@@ -6,6 +6,10 @@ from node.tests import patch
 from node.tests import unittest
 
 
+###############################################################################
+# Mock objects
+###############################################################################
+
 class PatchedMockupNode(object):
     pass
 
@@ -13,6 +17,10 @@ class PatchedMockupNode(object):
 class PatchedNoNode(object):
     pass
 
+
+###############################################################################
+# Tests
+###############################################################################
 
 class TestPatch(unittest.TestCase):
 
