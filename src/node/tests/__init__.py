@@ -155,11 +155,12 @@ class TestNodeTestCase(NodeTestCase):
 
 def test_suite():
     from node.tests import test_base
-    from node.tests import test_testing_env
+    from node.tests import test_locking
+    from node.tests import test_serializer
     from node.tests import test_testing_base
+    from node.tests import test_testing_env
     from node.tests import test_testing_fullmapping
     from node.tests import test_utils
-    from node.tests import test_locking
 
     suite = unittest.TestSuite()
 
@@ -176,6 +177,7 @@ def test_suite():
     suite.addTest(unittest.findTestCases(test_base))
     suite.addTest(unittest.findTestCases(test_utils))
     suite.addTest(unittest.findTestCases(test_locking))
+    suite.addTest(unittest.findTestCases(test_serializer))
 
     return suite
 
