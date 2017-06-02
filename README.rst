@@ -326,37 +326,18 @@ Summary of the test coverage report::
     src/node/tests/test_storage.py                             41      0   100%
     src/node/tests/test_testing.py                            688      0   100%
     src/node/tests/test_tests.py                               50      0   100%
-    src/node/tests/test_utils.py                              129      0   100%
+    src/node/tests/test_utils.py                              127      0   100%
     src/node/utils.py                                         142      0   100%
     ---------------------------------------------------------------------------
-    TOTAL                                                    4012      0   100%
+    TOTAL                                                    4010      0   100%
 
-    lines   cov%   module
-        1   100%   node.__init__
-       61   100%   node.base
-       36   100%   node.behaviors.__init__
-      111   100%   node.behaviors.alias
-       42   100%   node.behaviors.attributes
-       68   100%   node.behaviors.cache
-      131   100%   node.behaviors.common
-       41   100%   node.behaviors.fallback
-       56   100%   node.behaviors.lifecycle
-      124   100%   node.behaviors.mapping
-       34   100%   node.behaviors.nodespace
-       92   100%   node.behaviors.nodify
-      109   100%   node.behaviors.order
-       84   100%   node.behaviors.reference
-       30   100%   node.behaviors.storage
-       25   100%   node.events
-      133   100%   node.interfaces
-       23   100%   node.locking
-      136   100%   node.serializer
-        1   100%   node.testing.__init__
-       62   100%   node.testing.base
-       24   100%   node.testing.env
-      216   100%   node.testing.fullmapping
-       31   100%   node.tests
-      138   100%   node.utils
+
+Python Versions
+---------------
+
+- Python 2.7, 3.3+, pypy
+
+- May work with other versions (untested)
 
 
 Contributors
