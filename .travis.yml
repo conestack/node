@@ -1,7 +1,23 @@
 language: python
-python: "2.7"
 sudo: false
+
+python:
+  - "2.7"
+  - "3.3"
+  - "3.4"
+  - "3.5"
+  - "3.6"
+  - "pypy"  # PyPy2 2.5.0
+  - "pypy-5.3.1"
+
 install:
-  - pip install -U pip setuptools zc.buildout
-  - buildout 
-script: ./bin/test
+  - pip install zope.interface
+  - pip install zope.lifecycleevent
+  - pip install zope.component
+  - pip install zope.deprecation
+  - pip install https://github.com/bluedynamics/odict/archive/master.zip
+  - pip install https://github.com/bluedynamics/plumber/archive/master.zip
+  - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install -U unittest2; fi
+  - python setup.py install
+
+script: python -m unittest node.tests.test_suite

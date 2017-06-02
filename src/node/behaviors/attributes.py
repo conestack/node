@@ -3,6 +3,7 @@ from node.behaviors.common import Adopt
 from node.behaviors.common import NodeChildValidate
 from node.behaviors.nodify import Nodify
 from node.behaviors.storage import OdictStorage
+from node.compat import IS_PY2
 from node.interfaces import IAttributes
 from node.utils import AttributeAccess
 from plumber import Behavior
@@ -23,14 +24,18 @@ class NodeAttributes(object):
     def __init__(self, name=None, parent=None):
         self.__name__ = name
         self.__parent__ = parent
-        self.context = parent  # BBB 2011-01-31
-        self._node = parent    # BBB 2011-01-31
+        self.context = parent  # B/C 2011-01-31
+        self._node = parent    # B/C 2011-01-31
 
     def __repr__(self):
-        name = unicode(self.parent.name).encode('ascii', 'replace')
-        return "<%s object '%s' at %s>" % (self.__class__.__name__,
-                                           name,
-                                           hex(id(self))[:-1])
+        name = self.parent.name.encode('ascii', 'replace') \
+            if IS_PY2 and isinstance(self.parent.name, unicode) \
+            else str(self.parent.name)
+        return '<{} object \'{}\' at {}>'.format(
+            self.__class__.__name__,
+            name,
+            hex(id(self))[:-1]
+        )
 
 
 @implementer(IAttributes)
@@ -50,5 +55,5 @@ class Attributes(Behavior):
             return AttributeAccess(attrs)
         return attrs
 
-    # BBB
+    # B/C
     attributes = finalize(attrs)

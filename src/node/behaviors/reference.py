@@ -40,10 +40,10 @@ class Reference(Behavior):
     def __setitem__(_next, self, key, val):
         if INode.providedBy(val):
             try:
-                val.iterkeys().next()
+                next(val.iterkeys())
                 keys = set(self._index.keys())
                 if keys.intersection(val._index.keys()):
-                    raise ValueError(u"Node with uuid already exists")
+                    raise ValueError('Node with uuid already exists')
             except StopIteration:
                 pass
             self._index.update(val._index)
@@ -72,8 +72,8 @@ class Reference(Behavior):
     def _set_uuid(self, uuid):
         iuuid = uuid is not None and int(uuid) or None
         if iuuid in self._index \
-          and self._index[iuuid] is not self:
-            raise ValueError(u"Given uuid was already used for another Node")
+                and self._index[iuuid] is not self:
+            raise ValueError('Given uuid was already used for another Node')
         siuuid = self._uuid is not None and int(self._uuid) or None
         if siuuid in self._index:
             del self._index[siuuid]

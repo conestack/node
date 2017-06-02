@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from node.compat import ITER_FUNC
+from node.compat import iteritems
 from node.utils import UNSET
 from plumber import Behavior
 from plumber import default
@@ -18,7 +20,7 @@ import copy
 
 @implementer(IItemMapping)
 class ItemMapping(Behavior):
-    """Simplest readable mapping object
+    """Simplest readable mapping object.
     """
 
     @default
@@ -28,7 +30,7 @@ class ItemMapping(Behavior):
 
 @implementer(IReadMapping)
 class ReadMapping(ItemMapping):
-    """Basic mapping interface
+    """Basic mapping interface.
     """
 
     @default
@@ -59,7 +61,7 @@ class ReadMapping(ItemMapping):
 
 @implementer(IWriteMapping)
 class WriteMapping(Behavior):
-    """Mapping methods for changing data
+    """Mapping methods for changing data.
     """
 
     @default
@@ -111,7 +113,7 @@ class EnumerableMapping(ReadMapping):
 
 @implementer(IMapping)
 class Mapping(WriteMapping, EnumerableMapping):
-    """Simple mapping interface
+    """Simple mapping interface.
     """
 
 
@@ -128,7 +130,7 @@ class IterableMapping(EnumerableMapping):
     def itervalues(self):
         """Uses ``__iter__`` and ``__getitem__``.
 
-        iter values in key order
+        Iterate values in key order.
         """
         for key in self:
             yield self[key]
@@ -137,7 +139,7 @@ class IterableMapping(EnumerableMapping):
     def iteritems(self):
         """Uses ``__iter__`` and ``__getitem__``.
 
-        iter items in key order
+        Iterate items in key order.
         """
         for key in self:
             yield key, self[key]
@@ -161,7 +163,7 @@ class ExtendedReadMapping(IterableMapping):
 
     @default
     def has_key(self, key):
-        """uses ``__iter__``
+        """Uses ``__iter__``.
         """
         return key in self
 
@@ -171,7 +173,7 @@ class ExtendedWriteMapping(WriteMapping):
 
     @default
     def clear(self):
-        """works only if together with EnumerableMapping
+        """Works only if together with EnumerableMapping.
         """
         for key in self.keys():
             del self[key]
@@ -179,20 +181,20 @@ class ExtendedWriteMapping(WriteMapping):
     @default
     def update(self, *args, **kw):
         if len(args) > 1:
-            raise TypeError("At most one positional argument, not: %s." % \
-                    (len(args),))
+            msg = 'At most one positional argument, not: {}.'.format(len(args))
+            raise TypeError(msg)
         if args:
             data = args[0]
-            if hasattr(data, 'iteritems'):
-                data = data.iteritems()
+            if hasattr(data, ITER_FUNC):
+                data = iteritems(data)
             for key, val in data:
                 self[key] = val
-        for key, val in kw.iteritems():
+        for key, val in iteritems(kw):
             self[key] = val
 
     @default
     def setdefault(self, key, default=None):
-        """works only if together with ReadMapping
+        """Works only if together with ReadMapping.
         """
         try:
             return self[key]
@@ -202,7 +204,7 @@ class ExtendedWriteMapping(WriteMapping):
 
     @default
     def pop(self, key, default=UNSET):
-        """works only if together with ReadMapping
+        """Works only if together with ReadMapping.
         """
         try:
             val = self[key]
@@ -215,7 +217,7 @@ class ExtendedWriteMapping(WriteMapping):
 
     @default
     def popitem(self):
-        """works only if together with IterableMapping
+        """Works only if together with IterableMapping.
         """
         for key in reversed(self.keys()):
             val = self[key]

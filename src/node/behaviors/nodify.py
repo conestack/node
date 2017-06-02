@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 from node.behaviors.mapping import FullMapping
+from node.compat import IS_PY2
 from node.interfaces import IDefaultInit
 from node.interfaces import INode
 from node.interfaces import INodify
@@ -68,95 +70,74 @@ class Nodify(FullMapping):
     def acquire(self, interface):
         node = self.parent
         while node:
-            if (IInterface.providedBy(interface) \
-              and interface.providedBy(node)) \
-              or isinstance(node, interface):
+            if (IInterface.providedBy(interface) and
+                    interface.providedBy(node)) or \
+                    isinstance(node, interface):
                 return node
             node = node.parent
 
     @override
     def filtereditervalues(self, interface):
-        """Uses ``itervalues``.
-        """
         for val in self.itervalues():
             if interface.providedBy(val):
                 yield val
 
     @override
     def filteredvalues(self, interface):
-        """Uses ``values``.
-        """
         return [val for val in self.filtereditervalues(interface)]
 
-    # BBB 2010-12-23
+    # B/C 2010-12-23
     filtereditems = override(filtereditervalues)
 
     @override
     @property
     def noderepr(self):
-        """``noderepr`` is used in ``printtree``.
+        """``noderepr`` is used in ``treerepr``.
 
         Thus, we can overwrite it in subclass and return any debug information
         we need while ``__repr__`` is an enhanced standard object
         representation, also used as ``__str__`` on nodes.
-
-        XXX: do we really need the difference or can we just override __repr__
-        in subclasses and use __repr__ in printtree?
         """
-        # XXX: is this a relict from plumber prototyping? -rn
-        #if hasattr(self.__class__, '_wrapped'):
-        #    class_ = self.__class__._wrapped
-        #else:
-        #    class_ = self.__class__
-        class_ = self.__class__
-        name = self.__name__
-        if isinstance(name, unicode):
-            name = name.encode('ascii', 'replace')
-        else:
-            name = str(name)
-        return str(class_) + ': ' + name[name.find(':') + 1:]
+        class_name = self.__class__
+        name = self.name.encode('ascii', 'replace') \
+            if IS_PY2 and isinstance(self.name, unicode) \
+            else str(self.name)
+        return str(class_name) + ': ' + name[name.find(':') + 1:]
 
     @override
-    def printtree(self, indent=0):
-        print "{0}{1}".format(indent * ' ', self.noderepr)
+    def treerepr(self, indent=0):
+        res = '{}{}\n'.format(indent * ' ', self.noderepr)
         for key, value in self.items():
             if INode.providedBy(value):
-                value.printtree(indent + 2)
+                res += value.treerepr(indent + 2)
             else:
-                print "{0}{1}: {2}".format(
+                res += '{}{}: {}\n'.format(
                     (indent + 2) * ' ',
                     key,
                     repr(value)
                 )
+        return res
 
-    # XXX: tricky one: If a base class provides a __nonzero__ and that
-    # base class is nodified, should the base class' __nonzero__ be
-    # used or this one? Please write your thoughts here -cfl
-    #
-    # I think @default is fine, leaves most possible flexibility to the user.
-    # Other thoughts? -rn
+    @override
+    def printtree(self):
+        print(self.treerepr())                               # pragma: no cover
 
     @default
     def __nonzero__(self):
         return True
 
+    __bool__ = default(__nonzero__)
+
     @override
     def __repr__(self):
-        # XXX: is this a relict from plumber prototyping? -rn
-        #if hasattr(self.__class__, '_wrapped'):
-        #    class_name = self.__class__._wrapped.__name__
-        #else:
-        #    class_name = self.__class__.__name__
         class_name = self.__class__.__name__
-        # XXX: This is mainly used in doctest, I think
-        #      doctest fails if we output utf-8
-        name = self.__name__
-        if isinstance(name, unicode):
-            name = name.encode('ascii', 'replace')
-        else:
-            name = str(name)
-        return "<%s object '%s' at %s>" % (class_name,
-                                           name,
-                                           hex(id(self))[:-1])
+        name = self.name.encode('ascii', 'replace') \
+            if IS_PY2 and isinstance(self.name, unicode) \
+            else str(self.name)
+        return '<{} object \'{}\' at {}>'.format(
+            class_name,
+            name,
+            hex(id(self))[:-1]
+        )
 
     __str__ = override(__repr__)

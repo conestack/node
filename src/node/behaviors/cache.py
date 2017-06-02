@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from node.compat import IS_PY2
 from node.interfaces import ICache
 from node.interfaces import IInvalidate
 from node.utils import instance_property
@@ -6,6 +7,21 @@ from plumber import Behavior
 from plumber import default
 from plumber import plumb
 from zope.interface import implementer
+
+
+def _keys(obj):
+    """Compat function to always get keys as list.
+
+    Currently used to avoid modification of dict while iterating in python 3.
+        for key in _keys(ob):
+            del ob[key]
+
+    Can probably be replaced by just using.
+        ob.clear()
+
+    Business logic changes after whole stack has been migrated to python 3.
+    """
+    return obj.keys() if IS_PY2 else list(obj.keys())
 
 
 @implementer(IInvalidate)
@@ -23,7 +39,7 @@ class Invalidate(Behavior):
         if key is not None:
             del self[key]
         else:
-            for key in self.keys():
+            for key in _keys(self):
                 del self[key]
 
 
@@ -39,15 +55,15 @@ class VolatileStorageInvalidate(Behavior):
         """
         storage = self.storage
         if key is not None:
-            if key in self.keys():
+            if key in _keys(self):
                 try:
                     del storage[key]
-                except KeyError, e:
-                    pass # ignore, key is valid, but not on storage right now
+                except KeyError:
+                    pass  # ignore, key is valid, but not on storage right now
             else:
                 raise KeyError(key)
         else:
-            for key in storage.keys():
+            for key in _keys(storage):
                 del storage[key]
 
 
@@ -70,7 +86,7 @@ class Cache(Behavior):
             except KeyError:
                 pass
         else:
-            for key in cache.keys():
+            for key in _keys(cache):
                 del cache[key]
         _next(self, key=key)
 
@@ -82,13 +98,6 @@ class Cache(Behavior):
         except KeyError:
             cache[key] = _next(self, key)
         return cache[key]
-
-    # XXX: think of using subscribers instead of plumbings for cache
-    #      invalidation on __setitem__, __delitem__, __iter__.
-    #      but this makes us depend caching to lifecycle.
-    #
-    #      might be another caching mechanism, both caching variants are
-    #      possible then.
 
     @plumb
     def __setitem__(_next, self, key, value):
