@@ -1,6 +1,4 @@
 from node.base import BaseNode
-from node.compat import IS_PY2
-from node.compat import IS_PYPY
 from node.tests import NodeTestCase
 from node.utils import AttributeAccess
 from node.utils import ReverseMapping
@@ -80,7 +78,10 @@ class TestUtils(NodeTestCase):
         )
         self.assertEqual(encode(u'\xe4'), b'\xc3\xa4')
         self.assertEqual(encode([u'\xe4']), [b'\xc3\xa4'])
-        self.assertEqual(encode({u'\xe4': u'\xe4'}), {b'\xc3\xa4': b'\xc3\xa4'})
+        self.assertEqual(
+            encode({u'\xe4': u'\xe4'}),
+            {b'\xc3\xa4': b'\xc3\xa4'}
+        )
         self.assertEqual(encode(b'\xc3\xa4'), b'\xc3\xa4')
 
         node = BaseNode()
@@ -102,15 +103,12 @@ class TestUtils(NodeTestCase):
     def test_StrCodec(self):
         codec = StrCodec(soft=False)
         expected = (
-            '\'utf8\' codec can\'t decode byte 0xe4 in position 2: '
-            'unexpected end of data'
-        ) if IS_PY2 and not IS_PYPY else (
-            '\'utf-8\' codec can\'t decode byte 0xe4 in position 2: '
+            'codec can\'t decode byte 0xe4 in position 2: '
             'unexpected end of data'
         )
         err = self.except_error(UnicodeDecodeError,
                                 lambda: codec.decode(b'fo\xe4'))
-        self.assertEqual(str(err), expected)
+        self.assertTrue(str(err).find(expected) > -1)
 
     def test_instance_property(self):
         computed = list()
