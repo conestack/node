@@ -11,8 +11,8 @@ from node.behaviors.common import ChildFactory
 from node.behaviors.common import FixedChildren
 from node.behaviors.common import GetattrChildren
 from node.behaviors.common import NodeChildValidate
-from node.behaviors.common import UnicodeAware
 from node.behaviors.common import UUIDAware
+from node.behaviors.common import UnicodeAware
 from node.behaviors.fallback import Fallback
 from node.behaviors.lifecycle import AttributesLifecycle
 from node.behaviors.lifecycle import Lifecycle

@@ -25,7 +25,7 @@ class DictAliaser(odict):
     def alias(self, key):
         try:
             return ReverseMapping(self)[key]
-        except KeyError, e:
+        except KeyError as e:
             if not self.strict:
                 return key
             raise e
@@ -33,7 +33,7 @@ class DictAliaser(odict):
     def unalias(self, aliased_key):
         try:
             return self[aliased_key]
-        except KeyError, e:
+        except KeyError as e:
             if not self.strict:
                 return aliased_key
             raise e
@@ -57,8 +57,10 @@ class PrefixAliaser(object):
         """
         prefix = self.prefix or ''
         if not prefixed_key.startswith(prefix):
-            raise KeyError(u"key '%s' does not match prefix '%s'" % \
-                    (prefixed_key, prefix))
+            raise KeyError(u"key '{}' does not match prefix '{}'".format(
+                prefixed_key,
+                prefix
+            ))
         return prefixed_key[len(prefix):]
 
 
@@ -80,10 +82,10 @@ class SuffixAliaser(object):
         """
         suffix = self.suffix or ''
         if not suffixed_key.endswith(suffix):
-            raise KeyError(
-                    u"key '%s' does not match suffix '%s'" % \
-                            (suffixed_key, suffix)
-                    )
+            raise KeyError(u"key '{}' does not match suffix '{}'".format(
+                suffixed_key,
+                suffix
+            ))
         return suffixed_key[:-len(suffix)]
 
 

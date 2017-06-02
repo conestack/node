@@ -2,6 +2,8 @@
 from inspect import isclass
 from inspect import isfunction
 from inspect import ismethod
+from node.compat import IS_PY2
+from node.compat import STR_TYPE
 from node.interfaces import IAttributes
 from node.interfaces import INode
 from node.utils import UNSET
@@ -90,8 +92,11 @@ class NodeEncoder(json.JSONEncoder):
         """Return dotted name of object.
         """
         if isclass(ob) or isfunction(ob):
-            return '.'.join([ob.__module__, ob.__name__])
+            return '.'.join(
+                [ob.__module__, ob.__name__ if IS_PY2 else ob.__qualname__]
+            )
         elif ismethod(ob):
+            # this block is not reached in python 3, ignore missing coverage
             return '.'.join(
                 [ob.im_class.__module__, ob.im_class.__name__, ob.__name__]
             )
@@ -161,7 +166,7 @@ class NodeDecoder(object):
 
     def decode(self, data, parent=None):
         # decode data from string
-        if isinstance(data, basestring):
+        if isinstance(data, STR_TYPE):
             # decode UNSET
             if data == '<UNSET>':
                 return UNSET

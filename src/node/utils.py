@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
-from interfaces import IAttributeAccess
-from interfaces import INode
+from node.compat import STR_TYPE
+from node.compat import UNICODE_TYPE
+from node.compat import func_name
+from node.compat import iteritems
+from node.interfaces import IAttributeAccess
+from node.interfaces import INode
 from zope.interface import implementer
 from zope.interface.common.mapping import IEnumerableMapping
 import logging
@@ -18,6 +22,8 @@ class Unset(object):
     def __nonzero__(self):
         return False
 
+    __bool__ = __nonzero__
+
     def __str__(self):
         return ''
 
@@ -31,15 +37,14 @@ class Unset(object):
 UNSET = Unset()
 
 
-def LocationIterator(object):
+def LocationIterator(obj):
     """Iterate over an object and all of its parents.
 
     Copied from ``zope.location.LocationIterator``.
-
     """
-    while object is not None:
-        yield object
-        object = getattr(object, '__parent__', None)
+    while obj is not None:
+        yield obj
+        obj = getattr(obj, '__parent__', None)
 
 
 @implementer(IEnumerableMapping)
@@ -50,7 +55,7 @@ class ReverseMapping(object):
     def __init__(self, context):
         """Object behaves as adapter for dict like object.
 
-        ``context``: a dict like object.
+        :param context: a dict like object.
         """
         self.context = context
 
@@ -137,11 +142,9 @@ class StrCodec(object):
 
     def __init__(self, encoding=CHARACTER_ENCODING, soft=True):
         """
-        ``encoding``
-            the character encoding to decode from/encode to
-
-        ``soft``
-           if True, catch UnicodeDecodeErrors and leave this strings as-is.
+        :param encoding: the character encoding to decode from/encode to
+        :param soft: if True, catch UnicodeDecodeErrors and leave this
+        strings as-is.
         """
         self._encoding = encoding
         self._soft = soft
@@ -151,6 +154,7 @@ class StrCodec(object):
 
         - strs are decoded and reencode to make sure they conform to the
           encoding.
+
           XXX: makes no sence, especially because a UnicodeDecodeError ends up
                in a recursion error due to re-trying to encode. See below.
                Added condition to return if str is still str after decoding.
@@ -165,25 +169,25 @@ class StrCodec(object):
         if isinstance(arg, (list, tuple)):
             arg = arg.__class__(map(self.encode, arg))
         elif isinstance(arg, dict):
-            arg = dict([self.encode(t) for t in arg.iteritems()])
-        elif isinstance(arg, str):
+            arg = dict([self.encode(t) for t in iteritems(arg)])
+        elif isinstance(arg, bytes):
             arg = self.decode(arg)
             # If UnicodeDecodeError, binary data is expected. Return value
             # as is.
-            if not isinstance(arg, str):
+            if not isinstance(arg, bytes):
                 arg = self.encode(arg)
-        elif isinstance(arg, unicode):
+        elif isinstance(arg, UNICODE_TYPE):
             arg = arg.encode(self._encoding)
         elif INode.providedBy(arg):
-            arg = dict([self.encode(t) for t in arg.iteritems()])
+            arg = dict([self.encode(t) for t in iteritems(arg)])
         return arg
 
     def decode(self, arg):
         if isinstance(arg, (list, tuple)):
             arg = arg.__class__(map(self.decode, arg))
         elif isinstance(arg, dict):
-            arg = dict([self.decode(t) for t in arg.iteritems()])
-        elif isinstance(arg, str):
+            arg = dict([self.decode(t) for t in iteritems(arg)])
+        elif isinstance(arg, bytes):
             try:
                 arg = arg.decode(self._encoding)
             except UnicodeDecodeError:
@@ -192,7 +196,7 @@ class StrCodec(object):
                 if not self._soft:
                     raise
         elif INode.providedBy(arg):
-            arg = dict([self.decode(t) for t in arg.iteritems()])
+            arg = dict([self.decode(t) for t in iteritems(arg)])
         return arg
 
 
@@ -208,10 +212,14 @@ def instance_property(func):
     Set instance attribute with '_' prefix.
     """
     def wrapper(self):
-        attribute_name = '_%s' % func.__name__
-        if not hasattr(self, attribute_name):
-            setattr(self, attribute_name, func(self))
-        return getattr(self, attribute_name)
+        attribute_name = '_{}'.format(func.__name__)
+        # do not use hasattr/getattr to avoid problems when overwriting
+        # __getattr__ on a class which also uses instance_property
+        try:
+            return object.__getattribute__(self, attribute_name)
+        except AttributeError:
+            object.__setattr__(self, attribute_name, func(self))
+            return object.__getattribute__(self, attribute_name)
     wrapper.__doc__ = func.__doc__
     return property(wrapper)
 
@@ -219,7 +227,7 @@ def instance_property(func):
 def node_by_path(root, path):
     """Return node by path from root
     """
-    if isinstance(path, basestring):
+    if isinstance(path, STR_TYPE):
         path = path.strip('/')
         path = path.split('/') if path else []
     if not path:
@@ -234,11 +242,16 @@ def debug(func):
     """Decorator for logging debug messages.
     """
     def wrapped(*args, **kws):
-        logger.debug(
-            u'%s: args=%s, kws=%s' % (
-                func.func_name, unicode(args), unicode(kws)))
+        logger.debug(u'{}: args={}, kws={}'.format(
+            func_name(func),
+            UNICODE_TYPE(args),
+            UNICODE_TYPE(kws)
+        ))
         f_result = func(*args, **kws)
-        logger.debug(u'%s: --> %s' % (func.func_name, unicode(f_result)))
+        logger.debug(u'{}: --> {}'.format(
+            func_name(func),
+            UNICODE_TYPE(f_result)
+        ))
         return f_result
     wrapped.__doc__ = func.__doc__
     return wrapped
