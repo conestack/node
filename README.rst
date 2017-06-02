@@ -283,6 +283,54 @@ TestCoverage
 
 Summary of the test coverage report::
 
+    Name                                                    Stmts   Miss  Cover
+    ---------------------------------------------------------------------------
+    src/node/base.py                                           23      0   100%
+    src/node/behaviors/__init__.py                             36      0   100%
+    src/node/behaviors/alias.py                               103      0   100%
+    src/node/behaviors/attributes.py                           37      0   100%
+    src/node/behaviors/cache.py                                69      0   100%
+    src/node/behaviors/common.py                              130      0   100%
+    src/node/behaviors/fallback.py                             41      0   100%
+    src/node/behaviors/lifecycle.py                            48      0   100%
+    src/node/behaviors/mapping.py                             117      0   100%
+    src/node/behaviors/nodespace.py                            33      0   100%
+    src/node/behaviors/nodify.py                               84      0   100%
+    src/node/behaviors/order.py                               109      0   100%
+    src/node/behaviors/reference.py                            83      0   100%
+    src/node/behaviors/storage.py                              31      0   100%
+    src/node/compat.py                                         10      0   100%
+    src/node/events.py                                         25      0   100%
+    src/node/interfaces.py                                     96      0   100%
+    src/node/locking.py                                        23      0   100%
+    src/node/serializer.py                                    134      0   100%
+    src/node/testing/__init__.py                                1      0   100%
+    src/node/testing/base.py                                   66      0   100%
+    src/node/testing/env.py                                    18      0   100%
+    src/node/testing/fullmapping.py                           177      0   100%
+    src/node/tests/__init__.py                                 85      0   100%
+    src/node/tests/test_alias.py                              113      0   100%
+    src/node/tests/test_attributes.py                          38      0   100%
+    src/node/tests/test_base.py                               245      0   100%
+    src/node/tests/test_cache.py                               98      0   100%
+    src/node/tests/test_common.py                             154      0   100%
+    src/node/tests/test_fallback.py                            46      0   100%
+    src/node/tests/test_lifecycle.py                          105      0   100%
+    src/node/tests/test_locking.py                             43      0   100%
+    src/node/tests/test_mapping.py                             22      0   100%
+    src/node/tests/test_nodespace.py                           44      0   100%
+    src/node/tests/test_nodify.py                              45      0   100%
+    src/node/tests/test_order.py                              134      0   100%
+    src/node/tests/test_reference.py                           74      0   100%
+    src/node/tests/test_serializer.py                         222      0   100%
+    src/node/tests/test_storage.py                             41      0   100%
+    src/node/tests/test_testing.py                            688      0   100%
+    src/node/tests/test_tests.py                               50      0   100%
+    src/node/tests/test_utils.py                              129      0   100%
+    src/node/utils.py                                         142      0   100%
+    ---------------------------------------------------------------------------
+    TOTAL                                                    4012      0   100%
+
     lines   cov%   module
         1   100%   node.__init__
        61   100%   node.base
