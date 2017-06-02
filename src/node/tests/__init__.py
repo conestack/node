@@ -92,9 +92,8 @@ def test_suite():
     from node.tests import test_testing
     from node.tests import test_tests
     from node.tests import test_utils
-    from unittest import TestSuite
 
-    suite = TestSuite()
+    suite = unittest.TestSuite()
 
     suite.addTest(unittest.findTestCases(test_tests))
     suite.addTest(unittest.findTestCases(test_testing))
