@@ -5,7 +5,20 @@ Changes
 0.9.19 (unreleased)
 -------------------
 
-- No changes yet.
+- Python 3 and pypy compatibility.
+  [rnix, 2017-06-02]
+
+- Add ``__bool__`` to ``node.behaviors.Nodify``.
+  [rnix, 2017-06-02]
+
+- Add ``__bool__`` to ``node.utils.UNSET``.
+  [rnix, 2017-06-02]
+
+- Use ``object.__getattribute__`` explicitely in
+  ``node.utils.instance_property`` to check whether property value already has
+  been computed in order to avoid problems when oberwriting ``__getattr__``
+  on classes using ``instance_property`` decorator.
+  [rnix, 2017-06-02]
 
 
 0.9.18.1 (2017-02-23)

@@ -22,6 +22,8 @@ class Unset(object):
     def __nonzero__(self):
         return False
 
+    __bool__ = __nonzero__
+
     def __str__(self):
         return ''
 

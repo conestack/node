@@ -96,6 +96,7 @@ class NodeEncoder(json.JSONEncoder):
                 [ob.__module__, ob.__name__ if IS_PY2 else ob.__qualname__]
             )
         elif ismethod(ob):
+            # this block is not reached in python 3, ignore missing coverage
             return '.'.join(
                 [ob.im_class.__module__, ob.im_class.__name__, ob.__name__]
             )
