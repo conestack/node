@@ -36,7 +36,7 @@ class TestStorage(NodeTestCase):
 
         def access_storage_fails():
             obj.storage
-        err = self.except_error(NotImplementedError, access_storage_fails)
+        err = self.expect_error(NotImplementedError, access_storage_fails)
         expected = 'Abstract storage does not implement ``storage``'
         self.assertEqual(str(err), expected)
 

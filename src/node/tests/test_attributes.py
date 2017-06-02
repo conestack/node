@@ -53,6 +53,6 @@ class TestAttributes(NodeTestCase):
 
         def attr_access_fails():
             node.attrs.foo
-        err = self.except_error(AttributeError, attr_access_fails)
+        err = self.expect_error(AttributeError, attr_access_fails)
         expected = '\'NodeAttributes\' object has no attribute \'foo\''
         self.assertEqual(str(err), expected)

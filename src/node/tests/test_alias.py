@@ -18,9 +18,9 @@ class TestAlias(NodeTestCase):
 
         # By default, aliasing is strict, which means that only key/value pairs
         # set in aliaser are valid
-        err = self.except_error(KeyError, da.alias, 'foo')
+        err = self.expect_error(KeyError, da.alias, 'foo')
         self.assertEqual(str(err), '\'foo\'')
-        err = self.except_error(KeyError, da.unalias, 'foo')
+        err = self.expect_error(KeyError, da.unalias, 'foo')
         self.assertEqual(str(err), '\'foo\'')
 
         # By setting strict to False, inexistent keys are returned as fallback
@@ -37,7 +37,7 @@ class TestAlias(NodeTestCase):
         self.assertEqual(pa.alias('foo'), 'prefix-foo')
         self.assertEqual(pa.unalias('prefix-foo'), 'foo')
 
-        err = self.except_error(KeyError, pa.unalias, 'foo')
+        err = self.expect_error(KeyError, pa.unalias, 'foo')
         expected = '"key \'foo\' does not match prefix \'prefix-\'"'
         self.assertTrue(str(err).find(expected) > -1)
 
@@ -47,7 +47,7 @@ class TestAlias(NodeTestCase):
         self.assertEqual(sa.alias('foo'), 'foo-suffix')
         self.assertEqual(sa.unalias('foo-suffix'), 'foo')
 
-        err = self.except_error(KeyError, sa.unalias, 'foo')
+        err = self.expect_error(KeyError, sa.unalias, 'foo')
         expected = '"key \'foo\' does not match suffix \'-suffix\'"'
         self.assertTrue(str(err).find(expected) > -1)
 
@@ -124,17 +124,17 @@ class TestAlias(NodeTestCase):
 
         def fail___setitem__():
             fail['pre-foo'] = 1
-        err = self.except_error(KeyError, fail___setitem__)
+        err = self.expect_error(KeyError, fail___setitem__)
         self.assertEqual(str(err), '\'pre-foo\'')
 
         def fail___getitem__():
             fail['pre-foo']
-        err = self.except_error(KeyError, fail___getitem__)
+        err = self.expect_error(KeyError, fail___getitem__)
         self.assertEqual(str(err), '\'pre-foo\'')
 
         def fail___delitem__():
             del fail['pre-foo']
-        err = self.except_error(KeyError, fail___delitem__)
+        err = self.expect_error(KeyError, fail___delitem__)
         self.assertEqual(str(err), '\'pre-foo\'')
 
         # A prefix aliaser cannot raise a KeyError, nevertheless, if it does,
@@ -165,7 +165,7 @@ class TestAlias(NodeTestCase):
         # we need to use ``dict.__setitem__``
         def fail___setitem__():
             ad['abc'] = 1
-        err = self.except_error(KeyError, fail___setitem__)
+        err = self.expect_error(KeyError, fail___setitem__)
         self.assertEqual(str(err), '\'abc\'')
 
         dict.__setitem__(ad, 'abc', 1)

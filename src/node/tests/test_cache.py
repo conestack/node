@@ -57,7 +57,7 @@ class TestCache(NodeTestCase):
             '    <class \'node.tests.test_cache.Node\'>: d2\n'
         ))
 
-        err = self.except_error(KeyError, root.invalidate, key='c1')
+        err = self.expect_error(KeyError, root.invalidate, key='c1')
         self.assertEqual(str(err), '\'c1\'')
 
         # Active invalidation of all children
@@ -107,7 +107,7 @@ class TestCache(NodeTestCase):
             '    <class \'node.tests.test_cache.Node\'>: d2\n'
         ))
 
-        err = self.except_error(KeyError, root.invalidate, key='c1')
+        err = self.expect_error(KeyError, root.invalidate, key='c1')
         self.assertEqual(str(err), '\'c1\'')
 
         # Active invalidation of all children
@@ -153,7 +153,7 @@ class TestCache(NodeTestCase):
         node.invalidate()
         self.assertEqual(node.storage.items(), [])
 
-        err = self.except_error(KeyError, node.invalidate, 'baz')
+        err = self.expect_error(KeyError, node.invalidate, 'baz')
         self.assertEqual(str(err), '\'baz\'')
 
     def test_Cache(self):

@@ -53,7 +53,7 @@ class NodeTestCase(unittest.TestCase):
             doctest.REPORT_ONLY_FIRST_FAILURE
         )
 
-    def except_error(self, exc, func, *args, **kw):
+    def expect_error(self, exc, func, *args, **kw):
         try:
             func(*args, **kw)
         except exc as e:

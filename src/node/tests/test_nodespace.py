@@ -60,12 +60,12 @@ class TestNodespace(NodeTestCase):
 
         def __getitem__fails():
             node['__inexistent__']
-        err = self.except_error(KeyError, __getitem__fails)
+        err = self.expect_error(KeyError, __getitem__fails)
         self.assertEqual(str(err), '\'__inexistent__\'')
 
         def __getitem__fails2():
             node['inexistent']
-        err = self.except_error(KeyError, __getitem__fails2)
+        err = self.expect_error(KeyError, __getitem__fails2)
         self.assertEqual(str(err), '\'inexistent\'')
 
         del node['child']

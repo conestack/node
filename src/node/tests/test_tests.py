@@ -52,17 +52,17 @@ class TestPatch(unittest.TestCase):
 
 class TestNodeTestCase(NodeTestCase):
 
-    def test_except_error(self):
+    def test_expect_error(self):
         def func_raises():
             raise Exception('Function raises')
-        err = self.except_error(Exception, func_raises)
+        err = self.expect_error(Exception, func_raises)
         self.assertEqual(str(err), 'Function raises')
 
         def func_passes():
             pass
         err = None
         try:
-            self.except_error(Exception, func_passes)
+            self.expect_error(Exception, func_passes)
         except Exception as e:
             err = e
         finally:
@@ -71,7 +71,7 @@ class TestNodeTestCase(NodeTestCase):
                 ' \'<function func_passes at '
             ) if IS_PY2 else (
                 'Expected \'<class \'Exception\'>\' when calling \'<function '
-                'TestNodeTestCase.test_except_error.<locals>.func_passes at'
+                'TestNodeTestCase.test_expect_error.<locals>.func_passes at'
             )
             self.assertTrue(str(err).startswith(expected))
 
@@ -80,7 +80,7 @@ class TestNodeTestCase(NodeTestCase):
         got = 'Leading Hello Trailing'
         self.check_output(want, got)
         want = 'Hello'
-        err = self.except_error(Failure, self.check_output, want, got)
+        err = self.expect_error(Failure, self.check_output, want, got)
         self.assertEqual(str(err).split('\n'), [
             'Expected:',
             '    Hello',

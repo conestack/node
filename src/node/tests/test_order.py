@@ -56,7 +56,7 @@ class TestOrder(NodeTestCase):
         ))
 
         new = OrderableNode()
-        err = self.except_error(
+        err = self.expect_error(
             ValueError,
             node.insertbefore,
             new,
@@ -65,7 +65,7 @@ class TestOrder(NodeTestCase):
         self.assertEqual(str(err), 'Given node has no __name__ set.')
 
         new.__name__ = 'child3'
-        err = self.except_error(
+        err = self.expect_error(
             ValueError,
             node.insertbefore,
             new,
@@ -228,7 +228,7 @@ class TestOrder(NodeTestCase):
         node['child2'] = OrderReferenceNode()
         node['child5'] = OrderReferenceNode()
 
-        err = self.except_error(
+        err = self.expect_error(
             KeyError,
             node.insertbefore,
             node['child2'],
@@ -319,7 +319,7 @@ class TestOrder(NodeTestCase):
         self.assertTrue(tree1._index is sub._index)
         self.assertEqual(len(tree1._index.keys()), 6)
 
-        err = self.except_error(
+        err = self.expect_error(
             KeyError,
             tree1.insertbefore,
             sub,

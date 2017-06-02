@@ -165,5 +165,5 @@ class TestFallback(NodeTestCase):
         # KeyError
         def case_5_raises():
             self.fb_node['y']['2'].attrs['z']
-        err = self.except_error(KeyError, case_5_raises)
+        err = self.expect_error(KeyError, case_5_raises)
         self.assertEqual(str(err), '\'z\'')

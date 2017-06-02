@@ -27,39 +27,39 @@ class TestBase(NodeTestCase):
 
         def __getitem__fails():
             abstract['foo']
-        self.except_error(NotImplementedError, __getitem__fails)
+        self.expect_error(NotImplementedError, __getitem__fails)
 
         def __delitem__fails():
             del abstract['foo']
-        self.except_error(NotImplementedError, __delitem__fails)
+        self.expect_error(NotImplementedError, __delitem__fails)
 
         def __setitem__fails():
             abstract['foo'] = 'bar'
-        self.except_error(NotImplementedError, __setitem__fails)
+        self.expect_error(NotImplementedError, __setitem__fails)
 
         def __iter__fails():
             [key for key in abstract]
-        self.except_error(NotImplementedError, __iter__fails)
+        self.expect_error(NotImplementedError, __iter__fails)
 
         def clear_fails():
             abstract.clear()
-        self.except_error(NotImplementedError, clear_fails)
+        self.expect_error(NotImplementedError, clear_fails)
 
         def update_fails():
             abstract.update((('foo', 'bar'),))
-        self.except_error(NotImplementedError, update_fails)
+        self.expect_error(NotImplementedError, update_fails)
 
         def setdefaut_fails():
             abstract.setdefault('foo', 'bar')
-        self.except_error(NotImplementedError, setdefaut_fails)
+        self.expect_error(NotImplementedError, setdefaut_fails)
 
         def pop_fails():
             abstract.pop('foo')
-        self.except_error(NotImplementedError, pop_fails)
+        self.expect_error(NotImplementedError, pop_fails)
 
         def popitem_fails():
             abstract.popitem()
-        self.except_error(NotImplementedError, popitem_fails)
+        self.expect_error(NotImplementedError, popitem_fails)
 
     def test_MyNode(self):
         # ``node.testing.env`` contains a base node implementation inheriting
@@ -298,12 +298,12 @@ class TestBase(NodeTestCase):
 
         def non_node_childs_not_allowed():
             mynode['foo'] = object()
-        err = self.except_error(ValueError, non_node_childs_not_allowed)
+        err = self.expect_error(ValueError, non_node_childs_not_allowed)
         self.assertEqual(str(err), 'Non-node childs are not allowed.')
 
         def no_classes_as_values_allowed():
             mynode['foo'] = object
-        err = self.except_error(ValueError, no_classes_as_values_allowed)
+        err = self.expect_error(ValueError, no_classes_as_values_allowed)
         expected = 'It isn\'t allowed to use classes as values.'
         self.assertEqual(str(err), expected)
 
@@ -318,12 +318,12 @@ class TestBase(NodeTestCase):
 
         def non_node_childs_not_allowed2():
             basenode['foo'] = object()
-        err = self.except_error(ValueError, non_node_childs_not_allowed2)
+        err = self.expect_error(ValueError, non_node_childs_not_allowed2)
         self.assertEqual(str(err), 'Non-node childs are not allowed.')
 
         def no_classes_as_values_allowed2():
             basenode['foo'] = object
-        err = self.except_error(ValueError, no_classes_as_values_allowed2)
+        err = self.expect_error(ValueError, no_classes_as_values_allowed2)
         expected = 'It isn\'t allowed to use classes as values.'
         self.assertEqual(str(err), expected)
 
@@ -338,12 +338,12 @@ class TestBase(NodeTestCase):
 
         def non_node_childs_not_allowed3():
             orderednode['foo'] = object()
-        err = self.except_error(ValueError, non_node_childs_not_allowed3)
+        err = self.expect_error(ValueError, non_node_childs_not_allowed3)
         self.assertEqual(str(err), 'Non-node childs are not allowed.')
 
         def no_classes_as_values_allowed3():
             orderednode['foo'] = object
-        err = self.except_error(ValueError, no_classes_as_values_allowed3)
+        err = self.expect_error(ValueError, no_classes_as_values_allowed3)
         expected = 'It isn\'t allowed to use classes as values.'
         self.assertEqual(str(err), expected)
 
@@ -406,7 +406,7 @@ class TestBase(NodeTestCase):
 
         def no_classes_as_values_allowed4():
             myattrs.child_4 = object
-        err = self.except_error(ValueError, no_classes_as_values_allowed4)
+        err = self.expect_error(ValueError, no_classes_as_values_allowed4)
         expected = 'It isn\'t allowed to use classes as values.'
         self.assertEqual(str(err), expected)
 
@@ -418,7 +418,7 @@ class TestBase(NodeTestCase):
 
         def no_classes_as_values_allowed5():
             baseattrs.child_4 = object
-        err = self.except_error(ValueError, no_classes_as_values_allowed5)
+        err = self.expect_error(ValueError, no_classes_as_values_allowed5)
         expected = 'It isn\'t allowed to use classes as values.'
         self.assertEqual(str(err), expected)
 
@@ -430,7 +430,7 @@ class TestBase(NodeTestCase):
 
         def no_classes_as_values_allowed6():
             orderedattrs.child_4 = object
-        err = self.except_error(ValueError, no_classes_as_values_allowed6)
+        err = self.expect_error(ValueError, no_classes_as_values_allowed6)
         expected = 'It isn\'t allowed to use classes as values.'
         self.assertEqual(str(err), expected)
 
