@@ -3,17 +3,14 @@ from inspect import isclass
 from inspect import isfunction
 from inspect import ismethod
 from node.compat import IS_PY2
+from node.compat import STR_TYPE
 from node.interfaces import IAttributes
 from node.interfaces import INode
 from node.utils import UNSET
 from odict import odict
 from zope.interface import Interface
 import json
-import sys
 import uuid
-
-
-STR_TYPE = basestring if sys.version_info[0] < 3 else str
 
 
 ###############################################################################

@@ -10,6 +10,17 @@ from zope.interface import implementer
 
 
 def _keys(obj):
+    """Compat function to always get keys as list.
+
+    Currently used to avoid modification of dict while iterating in python 3.
+        for key in _keys(ob):
+            del ob[key]
+
+    Can probably be replaced by just using.
+        ob.clear()
+
+    Business logic changes after whole stack has been migrated to python 3.
+    """
     return obj.keys() if IS_PY2 else list(obj.keys())
 
 

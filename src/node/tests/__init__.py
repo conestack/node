@@ -16,26 +16,20 @@ class patch(object):
         self.ob = ob
 
     def __call__(self, ob):
-        wrap = False
-        if not hasattr(ob, '__test_patches__'):
-            ob.__test_patches__ = list()
-            wrap = True
-        ob.__test_patches__.append((self.module, self.name, self.ob))
-        if wrap:
-            def _wrapped(*args, **kw):
-                orgin = list()
-                for module, name, obj in ob.__test_patches__:
-                    orgin.append((module, name, getattr(module, name)))
-                    setattr(module, name, obj)
-                try:
-                    ob(*args, **kw)
-                except Exception as e:
-                    raise e
-                finally:
-                    for module, name, obj in orgin:
-                        setattr(module, name, obj)
-            return _wrapped
-        return ob
+        ob.__test_patch__ = (self.module, self.name, self.ob)
+
+        def _wrapped(*args, **kw):
+            module, name, obj = ob.__test_patch__
+            orgin = (module, name, getattr(module, name))
+            setattr(module, name, obj)
+            try:
+                ob(*args, **kw)
+            except Exception as e:
+                raise e
+            finally:
+                module, name, obj = orgin
+                setattr(module, name, obj)
+        return _wrapped
 
 
 class Example(object):
@@ -112,6 +106,7 @@ def test_suite():
     suite.addTest(unittest.findTestCases(test_alias))
     suite.addTest(unittest.findTestCases(test_attributes))
     suite.addTest(unittest.findTestCases(test_cache))
+    suite.addTest(unittest.findTestCases(test_common))
     suite.addTest(unittest.findTestCases(test_fallback))
     suite.addTest(unittest.findTestCases(test_lifecycle))
     suite.addTest(unittest.findTestCases(test_mapping))
@@ -120,10 +115,6 @@ def test_suite():
     suite.addTest(unittest.findTestCases(test_order))
     suite.addTest(unittest.findTestCases(test_reference))
     suite.addTest(unittest.findTestCases(test_storage))
-
-    # at very end, ``GetattrChildren`` tests break coverage recording
-    # XXX: still with unittests?
-    suite.addTest(unittest.findTestCases(test_common))
 
     return suite
 

@@ -59,7 +59,7 @@ class TestCommon(NodeTestCase):
                 raise KeyError(key)
 
             def setdefault(self, key, default=None):
-                pass
+                pass                                         # pragma: no cover
 
         @plumbing(Adopt)
         class FailingAD(FakeDict):

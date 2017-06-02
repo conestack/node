@@ -5,9 +5,9 @@ from odict import odict
 def create_tree(class_):
     root = class_()
     for i in range(3):
-        root['child_%i' % i] = class_()
+        root['child_{}'.format(i)] = class_()
         for j in range(2):
-            root['child_%i' % i]['subchild_%i' % j] = class_()
+            root['child_{}'.format(i)]['subchild_{}'.format(j)] = class_()
     return root
 
 
@@ -21,7 +21,7 @@ class ResultWriter(object):
         self.results[self.name] = 'OK'
 
     def failed(self, exc):
-        self.results[self.name] = 'failed: %s' % (repr(exc),)
+        self.results[self.name] = 'failed: {}'.format(repr(exc))
 
 
 class ContractError(Exception):
@@ -39,11 +39,9 @@ class BaseTester(object):
 
     def __init__(self, class_, context=None):
         """
-        ``class_``
-            class object for creating children in test.
-        ``context``
-            an optional root context to test against, If None, an instance of
-            class_ is created as root.
+        :param class_: class object for creating children in test.
+        :param context: an optional root context to test against, If None, an
+        instance of class_ is created as root.
         """
         self._results = odict()
         self.class_ = class_
@@ -60,7 +58,7 @@ class BaseTester(object):
     def combined(self):
         res = list()
         for key, val in sorted(self.writer().results.iteritems()):
-            res.append('``%s``: %s' % (key, val))
+            res.append('``{}``: {}'.format(key, val))
         return '\n'.join(res)
 
     @property
@@ -83,8 +81,10 @@ class BaseTester(object):
         for name in self.iface_contract:
             func = getattr(self, 'test_%s' % name, None)
             if func is None:
-                msg = '``%s`` does not provide ``test_%s``' % (
-                    self.__class__.__name__, name)
+                msg = '``{}`` does not provide ``test_{}``'.format(
+                    self.__class__.__name__,
+                    name
+                )
                 raise ContractError(msg)
             writer = self.writer(name)
             if self.direct_error:

@@ -24,17 +24,18 @@ class NodeAttributes(object):
     def __init__(self, name=None, parent=None):
         self.__name__ = name
         self.__parent__ = parent
-        self.context = parent  # BBB 2011-01-31
-        self._node = parent    # BBB 2011-01-31
+        self.context = parent  # B/C 2011-01-31
+        self._node = parent    # B/C 2011-01-31
 
     def __repr__(self):
-        if IS_PY2:
-            name = unicode(self.parent.name).encode('ascii', 'replace')
-        else:
-            name = self.parent.name
-        return "<%s object '%s' at %s>" % (self.__class__.__name__,
-                                           name,
-                                           hex(id(self))[:-1])
+        name = self.parent.name.encode('ascii', 'replace') \
+            if IS_PY2 and isinstance(self.parent.name, unicode) \
+            else str(self.parent.name)
+        return '<{} object \'{}\' at {}>'.format(
+            self.__class__.__name__,
+            name,
+            hex(id(self))[:-1]
+        )
 
 
 @implementer(IAttributes)
@@ -54,5 +55,5 @@ class Attributes(Behavior):
             return AttributeAccess(attrs)
         return attrs
 
-    # BBB
+    # B/C
     attributes = finalize(attrs)

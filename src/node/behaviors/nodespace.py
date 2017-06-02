@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from node.compat import STR_TYPE
 from node.interfaces import INodespaces
 from odict import odict
 from plumber import Behavior
@@ -6,10 +7,6 @@ from plumber import default
 from plumber import finalize
 from plumber import plumb
 from zope.interface import implementer
-import sys
-
-
-STR_TYPE = basestring if sys.version_info[0] < 3 else str
 
 
 @implementer(INodespaces)

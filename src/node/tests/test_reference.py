@@ -7,7 +7,6 @@ from node.behaviors.reference import NodeIndex
 from node.tests import NodeTestCase
 from plumber import plumbing
 from zope.interface.common.mapping import IReadMapping
-import copy
 import uuid
 
 
