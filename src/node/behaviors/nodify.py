@@ -126,6 +126,8 @@ class Nodify(FullMapping):
     def __nonzero__(self):
         return True
 
+    __bool__ = default(__nonzero__)
+
     @override
     def __repr__(self):
         class_name = self.__class__.__name__
