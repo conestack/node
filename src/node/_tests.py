@@ -31,7 +31,7 @@ TESTFILES = [
     # 'behaviors/storage.rst',
     '../../README.rst',
     # at very end, ``GetattrChildren`` tests break coverage recording
-    'behaviors/common.rst',
+    # 'behaviors/common.rst',
 ]
 
 

@@ -314,8 +314,8 @@ Summary of the test coverage report::
 Contributors
 ============
 
-- Robert Niederreiter <rnix [at] squarewave [dot] at>
+- Robert Niederreiter
 
-- Florian Friesdorf <flo [at] chaoflow [dot] net>
+- Florian Friesdorf
 
-- Jens Klein <jens [at] bluedynamics [dot] com>
+- Jens Klein

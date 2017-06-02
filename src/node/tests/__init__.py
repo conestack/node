@@ -84,6 +84,7 @@ def test_suite():
     from node.tests import test_attributes
     from node.tests import test_base
     from node.tests import test_cache
+    from node.tests import test_common
     from node.tests import test_fallback
     from node.tests import test_lifecycle
     from node.tests import test_locking
@@ -119,6 +120,10 @@ def test_suite():
     suite.addTest(unittest.findTestCases(test_order))
     suite.addTest(unittest.findTestCases(test_reference))
     suite.addTest(unittest.findTestCases(test_storage))
+
+    # at very end, ``GetattrChildren`` tests break coverage recording
+    # XXX: still with unittests?
+    suite.addTest(unittest.findTestCases(test_common))
 
     return suite
 
