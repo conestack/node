@@ -25,7 +25,7 @@ TESTFILES = [
     # 'behaviors/lifecycle.rst',
     # 'behaviors/mapping.rst',
     # 'behaviors/nodespace.rst',
-    'behaviors/nodify.rst',
+    # 'behaviors/nodify.rst',
     'behaviors/order.rst',
     'behaviors/reference.rst',
     'behaviors/storage.rst',
