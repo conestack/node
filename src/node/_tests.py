@@ -26,7 +26,7 @@ TESTFILES = [
     # 'behaviors/mapping.rst',
     # 'behaviors/nodespace.rst',
     # 'behaviors/nodify.rst',
-    'behaviors/order.rst',
+    # 'behaviors/order.rst',
     'behaviors/reference.rst',
     'behaviors/storage.rst',
     '../../README.rst',
