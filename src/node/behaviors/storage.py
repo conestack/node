@@ -15,8 +15,8 @@ class Storage(Behavior):
     @default
     @property
     def storage(self):
-        raise NotImplementedError(u"Abstract storage does not implement "
-                                  u"``storage``")
+        msg = 'Abstract storage does not implement ``storage``'
+        raise NotImplementedError(msg)
 
     @override
     def __getitem__(self, key):

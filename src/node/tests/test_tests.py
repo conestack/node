@@ -38,12 +38,15 @@ class TestPatch(unittest.TestCase):
         def raises():
             raise Exception()
 
+        @patch(env, 'MockupNode', PatchedMockupNode)
         @patch(env, 'NoNode', PatchedNoNode)
         def test_raises():
+            self.assertEqual(env.MockupNode.__name__, 'PatchedMockupNode')
             self.assertEqual(env.NoNode.__name__, 'PatchedNoNode')
             raises()
 
         self.assertRaises(Exception, test_raises)
+        self.assertEqual(env.MockupNode.__name__, 'MockupNode')
         self.assertEqual(env.NoNode.__name__, 'NoNode')
 
 

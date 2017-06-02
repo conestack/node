@@ -6,6 +6,7 @@ from zope.lifecycleevent import IObjectAddedEvent
 from zope.lifecycleevent import IObjectCreatedEvent
 from zope.lifecycleevent import IObjectModifiedEvent
 from zope.lifecycleevent import IObjectRemovedEvent
+
 try:
     from zope.location.interfaces import ILocation
 except ImportError as e:
@@ -136,12 +137,12 @@ class ICallable(Interface):
 class INode(ILocation, IFullMapping):
     """Basic node interface.
     """
-    name = Attribute(u"Read only property mapping ``__name__``.")
-    parent = Attribute(u"Read only property mapping ``__parent__``.")
-    path = Attribute(u"Path of node as list")
-    root = Attribute(u"Root node. Normally wither the node with no more "
-                     u"parent or a node implementing "
-                     u"``node.interfaces.IRoot``")
+    name = Attribute('Read only property mapping ``__name__``.')
+    parent = Attribute('Read only property mapping ``__parent__``.')
+    path = Attribute('Path of node as list')
+    root = Attribute(
+        'Root node. Normally wither the node with no more parent or a node '
+        'implementing ``node.interfaces.IRoot``')
 
     def detach(key):
         """Detach child Node.
@@ -210,8 +211,8 @@ class INodeChildValidate(Interface):
         If ``allow_non_node_childs`` is False, check if given child is instance
         of node, otherwise raise ``ValuError``.
     """
-    allow_non_node_childs = Attribute(u"Flag wether this node may contain non "
-                                      u"node based children.")
+    allow_non_node_childs = Attribute(
+        'Flag wether this node may contain non node based children.')
 
 
 class IUnicodeAware(Interface):
@@ -251,7 +252,7 @@ class IAlias(Interface):
     __iter__
         Iterate aliased keys.
     """
-    aliaser = Attribute(u"``IAliaser`` implementation.")
+    aliaser = Attribute('``IAliaser`` implementation.')
 
 
 class IAsAttrAccess(Interface):
@@ -266,7 +267,7 @@ class IChildFactory(Interface):
     """Plumbing behavior providing child factories which are invoked at
     ``__getitem__`` if object by key is not present at plumbing endpoint yet.
     """
-    factories = Attribute(u"Dict like object containing key/factory pairs.")
+    factories = Attribute('Dict like object containing key/factory pairs.')
 
     def __iter__():
         """Return iterator of factory keys.
@@ -285,8 +286,8 @@ class IFixedChildren(Interface):
     __init__
         Create fixed children defined in ``fixed_children_factories``
     """
-    fixed_children_factories = Attribute(u"Dict like object containing child "
-                                         u"factories.")
+    fixed_children_factories = Attribute(
+        'Dict like object containing child factories.')
 
     def __delitem__(key):
         """Deny deleting, read-only.
@@ -326,14 +327,14 @@ class INodespaces(Interface):
         Delete nodespace if key pre- and postfixed with '__', otherwise delete
         child from ``__children__`` nodespace.
     """
-    nodespaces = Attribute(u"Nodespaces. Dict like object.")
+    nodespaces = Attribute('Nodespaces. Dict like object.')
 
 
 class IAttributes(Interface):
     """Plumbing behavior to provide attributes on node.
     """
-    attrs = Attribute(u"``INodeAttributes`` implementation.")
-    attrs_factory = Attribute(u"``INodeAttributes`` implementation class")
+    attrs = Attribute('``INodeAttributes`` implementation.')
+    attrs_factory = Attribute('``INodeAttributes`` implementation class.')
 
 
 class ILifecycle(Interface):
@@ -353,8 +354,8 @@ class ILifecycle(Interface):
     detach
         Trigger detached event.
     """
-    events = Attribute(u"Dict with lifecycle event classes to use for "
-                       u"notification.")
+    events = Attribute(
+        'Dict with lifecycle event classes to use for notification.')
 
 
 class IAttributesLifecycle(Interface):
@@ -399,7 +400,7 @@ class ICache(Interface):
     invalidate
         Invalidate cache.
     """
-    cache = Attribute(u"Dict like object representing the cache.")
+    cache = Attribute('Dict like object representing the cache.')
 
 
 class IOrder(Interface):
@@ -442,7 +443,7 @@ class IOrder(Interface):
 class IUUID(Interface):
     """Plumbing behavior for providing a uuid on a node.
     """
-    uuid = Attribute(u"``uuid.UUID`` of this node.")
+    uuid = Attribute('``uuid.UUID`` of this node.')
 
 
 class IUUIDAware(IUUID):
@@ -458,10 +459,10 @@ class IUUIDAware(IUUID):
         ``overwrite_recursiv_on_copy``.
     """
     overwrite_recursiv_on_copy = Attribute(
-        u"Flag whether to set new UUID on children as well when calling "
-        u"``node.copy()``. This only makes sence for nodes performing a "
-        u"``deepcopy`` or anythin equivalent also creating copies "
-        u"of it's children.")
+        'Flag whether to set new UUID on children as well when calling '
+        '``node.copy()``. This only makes sence for nodes performing a '
+        '``deepcopy`` or anythin equivalent also creating copies '
+        'of it\'s children.')
 
     def set_uuid_for(node, override=False, recursiv=False):
         """Set ``uuid`` for node. If ``override`` is True, override existing
@@ -487,7 +488,7 @@ class IReference(IUUID):
     detach
         Reduce index of detached child.
     """
-    index = Attribute(u"The tree node index")
+    index = Attribute('The tree node index')
 
     def node(uuid):
         """Return node by uuid located anywhere in this nodetree.
@@ -530,8 +531,7 @@ class IFallback(Interface):
     """
 
     fallback_key = Attribute(
-        u'Key to be used as fallback if an item was not found.'
-    )
+        'Key to be used as fallback if an item was not found.')
 
     def __getitem__(key):
         """Lookup fallback if item is not available on node.

@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 from node.behaviors import Adopt
 from node.behaviors import DefaultInit
-from node.behaviors import OdictStorage
 from node.behaviors import Nodify
+from node.behaviors import OdictStorage
+from node.interfaces import INode
 from node.testing import FullMappingTester
 from node.tests import NodeTestCase
 from plumber import plumbing
 from zope.interface import Interface
 from zope.interface import alsoProvides
-from node.interfaces import INode
 
 
 ###############################################################################

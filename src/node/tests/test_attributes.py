@@ -31,6 +31,9 @@ class TestAttributes(NodeTestCase):
 
         self.assertTrue(isinstance(node.attrs, AttributeAccess))
 
+        expected = '<node.utils.AttributeAccess object at'
+        self.assertTrue(repr(node.attrs).startswith(expected))
+
         node.attrs.foo = 'bar'
         self.assertEqual(node.attrs['foo'], 'bar')
 
@@ -42,6 +45,9 @@ class TestAttributes(NodeTestCase):
 
         node.attribute_access_for_attrs = False
         self.assertTrue(isinstance(node.attrs, NodeAttributes))
+
+        expected = '<NodeAttributes object \'attributed\' at '
+        self.assertTrue(repr(node.attrs).startswith(expected))
 
         self.assertEqual(node.attrs['foo'], 'bar')
 

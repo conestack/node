@@ -20,12 +20,12 @@ import uuid
 ###############################################################################
 
 def referenced_function():
-    pass
+    pass                                                     # pragma: no cover
 
 
 class ReferencedClass(object):
     def foo(self):
-        pass
+        pass                                                 # pragma: no cover
 
 
 class ICustomNode(Interface):

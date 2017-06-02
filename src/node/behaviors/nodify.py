@@ -120,7 +120,7 @@ class Nodify(FullMapping):
 
     @override
     def printtree(self):
-        print(self.treerepr())
+        print(self.treerepr())                               # pragma: no cover
 
     @default
     def __nonzero__(self):

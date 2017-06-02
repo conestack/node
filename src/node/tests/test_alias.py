@@ -24,7 +24,10 @@ class TestAlias(NodeTestCase):
         self.assertEqual(str(err), '\'foo\'')
 
         # By setting strict to False, inexistent keys are returned as fallback
-        da = DictAliaser([('alias1', 'key1'), ('alias2', 'key2')], strict=False)
+        da = DictAliaser(
+            [('alias1', 'key1'), ('alias2', 'key2')],
+            strict=False
+        )
         self.assertEqual(da.alias('foo'), 'foo')
         self.assertEqual(da.unalias('foo'), 'foo')
 

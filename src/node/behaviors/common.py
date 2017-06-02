@@ -107,7 +107,7 @@ class FixedChildren(Behavior):
 
     @finalize
     def __delitem__(self, key):
-        raise NotImplementedError("read-only")
+        raise NotImplementedError('read-only')
 
     @finalize
     def __getitem__(self, key):
@@ -119,7 +119,7 @@ class FixedChildren(Behavior):
 
     @finalize
     def __setitem__(self, key, val):
-        raise NotImplementedError("read-only")
+        raise NotImplementedError('read-only')
 
 
 @implementer(IGetattrChildren)
@@ -144,9 +144,9 @@ class NodeChildValidate(Behavior):
     @plumb
     def __setitem__(_next, self, key, val):
         if not self.allow_non_node_childs and inspect.isclass(val):
-            raise ValueError(u"It isn't allowed to use classes as values.")
+            raise ValueError('It isn\'t allowed to use classes as values.')
         if not self.allow_non_node_childs and not INode.providedBy(val):
-            raise ValueError("Non-node childs are not allowed.")
+            raise ValueError('Non-node childs are not allowed.')
         _next(self, key, val)
 
 
@@ -188,8 +188,8 @@ class UUIDAware(Behavior):
 
     @plumb
     def copy(_next, self):
-        raise RuntimeError(u"Shallow copy useless on UUID aware node trees, "
-                           u"use deepcopy.")
+        msg = 'Shallow copy useless on UUID aware node trees, use deepcopy.'
+        raise RuntimeError(msg)
 
     @plumb
     def deepcopy(_next, self):

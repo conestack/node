@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from node.compat import IS_PY2
 from node.compat import STR_TYPE
 from node.compat import UNICODE_TYPE
 from node.compat import func_name
@@ -54,7 +53,7 @@ class ReverseMapping(object):
     def __init__(self, context):
         """Object behaves as adapter for dict like object.
 
-        ``context``: a dict like object.
+        :param context: a dict like object.
         """
         self.context = context
 
@@ -141,11 +140,9 @@ class StrCodec(object):
 
     def __init__(self, encoding=CHARACTER_ENCODING, soft=True):
         """
-        ``encoding``
-            the character encoding to decode from/encode to
-
-        ``soft``
-           if True, catch UnicodeDecodeErrors and leave this strings as-is.
+        :param encoding: the character encoding to decode from/encode to
+        :param soft: if True, catch UnicodeDecodeErrors and leave this
+        strings as-is.
         """
         self._encoding = encoding
         self._soft = soft
@@ -155,6 +152,7 @@ class StrCodec(object):
 
         - strs are decoded and reencode to make sure they conform to the
           encoding.
+
           XXX: makes no sence, especially because a UnicodeDecodeError ends up
                in a recursion error due to re-trying to encode. See below.
                Added condition to return if str is still str after decoding.
@@ -212,10 +210,14 @@ def instance_property(func):
     Set instance attribute with '_' prefix.
     """
     def wrapper(self):
-        attribute_name = '_%s' % func.__name__
-        if not hasattr(self, attribute_name):
-            setattr(self, attribute_name, func(self))
-        return getattr(self, attribute_name)
+        attribute_name = '_{}'.format(func.__name__)
+        # do not use hasattr/getattr to avoid problems when overwriting
+        # __getattr__ on a class which also uses instance_property
+        try:
+            return object.__getattribute__(self, attribute_name)
+        except AttributeError:
+            object.__setattr__(self, attribute_name, func(self))
+            return object.__getattribute__(self, attribute_name)
     wrapper.__doc__ = func.__doc__
     return property(wrapper)
 
