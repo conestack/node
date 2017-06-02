@@ -90,6 +90,7 @@ def test_suite():
     from node.tests import test_mapping
     from node.tests import test_nodespace
     from node.tests import test_nodify
+    from node.tests import test_order
     from node.tests import test_serializer
     from node.tests import test_testing
     from node.tests import test_tests
@@ -113,6 +114,7 @@ def test_suite():
     suite.addTest(unittest.findTestCases(test_mapping))
     suite.addTest(unittest.findTestCases(test_nodespace))
     suite.addTest(unittest.findTestCases(test_nodify))
+    suite.addTest(unittest.findTestCases(test_order))
 
     return suite
 

@@ -110,15 +110,15 @@ class Order(Behavior):
     def _validateinsertion(self, newnode, refnode):
         nodekey = newnode.__name__
         if nodekey is None:
-            raise ValueError(u"Given node has no __name__ set.")
+            raise ValueError('Given node has no __name__ set.')
         # case if Reference behavior is mixed in
         # XXX: move out of here
         if hasattr(self, 'node'):
             if self.node(newnode.uuid) is not None:
-                raise KeyError(u"Given node already contained in tree.")
+                raise KeyError('Given node already contained in tree.')
         index = self._nodeindex(refnode)
         if index is None:
-            raise ValueError(u"Given reference node not child of self.")
+            raise ValueError('Given reference node not child of self.')
 
     @override
     def _nodeindex(self, node):
