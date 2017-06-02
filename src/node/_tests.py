@@ -28,7 +28,7 @@ TESTFILES = [
     # 'behaviors/nodify.rst',
     # 'behaviors/order.rst',
     # 'behaviors/reference.rst',
-    'behaviors/storage.rst',
+    # 'behaviors/storage.rst',
     '../../README.rst',
     # at very end, ``GetattrChildren`` tests break coverage recording
     'behaviors/common.rst',
