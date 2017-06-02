@@ -20,7 +20,7 @@ def _to_root(node, path, visited):
         return _marker
     if not getattr(parent, 'fallback_key', _marker) or node in visited:
         return _to_root(parent, path=path, visited=visited)
-    visited.update(set([node]))
+    visited.update({node})
     return _to_leaf(parent[parent.fallback_key], path=path, visited=visited)
 
 

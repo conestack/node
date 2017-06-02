@@ -8,6 +8,9 @@ Changes
 - Python 3 and pypy compatibility.
   [rnix, 2017-06-02]
 
+- Drop support for Python < 2.7.
+  [rnix, 2017-06-02]
+
 - Add ``__bool__`` to ``node.behaviors.Nodify``.
   [rnix, 2017-06-02]
 
