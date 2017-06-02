@@ -78,40 +78,31 @@ class Nodify(FullMapping):
 
     @override
     def filtereditervalues(self, interface):
-        """Uses ``itervalues``.
-        """
         for val in self.itervalues():
             if interface.providedBy(val):
                 yield val
 
     @override
     def filteredvalues(self, interface):
-        """Uses ``values``.
-        """
         return [val for val in self.filtereditervalues(interface)]
 
-    # BBB 2010-12-23
+    # B/C 2010-12-23
     filtereditems = override(filtereditervalues)
 
     @override
     @property
     def noderepr(self):
-        """``noderepr`` is used in ``printtree``.
+        """``noderepr`` is used in ``treerepr``.
 
         Thus, we can overwrite it in subclass and return any debug information
         we need while ``__repr__`` is an enhanced standard object
         representation, also used as ``__str__`` on nodes.
-
-        XXX: do we really need the difference or can we just override __repr__
-        in subclasses and use __repr__ in printtree?
         """
-        class_ = self.__class__
-        name = self.__name__
-        if IS_PY2 and isinstance(name, unicode):
-            name = name.encode('ascii', 'replace')
-        else:
-            name = str(name)
-        return str(class_) + ': ' + name[name.find(':') + 1:]
+        class_name = self.__class__
+        name = self.name.encode('ascii', 'replace') \
+            if IS_PY2 and isinstance(self.name, unicode) \
+            else str(self.name)
+        return str(class_name) + ': ' + name[name.find(':') + 1:]
 
     @override
     def treerepr(self, indent=0):
@@ -138,13 +129,13 @@ class Nodify(FullMapping):
     @override
     def __repr__(self):
         class_name = self.__class__.__name__
-        name = self.__name__
-        if IS_PY2 and isinstance(name, unicode):
-            name = name.encode('ascii', 'replace')
-        else:
-            name = str(name)
-        return "<%s object '%s' at %s>" % (class_name,
-                                           name,
-                                           hex(id(self))[:-1])
+        name = self.name.encode('ascii', 'replace') \
+            if IS_PY2 and isinstance(self.name, unicode) \
+            else str(self.name)
+        return '<{} object \'{}\' at {}>'.format(
+            class_name,
+            name,
+            hex(id(self))[:-1]
+        )
 
     __str__ = override(__repr__)
