@@ -10,15 +10,8 @@ if [ -x "$(which python)" ]; then
     ./py2/bin/pip install zope.lifecycleevent
     ./py2/bin/pip install zope.component
     ./py2/bin/pip install zope.deprecation
-
-    pushd devsrc/odict
-    ../../py2/bin/python setup.py develop
-    popd
-
-    pushd devsrc/plumber
-    ../../py2/bin/python setup.py develop
-    popd
-
+    ./py2/bin/pip install https://github.com/bluedynamics/odict/archive/master.zip
+    ./py2/bin/pip install https://github.com/bluedynamics/plumber/archive/master.zip
     ./py2/bin/python setup.py develop
 fi
 if [ -x "$(which python3)" ]; then
@@ -31,15 +24,8 @@ if [ -x "$(which python3)" ]; then
     ./py3/bin/pip install zope.lifecycleevent
     ./py3/bin/pip install zope.component
     ./py3/bin/pip install zope.deprecation
-
-    pushd devsrc/odict
-    ../../py3/bin/python setup.py develop
-    popd
-
-    pushd devsrc/plumber
-    ../../py3/bin/python setup.py develop
-    popd
-
+    ./py3/bin/pip install https://github.com/bluedynamics/odict/archive/master.zip
+    ./py3/bin/pip install https://github.com/bluedynamics/plumber/archive/master.zip
     ./py3/bin/python setup.py develop
 fi
 if [ -x "$(which pypy)" ]; then
@@ -52,14 +38,7 @@ if [ -x "$(which pypy)" ]; then
     ./pypy/bin/pip install zope.lifecycleevent
     ./pypy/bin/pip install zope.component
     ./pypy/bin/pip install zope.deprecation
-
-    pushd devsrc/odict
-    ../../pypy/bin/python setup.py develop
-    popd
-
-    pushd devsrc/plumber
-    ../../pypy/bin/python setup.py develop
-    popd
-
+    ./pypy/bin/pip install https://github.com/bluedynamics/odict/archive/master.zip
+    ./pypy/bin/pip install https://github.com/bluedynamics/plumber/archive/master.zip
     ./pypy/bin/python setup.py develop
 fi
