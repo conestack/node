@@ -5,6 +5,7 @@ from node.compat import IS_PY2
 from node.interfaces import IDefaultInit
 from node.interfaces import INode
 from node.interfaces import INodify
+from node.interfaces import IOrdered
 from node.utils import LocationIterator
 from plumber import Behavior
 from plumber import default
@@ -107,7 +108,10 @@ class Nodify(FullMapping):
     @override
     def treerepr(self, indent=0):
         res = '{}{}\n'.format(indent * ' ', self.noderepr)
-        for key, value in self.items():
+        items = self.items() \
+            if IOrdered.providedBy(self) \
+            else sorted(self.items(), key=lambda x: str(x[0]))
+        for key, value in items:
             if INode.providedBy(value):
                 res += value.treerepr(indent + 2)
             else:

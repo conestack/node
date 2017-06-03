@@ -17,6 +17,13 @@ Changes
 - Add ``__bool__`` to ``node.utils.UNSET``.
   [rnix, 2017-06-02]
 
+- Add ``treerepr`` in ``node.behaviors.nodify.Nodify`` and move code from
+  ``printtree`` to it. Returs tree representation as string instead of printing
+  it. ``printtree`` uses ``treerepr`` now. As enhancement ``treerepr`` sorts
+  children of node if it does not implement ``IOrdered`` in order to ensure
+  consistend output which can be used to write tests against.
+  [rnix, 2017-06-02]
+
 - Use ``object.__getattribute__`` explicitely in
   ``node.utils.instance_property`` to check whether property value already has
   been computed in order to avoid problems when oberwriting ``__getattr__``
