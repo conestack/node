@@ -308,7 +308,7 @@ Summary of the test coverage report::
     src/node/testing/base.py                                   66      0   100%
     src/node/testing/env.py                                    18      0   100%
     src/node/testing/fullmapping.py                           177      0   100%
-    src/node/tests/__init__.py                                 85      0   100%
+    src/node/tests/__init__.py                                 86      0   100%
     src/node/tests/test_alias.py                              113      0   100%
     src/node/tests/test_attributes.py                          38      0   100%
     src/node/tests/test_base.py                               245      0   100%
@@ -329,7 +329,7 @@ Summary of the test coverage report::
     src/node/tests/test_utils.py                              127      0   100%
     src/node/utils.py                                         142      0   100%
     ---------------------------------------------------------------------------
-    TOTAL                                                    4010      0   100%
+    TOTAL                                                    4011      0   100%
 
 
 Python Versions
