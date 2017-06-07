@@ -295,7 +295,7 @@ Summary of the test coverage report::
     src/node/behaviors/lifecycle.py                            48      0   100%
     src/node/behaviors/mapping.py                             117      0   100%
     src/node/behaviors/nodespace.py                            33      0   100%
-    src/node/behaviors/nodify.py                               86      0   100%
+    src/node/behaviors/nodify.py                               87      0   100%
     src/node/behaviors/order.py                               109      0   100%
     src/node/behaviors/reference.py                            83      0   100%
     src/node/behaviors/storage.py                              31      0   100%
@@ -329,7 +329,7 @@ Summary of the test coverage report::
     src/node/tests/test_utils.py                              127      0   100%
     src/node/utils.py                                         142      0   100%
     ---------------------------------------------------------------------------
-    TOTAL                                                    4013      0   100%
+    TOTAL                                                    4014      0   100%
 
 
 Python Versions

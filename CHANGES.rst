@@ -2,10 +2,12 @@
 Changes
 =======
 
-0.9.20 (unreleased)
+0.9.20 (2017-06-07)
 -------------------
 
-- No changes yet.
+- Type cast sort key to ``node.compat.UNICODE_TYPE`` in
+  ``node.behaviors.Nodify.treerepr`` to avoid unicode decode errors.
+  [rnix, 2017-06-07]
 
 
 0.9.19 (2017-06-07)
