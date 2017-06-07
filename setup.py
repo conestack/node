@@ -4,11 +4,18 @@ from setuptools import setup
 import os
 
 
+def read_file(name):
+    with open(os.path.join(os.path.dirname(__file__), name)) as f:
+        return f.read()
+
+
 version = '0.9.19.dev0'
 shortdesc = "Building data structures as node trees"
-longdesc = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
-longdesc += open(os.path.join(os.path.dirname(__file__), 'CHANGES.rst')).read()
-longdesc += open(os.path.join(os.path.dirname(__file__), 'LICENSE.rst')).read()
+longdesc = '\n\n'.join([read_file(name) for name in [
+    'README.rst',
+    'CHANGES.rst',
+    'LICENSE.rst'
+]])
 
 
 setup(
