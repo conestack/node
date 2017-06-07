@@ -2,7 +2,7 @@
 Changes
 =======
 
-0.9.19 (unreleased)
+0.9.19 (2017-06-07)
 -------------------
 
 - Python 3 and pypy compatibility.
