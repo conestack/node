@@ -5,7 +5,10 @@ Changes
 0.9.21 (unreleased)
 -------------------
 
-- No changes yet.
+- Use ``setattr`` in ``instance_property`` decorator instead of
+  ``object.__setattr__`` in order to avoid errors with custom low level
+  ``__setattr__`` implementations.
+  [rnix, 2017-06-14]
 
 
 0.9.20 (2017-06-07)

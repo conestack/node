@@ -218,7 +218,7 @@ def instance_property(func):
         try:
             return object.__getattribute__(self, attribute_name)
         except AttributeError:
-            object.__setattr__(self, attribute_name, func(self))
+            setattr(self, attribute_name, func(self))
             return object.__getattribute__(self, attribute_name)
     wrapper.__doc__ = func.__doc__
     return property(wrapper)
