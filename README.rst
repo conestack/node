@@ -291,7 +291,7 @@ Summary of the test coverage report::
     src/node/behaviors/attributes.py                           37      0   100%
     src/node/behaviors/cache.py                                69      0   100%
     src/node/behaviors/common.py                              130      0   100%
-    src/node/behaviors/fallback.py                             46      0   100%
+    src/node/behaviors/fallback.py                             45      0   100%
     src/node/behaviors/lifecycle.py                            48      0   100%
     src/node/behaviors/mapping.py                             117      0   100%
     src/node/behaviors/nodespace.py                            33      0   100%
@@ -330,7 +330,7 @@ Summary of the test coverage report::
     src/node/tests/test_utils.py                              127      0   100%
     src/node/utils.py                                         142      0   100%
     ---------------------------------------------------------------------------
-    TOTAL                                                    4146      0   100%
+    TOTAL                                                    4145      0   100%
 
 
 Python Versions

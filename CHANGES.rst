@@ -5,6 +5,10 @@ Changes
 0.9.22 (unreleased)
 -------------------
 
+- Create ``node.events.suppress_events`` context manager which can be used to
+  suppress event notification on ``node.events.EventDispatcher`` objects.
+  [rnix, 2017-06-15]
+
 - Create ``node.behaviors.fallback.fallback_processing`` context manager and
   and use it in ``node.behaviors.fallback.Fallback.__getitem__`` to check
   whether fallback processing is active.

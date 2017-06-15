@@ -9,6 +9,7 @@ from zope.lifecycleevent import ObjectAddedEvent
 from zope.lifecycleevent import ObjectCreatedEvent
 from zope.lifecycleevent import ObjectModifiedEvent
 from zope.lifecycleevent import ObjectRemovedEvent
+import threading
 
 
 ###############################################################################
@@ -45,6 +46,55 @@ class NodeDetachedEvent(ObjectRemovedEvent):
 #
 # The API is unabashedly cribbed from Kivy - https://kivy.org
 ###############################################################################
+
+_local_data = threading.local()
+_local_data.suppress = 0
+_local_data.events = list()
+
+ALL_EVENTS = object()
+
+
+class suppress_events(object):
+    """Context manager to suppress event notification.
+
+    Dedicated to be used in node implementations to internally modify data
+    structures and it's not desired that events are dispached where they
+    usually are.
+
+    Suppress all events::
+
+        with suppress_events() as count:
+            # count defines the recursion level of ``suppress_event`` calls.
+            # do something where normally events are triggered.
+            pass
+
+    Suppress specific event::
+
+        with suppress_events('my_event'):
+            pass  # do something
+
+    Suppress list of events::
+
+        with suppress_events(['event_1', 'event_2'])
+    """
+
+    def __init__(self, events=ALL_EVENTS):
+        type_ = type(events)
+        if type_ not in (list, tuple):
+            events = [events]
+        for event in events:
+            _local_data.events.append(event)
+        self.events = events
+
+    def __enter__(self):
+        _local_data.suppress += 1
+        return _local_data.suppress
+
+    def __exit__(self, type, value, traceback):
+        _local_data.suppress -= 1
+        for event in self.events:
+            _local_data.events.remove(event)
+
 
 class UnknownEvent(ValueError):
     """Thrown on attempt to register a subscriber to an unknown event.
@@ -83,19 +133,18 @@ class EventDispatcher(object):
     """
 
     def __init__(self, *args, **kw):
+        # XXX: class initialization might go to a metaclass or __new__
         # do not override events defined on class.
         if not hasattr(self, '__events__'):
             self.__events__ = list()
         # mapping between events and subscribers
         self.__subscribers__ = dict()
-        # call super class constructor
-        super(EventDispatcher, self).__init__(*args, **kw)
         # iterate class dict and register events for contained EventAttribute
         # objects
         for attr, val in self.__class__.__dict__.items():
             if isinstance(val, EventAttribute):
                 self.register_event(attr)
-                val.event = attr
+                val.name = attr
 
     def register_event(self, event):
         """Register event type.
@@ -146,6 +195,11 @@ class EventDispatcher(object):
         :param args: Arguments passed to subscribers.
         :patam kw: Keyword arguments passed to subscribers.
         """
+        if _local_data.suppress > 0:
+            if ALL_EVENTS in _local_data.events:
+                return
+            if event in _local_data.events:
+                return
         subscribers = self.__subscribers__.get(event, list())
         for subscriber in subscribers:
             subscriber(*args, **kw)
@@ -170,22 +224,29 @@ class EventAttribute(object):
         # is called
         dispatcher.example_attribute = 1
     """
-    event = None
+    name = None
 
     def __init__(self, default):
         """Initialize attribute.
         """
-        self.value = default
+        self.default = default
 
     def __get__(self, obj, owner=None):
         """Return attribute value.
         """
-        return self.value
+        if obj is None:
+            return self.default
+        return obj.__dict__.get(self.name, self.default)
 
     def __set__(self, obj, value):
         """Set attribute value. Triggers event if value changed.
         """
-        dispatch = value != self.value
-        self.value = value
-        if dispatch:
-            obj.dispatch(self.event, value)
+        old_value = obj.__dict__.get(self.name, self.default)
+        obj.__dict__[self.name] = value
+        if value != old_value:
+            obj.dispatch(self.name, value)
+
+    # def __delete__(self, obj):
+    #     """Delete attribute value.
+    #     """
+    #     del obj.__dict__[self.name]

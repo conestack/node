@@ -1,6 +1,7 @@
 from node.events import EventAttribute
 from node.events import EventDispatcher
 from node.events import UnknownEvent
+from node.events import suppress_events
 import unittest
 
 
@@ -152,9 +153,47 @@ class TestEvents(unittest.TestCase):
         self.assertEqual(dispatcher.attr, 1)
         dispatcher.attr = 1
         self.assertFalse(hasattr(subscriber, 'args'))
-        self.assertFalse(hasattr(subscriber, 'kw'))
 
         # if value changes, an event gets triggered
         dispatcher.attr = 2
+        self.assertEqual(dispatcher.attr, 2)
         self.assertEqual(subscriber.args, (2,))
-        self.assertEqual(subscriber.kw, {})
+
+        dispatcher.attr = 3
+        self.assertEqual(dispatcher.attr, 3)
+        self.assertEqual(subscriber.args, (3,))
+
+        # default value on class still 1
+        self.assertEqual(MyDispatcher.attr, 1)
+
+    def test_suppress_events(self):
+        dispatcher = MyDispatcher()
+        dispatcher.register_event('my_event')
+
+        subscriber = Subscriber()
+        dispatcher.bind(my_event=subscriber, attr=subscriber)
+
+        with suppress_events():
+            dispatcher.attr = 0
+        self.assertFalse(hasattr(subscriber, 'args'))
+
+        with suppress_events('attr'):
+            dispatcher.attr = 1
+        self.assertFalse(hasattr(subscriber, 'args'))
+
+        with suppress_events(['other']):
+            dispatcher.attr = 2
+        self.assertEqual(subscriber.args, (2,))
+        del subscriber.args
+
+        with suppress_events():
+            dispatcher.dispatch('my_event', 0)
+        self.assertFalse(hasattr(subscriber, 'args'))
+
+        with suppress_events('my_event'):
+            dispatcher.dispatch('my_event', 1)
+        self.assertFalse(hasattr(subscriber, 'args'))
+
+        with suppress_events(['other']):
+            dispatcher.dispatch('my_event', 2)
+        self.assertEqual(subscriber.args, (2,))

@@ -19,7 +19,6 @@ class fallback_processing(object):
         return self.data.processing
 
     def __exit__(self, type, value, traceback):
-        type, value, traceback
         self.data.processing -= 1
 
 
