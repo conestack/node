@@ -5,6 +5,9 @@ Changes
 0.9.21 (unreleased)
 -------------------
 
+- Introduce ``node.events.EventDispatcher`` and ``node.events.EventAttribute``.
+  [rnix, 2017-06-15]
+
 - Use ``setattr`` in ``instance_property`` decorator instead of
   ``object.__setattr__`` in order to avoid errors with custom low level
   ``__setattr__`` implementations.

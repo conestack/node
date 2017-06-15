@@ -257,8 +257,8 @@ Nodes can be serialized to and deserialized from JSON:
     >>> deserialize(json_dump)
     <BaseNode object 'node' at ...>
 
-For details on serialization API please read tests in
-``src/node/serializer.rst``.
+For details on serialization API please read file in
+``docs/archive/serializer.rst``.
 
 
 Migration
@@ -300,7 +300,7 @@ Summary of the test coverage report::
     src/node/behaviors/reference.py                            83      0   100%
     src/node/behaviors/storage.py                              31      0   100%
     src/node/compat.py                                         10      0   100%
-    src/node/events.py                                         25      0   100%
+    src/node/events.py                                         75      0   100%
     src/node/interfaces.py                                     96      0   100%
     src/node/locking.py                                        23      0   100%
     src/node/serializer.py                                    134      0   100%
@@ -308,12 +308,13 @@ Summary of the test coverage report::
     src/node/testing/base.py                                   66      0   100%
     src/node/testing/env.py                                    18      0   100%
     src/node/testing/fullmapping.py                           177      0   100%
-    src/node/tests/__init__.py                                 86      0   100%
+    src/node/tests/__init__.py                                 88      0   100%
     src/node/tests/test_alias.py                              113      0   100%
     src/node/tests/test_attributes.py                          38      0   100%
     src/node/tests/test_base.py                               245      0   100%
     src/node/tests/test_cache.py                               98      0   100%
     src/node/tests/test_common.py                             154      0   100%
+    src/node/tests/test_events.py                              75      0   100%
     src/node/tests/test_fallback.py                            46      0   100%
     src/node/tests/test_lifecycle.py                          105      0   100%
     src/node/tests/test_locking.py                             43      0   100%
@@ -329,7 +330,7 @@ Summary of the test coverage report::
     src/node/tests/test_utils.py                              127      0   100%
     src/node/utils.py                                         142      0   100%
     ---------------------------------------------------------------------------
-    TOTAL                                                    4014      0   100%
+    TOTAL                                                    4141      0   100%
 
 
 Python Versions

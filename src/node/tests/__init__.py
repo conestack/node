@@ -74,6 +74,7 @@ def test_suite():
     from node.tests import test_base
     from node.tests import test_cache
     from node.tests import test_common
+    from node.tests import test_events
     from node.tests import test_fallback
     from node.tests import test_lifecycle
     from node.tests import test_locking
@@ -97,6 +98,7 @@ def test_suite():
     suite.addTest(unittest.findTestCases(test_utils))
     suite.addTest(unittest.findTestCases(test_locking))
     suite.addTest(unittest.findTestCases(test_serializer))
+    suite.addTest(unittest.findTestCases(test_events))
 
     suite.addTest(unittest.findTestCases(test_alias))
     suite.addTest(unittest.findTestCases(test_attributes))
