@@ -5,7 +5,10 @@ Changes
 0.9.22 (unreleased)
 -------------------
 
-- No changes yet.
+- Create ``node.behaviors.fallback.fallback_processing`` context manager and
+  and use it in ``node.behaviors.fallback.Fallback.__getitem__`` to check
+  whether fallback processing is active.
+  [rnix, 2017-06-15]
 
 
 0.9.21 (2017-06-15)

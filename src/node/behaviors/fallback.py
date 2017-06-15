@@ -7,9 +7,20 @@ from zope.interface import implementer
 import threading
 
 
-thread_data = threading.local()
-thread_data.in_fallback_processing = False
 _marker = dict()
+
+
+class fallback_processing(object):
+    data = threading.local()
+    data.processing = -1
+
+    def __enter__(self):
+        self.data.processing += 1
+        return self.data.processing
+
+    def __exit__(self, type, value, traceback):
+        type, value, traceback
+        self.data.processing -= 1
 
 
 def _to_root(node, path, visited):
@@ -49,13 +60,10 @@ class Fallback(Behavior):
         try:
             value = _next(self, key)
         except KeyError:
-            if thread_data.in_fallback_processing:
-                raise
-            try:
-                thread_data.in_fallback_processing = True
+            with fallback_processing() as count:
+                if count > 0:
+                    raise
                 value = _to_root(self, path=self.path + [key], visited=set())
-            finally:
-                thread_data.in_fallback_processing = False
-            if value is _marker:
-                raise
+                if value is _marker:
+                    raise
         return value
