@@ -2,7 +2,7 @@
 Changes
 =======
 
-0.9.21 (unreleased)
+0.9.21 (2017-06-15)
 -------------------
 
 - Introduce ``node.events.EventDispatcher`` and ``node.events.EventAttribute``.
