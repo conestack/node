@@ -78,7 +78,8 @@ class suppress_events(object):
 
     Suppress list of events::
 
-        with suppress_events(['event_1', 'event_2'])
+        with suppress_events(['event_1', 'event_2']):
+            pass  # do something
     """
 
     def __init__(self, events=ALL_EVENTS):
@@ -123,7 +124,7 @@ class EventAttribute(object):
         # is called
         dispatcher.example_attribute = 1
 
-    An alternative storage attribute can be given to ``EventDispatcher`` at
+    An alternative storage attribute can be given to ``EventAttribute`` at
     creation time to define an alternative container object for the actual
     values. This is useful if it's desired to store the values on node
     attributes for example.::
