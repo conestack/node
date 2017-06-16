@@ -13,6 +13,10 @@ from node.behaviors.common import GetattrChildren
 from node.behaviors.common import NodeChildValidate
 from node.behaviors.common import UUIDAware
 from node.behaviors.common import UnicodeAware
+from node.behaviors.events import EventAttribute
+from node.behaviors.events import Events
+from node.behaviors.events import UnknownEvent
+from node.behaviors.events import suppress_events
 from node.behaviors.fallback import Fallback
 from node.behaviors.lifecycle import AttributesLifecycle
 from node.behaviors.lifecycle import Lifecycle

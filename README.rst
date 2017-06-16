@@ -286,11 +286,12 @@ Summary of the test coverage report::
     Name                                                    Stmts   Miss  Cover
     ---------------------------------------------------------------------------
     src/node/base.py                                           23      0   100%
-    src/node/behaviors/__init__.py                             36      0   100%
+    src/node/behaviors/__init__.py                             40      0   100%
     src/node/behaviors/alias.py                               103      0   100%
     src/node/behaviors/attributes.py                           37      0   100%
     src/node/behaviors/cache.py                                69      0   100%
     src/node/behaviors/common.py                              130      0   100%
+    src/node/behaviors/events.py                               99      0   100%
     src/node/behaviors/fallback.py                             45      0   100%
     src/node/behaviors/lifecycle.py                            48      0   100%
     src/node/behaviors/mapping.py                             117      0   100%
@@ -300,8 +301,8 @@ Summary of the test coverage report::
     src/node/behaviors/reference.py                            83      0   100%
     src/node/behaviors/storage.py                              31      0   100%
     src/node/compat.py                                         10      0   100%
-    src/node/events.py                                        118      0   100%
-    src/node/interfaces.py                                     96      0   100%
+    src/node/events.py                                         32      0   100%
+    src/node/interfaces.py                                    102      0   100%
     src/node/locking.py                                        23      0   100%
     src/node/serializer.py                                    134      0   100%
     src/node/testing/__init__.py                                1      0   100%
@@ -314,7 +315,7 @@ Summary of the test coverage report::
     src/node/tests/test_base.py                               245      0   100%
     src/node/tests/test_cache.py                               98      0   100%
     src/node/tests/test_common.py                             154      0   100%
-    src/node/tests/test_events.py                             137      0   100%
+    src/node/tests/test_events.py                             153      0   100%
     src/node/tests/test_fallback.py                            46      0   100%
     src/node/tests/test_lifecycle.py                          105      0   100%
     src/node/tests/test_locking.py                             43      0   100%
@@ -330,7 +331,7 @@ Summary of the test coverage report::
     src/node/tests/test_utils.py                              127      0   100%
     src/node/utils.py                                         142      0   100%
     ---------------------------------------------------------------------------
-    TOTAL                                                    4250      0   100%
+    TOTAL                                                    4298      0   100%
 
 
 Python Versions

@@ -1,8 +1,10 @@
 from node.base import AttributedNode
+from node.behaviors import Events
 from node.events import EventAttribute
 from node.events import EventDispatcher
 from node.events import UnknownEvent
 from node.events import suppress_events
+from node.interfaces import IEvents
 from node.utils import UNSET
 from plumber import Behavior
 from plumber import default
@@ -34,8 +36,14 @@ class PlumbedDispatcher(EventDispatcher):
     pass
 
 
-class AttributedDispatcher(AttributedNode, EventDispatcher):
+@plumbing(Events)
+class AttributedDispatcher(AttributedNode):
     attr = EventAttribute(1, storage='attrs')
+
+
+@plumbing(Events)
+class MixedEventDeclatationsDispatcher(object):
+    __events__ = ['event_a']
 
 
 ###############################################################################
@@ -44,7 +52,11 @@ class AttributedDispatcher(AttributedNode, EventDispatcher):
 
 class TestEvents(unittest.TestCase):
 
-    def test_EventDispatcher_register_event(self):
+    def test_implements(self):
+        dispatcher = EventDispatcher()
+        self.assertTrue(IEvents.providedBy(dispatcher))
+
+    def test_register_event(self):
         dispatcher = EventDispatcher()
 
         # no events registered yet
@@ -58,7 +70,7 @@ class TestEvents(unittest.TestCase):
         dispatcher.register_event('my_event')
         self.assertEqual(dispatcher.__events__, ['my_event'])
 
-    def test_EventDispatcher_bind(self):
+    def test_bind(self):
         dispatcher = EventDispatcher()
 
         # no event subscribers registered yet
@@ -88,7 +100,19 @@ class TestEvents(unittest.TestCase):
             {'my_event': [subscriber]}
         )
 
-    def test_EventDispatcher_unbind(self):
+    def test_mixed_event_declarations(self):
+        dispatcher = MixedEventDeclatationsDispatcher()
+        dispatcher.register_event('event_b')
+
+        subscriber = Subscriber()
+        dispatcher.bind(event_a=subscriber)
+        dispatcher.bind(event_b=subscriber)
+        self.assertEqual(dispatcher.__subscribers__, {
+            'event_a': [subscriber],
+            'event_b': [subscriber]
+        })
+
+    def test_unbind(self):
         dispatcher = EventDispatcher()
         dispatcher.register_event('event_1')
         dispatcher.register_event('event_2')
@@ -143,7 +167,7 @@ class TestEvents(unittest.TestCase):
         })
         dispatcher.unbind()
 
-    def test_EventDispatcher_dispatch(self):
+    def test_dispatch(self):
         dispatcher = EventDispatcher()
 
         # register event and bind subscriber to it
@@ -157,7 +181,7 @@ class TestEvents(unittest.TestCase):
         self.assertEqual(subscriber.args, (1,))
         self.assertEqual(subscriber.kw, dict(kw=2))
 
-    def test_EventAttribute(self):
+    def test_attribute(self):
         dispatcher = MyDispatcher()
 
         # attribute events get registered automatically and are written to
@@ -195,7 +219,7 @@ class TestEvents(unittest.TestCase):
         # After deleting the default value of event attribute is returned again
         self.assertEqual(dispatcher.attr, 1)
 
-    def test_EventAttribute_storage(self):
+    def test_attribute_storage(self):
         dispatcher = AttributedDispatcher()
         subscriber = Subscriber()
         dispatcher.bind(attr=subscriber)
@@ -208,6 +232,14 @@ class TestEvents(unittest.TestCase):
         del dispatcher.attr
         self.assertEqual(subscriber.args, (UNSET,))
         self.assertFalse('attr' in dispatcher.attrs)
+
+    def test_attributes_on_behavior(self):
+        dispatcher = PlumbedDispatcher()
+        subscriber = Subscriber()
+        dispatcher.bind(attr=subscriber)
+
+        dispatcher.attr = 0
+        self.assertEqual(subscriber.args, (0,))
 
     def test_suppress_events(self):
         dispatcher = MyDispatcher()
@@ -240,11 +272,3 @@ class TestEvents(unittest.TestCase):
         with suppress_events(['other']):
             dispatcher.dispatch('my_event', 2)
         self.assertEqual(subscriber.args, (2,))
-
-    def test_with_plumber(self):
-        dispatcher = PlumbedDispatcher()
-        subscriber = Subscriber()
-        dispatcher.bind(attr=subscriber)
-
-        dispatcher.attr = 0
-        self.assertEqual(subscriber.args, (0,))

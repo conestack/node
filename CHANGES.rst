@@ -5,8 +5,18 @@ Changes
 0.9.22 (unreleased)
 -------------------
 
-- Create ``node.events.suppress_events`` context manager which can be used to
-  suppress event notification on ``node.events.EventDispatcher`` objects.
+- Move event dispatching related classes and functions from ``node.events``
+  to ``node.behaviors.events`` and import it from there in ``node.events``.
+  [rnix, 2017-06-16]
+
+- Introduce ``node.interfaces.IEvents`` and implement
+  ``node.behaviors.events.Events`` behavior. Contains business logic from
+  ``node.events.EventDispatcher``. Use new behavior on ``EventDispatcher``.
+  [rnix, 2017-06-16]
+
+- Create ``suppress_events`` context manager which can be used to
+  suppress event notification in conjunction with ``node.behaviors.Events``
+  behavior.
   [rnix, 2017-06-15]
 
 - Create ``node.behaviors.fallback.fallback_processing`` context manager and

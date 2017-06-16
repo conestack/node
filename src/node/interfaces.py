@@ -536,3 +536,41 @@ class IFallback(Interface):
     def __getitem__(key):
         """Lookup fallback if item is not available on node.
         """
+
+
+class IEvents(Interface):
+    """Plumbing behavior providing event dispatching.
+    """
+
+    def __new__(*args, **kw):
+        """Set ``__events__`` and ``__subscribers__`` attributes on instance.
+        """
+
+    def register_event(event):
+        """Register event type.
+
+        :param event: Event name as string.
+        """
+
+    def bind(**kw):
+        """Bind subscribers to events.
+
+        :param kw: Each keyword argument is the event name and the argument
+            value is the subscriber callable.
+        """
+
+    def unbind(event=None, subscriber=None):
+        """Unbind subscribers.
+
+        :param event: Event name. If not given, all events are affected.
+        :param subscriber: Subscriber callable. If not given, all subscribers
+            are affected.
+        """
+
+    def dispatch(event, *args, **kw):
+        """Dispatch event.
+
+        :param event: Event name.
+        :param args: Arguments passed to subscribers.
+        :patam kw: Keyword arguments passed to subscribers.
+        """
