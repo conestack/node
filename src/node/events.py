@@ -4,6 +4,9 @@ from node.interfaces import INodeCreatedEvent
 from node.interfaces import INodeDetachedEvent
 from node.interfaces import INodeModifiedEvent
 from node.interfaces import INodeRemovedEvent
+from node.utils import UNSET
+from plumber import plumber
+from plumber.compat import add_metaclass
 from zope.interface import implementer
 from zope.lifecycleevent import ObjectAddedEvent
 from zope.lifecycleevent import ObjectCreatedEvent
@@ -101,6 +104,85 @@ class UnknownEvent(ValueError):
     """
 
 
+class EventAttribute(object):
+    """Descriptor which can be used on ``EventDispatcher`` objects.
+
+    It's possible to bind subscribers to object attributes of type
+    ``EventAttribute`` by attribute name::
+
+        class ExampleDispatcher(EventDispatcher):
+            example_attribute = EventAttribute(0)
+
+        def subscriber(value):
+            pass  # do something
+
+        dispatcher = ExampleDispatcher()
+        dispatcher.bind(example_attribute=subscriber)
+
+        # when setting ``example_attribute`` with a changed value, subscriber
+        # is called
+        dispatcher.example_attribute = 1
+
+    An alternative storage attribute can be given to ``EventDispatcher`` at
+    creation time to define an alternative container object for the actual
+    values. This is useful if it's desired to store the values on node
+    attributes for example.::
+
+        class ExampleNode(AttributedNode):
+            example_attribute = EventAttribute(0, storage='attrs')
+    """
+    name = None
+
+    def __init__(self, default, storage='__dict__'):
+        """Initialize attribute.
+
+        :param default: Default value.
+        :param storage: Attribute of instance to use as attribute storage.
+            Defaults to ``__dict__``.
+        """
+        self.default = default
+        self.storage = storage
+
+    def __get__(self, obj, type=None):
+        """Return attribute value.
+        """
+        if obj is None:
+            return self.default
+        return getattr(obj, self.storage).get(self.name, self.default)
+
+    def __set__(self, obj, value):
+        """Set attribute value. Triggers event if value changed.
+        """
+        storage = getattr(obj, self.storage)
+        old_value = storage.get(self.name, self.default)
+        storage[self.name] = value
+        if value != old_value:
+            obj.dispatch(self.name, value)
+
+    def __delete__(self, obj):
+        """Delete attribute value.
+        """
+        del getattr(obj, self.storage)[self.name]
+        obj.dispatch(self.name, UNSET)
+
+
+class event_meta(plumber):
+    """Metaclass handling ``EventAttribute`` instances on classes.
+    """
+
+    def __new__(cls, name, bases, dct):
+        if not '__events__' in dct:
+            dct['__events__'] = list()
+        events = dct['__events__']
+        for attr, val in dct.items():
+            if isinstance(val, EventAttribute):
+                if not attr in events:
+                    events.append(attr)
+                val.name = attr
+        return plumber.__new__(cls, name, bases, dct)
+
+
+@add_metaclass(event_meta)
 class EventDispatcher(object):
     """Object for event dispatching.
 
@@ -132,19 +214,11 @@ class EventDispatcher(object):
         dispatcher.unbind(event=event_1, subscriber=subscriber)
     """
 
-    def __init__(self, *args, **kw):
-        # XXX: class initialization might go to a metaclass or __new__
-        # do not override events defined on class.
-        if not hasattr(self, '__events__'):
-            self.__events__ = list()
-        # mapping between events and subscribers
-        self.__subscribers__ = dict()
-        # iterate class dict and register events for contained EventAttribute
-        # objects
-        for attr, val in self.__class__.__dict__.items():
-            if isinstance(val, EventAttribute):
-                self.register_event(attr)
-                val.name = attr
+    def __new__(cls, *args, **kw):
+        inst = super(EventDispatcher, cls).__new__(cls, *args, **kw)
+        inst.__events__ = list()
+        inst.__subscribers__ = dict()
+        return inst
 
     def register_event(self, event):
         """Register event type.
@@ -161,7 +235,8 @@ class EventDispatcher(object):
             value is the subscriber callable.
         """
         for event, subscriber in kw.items():
-            if not event in self.__events__:
+            if not event in self.__events__ \
+                    and not event in self.__class__.__events__:
                 raise UnknownEvent(event)
             subscribers = self.__subscribers__.setdefault(event, list())
             if not subscriber in subscribers:
@@ -203,50 +278,3 @@ class EventDispatcher(object):
         subscribers = self.__subscribers__.get(event, list())
         for subscriber in subscribers:
             subscriber(*args, **kw)
-
-
-class EventAttribute(object):
-    """Descriptor which can be used on ``EventDispatcher`` objects.
-
-    It's possible to bind subscribers to object attributes of type
-    ``EventAttribute`` by attribute name::
-
-        class ExampleDispatcher(EventDispatcher):
-            example_attribute = EventAttribute(0)
-
-        def subscriber(value):
-            pass  # do something
-
-        dispatcher = ExampleDispatcher()
-        dispatcher.bind(example_attribute=subscriber)
-
-        # when setting ``example_attribute`` with a changed value, subscriber
-        # is called
-        dispatcher.example_attribute = 1
-    """
-    name = None
-
-    def __init__(self, default):
-        """Initialize attribute.
-        """
-        self.default = default
-
-    def __get__(self, obj, owner=None):
-        """Return attribute value.
-        """
-        if obj is None:
-            return self.default
-        return obj.__dict__.get(self.name, self.default)
-
-    def __set__(self, obj, value):
-        """Set attribute value. Triggers event if value changed.
-        """
-        old_value = obj.__dict__.get(self.name, self.default)
-        obj.__dict__[self.name] = value
-        if value != old_value:
-            obj.dispatch(self.name, value)
-
-    # def __delete__(self, obj):
-    #     """Delete attribute value.
-    #     """
-    #     del obj.__dict__[self.name]
