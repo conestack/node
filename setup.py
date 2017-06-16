@@ -48,7 +48,7 @@ setup(
     install_requires=[
         'setuptools',
         'odict>=1.6.2',
-        'plumber>=1.5',
+        'plumber>1.4.99',
         'zope.lifecycleevent',
         'zope.deprecation',
         'zope.component',
