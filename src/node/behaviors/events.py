@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from contextlib import contextmanager
 from node.interfaces import IEvents
 from node.utils import UNSET
 from plumber import Behavior
@@ -28,7 +29,7 @@ def event_dispatcher_metclass_hook(cls, name, bases, dct):
     events = cls.__events__
     for attr, val in dct.items():
         if isinstance(val, EventAttribute):
-            if not attr in events:
+            if attr not in events:
                 events.append(attr)
             val.name = attr
 
@@ -87,6 +88,21 @@ class UnknownEvent(ValueError):
     """
 
 
+_attribute_subscribers = threading.local()
+_attribute_subscribers.subscribers = list()
+
+
+@contextmanager
+def _subscribers(subscribers):
+    """Context manager to inject subscribers to ``Events.dispatch``.
+
+    Used in to inject subscribers registered with
+    ``EventAttributes.subscriber`` decorator.
+    """
+    _attribute_subscribers.subscribers = subscribers
+    yield
+
+
 class EventAttribute(object):
     """Descriptor which can be used on ``Events`` behavior using objects.
 
@@ -118,15 +134,16 @@ class EventAttribute(object):
     """
     name = None
 
-    def __init__(self, default, storage='__dict__'):
+    def __init__(self, default=UNSET, storage='__dict__'):
         """Initialize attribute.
 
-        :param default: Default value.
+        :param default: Default value. Defaults to UNSET
         :param storage: Attribute of instance to use as attribute storage.
             Defaults to ``__dict__``.
         """
         self.default = default
         self.storage = storage
+        self.subscribers = list()
 
     def __get__(self, obj, type=None):
         """Return attribute value.
@@ -142,13 +159,20 @@ class EventAttribute(object):
         old_value = storage.get(self.name, self.default)
         storage[self.name] = value
         if value != old_value:
-            obj.dispatch(self.name, value)
+            with _subscribers(self.subscribers):
+                obj.dispatch(self.name, value)
 
     def __delete__(self, obj):
         """Delete attribute value.
         """
         del getattr(obj, self.storage)[self.name]
         obj.dispatch(self.name, UNSET)
+
+    def subscriber(self, func):
+        """Event attribute subscriber decorator.
+        """
+        self.subscribers.append(func)
+        return func
 
 
 @implementer(IEvents)
@@ -199,7 +223,7 @@ class Events(Behavior):
 
         :param event: Event name as string.
         """
-        if not event in self.__events__:
+        if event not in self.__events__:
             self.__events__.append(event)
 
     @finalize
@@ -210,11 +234,11 @@ class Events(Behavior):
             value is the subscriber callable.
         """
         for event, subscriber in kw.items():
-            if not event in self.__events__ \
-                    and not event in self.__class__.__events__:
+            if event not in self.__events__ \
+                    and event not in self.__class__.__events__:
                 raise UnknownEvent(event)
             subscribers = self.__subscribers__.setdefault(event, list())
-            if not subscriber in subscribers:
+            if subscriber not in subscribers:
                 subscribers.append(subscriber)
 
     @finalize
@@ -247,11 +271,14 @@ class Events(Behavior):
         :param args: Arguments passed to subscribers.
         :patam kw: Keyword arguments passed to subscribers.
         """
+        attribute_subscribers = _attribute_subscribers.subscribers
+        _attribute_subscribers.subscribers = list()
         if suppress_events.data.suppress > 0:
             if ALL_EVENTS in suppress_events.data.events:
                 return
             if event in suppress_events.data.events:
                 return
-        subscribers = self.__subscribers__.get(event, list())
-        for subscriber in subscribers:
+        for subscriber in attribute_subscribers:
+            subscriber(self, *args, **kw)
+        for subscriber in self.__subscribers__.get(event, list()):
             subscriber(*args, **kw)

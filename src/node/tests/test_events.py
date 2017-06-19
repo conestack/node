@@ -46,6 +46,29 @@ class MixedEventDeclatationsDispatcher(object):
     __events__ = ['event_a']
 
 
+class SubscriberDecoratorDispatcher(EventDispatcher):
+    attr = EventAttribute()
+
+    @attr.subscriber
+    def attr_changed(self, value):
+        self.changed_value = value
+
+
+class SubscriberDecoratorBehavior(Behavior):
+    attr = EventAttribute()
+
+    @attr.subscriber
+    def attr_changed(self, value):
+        self.changed_value = value
+
+    attr = default(attr)
+
+
+@plumbing(SubscriberDecoratorBehavior)
+class PlumbedSubscriberDecoratorDispatcher(EventDispatcher):
+    pass
+
+
 ###############################################################################
 # Tests
 ###############################################################################
@@ -240,6 +263,15 @@ class TestEvents(unittest.TestCase):
 
         dispatcher.attr = 0
         self.assertEqual(subscriber.args, (0,))
+
+    def test_attribute_subscriber_decorator(self):
+        dispatcher = SubscriberDecoratorDispatcher()
+        dispatcher.attr = 'Changed Value'
+        self.assertEqual(dispatcher.changed_value, 'Changed Value')
+
+        dispatcher = PlumbedSubscriberDecoratorDispatcher()
+        dispatcher.attr = 'Changed Value'
+        self.assertEqual(dispatcher.changed_value, 'Changed Value')
 
     def test_suppress_events(self):
         dispatcher = MyDispatcher()

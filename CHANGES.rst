@@ -5,6 +5,14 @@ Changes
 0.9.22 (unreleased)
 -------------------
 
+- Use ``node.utils.UNSET`` as default ``default`` value in
+  ``node.behaviors.events.EventAttribute.__init__``.
+  [rnix, 2017-06-19]
+
+- Introduce ``node.behaviors.events.EventAttribute.subscriber`` decorator which
+  can be used to register attribute subscribers.
+  [rnix, 2017-06-19]
+
 - Move event dispatching related classes and functions from ``node.events``
   to ``node.behaviors.events`` and import it from there in ``node.events``.
   [rnix, 2017-06-16]
