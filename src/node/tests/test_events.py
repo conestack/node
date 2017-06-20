@@ -46,6 +46,11 @@ class MixedEventDeclatationsDispatcher(object):
     __events__ = ['event_a']
 
 
+@plumbing(Events)
+class AlwaysDispatchingAttributedDispatcher(object):
+    attr = EventAttribute(always_dispatch=True)
+
+
 class SubscriberDecoratorDispatcher(EventDispatcher):
     attr = EventAttribute()
 
@@ -241,6 +246,18 @@ class TestEvents(unittest.TestCase):
 
         # After deleting the default value of event attribute is returned again
         self.assertEqual(dispatcher.attr, 1)
+
+    def test_attribute_always_dispatch(self):
+        dispatcher = AlwaysDispatchingAttributedDispatcher()
+        subscriber = Subscriber()
+        dispatcher.bind(attr=subscriber)
+
+        dispatcher.attr = 1
+        self.assertEqual(subscriber.args, (1,))
+        del subscriber.args
+
+        dispatcher.attr = 1
+        self.assertEqual(subscriber.args, (1,))
 
     def test_attribute_storage(self):
         dispatcher = AttributedDispatcher()

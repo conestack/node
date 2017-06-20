@@ -542,10 +542,6 @@ class IEvents(Interface):
     """Plumbing behavior providing event dispatching.
     """
 
-    def __new__(*args, **kw):
-        """Set ``__events__`` and ``__subscribers__`` attributes on instance.
-        """
-
     def register_event(event):
         """Register event type.
 

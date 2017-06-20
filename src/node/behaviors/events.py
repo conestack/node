@@ -41,7 +41,7 @@ class suppress_events(object):
     """Context manager to suppress event notification.
 
     Dedicated to be used in node implementations to internally modify data
-    structures and it's not desired that events are dispached where they
+    structures and it's not desired that events are dispatched if they
     usually are.
 
     Suppress all events::
@@ -77,7 +77,7 @@ class suppress_events(object):
         self.data.suppress += 1
         return self.data.suppress
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, type_, value, traceback):
         self.data.suppress -= 1
         for event in self.events:
             self.data.events.remove(event)
@@ -119,9 +119,17 @@ class EventAttribute(object):
         dispatcher = ExampleDispatcher()
         dispatcher.bind(example_attribute=subscriber)
 
-        # when setting ``example_attribute`` with a changed value, subscriber
-        # is called
+    When setting ``example_attribute``, subscriber gets called. By default,
+    event is only dispatched if value changes::
+
         dispatcher.example_attribute = 1
+
+    If it's desired to always dispatch the attribute event when ``__set__``
+    gets executed, pass ``always_dispatch`` to constructor::
+
+        @plumbing(Events)
+        class ExampleDispatcher(object):
+            example_attribute = EventAttribute(0, always_dispatch=True)
 
     An alternative storage attribute can be given to ``EventAttribute`` at
     creation time to define an alternative container object for the actual
@@ -131,21 +139,37 @@ class EventAttribute(object):
         @plumbing(Events)
         class ExampleNode(AttributedNode):
             example_attribute = EventAttribute(0, storage='attrs')
+
+    Attribute event subscribers can also be registered with ``subscriber``
+    decorator::
+
+        @plumbing(Events)
+        class ExampleNode(object):
+            example_attribute = EventAttribute(0, storage='attrs')
+
+            @example_attribute.subscriber
+            def on_example_attribute(self, value):
+                pass  # do something
     """
     name = None
 
-    def __init__(self, default=UNSET, storage='__dict__'):
+    def __init__(self, default=UNSET,
+                 storage='__dict__',
+                 always_dispatch=False):
         """Initialize attribute.
 
         :param default: Default value. Defaults to UNSET
         :param storage: Attribute of instance to use as attribute storage.
             Defaults to ``__dict__``.
+        :param always_dispatch: Flag whether events should always be
+            dispatched.
         """
         self.default = default
         self.storage = storage
+        self.always_dispatch = always_dispatch
         self.subscribers = list()
 
-    def __get__(self, obj, type=None):
+    def __get__(self, obj, type_=None):
         """Return attribute value.
         """
         if obj is None:
@@ -158,7 +182,7 @@ class EventAttribute(object):
         storage = getattr(obj, self.storage)
         old_value = storage.get(self.name, self.default)
         storage[self.name] = value
-        if value != old_value:
+        if self.always_dispatch or value != old_value:
             with _subscribers(self.subscribers):
                 obj.dispatch(self.name, value)
 

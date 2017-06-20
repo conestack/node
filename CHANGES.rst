@@ -5,6 +5,12 @@ Changes
 0.9.22 (unreleased)
 -------------------
 
+- Add ``always_dispatch`` keyword argument to
+  ``node.behaviors.events.EventAttribute`` constructor which defines whether
+  events are always dispatched on ``__set__``, not only if attribute value
+  changes.
+  [rnix, 2017-06-20]
+
 - Use ``node.utils.UNSET`` as default ``default`` value in
   ``node.behaviors.events.EventAttribute.__init__``.
   [rnix, 2017-06-19]
