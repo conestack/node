@@ -2,7 +2,7 @@
 Changes
 =======
 
-0.9.22 (unreleased)
+0.9.22 (2017-07-18)
 -------------------
 
 - Add ``always_dispatch`` keyword argument to
