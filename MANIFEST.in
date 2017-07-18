@@ -1,5 +1,8 @@
 graft src/node
+graft docs
 include *.rst
 exclude *.cfg
 exclude bootstrap.sh
 global-exclude *.pyc
+include *.sh
+
