@@ -334,8 +334,6 @@ Summary of the test coverage report::
     src/node/tests/test_tests.py                               50      0   100%
     src/node/tests/test_utils.py                              127      0   100%
     src/node/utils.py                                         142      0   100%
-    ---------------------------------------------------------------------------
-    TOTAL                                                    4343      0   100%
 
 
 Python Versions
@@ -350,7 +348,5 @@ Contributors
 ============
 
 - Robert Niederreiter
-
 - Florian Friesdorf
-
 - Jens Klein
