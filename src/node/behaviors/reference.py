@@ -66,10 +66,13 @@ class Reference(Behavior):
         node._index_nodes()
         return node
 
-    def _get_uuid(self):
+    @property
+    def uuid(self):
         return self._uuid
 
-    def _set_uuid(self, uuid):
+    @override
+    @uuid.setter
+    def uuid(self, uuid):
         iuuid = uuid is not None and int(uuid) or None
         if iuuid in self._index \
                 and self._index[iuuid] is not self:
@@ -79,8 +82,6 @@ class Reference(Behavior):
             del self._index[siuuid]
         self._index[iuuid] = self
         self._uuid = uuid
-
-    uuid = override(property(_get_uuid, _set_uuid))
 
     @override
     @property

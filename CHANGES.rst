@@ -5,7 +5,8 @@ Changes
 0.9.23 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Use property decorators for ``node.behaviors.reference.Reference.uuid``.
+  [rnix, 2017-12-15]
 
 
 0.9.22 (2017-07-18)
