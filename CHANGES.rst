@@ -2,7 +2,7 @@
 Changes
 =======
 
-0.9.23 (unreleased)
+0.9.23 (2018-11-07)
 -------------------
 
 - Use property decorators for ``node.behaviors.reference.Reference.uuid``.
