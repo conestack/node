@@ -35,7 +35,7 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
     ],
-    keywords='node tree fullmapping',
+    keywords='node tree fullmapping dict',
     author='BlueDynamics Alliance',
     author_email='dev@bluedynamics.com',
     url='http://github.com/bluedynamics/node',
@@ -53,17 +53,5 @@ setup(
         'zope.deprecation',
         'zope.component',
     ],
-    extras_require={
-        'py24': [
-            'uuid',
-        ],
-        'test': [
-            'plone.testing',
-            'odict',
-            'plumber[test]',
-        ]
-    },
-    test_suite='node.tests.test_suite',
-    entry_points="""
-    """
+    test_suite='node.tests.test_suite'
 )
