@@ -5,7 +5,11 @@ Changes
 0.9.24 (unreleased)
 -------------------
 
-- No changes yet.
+- Remove superfluous ``extra_require`` from ``setup.py``.
+  [rnix, 2019-04-25]
+
+- Drop Support for python < 2.7.
+  [rnix, 2019-04-25]
 
 
 0.9.23 (2018-11-07)
