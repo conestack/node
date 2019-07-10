@@ -5,6 +5,10 @@ Changes
 0.9.24 (unreleased)
 -------------------
 
+- Overhaul ``node.behaviors.Order``. Use related functions from ``odict`` where
+  appropriate.
+  [rnix, 2019-07-10]
+
 - Remove superfluous ``extra_require`` from ``setup.py``.
   [rnix, 2019-04-25]
 
