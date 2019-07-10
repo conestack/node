@@ -2,7 +2,7 @@
 Changes
 =======
 
-0.9.24 (unreleased)
+0.9.24 (2019-07-10)
 -------------------
 
 - Overhaul ``node.behaviors.Order``. Use related functions from ``odict`` where

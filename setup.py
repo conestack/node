@@ -9,7 +9,7 @@ def read_file(name):
         return f.read()
 
 
-version = '0.9.24.dev0'
+version = '0.9.24'
 shortdesc = "Building data structures as node trees"
 longdesc = '\n\n'.join([read_file(name) for name in [
     'README.rst',
@@ -47,7 +47,7 @@ setup(
     zip_safe=True,
     install_requires=[
         'setuptools',
-        'odict>=1.6.2',
+        'odict>=1.7.0',
         'plumber>1.4.99',
         'zope.lifecycleevent',
         'zope.deprecation',
