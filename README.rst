@@ -301,7 +301,7 @@ Summary of the test coverage report::
     src/node/behaviors/mapping.py                             117      0   100%
     src/node/behaviors/nodespace.py                            33      0   100%
     src/node/behaviors/nodify.py                               87      0   100%
-    src/node/behaviors/order.py                               109      0   100%
+    src/node/behaviors/order.py                                42      0   100%
     src/node/behaviors/reference.py                            83      0   100%
     src/node/behaviors/storage.py                              31      0   100%
     src/node/compat.py                                         10      0   100%
@@ -326,7 +326,7 @@ Summary of the test coverage report::
     src/node/tests/test_mapping.py                             22      0   100%
     src/node/tests/test_nodespace.py                           44      0   100%
     src/node/tests/test_nodify.py                              45      0   100%
-    src/node/tests/test_order.py                              134      0   100%
+    src/node/tests/test_order.py                              138      0   100%
     src/node/tests/test_reference.py                           74      0   100%
     src/node/tests/test_serializer.py                         222      0   100%
     src/node/tests/test_storage.py                             41      0   100%
@@ -334,7 +334,6 @@ Summary of the test coverage report::
     src/node/tests/test_tests.py                               50      0   100%
     src/node/tests/test_utils.py                              127      0   100%
     src/node/utils.py                                         142      0   100%
-
 
 Python Versions
 ---------------

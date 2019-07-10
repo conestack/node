@@ -12,7 +12,7 @@ Changes
 - Remove superfluous ``extra_require`` from ``setup.py``.
   [rnix, 2019-04-25]
 
-- Drop Support for python < 2.7.
+- Drop Support for python < 2.7 and < 3.3.
   [rnix, 2019-04-25]
 
 

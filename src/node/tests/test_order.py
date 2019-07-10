@@ -64,10 +64,26 @@ class TestOrder(NodeTestCase):
         )
         self.assertEqual(str(err), 'Given node has no __name__ set.')
 
+        err = self.expect_error(
+            ValueError,
+            node.insertafter,
+            new,
+            node['child1']
+        )
+        self.assertEqual(str(err), 'Given node has no __name__ set.')
+
         new.__name__ = 'child3'
         err = self.expect_error(
             ValueError,
             node.insertbefore,
+            new,
+            OrderableNode('fromelsewhere')
+        )
+        self.assertEqual(str(err), 'Given reference node not child of self.')
+
+        err = self.expect_error(
+            ValueError,
+            node.insertafter,
             new,
             OrderableNode('fromelsewhere')
         )
