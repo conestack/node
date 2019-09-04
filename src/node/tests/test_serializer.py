@@ -179,7 +179,7 @@ class TestSerializer(NodeTestCase):
         root = OrderedNode(name='root')
         nodes = deserialize(json_data, root=root)
         self.assertEqual(len(nodes), 2)
-        self.check_output("""\
+        self.checkOutput("""\
         [<OrderedNode object 'child_1' at ...>,
         <OrderedNode object 'child_2' at ...>]
         """, str(nodes))

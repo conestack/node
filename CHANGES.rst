@@ -5,7 +5,14 @@ Changes
 0.9.25 (unreleased)
 -------------------
 
-- no changes yet.
+- Rename ``NodeTestCase.expect_error`` to ``NodeTestCase.expectError``.
+  [rnix, 2019-09-04]
+
+- Rename ``NodeTestCase.check_output`` to ``NodeTestCase.checkOutput``.
+  [rnix, 2019-09-04]
+
+- Introduce ``prefix`` keyword argument in ``Nodify.treerepr``.
+  [rnix, 2019-09-04]
 
 
 0.9.24 (2019-07-10)

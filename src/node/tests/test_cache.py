@@ -57,7 +57,7 @@ class TestCache(NodeTestCase):
             '    <class \'node.tests.test_cache.Node\'>: d2\n'
         ))
 
-        err = self.expect_error(KeyError, root.invalidate, key='c1')
+        err = self.expectError(KeyError, root.invalidate, key='c1')
         self.assertEqual(str(err), '\'c1\'')
 
         # Active invalidation of all children
@@ -107,7 +107,7 @@ class TestCache(NodeTestCase):
             '    <class \'node.tests.test_cache.Node\'>: d2\n'
         ))
 
-        err = self.expect_error(KeyError, root.invalidate, key='c1')
+        err = self.expectError(KeyError, root.invalidate, key='c1')
         self.assertEqual(str(err), '\'c1\'')
 
         # Active invalidation of all children
@@ -133,7 +133,7 @@ class TestCache(NodeTestCase):
             }
 
         node = Node()
-        self.check_output("""\
+        self.checkOutput("""\
         [('bar', <BaseNode object 'bar' at ...>),
         ('foo', <BaseNode object 'foo' at ...>)]
         """, str(sorted(node.items())))
@@ -141,19 +141,19 @@ class TestCache(NodeTestCase):
         node.invalidate('foo')
         self.assertEqual(sorted(node.keys()), ['bar', 'foo'])
 
-        self.check_output("""\
+        self.checkOutput("""\
         [('bar', <BaseNode object 'bar' at ...>)]
         """, str(node.storage.items()))
 
         node.invalidate('foo')
-        self.check_output("""\
+        self.checkOutput("""\
         [('bar', <BaseNode object 'bar' at ...>)]
         """, str(node.storage.items()))
 
         node.invalidate()
         self.assertEqual(node.storage.items(), [])
 
-        err = self.expect_error(KeyError, node.invalidate, 'baz')
+        err = self.expectError(KeyError, node.invalidate, 'baz')
         self.assertEqual(str(err), '\'baz\'')
 
     def test_Cache(self):
@@ -186,7 +186,7 @@ class TestCache(NodeTestCase):
         self.assertTrue(str(root['c1']).startswith(expected))
 
         # After accessing 'c1', it is cached as well:
-        self.check_output("""\
+        self.checkOutput("""\
         [('c1', <Node object 'c1' at ...>),
         ('c2', <Node object 'c2' at ...>)]
         """, str(sorted(root.cache.items())))
@@ -211,7 +211,7 @@ class TestCache(NodeTestCase):
             '  <class \'node.tests.test_cache.Node\'>: x2\n'
         ))
 
-        self.check_output("""\
+        self.checkOutput("""\
         [('x1', <Node object 'x1' at ...>),
         ('x2', <Node object 'x2' at ...>)]
         """, str(sorted(root.cache.items())))

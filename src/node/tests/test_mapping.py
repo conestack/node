@@ -32,7 +32,7 @@ class TestMapping(NodeTestCase):
         # ``__delitem__``, ``__getitem__``, ``__iter__`` and ``__setitem__``
         tester = FullMappingTester(FailingFullMapping, node_checks=False)
         tester.run()
-        self.check_output("""\
+        self.checkOutput("""\
         ``__contains__``: failed: NotImplementedError()
         ``__delitem__``: failed: NotImplementedError()
         ``__getitem__``: failed: NotImplementedError()
@@ -57,7 +57,7 @@ class TestMapping(NodeTestCase):
 
         # All methods are defined on the class by the FullMapping behavior,
         # none are inherited from base classes
-        self.check_output("""\
+        self.checkOutput("""\
         __contains__: FailingFullMapping
         __delitem__: FailingFullMapping
         __getitem__: FailingFullMapping
@@ -84,7 +84,7 @@ class TestMapping(NodeTestCase):
         # Use a storage
         tester = FullMappingTester(SuccessFullMapping, node_checks=False)
         tester.run()
-        self.check_output("""\
+        self.checkOutput("""\
         ``__contains__``: OK
         ``__delitem__``: OK
         ``__getitem__``: OK
@@ -109,7 +109,7 @@ class TestMapping(NodeTestCase):
 
         # Only the Four were taken from the base class, the others were filled
         # in by the FullMapping behavior
-        self.check_output("""\
+        self.checkOutput("""\
         __contains__: SuccessFullMapping
         __delitem__: SuccessFullMapping
         __getitem__: SuccessFullMapping

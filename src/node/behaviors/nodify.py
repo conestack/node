@@ -107,17 +107,17 @@ class Nodify(FullMapping):
         return str(class_name) + ': ' + name[name.find(':') + 1:]
 
     @override
-    def treerepr(self, indent=0):
-        res = '{}{}\n'.format(indent * ' ', self.noderepr)
+    def treerepr(self, indent=0, prefix=' '):
+        res = '{}{}\n'.format(indent * prefix, self.noderepr)
         items = self.items() \
             if IOrdered.providedBy(self) \
             else sorted(self.items(), key=lambda x: UNICODE_TYPE(x[0]))
         for key, value in items:
             if INode.providedBy(value):
-                res += value.treerepr(indent + 2)
+                res += value.treerepr(indent=indent + 2, prefix=prefix)
             else:
                 res += '{}{}: {}\n'.format(
-                    (indent + 2) * ' ',
+                    (indent + 2) * prefix,
                     key,
                     repr(value)
                 )

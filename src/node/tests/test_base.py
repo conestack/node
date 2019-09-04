@@ -27,39 +27,39 @@ class TestBase(NodeTestCase):
 
         def __getitem__fails():
             abstract['foo']
-        self.expect_error(NotImplementedError, __getitem__fails)
+        self.expectError(NotImplementedError, __getitem__fails)
 
         def __delitem__fails():
             del abstract['foo']
-        self.expect_error(NotImplementedError, __delitem__fails)
+        self.expectError(NotImplementedError, __delitem__fails)
 
         def __setitem__fails():
             abstract['foo'] = 'bar'
-        self.expect_error(NotImplementedError, __setitem__fails)
+        self.expectError(NotImplementedError, __setitem__fails)
 
         def __iter__fails():
             [key for key in abstract]
-        self.expect_error(NotImplementedError, __iter__fails)
+        self.expectError(NotImplementedError, __iter__fails)
 
         def clear_fails():
             abstract.clear()
-        self.expect_error(NotImplementedError, clear_fails)
+        self.expectError(NotImplementedError, clear_fails)
 
         def update_fails():
             abstract.update((('foo', 'bar'),))
-        self.expect_error(NotImplementedError, update_fails)
+        self.expectError(NotImplementedError, update_fails)
 
         def setdefaut_fails():
             abstract.setdefault('foo', 'bar')
-        self.expect_error(NotImplementedError, setdefaut_fails)
+        self.expectError(NotImplementedError, setdefaut_fails)
 
         def pop_fails():
             abstract.pop('foo')
-        self.expect_error(NotImplementedError, pop_fails)
+        self.expectError(NotImplementedError, pop_fails)
 
         def popitem_fails():
             abstract.popitem()
-        self.expect_error(NotImplementedError, popitem_fails)
+        self.expectError(NotImplementedError, popitem_fails)
 
     def test_MyNode(self):
         # ``node.testing.env`` contains a base node implementation inheriting
@@ -70,7 +70,7 @@ class TestBase(NodeTestCase):
         )
         fmtester = FullMappingTester(MyNode)
         fmtester.run()
-        self.check_output("""\
+        self.checkOutput("""\
         ``__contains__``: OK
         ``__delitem__``: OK
         ``__getitem__``: OK
@@ -101,7 +101,7 @@ class TestBase(NodeTestCase):
         )
         fmtester = FullMappingTester(BaseNode)
         fmtester.run()
-        self.check_output("""\
+        self.checkOutput("""\
         ``__contains__``: OK
         ``__delitem__``: OK
         ``__getitem__``: OK
@@ -132,7 +132,7 @@ class TestBase(NodeTestCase):
         )
         fmtester = FullMappingTester(OrderedNode)
         fmtester.run()
-        self.check_output("""\
+        self.checkOutput("""\
         ``__contains__``: OK
         ``__delitem__``: OK
         ``__getitem__``: OK
@@ -156,16 +156,16 @@ class TestBase(NodeTestCase):
         """, fmtester.combined)
 
         orderednode['child'] = OrderedNode()
-        self.check_output("""\
+        self.checkOutput("""\
         <class 'node.base.OrderedNode'>: None
-          <class 'node.base.OrderedNode'>: child
-        """, orderednode.treerepr())
+        __<class 'node.base.OrderedNode'>: child
+        """, orderednode.treerepr(prefix='_'))
 
         unpickled = pickle.loads(pickle.dumps(orderednode))
-        self.check_output("""\
+        self.checkOutput("""\
         <class 'node.base.OrderedNode'>: None
-          <class 'node.base.OrderedNode'>: child
-        """, unpickled.treerepr())
+        __<class 'node.base.OrderedNode'>: child
+        """, unpickled.treerepr(prefix='_'))
 
     def test_ILocation(self):
         # XXX: make tester object for ``ILocation`` contract.
@@ -223,46 +223,46 @@ class TestBase(NodeTestCase):
 
         # printtree
         mynode = create_tree(MyNode)
-        self.check_output("""\
+        self.checkOutput("""\
         <class 'node.testing.env.MyNode'>: None
-          <class 'node.testing.env.MyNode'>: child_0
-            <class 'node.testing.env.MyNode'>: subchild_0
-            <class 'node.testing.env.MyNode'>: subchild_1
-          <class 'node.testing.env.MyNode'>: child_1
-            <class 'node.testing.env.MyNode'>: subchild_0
-            <class 'node.testing.env.MyNode'>: subchild_1
-          <class 'node.testing.env.MyNode'>: child_2
-            <class 'node.testing.env.MyNode'>: subchild_0
-            <class 'node.testing.env.MyNode'>: subchild_1
-        """, mynode.treerepr())
+        __<class 'node.testing.env.MyNode'>: child_0
+        ____<class 'node.testing.env.MyNode'>: subchild_0
+        ____<class 'node.testing.env.MyNode'>: subchild_1
+        __<class 'node.testing.env.MyNode'>: child_1
+        ____<class 'node.testing.env.MyNode'>: subchild_0
+        ____<class 'node.testing.env.MyNode'>: subchild_1
+        __<class 'node.testing.env.MyNode'>: child_2
+        ____<class 'node.testing.env.MyNode'>: subchild_0
+        ____<class 'node.testing.env.MyNode'>: subchild_1
+        """, mynode.treerepr(prefix='_'))
 
         basenode = create_tree(BaseNode)
-        self.check_output("""\
+        self.checkOutput("""\
         <class 'node.base.BaseNode'>: None
-          <class 'node.base.BaseNode'>: child_...
-            <class 'node.base.BaseNode'>: subchild_...
-            <class 'node.base.BaseNode'>: subchild_...
-          <class 'node.base.BaseNode'>: child_...
-            <class 'node.base.BaseNode'>: subchild_...
-            <class 'node.base.BaseNode'>: subchild_...
-          <class 'node.base.BaseNode'>: child_...
-            <class 'node.base.BaseNode'>: subchild_...
-            <class 'node.base.BaseNode'>: subchild_...
-        """, basenode.treerepr())
+        __<class 'node.base.BaseNode'>: child_...
+        ____<class 'node.base.BaseNode'>: subchild_...
+        ____<class 'node.base.BaseNode'>: subchild_...
+        __<class 'node.base.BaseNode'>: child_...
+        ____<class 'node.base.BaseNode'>: subchild_...
+        ____<class 'node.base.BaseNode'>: subchild_...
+        __<class 'node.base.BaseNode'>: child_...
+        ____<class 'node.base.BaseNode'>: subchild_...
+        ____<class 'node.base.BaseNode'>: subchild_...
+        """, basenode.treerepr(prefix='_'))
 
         orderednode = create_tree(OrderedNode)
-        self.check_output("""\
+        self.checkOutput("""\
         <class 'node.base.OrderedNode'>: None
-          <class 'node.base.OrderedNode'>: child_0
-            <class 'node.base.OrderedNode'>: subchild_0
-            <class 'node.base.OrderedNode'>: subchild_1
-          <class 'node.base.OrderedNode'>: child_1
-            <class 'node.base.OrderedNode'>: subchild_0
-            <class 'node.base.OrderedNode'>: subchild_1
-          <class 'node.base.OrderedNode'>: child_2
-            <class 'node.base.OrderedNode'>: subchild_0
-            <class 'node.base.OrderedNode'>: subchild_1
-        """, orderednode.treerepr())
+        __<class 'node.base.OrderedNode'>: child_0
+        ____<class 'node.base.OrderedNode'>: subchild_0
+        ____<class 'node.base.OrderedNode'>: subchild_1
+        __<class 'node.base.OrderedNode'>: child_1
+        ____<class 'node.base.OrderedNode'>: subchild_0
+        ____<class 'node.base.OrderedNode'>: subchild_1
+        __<class 'node.base.OrderedNode'>: child_2
+        ____<class 'node.base.OrderedNode'>: subchild_0
+        ____<class 'node.base.OrderedNode'>: subchild_1
+        """, orderednode.treerepr(prefix='_'))
 
         # path
         mynode.__name__ = 'root'
@@ -298,12 +298,12 @@ class TestBase(NodeTestCase):
 
         def non_node_childs_not_allowed():
             mynode['foo'] = object()
-        err = self.expect_error(ValueError, non_node_childs_not_allowed)
+        err = self.expectError(ValueError, non_node_childs_not_allowed)
         self.assertEqual(str(err), 'Non-node childs are not allowed.')
 
         def no_classes_as_values_allowed():
             mynode['foo'] = object
-        err = self.expect_error(ValueError, no_classes_as_values_allowed)
+        err = self.expectError(ValueError, no_classes_as_values_allowed)
         expected = 'It isn\'t allowed to use classes as values.'
         self.assertEqual(str(err), expected)
 
@@ -318,12 +318,12 @@ class TestBase(NodeTestCase):
 
         def non_node_childs_not_allowed2():
             basenode['foo'] = object()
-        err = self.expect_error(ValueError, non_node_childs_not_allowed2)
+        err = self.expectError(ValueError, non_node_childs_not_allowed2)
         self.assertEqual(str(err), 'Non-node childs are not allowed.')
 
         def no_classes_as_values_allowed2():
             basenode['foo'] = object
-        err = self.expect_error(ValueError, no_classes_as_values_allowed2)
+        err = self.expectError(ValueError, no_classes_as_values_allowed2)
         expected = 'It isn\'t allowed to use classes as values.'
         self.assertEqual(str(err), expected)
 
@@ -338,12 +338,12 @@ class TestBase(NodeTestCase):
 
         def non_node_childs_not_allowed3():
             orderednode['foo'] = object()
-        err = self.expect_error(ValueError, non_node_childs_not_allowed3)
+        err = self.expectError(ValueError, non_node_childs_not_allowed3)
         self.assertEqual(str(err), 'Non-node childs are not allowed.')
 
         def no_classes_as_values_allowed3():
             orderednode['foo'] = object
-        err = self.expect_error(ValueError, no_classes_as_values_allowed3)
+        err = self.expectError(ValueError, no_classes_as_values_allowed3)
         expected = 'It isn\'t allowed to use classes as values.'
         self.assertEqual(str(err), expected)
 
@@ -406,7 +406,7 @@ class TestBase(NodeTestCase):
 
         def no_classes_as_values_allowed4():
             myattrs.child_4 = object
-        err = self.expect_error(ValueError, no_classes_as_values_allowed4)
+        err = self.expectError(ValueError, no_classes_as_values_allowed4)
         expected = 'It isn\'t allowed to use classes as values.'
         self.assertEqual(str(err), expected)
 
@@ -418,7 +418,7 @@ class TestBase(NodeTestCase):
 
         def no_classes_as_values_allowed5():
             baseattrs.child_4 = object
-        err = self.expect_error(ValueError, no_classes_as_values_allowed5)
+        err = self.expectError(ValueError, no_classes_as_values_allowed5)
         expected = 'It isn\'t allowed to use classes as values.'
         self.assertEqual(str(err), expected)
 
@@ -430,7 +430,7 @@ class TestBase(NodeTestCase):
 
         def no_classes_as_values_allowed6():
             orderedattrs.child_4 = object
-        err = self.expect_error(ValueError, no_classes_as_values_allowed6)
+        err = self.expectError(ValueError, no_classes_as_values_allowed6)
         expected = 'It isn\'t allowed to use classes as values.'
         self.assertEqual(str(err), expected)
 
@@ -440,10 +440,10 @@ class TestBase(NodeTestCase):
 
         # Shallow copy of BaseNode
         copied_node = node.copy()
-        self.check_output("""\
+        self.checkOutput("""\
         <class 'node.base.BaseNode'>: None
-          <class 'node.base.BaseNode'>: child
-        """, copied_node.treerepr())
+        __<class 'node.base.BaseNode'>: child
+        """, copied_node.treerepr(prefix='_'))
 
         self.assertFalse(node is copied_node)
         self.assertTrue(node['child'] is copied_node['child'])
@@ -454,10 +454,10 @@ class TestBase(NodeTestCase):
 
         # Deep copy of base node
         copied_node = node.deepcopy()
-        self.check_output("""\
+        self.checkOutput("""\
         <class 'node.base.BaseNode'>: None
-          <class 'node.base.BaseNode'>: child
-        """, copied_node.treerepr())
+        __<class 'node.base.BaseNode'>: child
+        """, copied_node.treerepr(prefix='_'))
 
         self.assertFalse(node is copied_node)
         self.assertFalse(node['child'] is copied_node['child'])
@@ -471,10 +471,10 @@ class TestBase(NodeTestCase):
         node['child'] = OrderedNode()
 
         copied_node = node.copy()
-        self.check_output("""\
+        self.checkOutput("""\
         <class 'node.base.OrderedNode'>: None
-          <class 'node.base.OrderedNode'>: child
-        """, copied_node.treerepr())
+        __<class 'node.base.OrderedNode'>: child
+        """, copied_node.treerepr(prefix='_'))
 
         self.assertFalse(node is copied_node)
         self.assertTrue(node['child'] is copied_node['child'])
@@ -488,10 +488,10 @@ class TestBase(NodeTestCase):
         node['child'] = OrderedNode()
 
         copied_node = node.deepcopy()
-        self.check_output("""\
+        self.checkOutput("""\
         <class 'node.base.OrderedNode'>: None
-          <class 'node.base.OrderedNode'>: child
-        """, copied_node.treerepr())
+        __<class 'node.base.OrderedNode'>: child
+        """, copied_node.treerepr(prefix='_'))
 
         self.assertFalse(node is copied_node)
         self.assertFalse(node['child'] is copied_node['child'])

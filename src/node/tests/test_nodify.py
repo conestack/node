@@ -92,14 +92,14 @@ class TestNodify(NodeTestCase):
         ))
 
         root[u'\xf6'] = Node()
-        self.check_output("""\
+        self.checkOutput("""\
         <class 'node.tests.test_nodify.RootNode'>: root
-          <class 'node.tests.test_nodify.Node'>: child
-            <class 'node.tests.test_nodify.Node'>: subchild
-          <class 'node.tests.test_nodify.Node'>: ...
-        """, root.treerepr())
+        __<class 'node.tests.test_nodify.Node'>: child
+        ____<class 'node.tests.test_nodify.Node'>: subchild
+        __<class 'node.tests.test_nodify.Node'>: ...
+        """, root.treerepr(prefix='_'))
 
-        self.check_output("""\
+        self.checkOutput("""\
         <Node object '...' at ...>
         """, repr(root[u'\xf6']))
 

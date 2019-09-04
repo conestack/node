@@ -70,7 +70,7 @@ class TestCommon(NodeTestCase):
 
         def __setitem_fails():
             fail['foo'] = node
-        err = self.expect_error(KeyError, __setitem_fails)
+        err = self.expectError(KeyError, __setitem_fails)
         self.assertEqual(str(err), "'foo'")
         self.assertTrue(node.__name__ is None)
         self.assertTrue(node.__parent__ is None)
@@ -110,7 +110,7 @@ class TestCommon(NodeTestCase):
             }
 
         node = ChildFactoryNode()
-        self.check_output("""\
+        self.checkOutput("""\
         [('bar', <...BarChild object at ...>),
         ('foo', <...FooChild object at ...>)]
         """, str(sorted(node.items())))
@@ -127,7 +127,7 @@ class TestCommon(NodeTestCase):
             fixed_children_factories = (
                 ('foo', FooChild),
                 ('bar', BarChild),
-                )
+            )
 
         node = FixedChildrenNode()
         self.assertEqual(list(node.keys()), ['foo', 'bar'])
@@ -137,12 +137,12 @@ class TestCommon(NodeTestCase):
 
         def __delitem__fails():
             del node['foo']
-        err = self.expect_error(NotImplementedError, __delitem__fails)
+        err = self.expectError(NotImplementedError, __delitem__fails)
         self.assertEqual(str(err), 'read-only')
 
         def __setitem__fails():
             node['foo'] = 'foo'
-        err = self.expect_error(NotImplementedError, __setitem__fails)
+        err = self.expectError(NotImplementedError, __setitem__fails)
         self.assertEqual(str(err), 'read-only')
 
     def test_UUIDAware(self):
@@ -162,7 +162,7 @@ class TestCommon(NodeTestCase):
         self.assertTrue(isinstance(root.uuid, uuid.UUID))
 
         # Shallow ``copy`` is prohibited for UUID aware nodes
-        err = self.expect_error(RuntimeError, root.copy)
+        err = self.expectError(RuntimeError, root.copy)
         exp = 'Shallow copy useless on UUID aware node trees, use deepcopy.'
         self.assertEqual(str(err), exp)
 
@@ -218,7 +218,7 @@ class TestCommon(NodeTestCase):
 
         def __setitem__fails():
             node['child'] = 1
-        err = self.expect_error(ValueError, __setitem__fails)
+        err = self.expectError(ValueError, __setitem__fails)
         self.assertEqual(str(err), 'Non-node childs are not allowed.')
 
         class SomeClass(object):
@@ -226,7 +226,7 @@ class TestCommon(NodeTestCase):
 
         def __setitem__fails2():
             node['aclasshere'] = SomeClass
-        err = self.expect_error(ValueError, __setitem__fails2)
+        err = self.expectError(ValueError, __setitem__fails2)
         expected = "It isn't allowed to use classes as values."
         self.assertEqual(str(err), expected)
 

@@ -56,7 +56,7 @@ class TestOrder(NodeTestCase):
         ))
 
         new = OrderableNode()
-        err = self.expect_error(
+        err = self.expectError(
             ValueError,
             node.insertbefore,
             new,
@@ -64,7 +64,7 @@ class TestOrder(NodeTestCase):
         )
         self.assertEqual(str(err), 'Given node has no __name__ set.')
 
-        err = self.expect_error(
+        err = self.expectError(
             ValueError,
             node.insertafter,
             new,
@@ -73,7 +73,7 @@ class TestOrder(NodeTestCase):
         self.assertEqual(str(err), 'Given node has no __name__ set.')
 
         new.__name__ = 'child3'
-        err = self.expect_error(
+        err = self.expectError(
             ValueError,
             node.insertbefore,
             new,
@@ -81,7 +81,7 @@ class TestOrder(NodeTestCase):
         )
         self.assertEqual(str(err), 'Given reference node not child of self.')
 
-        err = self.expect_error(
+        err = self.expectError(
             ValueError,
             node.insertafter,
             new,
@@ -244,7 +244,7 @@ class TestOrder(NodeTestCase):
         node['child2'] = OrderReferenceNode()
         node['child5'] = OrderReferenceNode()
 
-        err = self.expect_error(
+        err = self.expectError(
             KeyError,
             node.insertbefore,
             node['child2'],
@@ -335,7 +335,7 @@ class TestOrder(NodeTestCase):
         self.assertTrue(tree1._index is sub._index)
         self.assertEqual(len(tree1._index.keys()), 6)
 
-        err = self.expect_error(
+        err = self.expectError(
             KeyError,
             tree1.insertbefore,
             sub,
@@ -351,12 +351,12 @@ class TestOrder(NodeTestCase):
 
         tree2['d'].allow_non_node_childs = True
         tree2['d']['a'] = object()
-        self.check_output("""\
+        self.checkOutput("""\
         <class 'node.tests.test_order.OrderReferenceNode'>: x
-          <class 'node.tests.test_order.OrderReferenceNode'>: d
-            a: <object object at ...>
-          <class 'node.tests.test_order.OrderReferenceNode'>: e
-        """, tree2.treerepr())
+        __<class 'node.tests.test_order.OrderReferenceNode'>: d
+        ____a: <object object at ...>
+        __<class 'node.tests.test_order.OrderReferenceNode'>: e
+        """, tree2.treerepr(prefix='_'))
 
         tree2.detach('d')
         self.assertEqual(tree2.treerepr(), (

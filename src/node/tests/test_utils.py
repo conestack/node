@@ -36,7 +36,7 @@ class TestUtils(NodeTestCase):
         self.assertTrue('a' in mapping)
         self.assertFalse('foo' in mapping)
         self.assertEqual(mapping['a'], 'foo')
-        err = self.expect_error(KeyError, lambda: mapping['foo'])
+        err = self.expectError(KeyError, lambda: mapping['foo'])
         self.assertEqual(str(err), '\'foo\'')
         self.assertEqual(mapping.get('b'), 'bar')
         self.assertEqual(mapping.get('foo', 'DEFAULT'), 'DEFAULT')
@@ -48,7 +48,7 @@ class TestUtils(NodeTestCase):
         ])
         attraccess = AttributeAccess(context)
         self.assertEqual(attraccess.foo, 'a')
-        err = self.expect_error(AttributeError, lambda: attraccess.a)
+        err = self.expectError(AttributeError, lambda: attraccess.a)
         self.assertEqual(str(err), 'a')
         attraccess.foo = 'foo'
         self.assertEqual(attraccess.foo, 'foo')
@@ -106,8 +106,8 @@ class TestUtils(NodeTestCase):
             'codec can\'t decode byte 0xe4 in position 2: '
             'unexpected end of data'
         )
-        err = self.expect_error(UnicodeDecodeError,
-                                lambda: codec.decode(b'fo\xe4'))
+        err = self.expectError(UnicodeDecodeError,
+                               lambda: codec.decode(b'fo\xe4'))
         self.assertTrue(str(err).find(expected) > -1)
 
     def test_instance_property(self):
@@ -123,7 +123,7 @@ class TestUtils(NodeTestCase):
         obj = InstancePropertyTest()
         expected = '\'InstancePropertyTest\' object has no attribute ' \
                    '\'_property\''
-        err = self.expect_error(AttributeError, lambda: obj._property)
+        err = self.expectError(AttributeError, lambda: obj._property)
         self.assertEqual(str(err), expected)
 
         self.assertEqual(obj.property, 'value')

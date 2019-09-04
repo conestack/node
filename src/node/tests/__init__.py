@@ -48,7 +48,7 @@ class NodeTestCase(unittest.TestCase):
             doctest.REPORT_ONLY_FIRST_FAILURE
         )
 
-    def expect_error(self, exc, func, *args, **kw):
+    def expectError(self, exc, func, *args, **kw):
         try:
             func(*args, **kw)
         except exc as e:
@@ -57,7 +57,10 @@ class NodeTestCase(unittest.TestCase):
             msg = 'Expected \'{}\' when calling \'{}\''.format(exc, func)
             raise Exception(msg)
 
-    def check_output(self, want, got, optionflags=None):
+    # B/C
+    expect_error = expectError
+
+    def checkOutput(self, want, got, optionflags=None):
         if optionflags is None:
             optionflags = self._optionflags
         success = self._checker.check_output(want, got, optionflags)
@@ -66,6 +69,9 @@ class NodeTestCase(unittest.TestCase):
                 Example(want),
                 got, optionflags
             ))
+
+    # B/C
+    check_output = checkOutput
 
 
 def test_suite():

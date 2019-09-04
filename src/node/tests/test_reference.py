@@ -67,7 +67,7 @@ class TestReference(NodeTestCase):
 
         def __setitem__fails():
             node['child2'] = child
-        err = self.expect_error(ValueError, __setitem__fails)
+        err = self.expectError(ValueError, __setitem__fails)
         self.assertEqual(str(err), 'Node with uuid already exists')
 
     def test_uuid(self):
@@ -83,7 +83,7 @@ class TestReference(NodeTestCase):
 
         def set_uuid_fails():
             node.uuid = uid
-        err = self.expect_error(ValueError, set_uuid_fails)
+        err = self.expectError(ValueError, set_uuid_fails)
         expected = 'Given uuid was already used for another Node'
         self.assertEqual(str(err), expected)
 
