@@ -464,6 +464,8 @@ class IUUIDAware(IUUID):
         '``deepcopy`` or anythin equivalent also creating copies '
         'of it\'s children.')
 
+    uuid_factory = Attribute('Factory function creating new uuid instances')
+
     def set_uuid_for(node, override=False, recursiv=False):
         """Set ``uuid`` for node. If ``override`` is True, override existing
         ``uuid`` attributes, if ``recursiv`` is True, set new ``uuid`` on

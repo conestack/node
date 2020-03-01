@@ -5,6 +5,10 @@ Changes
 0.9.25 (unreleased)
 -------------------
 
+- Introduce ``uuid_factory`` function on ``node.interfaces.IUUIDAware`` and
+  implement default function in ``node.behaviors.common.UUIDAware``.
+  [rnix, 2020-03-01]
+
 - Rename ``NodeTestCase.expect_error`` to ``NodeTestCase.expectError``.
   [rnix, 2019-09-04]
 

@@ -258,7 +258,7 @@ class TestEnv(unittest.TestCase):
         self.assertRaises(KeyError, mynode.popitem)
 
 
-class TestBase(unittest.TestCase):
+class TestBase(NodeTestCase):
 
     def test_create_tree(self):
         self.assertEqual(create_tree(odict), odict([
@@ -311,21 +311,20 @@ class TestBase(unittest.TestCase):
 
         # Run and print combined results
         tester.run()
-        self.assertEqual(tester.combined.split('\n'), [
-            '``func_a``: OK',
-            '``func_b``: failed: Exception(\'func_b failed\',)',
-            '``func_c``: failed: AttributeError("\'FuncBImpl\' object has no '
-            'attribute \'func_c\'",)'
-        ])
+        self.checkOutput("""
+        ``func_a``: OK
+        ``func_b``: failed: Exception('func_b failed'...)
+        ``func_c``: failed: AttributeError("'FuncBImpl' object has no attribute 'func_c'"...)
+        """, tester.combined)
 
         # Get results of testing as odict
-        res = odict([
-            ('func_a', 'OK'),
-            ('func_b', 'failed: Exception(\'func_b failed\',)'),
-            ('func_c', 'failed: AttributeError("\'FuncBImpl\' object has no '
-                       'attribute \'func_c\'",)')
-        ])
-        self.assertEqual(tester.results, res)
+        self.assertEqual(
+            sorted(tester.results.keys()),
+            ['func_a', 'func_b', 'func_c']
+        )
+        self.assertEqual(tester.results['func_a'], 'OK')
+        self.assertTrue(tester.results['func_b'].find('Exception(\'func_b failed') > -1)
+        self.assertTrue(tester.results['func_c'].find('AttributeError("\'FuncBImpl\'') > -1)
 
         # Print classes which actually provides the function implementation
         self.assertEqual(tester.wherefrom.split('\n'), [

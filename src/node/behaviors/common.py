@@ -6,8 +6,8 @@ from node.interfaces import IFixedChildren
 from node.interfaces import IGetattrChildren
 from node.interfaces import INode
 from node.interfaces import INodeChildValidate
-from node.interfaces import IUUIDAware
 from node.interfaces import IUnicodeAware
+from node.interfaces import IUUIDAware
 from node.utils import AttributeAccess
 from node.utils import decode
 from odict import odict
@@ -184,7 +184,7 @@ class UUIDAware(Behavior):
     @plumb
     def __init__(_next, self, *args, **kw):
         _next(self, *args, **kw)
-        self.uuid = uuid.uuid4()
+        self.uuid = self.uuid_factory()
 
     @plumb
     def copy(_next, self):
@@ -198,10 +198,14 @@ class UUIDAware(Behavior):
         return copied
 
     @default
+    def uuid_factory(self):
+        return uuid.uuid4()
+
+    @default
     def set_uuid_for(self, node, override=False, recursiv=False):
         if IUUIDAware.providedBy(node):
             if override or not node.uuid:
-                node.uuid = uuid.uuid4()
+                node.uuid = self.uuid_factory()
         if recursiv:
             for child in node.values():
                 self.set_uuid_for(child, override, recursiv)
