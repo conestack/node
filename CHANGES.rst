@@ -2,7 +2,7 @@
 Changes
 =======
 
-0.9.25 (unreleased)
+0.9.25 (2020-03-30)
 -------------------
 
 - Introduce ``uuid_factory`` function on ``node.interfaces.IUUIDAware`` and
