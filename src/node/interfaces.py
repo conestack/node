@@ -377,6 +377,8 @@ class IInvalidate(Interface):
     """
     def invalidate(key=None):
         """Invalidate child with key or all children of this node.
+
+        Raise KeyError if child does not exist for key if given.
         """
 
 
