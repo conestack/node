@@ -132,7 +132,7 @@ CHARACTER_ENCODING = 'utf-8'
 
 
 class StrCodec(object):
-    """Encode unicodes to strs and decode strs to unicodes
+    """Encode unicodes to strs and decode strs to unicodes.
 
     We will recursively work on arbitrarily nested structures consisting of
     str, unicode, list, tuple, dict and INode implementations mixed with
@@ -203,6 +203,22 @@ class StrCodec(object):
 strcodec = StrCodec()
 encode = strcodec.encode
 decode = strcodec.decode
+
+
+def safe_encode(value, encoding=CHARACTER_ENCODING):
+    """Encode value to bytes with encoding if value not already bytes.
+    """
+    if isinstance(value, UNICODE_TYPE):
+        value = value.encode(encoding)
+    return value
+
+
+def safe_decode(value, encoding=CHARACTER_ENCODING):
+    """Decode value to string with encoding if value not already string.
+    """
+    if not isinstance(value, UNICODE_TYPE):
+        value = value.decode(encoding)
+    return value
 
 
 def instance_property(func):

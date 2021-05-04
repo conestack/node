@@ -1,15 +1,18 @@
+# -*- coding: utf-8 -*-
 from node.base import BaseNode
 from node.tests import NodeTestCase
 from node.utils import AttributeAccess
-from node.utils import ReverseMapping
-from node.utils import StrCodec
-from node.utils import UNSET
 from node.utils import debug
 from node.utils import decode
 from node.utils import encode
 from node.utils import instance_property
 from node.utils import logger
 from node.utils import node_by_path
+from node.utils import ReverseMapping
+from node.utils import safe_decode
+from node.utils import safe_encode
+from node.utils import StrCodec
+from node.utils import UNSET
 from odict import odict
 import logging
 
@@ -109,6 +112,14 @@ class TestUtils(NodeTestCase):
         err = self.expectError(UnicodeDecodeError,
                                lambda: codec.decode(b'fo\xe4'))
         self.assertTrue(str(err).find(expected) > -1)
+
+    def test_safe_encode(self):
+        self.assertEqual(safe_encode(u'äöü'), b'\xc3\xa4\xc3\xb6\xc3\xbc')
+        self.assertEqual(safe_encode(b'already_string'), b'already_string')
+
+    def test_safe_decode(self):
+        self.assertEqual(safe_decode(b'\xc3\xa4\xc3\xb6\xc3\xbc'), u'äöü')
+        self.assertEqual(safe_decode(u'already_unicode'), u'already_unicode')
 
     def test_instance_property(self):
         computed = list()

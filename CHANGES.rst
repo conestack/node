@@ -5,7 +5,11 @@ Changes
 0.9.26 (unreleased)
 -------------------
 
-- No changes yet.
+- Use ``node.utils.safe_decode`` in ``node.behaviors.nodify.Nodify.treerepr``.
+  [rnix, 2021-05-04]
+
+- Add ``node.utils.safe_encode`` and ``node.utils.safe_decode``.
+  [rnix, 2021-05-04]
 
 
 0.9.25 (2020-03-30)

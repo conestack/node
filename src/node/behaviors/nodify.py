@@ -2,12 +2,12 @@
 from __future__ import print_function
 from node.behaviors.mapping import FullMapping
 from node.compat import IS_PY2
-from node.compat import UNICODE_TYPE
 from node.interfaces import IDefaultInit
 from node.interfaces import INode
 from node.interfaces import INodify
 from node.interfaces import IOrdered
 from node.utils import LocationIterator
+from node.utils import safe_decode
 from plumber import Behavior
 from plumber import default
 from plumber import override
@@ -111,7 +111,7 @@ class Nodify(FullMapping):
         res = '{}{}\n'.format(indent * prefix, self.noderepr)
         items = self.items() \
             if IOrdered.providedBy(self) \
-            else sorted(self.items(), key=lambda x: UNICODE_TYPE(x[0]))
+            else sorted(self.items(), key=lambda x: safe_decode(x[0]))
         for key, value in items:
             if INode.providedBy(value):
                 res += value.treerepr(indent=indent + 2, prefix=prefix)
