@@ -2,7 +2,7 @@
 Changes
 =======
 
-0.9.26 (unreleased)
+0.9.26 (2021-05-10)
 -------------------
 
 - Use ``node.utils.safe_decode`` in ``node.behaviors.nodify.Nodify.treerepr``.
