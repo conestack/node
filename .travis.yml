@@ -13,8 +13,8 @@ install:
   - pip install zope.lifecycleevent
   - pip install zope.component
   - pip install zope.deprecation
-  - pip install https://github.com/bluedynamics/odict/archive/master.zip
-  - pip install https://github.com/bluedynamics/plumber/archive/master.zip
+  - pip install https://github.com/conestack/odict/archive/master.zip
+  - pip install https://github.com/conestack/plumber/archive/master.zip
   - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install -U unittest2; fi
   - python setup.py install
 
