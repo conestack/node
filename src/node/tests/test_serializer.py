@@ -6,11 +6,12 @@ from node.serializer import deserialize
 from node.serializer import deserializer
 from node.serializer import serialize
 from node.serializer import serializer
+from node.serializer import SerializerSettings
 from node.tests import NodeTestCase
 from node.utils import UNSET
 from zope.interface import Attribute
-from zope.interface import Interface
 from zope.interface import implementer
+from zope.interface import Interface
 import json
 import uuid
 
@@ -79,6 +80,34 @@ def serialize_custom_node(encoder, node, data):
 ###############################################################################
 
 class TestSerializer(NodeTestCase):
+
+    ###########################################################################
+    # Serializer settings
+    ###########################################################################
+
+    def test_SerializerSettings(self):
+        settings = SerializerSettings()
+        self.assertEqual(settings._ns, SerializerSettings._ns)
+        self.assertFalse(settings._ns is SerializerSettings._ns)
+
+        SerializerSettings.claim_namespace('test')
+        SerializerSettings.set_default('test', 'key', 'value')
+
+        settings = SerializerSettings()
+        self.assertEqual(settings.get('test', 'key'), 'value')
+
+        settings.set('test', 'key', 'other')
+        self.assertEqual(settings.get('test', 'key'), 'other')
+
+        settings = SerializerSettings()
+        self.assertEqual(settings.get('test', 'key'), 'value')
+
+        self.assertRaises(ValueError, SerializerSettings.claim_namespace, 'test')
+        self.assertRaises(ValueError, SerializerSettings.set_default, 'foo', 'bar', 'baz')
+
+        settings = SerializerSettings()
+        self.assertRaises(ValueError, settings.set, 'foo', 'bar', 'baz')
+        self.assertRaises(ValueError, settings.get, 'foo', 'bar')
 
     ###########################################################################
     # Node serialization

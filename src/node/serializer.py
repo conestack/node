@@ -9,6 +9,7 @@ from node.interfaces import INode
 from node.utils import UNSET
 from odict import odict
 from zope.interface import Interface
+import copy
 import json
 import uuid
 
@@ -27,21 +28,30 @@ class SerializerSettings(object):
 
     _ns = dict()
 
+    def __init__(self):
+        self._ns = copy.deepcopy(self._ns)
+
     @classmethod
     def claim_namespace(cls, ns):
         if ns in cls._ns:
             raise ValueError('Namespace "{}" already taken.'.format(ns))
         cls._ns.setdefault(ns, {})
 
+    @classmethod
+    def set_default(cls, ns, key, val):
+        if ns not in cls._ns:
+            raise ValueError('Unknown namespace "{}".'.format(ns))
+        cls._ns['{}.{}'.format(ns, key)] = val
+
     def set(self, ns, key, val):
         if ns not in self._ns:
             raise ValueError('Unknown namespace "{}".'.format(ns))
         self._ns['{}.{}'.format(ns, key)] = val
 
-    def get(self, ns, key, default=None):
+    def get(self, ns, key):
         if ns not in self._ns:
             raise ValueError('Unknown namespace "{}".'.format(ns))
-        return self._ns.get('{}.{}'.format(ns, key), default)
+        return self._ns['{}.{}'.format(ns, key)]
 
 
 def serialize(ob, simple_mode=False, include_class=False, settings=None):
@@ -233,6 +243,7 @@ class NodeDecoder(object):
 
 I_NODE_NS = 'node'
 SerializerSettings.claim_namespace(I_NODE_NS)
+SerializerSettings.set_default(I_NODE_NS, 'children_key', 'children')
 
 
 @serializer(INode)
@@ -241,13 +252,13 @@ def serialize_node(encoder, node, data):
     for child in node.values():
         children.append(encoder.default(child))
     if children:
-        children_key = encoder.settings.get(I_NODE_NS, 'children_key', 'children')
+        children_key = encoder.settings.get(I_NODE_NS, 'children_key')
         data[children_key] = children
 
 
 @deserializer(INode)
 def deserialize_node(decoder, node, data):
-    children_key = decoder.settings.get(I_NODE_NS, 'children_key', 'children')
+    children_key = decoder.settings.get(I_NODE_NS, 'children_key')
     children = data.get(children_key)
     if not children:
         return
@@ -261,11 +272,12 @@ def deserialize_node(decoder, node, data):
 
 I_ATTRS_NS = 'attrs'
 SerializerSettings.claim_namespace(I_ATTRS_NS)
+SerializerSettings.set_default(I_ATTRS_NS, 'attrs_key', 'attrs')
 
 
 @serializer(IAttributes)
 def serialize_node_attributes(encoder, node, data):
-    attrs_key = encoder.settings.get(I_ATTRS_NS, 'attrs_key', 'attrs')
+    attrs_key = encoder.settings.get(I_ATTRS_NS, 'attrs_key')
     attrs = data.setdefault(attrs_key, dict())
     for name, child in node.attrs.items():
         attrs[name] = encoder.default(child)
@@ -273,7 +285,7 @@ def serialize_node_attributes(encoder, node, data):
 
 @deserializer(IAttributes)
 def deserialize_node_attributes(decoder, node, data):
-    attrs_key = decoder.settings.get(I_ATTRS_NS, 'attrs_key', 'attrs')
+    attrs_key = decoder.settings.get(I_ATTRS_NS, 'attrs_key')
     attrs = data.get(attrs_key)
     if not attrs:
         return
