@@ -17,28 +17,56 @@ import uuid
 # API
 ###############################################################################
 
-def serialize(ob, simple_mode=False, include_class=False):
+class SerializerSettings(object):
+    """Object for defining serializer settings.
+
+    It holds settings for all registered serializers. When serializers provide
+    configurable aspects, a namespace gets claimed and all serializer specific
+    settings relates to it.
+    """
+
+    _ns = dict()
+
+    @classmethod
+    def claim_namespace(cls, ns):
+        if ns in cls._ns:
+            raise ValueError('Namespace "{}" already taken.'.format(ns))
+        cls._ns.setdefault(ns, {})
+
+    def set(self, ns, key, val):
+        if ns not in self._ns:
+            raise ValueError('Unknown namespace "{}".'.format(ns))
+        self._ns['{}.{}'.format(ns, key)] = val
+
+    def get(self, ns, key, default=None):
+        if ns not in self._ns:
+            raise ValueError('Unknown namespace "{}".'.format(ns))
+        return self._ns.get('{}.{}'.format(ns, key), default)
+
+
+def serialize(ob, simple_mode=False, include_class=False, settings=None):
     """Serialize ob.
 
     Return JSON dump.
     """
-    if simple_mode:
-        def encoder_factory(**kw):
-            kw['simple_mode'] = True
-            kw['include_class'] = include_class
-            return NodeEncoder(**kw)
-    else:
-        encoder_factory = NodeEncoder
+    def encoder_factory(**kw):
+        kw.update(dict(
+            simple_mode=simple_mode,
+            include_class=include_class,
+            settings=settings if settings else SerializerSettings()
+        ))
+        return NodeEncoder(**kw)
     return json.dumps(ob, cls=encoder_factory)
 
 
-def deserialize(json_data, root=None):
+def deserialize(json_data, root=None, settings=None):
     """Deserialize JSON dump.
 
     Return deserialized data.
     """
+    settings = settings if settings else SerializerSettings()
     data = json.loads(json_data)
-    return NodeDecoder().decode(data, parent=root)
+    return NodeDecoder(settings).decode(data, parent=root)
 
 
 ###############################################################################
@@ -76,16 +104,14 @@ class deserializer(_serializer_registry):
 ###############################################################################
 
 class NodeEncoder(json.JSONEncoder):
-    # flag whether to serialize without type information
-    simple_mode = False
-    # include class has no effect in non simple mode
-    include_class = True
 
     def __init__(self, **kw):
-        if 'simple_mode' in kw:
-            self.simple_mode = kw.pop('simple_mode')
-        if 'include_class' in kw:
-            self.include_class = kw.pop('include_class')
+        # flag whether to serialize without type information
+        self.simple_mode = kw.pop('simple_mode')
+        # include class has no effect in non simple mode
+        self.include_class = kw.pop('include_class')
+        # serializer settings instance
+        self.settings = kw.pop('settings')
         super(NodeEncoder, self).__init__(**kw)
 
     def dotted_name(self, ob):
@@ -140,6 +166,10 @@ class NodeEncoder(json.JSONEncoder):
 ###############################################################################
 
 class NodeDecoder(object):
+
+    def __init__(self, settings):
+        # serializer settings instance
+        self.settings = settings
 
     def resolve(self, name):
         """Resolve dotted name to object.
@@ -201,18 +231,24 @@ class NodeDecoder(object):
 # node serializer and deserializer
 ###############################################################################
 
+I_NODE_NS = 'node'
+SerializerSettings.claim_namespace(I_NODE_NS)
+
+
 @serializer(INode)
 def serialize_node(encoder, node, data):
     children = list()
     for child in node.values():
         children.append(encoder.default(child))
     if children:
-        data['children'] = children
+        children_key = encoder.settings.get(I_NODE_NS, 'children_key', 'children')
+        data[children_key] = children
 
 
 @deserializer(INode)
 def deserialize_node(decoder, node, data):
-    children = data.get('children')
+    children_key = decoder.settings.get(I_NODE_NS, 'children_key', 'children')
+    children = data.get(children_key)
     if not children:
         return
     for child in children:
@@ -223,16 +259,22 @@ def deserialize_node(decoder, node, data):
 # attributes serializer and deserializer
 ###############################################################################
 
+I_ATTRS_NS = 'attrs'
+SerializerSettings.claim_namespace(I_ATTRS_NS)
+
+
 @serializer(IAttributes)
 def serialize_node_attributes(encoder, node, data):
-    attrs = data.setdefault('attrs', dict())
+    attrs_key = encoder.settings.get(I_ATTRS_NS, 'attrs_key', 'attrs')
+    attrs = data.setdefault(attrs_key, dict())
     for name, child in node.attrs.items():
         attrs[name] = encoder.default(child)
 
 
 @deserializer(IAttributes)
 def deserialize_node_attributes(decoder, node, data):
-    attrs = data.get('attrs')
+    attrs_key = decoder.settings.get(I_ATTRS_NS, 'attrs_key', 'attrs')
+    attrs = data.get(attrs_key)
     if not attrs:
         return
     for attr, value in attrs.items():
