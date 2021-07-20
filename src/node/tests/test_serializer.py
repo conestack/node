@@ -4,6 +4,8 @@ from node.base import BaseNode
 from node.base import OrderedNode
 from node.serializer import deserialize
 from node.serializer import deserializer
+from node.serializer import I_ATTRS_NS
+from node.serializer import I_NODE_NS
 from node.serializer import serialize
 from node.serializer import serializer
 from node.serializer import SerializerSettings
@@ -219,6 +221,34 @@ class TestSerializer(NodeTestCase):
             '  <class \'node.base.OrderedNode\'>: child_2\n'
         ))
 
+    def test_custom_children_key(self):
+        # Serialize and deserialize children to custom key
+        node = OrderedNode(name='root')
+        node['child'] = OrderedNode()
+        self.assertEqual(node.treerepr(), (
+            '<class \'node.base.OrderedNode\'>: root\n'
+            '  <class \'node.base.OrderedNode\'>: child\n'
+        ))
+
+        settings = SerializerSettings()
+        settings.set(I_NODE_NS, 'children_key', 'child_nodes')
+        json_data = serialize(node, settings=settings)
+        data = json.loads(json_data)
+
+        self.assertFalse('children' in data['__node__'])
+        self.assertTrue('child_nodes' in data['__node__'])
+        self.assertEqual(len(data['__node__']['child_nodes']), 1)
+        self.assertEqual(
+            data['__node__']['child_nodes'][0]['__node__']['name'],
+            'child'
+        )
+
+        node = deserialize(json_data, settings=settings)
+        self.assertEqual(node.treerepr(), (
+            '<class \'node.base.OrderedNode\'>: root\n'
+            '  <class \'node.base.OrderedNode\'>: child\n'
+        ))
+
     ###########################################################################
     # Attribute serialization
     ###########################################################################
@@ -273,6 +303,23 @@ class TestSerializer(NodeTestCase):
             node.attrs['uuid'],
             uuid.UUID('fcb30f5a-20c7-43aa-9537-2a25fef0248d')
         )
+
+    def test_custom_attrs_key(self):
+        # Serialize and deserialize attributes to custom key
+        node = AttributedNode(name='root')
+        node.attrs['foo'] = 1
+
+        settings = SerializerSettings()
+        settings.set(I_ATTRS_NS, 'attrs_key', 'props')
+        json_data = serialize(node, settings=settings)
+        data = json.loads(json_data)
+
+        self.assertFalse('attrs' in data['__node__'])
+        self.assertTrue('props' in data['__node__'])
+        self.assertEqual(data['__node__']['props']['foo'], 1)
+
+        node = deserialize(json_data, settings=settings)
+        self.assertEqual(node.attrs['foo'], 1)
 
     ###########################################################################
     # Referencing of classes, methods and functions
