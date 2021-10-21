@@ -232,6 +232,44 @@ class TestOrder(NodeTestCase):
         node.swap(node['1'], node['3'])
         self.assertEqual(list(node.keys()), ['0', '1', '2', '3', '4'])
 
+    def test_first_key(self):
+        node = OrderableNode('root')
+        with self.assertRaises(KeyError):
+            node.first_key
+        node['0'] = OrderableNode()
+        self.assertEqual(node.first_key, '0')
+        node['1'] = OrderableNode()
+        self.assertEqual(node.first_key, '0')
+
+    def test_last_key(self):
+        node = OrderableNode('root')
+        with self.assertRaises(KeyError):
+            node.last_key
+        node['0'] = OrderableNode()
+        self.assertEqual(node.last_key, '0')
+        node['1'] = OrderableNode()
+        self.assertEqual(node.last_key, '1')
+
+    def test_next_key(self):
+        node = OrderableNode('root')
+        with self.assertRaises(KeyError):
+            node.next_key('x')
+        node['x'] = OrderableNode()
+        with self.assertRaises(KeyError):
+            node.next_key('x')
+        node['y'] = OrderableNode()
+        self.assertEqual(node.next_key('x'), 'y')
+
+    def test_prev_key(self):
+        node = OrderableNode()
+        with self.assertRaises(KeyError):
+            node.prev_key('x')
+        node['x'] = OrderableNode()
+        with self.assertRaises(KeyError):
+            node.prev_key('x')
+        node['y'] = OrderableNode()
+        self.assertEqual(node.prev_key('y'), 'x')
+
     ###########################################################################
     # Order with References
     ###########################################################################

@@ -5,7 +5,12 @@ Changes
 0.9.27 (unreleased)
 -------------------
 
-- No changes yet.
+- Expose ``first_key``, ``last_key``, ``next_key`` and ``prev_key`` from
+  odict storage on ``Order`` behavior.
+  [rnix, 2021-10-21]
+
+- Add basic serializer settings mechanism.
+  [rnix, 2021-07-20]
 
 
 0.9.26 (2021-05-10)
