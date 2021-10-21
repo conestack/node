@@ -408,6 +408,20 @@ class ICache(Interface):
 class IOrder(Interface):
     """Plumbing behavior for ordering support.
     """
+    first_key = Attribute(
+        'First child key. ``KeyError`` is raised if node has no children.')
+    last_key = Attribute(
+        'Last child key. ``KeyError`` is raised if node has no children.')
+
+    def next_key(key):
+        """Return key after given key. Raise ``KeyError`` if key corresponds
+        to last item in node.
+        """
+
+    def prev_key(key):
+        """Return key before given key. Raise ``KeyError`` if key corresponds
+        to first item in node.
+        """
 
     def swap(node_a, node_b):
         """Swap 2 nodes.

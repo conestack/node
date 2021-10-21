@@ -9,6 +9,24 @@ from zope.interface import implementer
 class Order(Behavior):
 
     @override
+    @property
+    def first_key(self):
+        return self.storage.first_key
+
+    @override
+    @property
+    def last_key(self):
+        return self.storage.last_key
+
+    @override
+    def next_key(self, key):
+        return self.storage.next_key(key)
+
+    @override
+    def prev_key(self, key):
+        return self.storage.prev_key(key)
+
+    @override
     def swap(self, node_a, node_b):
         self.storage.swap(node_a.name, node_b.name)
 
@@ -57,21 +75,3 @@ class Order(Behavior):
         if hasattr(self, 'node'):
             if self.node(node.uuid) is not None:
                 raise KeyError('Given node already contained in tree.')
-
-    @override
-    def next_key(self, key):
-        return self.storage.next_key(key)
-
-    @override
-    def prev_key(self, key):
-        return self.storage.prev_key(key)
-
-    @override
-    @property
-    def first_key(self):
-        return self.storage.first_key
-
-    @override
-    @property
-    def last_key(self):
-        return self.storage.last_key
