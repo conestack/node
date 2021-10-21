@@ -2,7 +2,7 @@
 Changes
 =======
 
-0.9.27 (unreleased)
+0.9.27 (2021-10-21)
 -------------------
 
 - Expose ``first_key``, ``last_key``, ``next_key`` and ``prev_key`` from
