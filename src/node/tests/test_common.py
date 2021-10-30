@@ -7,8 +7,8 @@ from node.behaviors import GetattrChildren
 from node.behaviors import NodeChildValidate
 from node.behaviors import Nodify
 from node.behaviors import OdictStorage
-from node.behaviors import UUIDAware
 from node.behaviors import UnicodeAware
+from node.behaviors import UUIDAware
 from node.testing.env import MockupNode
 from node.testing.env import NoNode
 from node.tests import NodeTestCase

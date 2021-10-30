@@ -2,8 +2,8 @@ from node.base import AttributedNode
 from node.behaviors import Events
 from node.events import EventAttribute
 from node.events import EventDispatcher
-from node.events import UnknownEvent
 from node.events import suppress_events
+from node.events import UnknownEvent
 from node.interfaces import IEvents
 from node.utils import UNSET
 from plumber import Behavior

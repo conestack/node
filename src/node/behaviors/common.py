@@ -139,6 +139,7 @@ class GetattrChildren(Behavior):
 
 @implementer(INodeChildValidate)
 class NodeChildValidate(Behavior):
+    # XXX: Rename to force_node_children
     allow_non_node_childs = default(False)
 
     @plumb

@@ -6,8 +6,8 @@ from node.testing.base import create_tree
 from node.testing.env import MyNode
 from node.tests import NodeTestCase
 from node.utils import AttributeAccess
-from zope.interface import Interface
 from zope.interface import directlyProvides
+from zope.interface import Interface
 from zope.interface import noLongerProvides
 import copy
 import pickle

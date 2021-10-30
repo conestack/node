@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-from node.behaviors import EventAttribute
 from node.behaviors import Events
-from node.behaviors import UnknownEvent
-from node.behaviors import suppress_events
 from node.interfaces import INodeAddedEvent
 from node.interfaces import INodeCreatedEvent
 from node.interfaces import INodeDetachedEvent
