@@ -588,3 +588,25 @@ class IEvents(Interface):
         :param args: Arguments passed to subscribers.
         :patam kw: Keyword arguments passed to subscribers.
         """
+
+
+class ISchema(Interface):
+    """Plumbing behavior providing schema validation and value serialization
+    on node values.
+
+    Plumbing hooks:
+
+    __getitem__
+        Check if name contained in schema. If not, return value as is. If
+        schema field is found, return deserialized value. If no value for key
+        yet, return default from schema field if defined.
+
+    __setitem__
+        Check if name contained in schema. If not, set value as is. If
+        schema field defined, validate given value. If validation succeeds,
+        write serialized value.
+    """
+
+    schema = Attribute(
+        'Dict of child names as keys and ``node.schema.Field`` '
+        'or deriving instances as values.')

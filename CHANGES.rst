@@ -5,7 +5,9 @@ Changes
 0.9.28 (unreleased)
 -------------------
 
-- No changes yet.
+- Introduce ``node.behaviors.schema.Schema`` and related schema definitions
+  in ``node.schema``.
+  [rnix]
 
 
 0.9.27 (2021-10-21)

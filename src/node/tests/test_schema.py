@@ -2,6 +2,7 @@ from node import schema
 from node.base import BaseNode
 from node.behaviors import Schema
 from node.behaviors.schema import scope_field
+from node.interfaces import ISchema
 from node.tests import NodeTestCase
 from node.utils import UNSET
 from plumber import plumbing
@@ -110,6 +111,8 @@ class TestSchema(NodeTestCase):
             }
 
         node = SchemaNode()
+        self.assertTrue(ISchema.providedBy(node))
+
         node['any'] = 'foo'
         self.assertRaises(ValueError, node.__setitem__, 'int', '1')
         node['int'] = 0

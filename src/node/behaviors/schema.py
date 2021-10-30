@@ -1,8 +1,10 @@
 from contextlib import contextmanager
+from node.interfaces import ISchema
 from node.utils import UNSET
 from plumber import Behavior
 from plumber import default
 from plumber import plumb
+from zope.interface import implementer
 
 
 @contextmanager
@@ -14,6 +16,7 @@ def scope_field(field, name, parent):
         field.reset_scope()
 
 
+@implementer(ISchema)
 class Schema(Behavior):
     schema = default(dict())
 
