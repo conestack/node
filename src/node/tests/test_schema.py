@@ -55,7 +55,7 @@ class TestSchema(NodeTestCase):
         node['int'] = 0
 
         self.checkOutput("""
-        <class 'touch.infomap.tests.test_model_schema.SchemaNode'>: None
+        <class 'node.tests.test_schema.SchemaNode'>: None
           any: 'foo'
           int: 0
         """, node.treerepr())

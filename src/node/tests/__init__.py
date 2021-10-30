@@ -105,6 +105,7 @@ def test_suite():
     suite.addTest(unittest.findTestCases(test_locking))
     suite.addTest(unittest.findTestCases(test_serializer))
     suite.addTest(unittest.findTestCases(test_events))
+    suite.addTest(unittest.findTestCases(test_schema))
 
     suite.addTest(unittest.findTestCases(test_alias))
     suite.addTest(unittest.findTestCases(test_attributes))
@@ -117,7 +118,6 @@ def test_suite():
     suite.addTest(unittest.findTestCases(test_nodify))
     suite.addTest(unittest.findTestCases(test_order))
     suite.addTest(unittest.findTestCases(test_reference))
-    suite.addTest(unittest.findTestCases(test_schema))
     suite.addTest(unittest.findTestCases(test_storage))
 
     return suite
