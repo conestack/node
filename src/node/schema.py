@@ -1,9 +1,10 @@
+from node import compat
 from node.base import BaseNode
 from node.utils import UNSET
 import uuid
 
 
-class Field:
+class Field(object):
     name = None
     parent = None
 
@@ -51,7 +52,7 @@ class Bytes(Field):
 class Str(Field):
 
     def __init__(self, default=UNSET):
-        super(Str, self).__init__(type_=str, default=default)
+        super(Str, self).__init__(type_=compat.UNICODE_TYPE, default=default)
 
 
 class Tuple(Field):
@@ -72,6 +73,12 @@ class Dict(Field):
         super(Dict, self).__init__(type_=dict, default=default)
 
 
+class Set(Field):
+
+    def __init__(self, default=UNSET):
+        super(Set, self).__init__(type_=set, default=default)
+
+
 class UUID(Field):
 
     def __init__(self, default=UNSET):
@@ -81,7 +88,7 @@ class UUID(Field):
 class Node(Field):
 
     def __init__(self, type_=BaseNode, default=UNSET, factory=UNSET):
-        super(UUID, self).__init__(type_=type_, default=default)
+        super(Node, self).__init__(type_=type_, default=default)
         self.factory = self.default_factory if factory is UNSET else factory
 
     def default_factory(self, field):

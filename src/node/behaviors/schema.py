@@ -25,10 +25,10 @@ class Schema(Behavior):
         with scope_field(field, name, self):
             try:
                 return field.deserialize(next_(self, name))
-            except KeyError:
+            except KeyError as e:
                 if field.default is not UNSET:
                     return field.default
-                raise
+                raise e
 
     @plumb
     def __setitem__(next_, self, name, value):
