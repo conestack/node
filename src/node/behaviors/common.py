@@ -144,16 +144,14 @@ class NodeChildValidate(Behavior):
 
     @plumb
     def __setitem__(_next, self, key, val):
-        if (
-            'allow_non_node_childs' in self.__dict__
-            or 'allow_non_node_childs' in self.__class__.__dict__
-        ):
+        try:
+            allow_non_node_children = self.allow_non_node_childs
             warnings.warn(
                 '``allow_non_node_childs`` is deprecated, '
                 'use ``allow_non_node_children`` instead'
             )
-            allow_non_node_children = self.allow_non_node_childs
-        else:
+        # KeyError happens if GetattrChildren is plumbed.
+        except (AttributeError, KeyError):
             allow_non_node_children = self.allow_non_node_children
         if not allow_non_node_children and inspect.isclass(val):
             raise ValueError('It isn\'t allowed to use classes as values.')
