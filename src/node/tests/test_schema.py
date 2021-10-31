@@ -127,3 +127,7 @@ class TestSchema(NodeTestCase):
         self.assertEqual(node['int'], 0)
         self.assertEqual(node['float'], 1.)
         self.assertRaises(KeyError, node.__getitem__, 'str')
+
+        node.schema['*'] = schema.UUID()
+        self.assertRaises(ValueError, node.__setitem__, 'arbitrary', '1234')
+        node['arbitrary'] = uuid.uuid4()

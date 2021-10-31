@@ -605,6 +605,9 @@ class ISchema(Interface):
         Check if name contained in schema. If not, set value as is. If
         schema field defined, validate given value. If validation succeeds,
         write serialized value.
+
+    Schema may contain special key '*', which is used as fallback for all
+    values if defined.
     """
 
     schema = Attribute(

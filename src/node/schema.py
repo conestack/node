@@ -5,6 +5,18 @@ import uuid
 
 
 class Field(object):
+    """A schema field.
+
+    Describes the data type and default value of node values.
+
+    Supports optional serialization and deserialization of node values.
+
+    By default, ``serialize`` and ``deserialize`` functions return value as is.
+    They are meant as hooks, e.g. if underlying storage only supports string
+    values, or if binary data should end up at different physical storage, etc.
+    In such cases, subclasses must be created implementing the concrete
+    handling.
+    """
     name = None
     parent = None
 
