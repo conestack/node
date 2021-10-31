@@ -19,7 +19,7 @@ from zope.interface import implementer
     Nodify,
     OdictStorage)
 class NodeAttributes(object):
-    allow_non_node_childs = True
+    allow_non_node_children = True
 
     def __init__(self, name=None, parent=None):
         self.__name__ = name

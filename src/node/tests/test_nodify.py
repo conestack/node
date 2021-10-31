@@ -7,8 +7,8 @@ from node.interfaces import INode
 from node.testing import FullMappingTester
 from node.tests import NodeTestCase
 from plumber import plumbing
-from zope.interface import Interface
 from zope.interface import alsoProvides
+from zope.interface import Interface
 
 
 ###############################################################################

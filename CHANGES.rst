@@ -5,7 +5,14 @@ Changes
 0.9.28 (unreleased)
 -------------------
 
-- No changes yet.
+- Rename ``node.behaviors.common.NodeChildValidate.allow_non_node_childs``
+  to ``allow_non_node_children``. A Deprecation warning is printed if the
+  old attribute is used.
+  [rnix]
+
+- Introduce ``node.behaviors.schema.Schema`` and related schema definitions
+  in ``node.schema``.
+  [rnix]
 
 
 0.9.27 (2021-10-21)

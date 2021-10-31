@@ -7,8 +7,8 @@ from node.behaviors import GetattrChildren
 from node.behaviors import NodeChildValidate
 from node.behaviors import Nodify
 from node.behaviors import OdictStorage
-from node.behaviors import UUIDAware
 from node.behaviors import UnicodeAware
+from node.behaviors import UUIDAware
 from node.testing.env import MockupNode
 from node.testing.env import NoNode
 from node.tests import NodeTestCase
@@ -214,12 +214,12 @@ class TestCommon(NodeTestCase):
             pass
 
         node = NodeChildValidateNode()
-        self.assertFalse(node.allow_non_node_childs)
+        self.assertFalse(node.allow_non_node_children)
 
         def __setitem__fails():
             node['child'] = 1
         err = self.expectError(ValueError, __setitem__fails)
-        self.assertEqual(str(err), 'Non-node childs are not allowed.')
+        self.assertEqual(str(err), 'Non-node children are not allowed.')
 
         class SomeClass(object):
             pass
@@ -230,14 +230,20 @@ class TestCommon(NodeTestCase):
         expected = "It isn't allowed to use classes as values."
         self.assertEqual(str(err), expected)
 
-        node.allow_non_node_childs = True
+        node.allow_non_node_children = True
         node['child'] = 1
         self.assertEqual(node['child'], 1)
+
+        class LegacyNodeChildValidateNode(NodeChildValidateNode):
+            allow_non_node_childs = True
+
+        node = LegacyNodeChildValidateNode()
+        node['child'] = 1
 
     def test_GetattrChildren(self):
         # XXX: this test breaks coverage recording!!!:
         class GetattrBase(BaseNode):
-            allow_non_node_childs = True
+            allow_non_node_children = True
             baseattr = 1
 
         @plumbing(GetattrChildren)

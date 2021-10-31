@@ -1,41 +1,42 @@
 # -*- coding: utf-8 -*-
-from node.behaviors.alias import Alias
-from node.behaviors.attributes import Attributes
-from node.behaviors.attributes import NodeAttributes
-from node.behaviors.cache import Cache
-from node.behaviors.cache import Invalidate
-from node.behaviors.cache import VolatileStorageInvalidate
-from node.behaviors.common import Adopt
-from node.behaviors.common import AsAttrAccess
-from node.behaviors.common import ChildFactory
-from node.behaviors.common import FixedChildren
-from node.behaviors.common import GetattrChildren
-from node.behaviors.common import NodeChildValidate
-from node.behaviors.common import UUIDAware
-from node.behaviors.common import UnicodeAware
-from node.behaviors.events import EventAttribute
-from node.behaviors.events import Events
-from node.behaviors.events import UnknownEvent
-from node.behaviors.events import suppress_events
-from node.behaviors.fallback import Fallback
-from node.behaviors.lifecycle import AttributesLifecycle
-from node.behaviors.lifecycle import Lifecycle
-from node.behaviors.mapping import ClonableMapping
-from node.behaviors.mapping import EnumerableMapping
-from node.behaviors.mapping import ExtendedReadMapping
-from node.behaviors.mapping import ExtendedWriteMapping
-from node.behaviors.mapping import FullMapping
-from node.behaviors.mapping import ItemMapping
-from node.behaviors.mapping import IterableMapping
-from node.behaviors.mapping import Mapping
-from node.behaviors.mapping import ReadMapping
-from node.behaviors.mapping import WriteMapping
-from node.behaviors.nodespace import Nodespaces
-from node.behaviors.nodify import DefaultInit
-from node.behaviors.nodify import Nodify
-from node.behaviors.order import Order
-from node.behaviors.reference import NodeIndex
-from node.behaviors.reference import Reference
-from node.behaviors.storage import DictStorage
-from node.behaviors.storage import OdictStorage
-from node.behaviors.storage import Storage
+from .alias import Alias  # noqa
+from .attributes import Attributes  # noqa
+from .attributes import NodeAttributes  # noqa
+from .cache import Cache  # noqa
+from .cache import Invalidate  # noqa
+from .cache import VolatileStorageInvalidate  # noqa
+from .common import Adopt  # noqa
+from .common import AsAttrAccess  # noqa
+from .common import ChildFactory  # noqa
+from .common import FixedChildren  # noqa
+from .common import GetattrChildren  # noqa
+from .common import NodeChildValidate  # noqa
+from .common import UnicodeAware  # noqa
+from .common import UUIDAware  # noqa
+from .events import EventAttribute  # noqa
+from .events import Events  # noqa
+from .events import suppress_events  # noqa
+from .events import UnknownEvent  # noqa
+from .fallback import Fallback  # noqa
+from .lifecycle import AttributesLifecycle  # noqa
+from .lifecycle import Lifecycle  # noqa
+from .mapping import ClonableMapping  # noqa
+from .mapping import EnumerableMapping  # noqa
+from .mapping import ExtendedReadMapping  # noqa
+from .mapping import ExtendedWriteMapping  # noqa
+from .mapping import FullMapping  # noqa
+from .mapping import ItemMapping  # noqa
+from .mapping import IterableMapping  # noqa
+from .mapping import Mapping  # noqa
+from .mapping import ReadMapping  # noqa
+from .mapping import WriteMapping  # noqa
+from .nodespace import Nodespaces  # noqa
+from .nodify import DefaultInit  # noqa
+from .nodify import Nodify  # noqa
+from .order import Order  # noqa
+from .reference import NodeIndex  # noqa
+from .reference import Reference  # noqa
+from .schema import Schema  # noqa
+from .storage import DictStorage  # noqa
+from .storage import OdictStorage  # noqa
+from .storage import Storage  # noqa

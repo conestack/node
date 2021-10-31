@@ -19,6 +19,7 @@ from plumber import plumb
 from zope.interface import implementer
 import inspect
 import uuid
+import warnings
 
 
 @implementer(IAdopt)
@@ -139,14 +140,25 @@ class GetattrChildren(Behavior):
 
 @implementer(INodeChildValidate)
 class NodeChildValidate(Behavior):
-    allow_non_node_childs = default(False)
+    allow_non_node_children = default(False)
 
     @plumb
     def __setitem__(_next, self, key, val):
-        if not self.allow_non_node_childs and inspect.isclass(val):
+        if (
+            'allow_non_node_childs' in self.__dict__
+            or 'allow_non_node_childs' in self.__class__.__dict__
+        ):
+            warnings.warn(
+                '``allow_non_node_childs`` is deprecated, '
+                'use ``allow_non_node_children`` instead'
+            )
+            allow_non_node_children = self.allow_non_node_childs
+        else:
+            allow_non_node_children = self.allow_non_node_children
+        if not allow_non_node_children and inspect.isclass(val):
             raise ValueError('It isn\'t allowed to use classes as values.')
-        if not self.allow_non_node_childs and not INode.providedBy(val):
-            raise ValueError('Non-node childs are not allowed.')
+        if not allow_non_node_children and not INode.providedBy(val):
+            raise ValueError('Non-node children are not allowed.')
         _next(self, key, val)
 
 

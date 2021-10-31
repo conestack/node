@@ -3,9 +3,7 @@ from contextlib import contextmanager
 from node.interfaces import IEvents
 from node.utils import UNSET
 from plumber import Behavior
-from plumber import default
 from plumber import finalize
-from plumber import plumb
 from plumber import plumber
 from zope.interface import implementer
 import threading

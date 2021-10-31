@@ -246,6 +246,10 @@ The ``node`` package provides several plumbing behaviors:
     Provide an event registration and dispatching mechanism.
     See ``node.interfaces.IEvents``.
 
+**node.behaviors.Schema**
+    Provide schema validation and value serialization on node values.
+    See ``node.interfaces.ISchema``.
+
 
 JSON Serialization
 ------------------

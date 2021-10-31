@@ -1,5 +1,4 @@
 import doctest
-import sys
 import unittest
 
 
@@ -89,6 +88,7 @@ def test_suite():
     from node.tests import test_nodify
     from node.tests import test_order
     from node.tests import test_reference
+    from node.tests import test_schema
     from node.tests import test_serializer
     from node.tests import test_storage
     from node.tests import test_testing
@@ -105,6 +105,7 @@ def test_suite():
     suite.addTest(unittest.findTestCases(test_locking))
     suite.addTest(unittest.findTestCases(test_serializer))
     suite.addTest(unittest.findTestCases(test_events))
+    suite.addTest(unittest.findTestCases(test_schema))
 
     suite.addTest(unittest.findTestCases(test_alias))
     suite.addTest(unittest.findTestCases(test_attributes))
