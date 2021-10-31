@@ -293,13 +293,13 @@ class TestBase(NodeTestCase):
             orderednode['child_1']['subchild_1'].root is orderednode
         )
 
-        # allow_non_node_childs
-        self.assertFalse(mynode.allow_non_node_childs)
+        # allow_non_node_children
+        self.assertFalse(mynode.allow_non_node_children)
 
-        def non_node_childs_not_allowed():
+        def non_node_children_not_allowed():
             mynode['foo'] = object()
-        err = self.expectError(ValueError, non_node_childs_not_allowed)
-        self.assertEqual(str(err), 'Non-node childs are not allowed.')
+        err = self.expectError(ValueError, non_node_children_not_allowed)
+        self.assertEqual(str(err), 'Non-node children are not allowed.')
 
         def no_classes_as_values_allowed():
             mynode['foo'] = object
@@ -307,19 +307,19 @@ class TestBase(NodeTestCase):
         expected = 'It isn\'t allowed to use classes as values.'
         self.assertEqual(str(err), expected)
 
-        mynode.allow_non_node_childs = True
+        mynode.allow_non_node_children = True
         obj = mynode['foo'] = object()
         self.assertEqual(mynode['foo'], obj)
 
         del mynode['foo']
-        mynode.allow_non_node_childs = False
+        mynode.allow_non_node_children = False
 
-        self.assertFalse(basenode.allow_non_node_childs)
+        self.assertFalse(basenode.allow_non_node_children)
 
-        def non_node_childs_not_allowed2():
+        def non_node_children_not_allowed2():
             basenode['foo'] = object()
-        err = self.expectError(ValueError, non_node_childs_not_allowed2)
-        self.assertEqual(str(err), 'Non-node childs are not allowed.')
+        err = self.expectError(ValueError, non_node_children_not_allowed2)
+        self.assertEqual(str(err), 'Non-node children are not allowed.')
 
         def no_classes_as_values_allowed2():
             basenode['foo'] = object
@@ -327,19 +327,19 @@ class TestBase(NodeTestCase):
         expected = 'It isn\'t allowed to use classes as values.'
         self.assertEqual(str(err), expected)
 
-        basenode.allow_non_node_childs = True
+        basenode.allow_non_node_children = True
         obj = basenode['foo'] = object()
         self.assertEqual(basenode['foo'], obj)
 
         del basenode['foo']
-        basenode.allow_non_node_childs = False
+        basenode.allow_non_node_children = False
 
-        self.assertFalse(orderednode.allow_non_node_childs)
+        self.assertFalse(orderednode.allow_non_node_children)
 
-        def non_node_childs_not_allowed3():
+        def non_node_children_not_allowed3():
             orderednode['foo'] = object()
-        err = self.expectError(ValueError, non_node_childs_not_allowed3)
-        self.assertEqual(str(err), 'Non-node childs are not allowed.')
+        err = self.expectError(ValueError, non_node_children_not_allowed3)
+        self.assertEqual(str(err), 'Non-node children are not allowed.')
 
         def no_classes_as_values_allowed3():
             orderednode['foo'] = object
@@ -347,12 +347,12 @@ class TestBase(NodeTestCase):
         expected = 'It isn\'t allowed to use classes as values.'
         self.assertEqual(str(err), expected)
 
-        orderednode.allow_non_node_childs = True
+        orderednode.allow_non_node_children = True
         obj = orderednode['foo'] = object()
         self.assertEqual(orderednode['foo'], obj)
 
         del orderednode['foo']
-        orderednode.allow_non_node_childs = False
+        orderednode.allow_non_node_children = False
 
         # filteredvalues and filtereditervalues
         class IFilter(Interface):

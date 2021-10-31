@@ -103,7 +103,7 @@ class TestSchema(NodeTestCase):
     def test_Schema(self):
         @plumbing(Schema)
         class SchemaNode(BaseNode):
-            allow_non_node_childs = True
+            allow_non_node_children = True
             schema = {
                 'int': schema.Int(),
                 'float': schema.Float(default=1.),

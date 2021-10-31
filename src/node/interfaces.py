@@ -208,10 +208,10 @@ class INodeChildValidate(Interface):
     Plumbing hooks:
 
     __setitem__
-        If ``allow_non_node_childs`` is False, check if given child is instance
+        If ``allow_non_node_children`` is False, check if given child is instance
         of node, otherwise raise ``ValuError``.
     """
-    allow_non_node_childs = Attribute(
+    allow_non_node_children = Attribute(
         'Flag wether this node may contain non node based children.')
 
 
