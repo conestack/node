@@ -250,6 +250,11 @@ The ``node`` package provides several plumbing behaviors:
     Provide schema validation and value serialization on node values.
     See ``node.interfaces.ISchema``.
 
+**node.behaviors.SchemaAsAttributes**
+    Provide schema validation and value serialization on node values via
+    dedicated attributes object.
+    See ``node.interfaces.ISchemaAsAttributes``.
+
 
 JSON Serialization
 ------------------
