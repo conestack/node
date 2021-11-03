@@ -72,9 +72,13 @@ class Nodify(FullMapping):
     def acquire(self, interface):
         node = self.parent
         while node:
-            if (IInterface.providedBy(interface) and
-                    interface.providedBy(node)) or \
-                    isinstance(node, interface):
+            if (
+                (
+                    IInterface.providedBy(interface)
+                    and interface.providedBy(node)
+                )
+                or isinstance(node, interface)
+            ):
                 return node
             node = node.parent
 

@@ -37,6 +37,8 @@ from .order import Order  # noqa
 from .reference import NodeIndex  # noqa
 from .reference import Reference  # noqa
 from .schema import Schema  # noqa
+from .schema import SchemaAsAttributes  # noqa
+from .schema import SchemaAttributes  # noqa
 from .storage import DictStorage  # noqa
 from .storage import OdictStorage  # noqa
 from .storage import Storage  # noqa

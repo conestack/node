@@ -330,11 +330,18 @@ class INodespaces(Interface):
     nodespaces = Attribute('Nodespaces. Dict like object.')
 
 
+class INodeAttributes(Interface):
+    """Marker interface for node attributes.
+    """
+
+
 class IAttributes(Interface):
     """Plumbing behavior to provide attributes on node.
     """
     attrs = Attribute('``INodeAttributes`` implementation.')
     attrs_factory = Attribute('``INodeAttributes`` implementation class.')
+    attribute_access_for_attrs = Attribute(
+        'Return ``attrs`` wrapped with ``node.utils.AttributeAccess``')
 
 
 class ILifecycle(Interface):
@@ -608,6 +615,37 @@ class ISchema(Interface):
 
     Schema may contain special key '*', which is used as fallback for all
     values if defined.
+    """
+
+    schema = Attribute(
+        'Dict of child names as keys and ``node.schema.Field`` '
+        'or deriving instances as values.')
+
+
+class ISchemaAsAttributes(IAttributes):
+    """Plumbing behavior providing schema validation and value serialization
+    on node values. The difference to ``ISchema`` interface is that the schema
+    fields are accessed via ``attrs`` instead of direct container access. This
+    way it's possible to distinguish between data which bolongs to the node
+    itself and children of the node while both are contained in the same
+    storage.
+
+    Plumbing hooks:
+
+    __getitem__
+        Raises KeyError if name contained in schema. Schema attributes are
+        supposed to be accessed via ``attrs``.
+
+    __setitem__
+        Raises KeyError if name contained in schema. Schema attributes are
+        supposed to be accessed via ``attrs``.
+
+    __delitem__
+        Raises KeyError if name contained in schema. Schema attributes are
+        supposed to be accessed via ``attrs``.
+
+    __iter__
+        Iterates downstream __iter__ and ignores all names contained in schema.
     """
 
     schema = Attribute(

@@ -43,6 +43,12 @@ class Field(object):
         return True
 
 
+class Bool(Field):
+
+    def __init__(self, default=UNSET):
+        super(Bool, self).__init__(type_=bool, default=default)
+
+
 class Int(Field):
 
     def __init__(self, default=UNSET):
@@ -95,18 +101,3 @@ class UUID(Field):
 
     def __init__(self, default=UNSET):
         super(UUID, self).__init__(type_=uuid.UUID, default=default)
-
-
-class Node(Field):
-
-    def __init__(self, type_=BaseNode, default=UNSET, factory=UNSET):
-        super(Node, self).__init__(type_=type_, default=default)
-        self.factory = self.default_factory if factory is UNSET else factory
-
-    def default_factory(self, field):
-        return field.type_(name=field.name, parent=field.parent)
-
-    def deserialize(self, value):
-        if not isinstance(value, self.type_):
-            value = self.factory(self)
-        return value

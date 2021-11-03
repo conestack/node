@@ -5,6 +5,13 @@ Changes
 0.9.28 (unreleased)
 -------------------
 
+- Add missing ``node.interfaces.INodeAttributes`` interface.
+  [rnix]
+
+- Add missing ``attribute_access_for_attrs`` attribute to ``IAttributes``
+  interface.
+  [rnix]
+
 - Rename ``node.behaviors.common.NodeChildValidate.allow_non_node_childs``
   to ``allow_non_node_children``. A Deprecation warning is printed if the
   old attribute is used.

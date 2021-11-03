@@ -5,6 +5,7 @@ from node.behaviors.nodify import Nodify
 from node.behaviors.storage import OdictStorage
 from node.compat import IS_PY2
 from node.interfaces import IAttributes
+from node.interfaces import INodeAttributes
 from node.utils import AttributeAccess
 from plumber import Behavior
 from plumber import default
@@ -18,6 +19,7 @@ from zope.interface import implementer
     Adopt,
     Nodify,
     OdictStorage)
+@implementer(INodeAttributes)
 class NodeAttributes(object):
     allow_non_node_children = True
 

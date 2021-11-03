@@ -5,6 +5,7 @@ from node.behaviors import Nodespaces
 from node.behaviors import Nodify
 from node.behaviors import OdictStorage
 from node.behaviors.attributes import NodeAttributes
+from node.interfaces import INodeAttributes
 from node.tests import NodeTestCase
 from node.utils import AttributeAccess
 from plumber import plumbing
@@ -24,12 +25,10 @@ class TestAttributes(NodeTestCase):
             pass
 
         node = AttributedNode(name='attributed')
-        self.assertEqual(node.attribute_access_for_attrs, False)
+        self.assertFalse(node.attribute_access_for_attrs)
 
         node.attribute_access_for_attrs = True
-        self.assertEqual(node.attribute_access_for_attrs, True)
-
-        self.assertTrue(isinstance(node.attrs, AttributeAccess))
+        self.assertIsInstance(node.attrs, AttributeAccess)
 
         expected = '<node.utils.AttributeAccess object at'
         self.assertTrue(repr(node.attrs).startswith(expected))
@@ -44,15 +43,17 @@ class TestAttributes(NodeTestCase):
         self.assertEqual(node.attrs.oof, 'abc')
 
         node.attribute_access_for_attrs = False
-        self.assertTrue(isinstance(node.attrs, NodeAttributes))
+        self.assertIsInstance(node.attrs, NodeAttributes)
+        self.assertTrue(INodeAttributes.providedBy(node.attrs))
 
         expected = '<NodeAttributes object \'attributed\' at '
         self.assertTrue(repr(node.attrs).startswith(expected))
 
         self.assertEqual(node.attrs['foo'], 'bar')
 
-        def attr_access_fails():
+        with self.assertRaises(AttributeError) as arc:
             node.attrs.foo
-        err = self.expectError(AttributeError, attr_access_fails)
-        expected = '\'NodeAttributes\' object has no attribute \'foo\''
-        self.assertEqual(str(err), expected)
+        self.assertEqual(
+            str(arc.exception),
+            '\'NodeAttributes\' object has no attribute \'foo\''
+        )

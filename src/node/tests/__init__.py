@@ -42,9 +42,9 @@ class NodeTestCase(unittest.TestCase):
         unittest.TestCase.__init__(self, *args, **kw)
         self._checker = doctest.OutputChecker()
         self._optionflags = (
-            doctest.NORMALIZE_WHITESPACE |
-            doctest.ELLIPSIS |
-            doctest.REPORT_ONLY_FIRST_FAILURE
+            doctest.NORMALIZE_WHITESPACE
+            | doctest.ELLIPSIS
+            | doctest.REPORT_ONLY_FIRST_FAILURE
         )
 
     def expectError(self, exc, func, *args, **kw):
