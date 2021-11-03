@@ -20,11 +20,11 @@ class TestSchema(NodeTestCase):
     def test_Field(self):
         field = schema.Field()
 
-        self.assertEqual(field.default, UNSET)
+        self.assertEqual(field.default, schema._undefined)
         self.assertEqual(field.serialize('value'), 'value')
         self.assertEqual(field.deserialize('value'), 'value')
 
-        self.assertEqual(field.type_, UNSET)
+        self.assertEqual(field.type_, schema._undefined)
         self.assertTrue(field.validate('value'))
 
         field.type_ = int
@@ -106,7 +106,8 @@ class TestSchema(NodeTestCase):
             schema = {
                 'int': schema.Int(),
                 'float': schema.Float(default=1.),
-                'str': schema.Str()
+                'str': schema.Str(),
+                'bool': schema.Bool(default=UNSET)
             }
 
         node = SchemaNode()
@@ -126,6 +127,7 @@ class TestSchema(NodeTestCase):
         self.assertEqual(node['any'], 'foo')
         self.assertEqual(node['int'], 0)
         self.assertEqual(node['float'], 1.)
+        self.assertEqual(node['bool'], UNSET)
         with self.assertRaises(KeyError):
             node['str']
 

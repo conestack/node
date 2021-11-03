@@ -5,7 +5,7 @@ from node.interfaces import INodeAttributes
 from node.interfaces import ISchema
 from node.interfaces import ISchemaAsAttributes
 from node.utils import AttributeAccess
-from node.utils import UNSET
+from node.schema import _undefined
 from plumber import Behavior
 from plumber import default
 from plumber import finalize
@@ -36,7 +36,7 @@ class Schema(Behavior):
             try:
                 return field.deserialize(next_(self, name))
             except KeyError as e:
-                if field.default is not UNSET:
+                if field.default is not _undefined:
                     return field.default
                 raise e
 
