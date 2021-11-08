@@ -2,7 +2,7 @@
 Changes
 =======
 
-0.9.28 (unreleased)
+0.9.28 (2021-11-08)
 -------------------
 
 - Add missing ``node.interfaces.INodeAttributes`` interface.
@@ -17,7 +17,8 @@ Changes
   old attribute is used.
   [rnix]
 
-- Introduce ``node.behaviors.schema.Schema`` and related schema definitions
+- Introduce ``node.behaviors.schema.Schema``,
+  ``node.behaviors.schema.SchemaAsAttributes`` and related schema definitions
   in ``node.schema``.
   [rnix]
 
