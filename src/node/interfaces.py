@@ -651,3 +651,19 @@ class ISchemaAsAttributes(IAttributes):
     schema = Attribute(
         'Dict of child names as keys and ``node.schema.Field`` '
         'or deriving instances as values.')
+
+
+class IBoundContext(Interface):
+    """Plumbing behavior for scoping objects to interfaces and classes.
+    """
+
+    def bind_context(context):
+        """Bind this object to context interfaces and or classes.
+
+        :param event: Either single interface or class or list/tuple of
+            interfaces and/or classes.
+        """
+
+    def context_matches(obj):
+        """Check whether given object matches bound context scope.
+        """

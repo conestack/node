@@ -5,7 +5,8 @@ Changes
 0.9.29 (unreleased)
 -------------------
 
-- No changes yet.
+- Introduce ``node.behaviors.context.BoundContext``.
+  [rnix]
 
 
 0.9.28 (2021-11-08)

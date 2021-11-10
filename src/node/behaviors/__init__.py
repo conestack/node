@@ -13,6 +13,7 @@ from .common import GetattrChildren  # noqa
 from .common import NodeChildValidate  # noqa
 from .common import UnicodeAware  # noqa
 from .common import UUIDAware  # noqa
+from .context import BoundContext  # noqa
 from .events import EventAttribute  # noqa
 from .events import Events  # noqa
 from .events import suppress_events  # noqa

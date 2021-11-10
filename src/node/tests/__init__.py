@@ -79,6 +79,7 @@ def test_suite():
     from node.tests import test_base
     from node.tests import test_cache
     from node.tests import test_common
+    from node.tests import test_context
     from node.tests import test_events
     from node.tests import test_fallback
     from node.tests import test_lifecycle
@@ -111,6 +112,7 @@ def test_suite():
     suite.addTest(unittest.findTestCases(test_attributes))
     suite.addTest(unittest.findTestCases(test_cache))
     suite.addTest(unittest.findTestCases(test_common))
+    suite.addTest(unittest.findTestCases(test_context))
     suite.addTest(unittest.findTestCases(test_fallback))
     suite.addTest(unittest.findTestCases(test_lifecycle))
     suite.addTest(unittest.findTestCases(test_mapping))
