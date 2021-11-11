@@ -29,6 +29,10 @@ class TestContext(NodeTestCase):
         self.assertEqual(ContextAware.__bound_context_interfaces__, ())
         self.assertEqual(ContextAware.__bound_context_classes__, ())
 
+        ContextAware.bind_context(None)
+        self.assertEqual(ContextAware.__bound_context_interfaces__, ())
+        self.assertEqual(ContextAware.__bound_context_classes__, ())
+
         ca = ContextAware()
         self.assertTrue(IBoundContext.providedBy(ca))
 

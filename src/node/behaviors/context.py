@@ -19,6 +19,8 @@ class BoundContext(Behavior):
         interfaces = []
         classes = []
         for ob in context:
+            if not ob:
+                continue
             if IInterface.providedBy(ob):
                 interfaces.append(ob)
             elif inspect.isclass(ob):
