@@ -2,7 +2,7 @@ from node.interfaces import IBoundContext
 from plumber import Behavior
 from plumber import default
 from zope.interface import implementer
-from zope.interface import Interface
+from zope.interface.interfaces import IInterface
 import inspect
 
 
@@ -19,12 +19,11 @@ class BoundContext(Behavior):
         interfaces = []
         classes = []
         for ob in context:
-            try:
-                if issubclass(ob, Interface):
-                    interfaces.append(ob)
-                elif inspect.isclass(ob):
-                    classes.append(ob)
-            except TypeError:
+            if IInterface.providedBy(ob):
+                interfaces.append(ob)
+            elif inspect.isclass(ob):
+                classes.append(ob)
+            else:
                 raise ValueError('Context is neither an interface nor a class')
         cls.__bound_context_interfaces__ = tuple(interfaces)
         cls.__bound_context_classes__ = tuple(classes)
