@@ -17,19 +17,29 @@ import uuid
 
 class TestSchema(NodeTestCase):
 
+    def test_Serializer(self):
+        serializer = schema.Serializer()
+
+        self.assertEqual(serializer.serialize('value'), 'value')
+        self.assertEqual(serializer.deserialize('value'), 'value')
+        self.assertIsNone(serializer.validate('value'))
+
     def test_Field(self):
         field = schema.Field()
+
+        self.assertIsInstance(field, schema.Serializer)
 
         self.assertEqual(field.default, schema._undefined)
         self.assertEqual(field.serialize('value'), 'value')
         self.assertEqual(field.deserialize('value'), 'value')
 
         self.assertEqual(field.type_, schema._undefined)
-        self.assertTrue(field.validate('value'))
+        self.assertIsNone(field.validate('value'))
 
         field.type_ = int
-        self.assertTrue(field.validate(1))
-        self.assertFalse(field.validate('1'))
+        self.assertIsNone(field.validate(1))
+        with self.assertRaises(ValueError):
+            field.validate('1')
 
         parent = object()
         field.set_scope('name', parent)
@@ -42,53 +52,63 @@ class TestSchema(NodeTestCase):
 
     def test_Bool(self):
         field = schema.Bool()
-        self.assertTrue(field.validate(True))
-        self.assertFalse(field.validate(1))
+        self.assertIsNone(field.validate(True))
+        with self.assertRaises(ValueError):
+            field.validate(1)
 
     def test_Int(self):
         field = schema.Int()
-        self.assertTrue(field.validate(1))
-        self.assertFalse(field.validate('1'))
+        self.assertIsNone(field.validate(1))
+        with self.assertRaises(ValueError):
+            field.validate('1')
 
     def test_Float(self):
         field = schema.Float()
-        self.assertTrue(field.validate(1.))
-        self.assertFalse(field.validate(1))
+        self.assertIsNone(field.validate(1.))
+        with self.assertRaises(ValueError):
+            field.validate(1)
 
     def test_Bytes(self):
         field = schema.Bytes()
-        self.assertTrue(field.validate(b'xxx'))
-        self.assertFalse(field.validate(u'xxx'))
+        self.assertIsNone(field.validate(b'xxx'))
+        with self.assertRaises(ValueError):
+            field.validate(u'xxx')
 
     def test_Str(self):
         field = schema.Str()
-        self.assertTrue(field.validate(u'xxx'))
-        self.assertFalse(field.validate(b'xxx'))
+        self.assertIsNone(field.validate(u'xxx'))
+        with self.assertRaises(ValueError):
+            field.validate(b'xxx')
 
     def test_Tuple(self):
         field = schema.Tuple()
-        self.assertTrue(field.validate((1, 2)))
-        self.assertFalse(field.validate([1, 2]))
+        self.assertIsNone(field.validate((1, 2)))
+        with self.assertRaises(ValueError):
+            field.validate([1, 2])
 
     def test_List(self):
         field = schema.List()
-        self.assertTrue(field.validate([1, 2]))
-        self.assertFalse(field.validate((1, 2)))
+        self.assertIsNone(field.validate([1, 2]))
+        with self.assertRaises(ValueError):
+            field.validate((1, 2))
 
     def test_Dict(self):
         field = schema.Dict()
-        self.assertTrue(field.validate({}))
-        self.assertFalse(field.validate([]))
+        self.assertIsNone(field.validate({}))
+        with self.assertRaises(ValueError):
+            field.validate([])
 
     def test_Set(self):
         field = schema.Set()
-        self.assertTrue(field.validate({1, 2}))
-        self.assertFalse(field.validate([]))
+        self.assertIsNone(field.validate({1, 2}))
+        with self.assertRaises(ValueError):
+            field.validate([])
 
     def test_UUID(self):
         field = schema.UUID()
-        self.assertTrue(field.validate(uuid.uuid4()))
-        self.assertFalse(field.validate('1234'))
+        self.assertIsNone(field.validate(uuid.uuid4()))
+        with self.assertRaises(ValueError):
+            field.validate('1234')
 
     def test_scope_field(self):
         field = schema.Field()

@@ -5,7 +5,41 @@ import uuid
 _undefined = object()
 
 
-class Field(object):
+class Serializer(object):
+    """Object for value serialization.
+
+    By default, ``serialize`` and ``deserialize`` functions return value as is.
+    Concrete serializers are used if e.g. underlying storage only supports
+    string values, or if binary data should end up at different physical
+    storage, etc. In such cases subclasses must be created implementing the
+    concrete handling.
+    """
+
+    def serialize(self, value):
+        """Serialize value.
+
+        :param value: The value to serialize.
+        :return: The serialized value.
+        """
+        return value
+
+    def deserialize(self, value):
+        """Deerialize value.
+
+        :param value: The value to deserialize.
+        :return: The deserialized value.
+        """
+        return value
+
+    def validate(self, value):
+        """Validate value.
+
+        :param value: The value to validate.
+        :raises Exception: If validation fails.
+        """
+
+
+class Field(Serializer):
     """A schema field.
 
     Describes the data type and default value of node values.
@@ -32,16 +66,9 @@ class Field(object):
     def reset_scope(self):
         self.set_scope(None, None)
 
-    def serialize(self, value):
-        return value
-
-    def deserialize(self, value):
-        return value
-
     def validate(self, value):
-        if self.type_ is not _undefined:
-            return isinstance(value, self.type_)
-        return True
+        if self.type_ is not _undefined and not isinstance(value, self.type_):
+            raise ValueError(u'{} is no {}'.format(value, self.type_))
 
 
 class Bool(Field):

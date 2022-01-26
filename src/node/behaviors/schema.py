@@ -47,8 +47,7 @@ class Schema(Behavior):
             next_(self, name, value)
             return
         with scope_field(field, name, self):
-            if not field.validate(value):
-                raise ValueError(u'{} is no {}'.format(value, field.type_))
+            field.validate(value)
             next_(self, name, field.serialize(value))
 
 

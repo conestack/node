@@ -5,7 +5,16 @@ Changes
 0.9.29 (unreleased)
 -------------------
 
+- Introduce ``node.schema.Serializer``.
+  [rnix]
+
 - Introduce ``node.behaviors.context.BoundContext``.
+  [rnix]
+
+**Breaking changes**:
+
+- ``node.schema.Field.validate`` raises exception if validation fails instead
+  of returning boolean.
   [rnix]
 
 
