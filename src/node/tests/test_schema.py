@@ -29,6 +29,15 @@ class TestSchema(NodeTestCase):
         self.assertEqual(split(b'a%2C,b,c'), [u'a,', u'b', u'c'])
         self.assertIsInstance(schema.iter_split, schema.IterSplit)
 
+    def test_scope_field(self):
+        field = schema.Field(str)
+        parent = object()
+        with schema.scope_field(field, 'name', parent):
+            self.assertEqual(field.name, 'name')
+            self.assertTrue(field.parent is parent)
+        self.assertEqual(field.name, None)
+        self.assertEqual(field.parent, None)
+
     def test_Field(self):
         field = schema.Field(str)
         self.assertEqual(field.type_, str)
@@ -224,6 +233,12 @@ class TestSchema(NodeTestCase):
         with self.assertRaises(ValueError):
             field.validate(b'xxx')
 
+    def test_UUID(self):
+        field = schema.UUID()
+        self.assertIsNone(field.validate(uuid.uuid4()))
+        with self.assertRaises(ValueError):
+            field.validate('1234')
+
     def test_Tuple(self):
         field = schema.Tuple()
         self.assertIsNone(field.validate((1, 2)))
@@ -247,21 +262,6 @@ class TestSchema(NodeTestCase):
         self.assertIsNone(field.validate({}))
         with self.assertRaises(ValueError):
             field.validate([])
-
-    def test_UUID(self):
-        field = schema.UUID()
-        self.assertIsNone(field.validate(uuid.uuid4()))
-        with self.assertRaises(ValueError):
-            field.validate('1234')
-
-    def test_scope_field(self):
-        field = schema.Field(str)
-        parent = object()
-        with schema.scope_field(field, 'name', parent):
-            self.assertEqual(field.name, 'name')
-            self.assertTrue(field.parent is parent)
-        self.assertEqual(field.name, None)
-        self.assertEqual(field.parent, None)
 
     def test_Schema(self):
         @plumbing(Schema)

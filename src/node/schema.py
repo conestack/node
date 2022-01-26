@@ -238,6 +238,15 @@ class IterableField(Field):
 class Bool(Field):
 
     def __init__(self, dump=_undefined, load=_undefined, default=_undefined):
+        """Create bool field.
+
+        :param dump: Callable for serialization. Supposed to be used if value
+        needs to be converted to a different format for serialization. Optional.
+        :param load: Callable for deserialization. Supposed to be used if value
+        needs to be parsed from a foreign format. Optional. If dump is set and
+        load is omitted, type_ is used instead.
+        :param default: Default value of the field. Optional.
+        """
         super(Bool, self).__init__(
             type_=bool,
             dump=dump,
@@ -249,6 +258,15 @@ class Bool(Field):
 class Int(Field):
 
     def __init__(self, dump=_undefined, load=_undefined, default=_undefined):
+        """Create int field.
+
+        :param dump: Callable for serialization. Supposed to be used if value
+        needs to be converted to a different format for serialization. Optional.
+        :param load: Callable for deserialization. Supposed to be used if value
+        needs to be parsed from a foreign format. Optional. If dump is set and
+        load is omitted, type_ is used instead.
+        :param default: Default value of the field. Optional.
+        """
         super(Int, self).__init__(
             type_=int,
             dump=dump,
@@ -260,6 +278,15 @@ class Int(Field):
 class Float(Field):
 
     def __init__(self, dump=_undefined, load=_undefined, default=_undefined):
+        """Create float field.
+
+        :param dump: Callable for serialization. Supposed to be used if value
+        needs to be converted to a different format for serialization. Optional.
+        :param load: Callable for deserialization. Supposed to be used if value
+        needs to be parsed from a foreign format. Optional. If dump is set and
+        load is omitted, type_ is used instead.
+        :param default: Default value of the field. Optional.
+        """
         super(Float, self).__init__(
             type_=float,
             dump=dump,
@@ -271,6 +298,15 @@ class Float(Field):
 class Bytes(Field):
 
     def __init__(self, dump=_undefined, load=_undefined, default=_undefined):
+        """Create bytes field.
+
+        :param dump: Callable for serialization. Supposed to be used if value
+        needs to be converted to a different format for serialization. Optional.
+        :param load: Callable for deserialization. Supposed to be used if value
+        needs to be parsed from a foreign format. Optional. If dump is set and
+        load is omitted, type_ is used instead.
+        :param default: Default value of the field. Optional.
+        """
         super(Bytes, self).__init__(
             type_=bytes,
             dump=dump,
@@ -282,8 +318,37 @@ class Bytes(Field):
 class Str(Field):
 
     def __init__(self, dump=_undefined, load=_undefined, default=_undefined):
+        """Create str field.
+
+        :param dump: Callable for serialization. Supposed to be used if value
+        needs to be converted to a different format for serialization. Optional.
+        :param load: Callable for deserialization. Supposed to be used if value
+        needs to be parsed from a foreign format. Optional. If dump is set and
+        load is omitted, type_ is used instead.
+        :param default: Default value of the field. Optional.
+        """
         super(Str, self).__init__(
             type_=compat.UNICODE_TYPE,
+            dump=dump,
+            load=load,
+            default=default
+        )
+
+
+class UUID(Field):
+
+    def __init__(self, dump=_undefined, load=_undefined, default=_undefined):
+        """Create UUID field.
+
+        :param dump: Callable for serialization. Supposed to be used if value
+        needs to be converted to a different format for serialization. Optional.
+        :param load: Callable for deserialization. Supposed to be used if value
+        needs to be parsed from a foreign format. Optional. If dump is set and
+        load is omitted, type_ is used instead.
+        :param default: Default value of the field. Optional.
+        """
+        super(UUID, self).__init__(
+            type_=uuid.UUID,
             dump=dump,
             load=load,
             default=default
@@ -300,6 +365,18 @@ class Tuple(IterableField):
         value_type=_undefined,
         size=_undefined
     ):
+        """Create tuple schema field.
+
+        :param dump: Callable for serialization. Supposed to be used if value
+        needs to be converted to a different format for serialization. Optional.
+        :param load: Callable for deserialization. Supposed to be used if value
+        needs to be parsed from a foreign format. Optional. If dump is set and
+        load is omitted, type_ is used instead.
+        :param default: Default value of the field. Optional.
+        :param value_type: Field instance defining the value type of the
+        iterable. Optional.
+        :param size: The allowed size of the iterable. Optional.
+        """
         super(Tuple, self).__init__(
             type_=tuple,
             dump=dump,
@@ -320,6 +397,18 @@ class List(IterableField):
         value_type=_undefined,
         size=_undefined
     ):
+        """Create list schema field.
+
+        :param dump: Callable for serialization. Supposed to be used if value
+        needs to be converted to a different format for serialization. Optional.
+        :param load: Callable for deserialization. Supposed to be used if value
+        needs to be parsed from a foreign format. Optional. If dump is set and
+        load is omitted, type_ is used instead.
+        :param default: Default value of the field. Optional.
+        :param value_type: Field instance defining the value type of the
+        iterable. Optional.
+        :param size: The allowed size of the iterable. Optional.
+        """
         super(List, self).__init__(
             type_=list,
             dump=dump,
@@ -340,6 +429,18 @@ class Set(IterableField):
         value_type=_undefined,
         size=_undefined
     ):
+        """Create set schema field.
+
+        :param dump: Callable for serialization. Supposed to be used if value
+        needs to be converted to a different format for serialization. Optional.
+        :param load: Callable for deserialization. Supposed to be used if value
+        needs to be parsed from a foreign format. Optional. If dump is set and
+        load is omitted, type_ is used instead.
+        :param default: Default value of the field. Optional.
+        :param value_type: Field instance defining the value type of the
+        iterable. Optional.
+        :param size: The allowed size of the iterable. Optional.
+        """
         super(Set, self).__init__(
             type_=set,
             dump=dump,
@@ -355,17 +456,6 @@ class Dict(Field):
     def __init__(self, dump=_undefined, load=_undefined, default=_undefined):
         super(Dict, self).__init__(
             type_=dict,
-            dump=dump,
-            load=load,
-            default=default
-        )
-
-
-class UUID(Field):
-
-    def __init__(self, dump=_undefined, load=_undefined, default=_undefined):
-        super(UUID, self).__init__(
-            type_=uuid.UUID,
             dump=dump,
             load=load,
             default=default
