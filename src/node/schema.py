@@ -1,9 +1,61 @@
 from contextlib import contextmanager
 from node import compat
+try:
+    from urllib import quote
+    from urllib import unquote
+except ImportError:
+    from urllib.parse import quote
+    from urllib.parse import unquote
 import uuid
 
 
 _undefined = object()
+
+
+class IterJoin(object):
+    """Join iterable into string."""
+
+    def __init__(self, coding=u'utf-8'):
+        """Create IterJoin instance.
+
+        :param coding: Coding to use. defaults to 'utf-8'
+        """
+        self.coding = coding
+
+    def __call__(self, value):
+        """Join iterable value to string.
+
+        :param value: The iterable to join. Must contain strings as values.
+        :return: Items of iterable joined by ',' as string. If items contain
+        commas themself, they get quoted.
+        """
+        return u','.join([quote(item) for item in value]).encode(self.coding)
+
+
+iter_join = IterJoin()
+
+
+class IterSplit(object):
+    """Split string into iterable."""
+
+    def __init__(self, coding=u'utf-8'):
+        """Create IterSplit instance.
+
+        :param coding: Coding to use. defaults to 'utf-8'
+        """
+        self.coding = coding
+
+    def __call__(self, value):
+        """Split string into iterable.
+
+        :param value: The string to split.
+        :return: List of strings split by ',' from value.
+        """
+        value = value.decode(self.coding).split(u',')
+        return [unquote(item) for item in value]
+
+
+iter_split = IterSplit()
 
 
 @contextmanager
@@ -159,10 +211,8 @@ class IterableField(Field):
         value_type = self.value_type
         if value_type is not _undefined:
             with scope_field(value_type, self.name, self.parent):
-                value = self.type_(
-                    [value_type.deserialize(item) for item in value]
-                )
-        return value
+                value = [value_type.deserialize(item) for item in value]
+        return self.type_(value)
 
     def validate(self, value):
         """Validate value.
@@ -186,59 +236,109 @@ class IterableField(Field):
 
 class Bool(Field):
 
-    def __init__(self, default=_undefined):
-        super(Bool, self).__init__(type_=bool, default=default)
+    def __init__(self, dump=_undefined, load=_undefined, default=_undefined):
+        super(Bool, self).__init__(
+            type_=bool,
+            dump=dump,
+            load=load,
+            default=default
+        )
 
 
 class Int(Field):
 
-    def __init__(self, default=_undefined):
-        super(Int, self).__init__(type_=int, default=default)
+    def __init__(self, dump=_undefined, load=_undefined, default=_undefined):
+        super(Int, self).__init__(
+            type_=int,
+            dump=dump,
+            load=load,
+            default=default
+        )
 
 
 class Float(Field):
 
-    def __init__(self, default=_undefined):
-        super(Float, self).__init__(type_=float, default=default)
+    def __init__(self, dump=_undefined, load=_undefined, default=_undefined):
+        super(Float, self).__init__(
+            type_=float,
+            dump=dump,
+            load=load,
+            default=default
+        )
 
 
 class Bytes(Field):
 
-    def __init__(self, default=_undefined):
-        super(Bytes, self).__init__(type_=bytes, default=default)
+    def __init__(self, dump=_undefined, load=_undefined, default=_undefined):
+        super(Bytes, self).__init__(
+            type_=bytes,
+            dump=dump,
+            load=load,
+            default=default
+        )
 
 
 class Str(Field):
 
-    def __init__(self, default=_undefined):
-        super(Str, self).__init__(type_=compat.UNICODE_TYPE, default=default)
+    def __init__(self, dump=_undefined, load=_undefined, default=_undefined):
+        super(Str, self).__init__(
+            type_=compat.UNICODE_TYPE,
+            dump=dump,
+            load=load,
+            default=default
+        )
 
 
 class Tuple(Field):
 
-    def __init__(self, default=_undefined):
-        super(Tuple, self).__init__(type_=tuple, default=default)
+    def __init__(self, dump=_undefined, load=_undefined, default=_undefined):
+        super(Tuple, self).__init__(
+            type_=tuple,
+            dump=dump,
+            load=load,
+            default=default
+        )
 
 
 class List(Field):
 
-    def __init__(self, default=_undefined):
-        super(List, self).__init__(type_=list, default=default)
+    def __init__(self, dump=_undefined, load=_undefined, default=_undefined):
+        super(List, self).__init__(
+            type_=list,
+            dump=dump,
+            load=load,
+            default=default
+        )
 
 
 class Dict(Field):
 
-    def __init__(self, default=_undefined):
-        super(Dict, self).__init__(type_=dict, default=default)
+    def __init__(self, dump=_undefined, load=_undefined, default=_undefined):
+        super(Dict, self).__init__(
+            type_=dict,
+            dump=dump,
+            load=load,
+            default=default
+        )
 
 
 class Set(Field):
 
-    def __init__(self, default=_undefined):
-        super(Set, self).__init__(type_=set, default=default)
+    def __init__(self, dump=_undefined, load=_undefined, default=_undefined):
+        super(Set, self).__init__(
+            type_=set,
+            dump=dump,
+            load=load,
+            default=default
+        )
 
 
 class UUID(Field):
 
-    def __init__(self, default=_undefined):
-        super(UUID, self).__init__(type_=uuid.UUID, default=default)
+    def __init__(self, dump=_undefined, load=_undefined, default=_undefined):
+        super(UUID, self).__init__(
+            type_=uuid.UUID,
+            dump=dump,
+            load=load,
+            default=default
+        )

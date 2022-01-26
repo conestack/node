@@ -16,6 +16,19 @@ import uuid
 
 class TestSchema(NodeTestCase):
 
+    def test_IterJoin(self):
+        join = schema.IterJoin()
+        self.assertEqual(join((u'a', u'b', u'c')), b'a,b,c')
+        self.assertEqual(join([u'a', u'b', u'c']), b'a,b,c')
+        self.assertEqual(join([u'a,', u'b', u'c']), b'a%2C,b,c')
+        self.assertIsInstance(schema.iter_join, schema.IterJoin)
+
+    def test_IterSplit(self):
+        split = schema.IterSplit()
+        self.assertEqual(split(b'a,b,c'), [u'a', u'b', u'c'])
+        self.assertEqual(split(b'a%2C,b,c'), [u'a,', u'b', u'c'])
+        self.assertIsInstance(schema.iter_split, schema.IterSplit)
+
     def test_Field(self):
         field = schema.Field(str)
         self.assertEqual(field.type_, str)
@@ -92,6 +105,36 @@ class TestSchema(NodeTestCase):
         self.assertIsNone(field.validate([1]))
         with self.assertRaises(ValueError):
             field.validate(['1'])
+
+        field = schema.IterableField(
+            list,
+            dump=schema.iter_join,
+            load=schema.iter_split
+        )
+        self.assertEqual(field.serialize(['a', 'b', 'c']), b'a,b,c')
+        self.assertEqual(field.deserialize(b'a,b,c'), ['a', 'b', 'c'])
+        with self.assertRaises(TypeError):
+            field.serialize([1, 2, 3])
+
+        field.type_ = tuple
+        self.assertEqual(field.serialize(('a', 'b', 'c')), b'a,b,c')
+        self.assertEqual(field.deserialize(b'a,b,c'), ('a', 'b', 'c'))
+
+        field.value_type = schema.Int(dump=str)
+        self.assertEqual(field.serialize((1, 2, 3)), b'1,2,3')
+        self.assertEqual(field.deserialize(b'1,2,3'), (1, 2, 3))
+
+        field.type_ = set
+        field.value_type = schema.UUID(dump=str)
+        uid = uuid.UUID('1f4be432-a693-44bd-9eb8-e0b8d3aec82d')
+        self.assertEqual(
+            field.serialize({uid}),
+            b'1f4be432-a693-44bd-9eb8-e0b8d3aec82d'
+        )
+        self.assertEqual(
+            field.deserialize(b'1f4be432-a693-44bd-9eb8-e0b8d3aec82d'),
+            {uid}
+        )
 
     def test_Bool(self):
         field = schema.Bool()
