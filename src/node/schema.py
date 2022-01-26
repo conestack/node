@@ -51,8 +51,9 @@ class IterSplit(object):
         :param value: The string to split.
         :return: List of strings split by ',' from value.
         """
-        value = value.decode(self.coding).split(u',')
-        return [unquote(item) for item in value]
+        if not isinstance(value, compat.UNICODE_TYPE):
+            value = value.decode(self.coding)
+        return [unquote(item) for item in value.split(u',')]
 
 
 iter_split = IterSplit()
@@ -289,25 +290,63 @@ class Str(Field):
         )
 
 
-class Tuple(Field):
+class Tuple(IterableField):
 
-    def __init__(self, dump=_undefined, load=_undefined, default=_undefined):
+    def __init__(
+        self,
+        dump=_undefined,
+        load=_undefined,
+        default=_undefined,
+        value_type=_undefined,
+        size=_undefined
+    ):
         super(Tuple, self).__init__(
             type_=tuple,
             dump=dump,
             load=load,
-            default=default
+            default=default,
+            value_type=value_type,
+            size=size
         )
 
 
-class List(Field):
+class List(IterableField):
 
-    def __init__(self, dump=_undefined, load=_undefined, default=_undefined):
+    def __init__(
+        self,
+        dump=_undefined,
+        load=_undefined,
+        default=_undefined,
+        value_type=_undefined,
+        size=_undefined
+    ):
         super(List, self).__init__(
             type_=list,
             dump=dump,
             load=load,
-            default=default
+            default=default,
+            value_type=value_type,
+            size=size
+        )
+
+
+class Set(IterableField):
+
+    def __init__(
+        self,
+        dump=_undefined,
+        load=_undefined,
+        default=_undefined,
+        value_type=_undefined,
+        size=_undefined
+    ):
+        super(Set, self).__init__(
+            type_=set,
+            dump=dump,
+            load=load,
+            default=default,
+            value_type=value_type,
+            size=size
         )
 
 
@@ -316,17 +355,6 @@ class Dict(Field):
     def __init__(self, dump=_undefined, load=_undefined, default=_undefined):
         super(Dict, self).__init__(
             type_=dict,
-            dump=dump,
-            load=load,
-            default=default
-        )
-
-
-class Set(Field):
-
-    def __init__(self, dump=_undefined, load=_undefined, default=_undefined):
-        super(Set, self).__init__(
-            type_=set,
             dump=dump,
             load=load,
             default=default

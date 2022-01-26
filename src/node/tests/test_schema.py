@@ -116,16 +116,29 @@ class TestSchema(NodeTestCase):
         with self.assertRaises(TypeError):
             field.serialize([1, 2, 3])
 
-        field.type_ = tuple
+        field = schema.IterableField(
+            tuple,
+            dump=schema.iter_join,
+            load=schema.iter_split
+        )
         self.assertEqual(field.serialize(('a', 'b', 'c')), b'a,b,c')
         self.assertEqual(field.deserialize(b'a,b,c'), ('a', 'b', 'c'))
 
-        field.value_type = schema.Int(dump=str)
+        field = schema.IterableField(
+            tuple,
+            dump=schema.iter_join,
+            load=schema.iter_split,
+            value_type=schema.Int(dump=str)
+        )
         self.assertEqual(field.serialize((1, 2, 3)), b'1,2,3')
         self.assertEqual(field.deserialize(b'1,2,3'), (1, 2, 3))
 
-        field.type_ = set
-        field.value_type = schema.UUID(dump=str)
+        field = schema.IterableField(
+            set,
+            dump=schema.iter_join,
+            load=schema.iter_split,
+            value_type=schema.UUID(dump=str)
+        )
         uid = uuid.UUID('1f4be432-a693-44bd-9eb8-e0b8d3aec82d')
         self.assertEqual(
             field.serialize({uid}),
@@ -135,6 +148,51 @@ class TestSchema(NodeTestCase):
             field.deserialize(b'1f4be432-a693-44bd-9eb8-e0b8d3aec82d'),
             {uid}
         )
+
+    def test_nested_IterableField(self):
+        field = schema.IterableField(
+            list,
+            value_type=schema.List(size=1)
+        )
+        self.assertIsNone(field.validate([[1]]))
+        with self.assertRaises(ValueError):
+            field.validate([[1, 2]])
+
+        field = schema.IterableField(
+            list,
+            dump=schema.iter_join,
+            load=schema.iter_split,
+            value_type=schema.Tuple(
+                dump=schema.iter_join,
+                load=schema.iter_split,
+                value_type=schema.Int(dump=str)
+            )
+        )
+        self.assertIsNone(field.validate([(1, 2), (3,)]))
+        with self.assertRaises(ValueError):
+            field.validate([(1, 2), 3])
+        self.assertEqual(field.serialize([(1, 2), (3,)]), b'1%2C2,3')
+        self.assertEqual(field.deserialize(b'1%2C2,3'), [(1, 2), (3,)])
+
+        field = schema.IterableField(
+            list,
+            dump=schema.iter_join,
+            load=schema.iter_split,
+            value_type=schema.Set(
+                dump=schema.iter_join,
+                load=schema.iter_split,
+                value_type=schema.Tuple(
+                    dump=schema.iter_join,
+                    load=schema.iter_split,
+                    value_type=schema.Int(dump=str)
+                )
+            )
+        )
+        self.assertIsNone(field.validate([{(1, 2)}, {(3,)}]))
+        with self.assertRaises(ValueError):
+            field.validate([{(1, 2)}, {3}])
+        self.assertEqual(field.serialize([{(1, 2)}, {(3,)}]), b'1%252C2,3')
+        self.assertEqual(field.deserialize(b'1%252C2,3'), [{(1, 2)}, {(3,)}])
 
     def test_Bool(self):
         field = schema.Bool()
@@ -178,15 +236,15 @@ class TestSchema(NodeTestCase):
         with self.assertRaises(ValueError):
             field.validate((1, 2))
 
-    def test_Dict(self):
-        field = schema.Dict()
-        self.assertIsNone(field.validate({}))
-        with self.assertRaises(ValueError):
-            field.validate([])
-
     def test_Set(self):
         field = schema.Set()
         self.assertIsNone(field.validate({1, 2}))
+        with self.assertRaises(ValueError):
+            field.validate([])
+
+    def test_Dict(self):
+        field = schema.Dict()
+        self.assertIsNone(field.validate({}))
         with self.assertRaises(ValueError):
             field.validate([])
 
