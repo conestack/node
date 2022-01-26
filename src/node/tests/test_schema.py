@@ -17,29 +17,41 @@ import uuid
 
 class TestSchema(NodeTestCase):
 
-    def test_Serializer(self):
-        serializer = schema.Serializer()
-
-        self.assertEqual(serializer.serialize('value'), 'value')
-        self.assertEqual(serializer.deserialize('value'), 'value')
-        self.assertIsNone(serializer.validate('value'))
-
     def test_Field(self):
-        field = schema.Field()
+        field = schema.Field(str)
 
-        self.assertIsInstance(field, schema.Serializer)
-
-        self.assertEqual(field.default, schema._undefined)
+        self.assertEqual(field.type_, str)
+        self.assertEqual(field.dump, schema._undefined)
+        self.assertEqual(field.load, schema._undefined)
+        self.assertIsNone(field.validate('value'))
+        with self.assertRaises(ValueError):
+            field.validate(1)
         self.assertEqual(field.serialize('value'), 'value')
         self.assertEqual(field.deserialize('value'), 'value')
 
-        self.assertEqual(field.type_, schema._undefined)
-        self.assertIsNone(field.validate('value'))
-
-        field.type_ = int
-        self.assertIsNone(field.validate(1))
+        field = schema.Field(uuid.UUID, dump=str)
+        self.assertEqual(field.type_, uuid.UUID)
+        self.assertEqual(field.dump, str)
+        self.assertEqual(field.load, uuid.UUID)
+        uid = uuid.uuid4()
+        self.assertIsNone(field.validate(uid))
         with self.assertRaises(ValueError):
-            field.validate('1')
+            field.validate(1)
+        self.assertEqual(field.serialize(uid), str(uid))
+        self.assertEqual(field.deserialize(str(uid)), uid)
+
+        def load(value):
+            return uuid.UUID(value)
+        field = schema.Field(uuid.UUID, dump=str, load=load)
+        self.assertEqual(field.type_, uuid.UUID)
+        self.assertEqual(field.dump, str)
+        self.assertEqual(field.load, load)
+        uid = uuid.uuid4()
+        self.assertIsNone(field.validate(uid))
+        with self.assertRaises(ValueError):
+            field.validate(1)
+        self.assertEqual(field.serialize(uid), str(uid))
+        self.assertEqual(field.deserialize(str(uid)), uid)
 
         parent = object()
         field.set_scope('name', parent)
@@ -111,7 +123,7 @@ class TestSchema(NodeTestCase):
             field.validate('1234')
 
     def test_scope_field(self):
-        field = schema.Field()
+        field = schema.Field(str)
         parent = object()
         with scope_field(field, 'name', parent):
             self.assertEqual(field.name, 'name')
