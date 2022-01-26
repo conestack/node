@@ -1,9 +1,27 @@
-from ast import Return
+from contextlib import contextmanager
 from node import compat
 import uuid
 
 
 _undefined = object()
+
+
+@contextmanager
+def scope_field(field, name, parent):
+    """Context manager for setting field scope.
+
+    Gets called by ``Schema.__getitem__`` and ``Schema.__setitem__``. Useful
+    if custom field implementations want to gather information from the model.
+
+    :param field: The field instance to scope.
+    :param name: The field name in this scope.
+    :param parent: The field containing model for this scope.
+    """
+    field.set_scope(name, parent)
+    try:
+        yield field
+    finally:
+        field.reset_scope()
 
 
 class Field(object):
@@ -69,9 +87,7 @@ class Field(object):
             raise ValueError(u'{} is no {} type'.format(value, self.type_))
 
     def set_scope(self, name, parent):
-        """Set scope of field. Gets called by ``Schema.__getitem__`` and
-        ``Schema.__setitem__``. Useful for custom field implementations if
-        informations should be gathered from the model.
+        """Set scope of field. Handled by ``scope_field`` context manager.
 
         :param name: The field name.
         :param parent: The parent object.
@@ -80,13 +96,13 @@ class Field(object):
         self.parent = parent
 
     def reset_scope(self):
-        """Reset scope of field. Gets called by ``Schema.__getitem__`` and
-        ``Schema.__setitem__`` after field operation.
+        """Reset scope of field. Handled by ``scope_field`` context manager.
         """
         self.set_scope(None, None)
 
 
 class IterableField(Field):
+    """An iterable schema field."""
 
     def __init__(
         self,
@@ -97,7 +113,7 @@ class IterableField(Field):
         value_type=_undefined,
         size=_undefined
     ):
-        """Create iterable field.
+        """Create iterable schema field.
 
         :param type_: Type of the value for validation.
         :param dump: Callable for serialization. Supposed to be used if value
@@ -110,7 +126,7 @@ class IterableField(Field):
         iterable. Optional.
         :param size: The allowed size of the iterable. Optional.
         """
-        super(Field, self).__init__(
+        super(IterableField, self).__init__(
             type_,
             dump=dump,
             load=load,
@@ -118,6 +134,54 @@ class IterableField(Field):
         )
         self.value_type = value_type
         self.size = size
+
+    def serialize(self, value):
+        """Serialize value.
+
+        :param value: The value to serialize.
+        :return: The serialized value.
+        """
+        value_type = self.value_type
+        if value_type is not _undefined:
+            with scope_field(value_type, self.name, self.parent):
+                value = self.type_(
+                    [value_type.serialize(item) for item in value]
+                )
+        return super(IterableField, self).serialize(value)
+
+    def deserialize(self, value):
+        """Deerialize value.
+
+        :param value: The value to deserialize.
+        :return: The deserialized value.
+        """
+        value = super(IterableField, self).deserialize(value)
+        value_type = self.value_type
+        if value_type is not _undefined:
+            with scope_field(value_type, self.name, self.parent):
+                value = self.type_(
+                    [value_type.deserialize(item) for item in value]
+                )
+        return value
+
+    def validate(self, value):
+        """Validate value.
+
+        :param value: The value to validate.
+        :raises Exception: If validation fails.
+        """
+        super(IterableField, self).validate(value)
+        if self.size is not _undefined and len(value) != self.size:
+            raise ValueError(u'{} has invalid size {} != {}'.format(
+                value,
+                len(value),
+                self.size
+            ))
+        value_type = self.value_type
+        if value_type is not _undefined:
+            with scope_field(value_type, self.name, self.parent):
+                for item in value:
+                    value_type.validate(item)
 
 
 class Bool(Field):

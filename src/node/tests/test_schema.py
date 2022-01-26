@@ -3,7 +3,6 @@ from node.base import BaseNode
 from node.behaviors import Schema
 from node.behaviors import SchemaAsAttributes
 from node.behaviors import SchemaAttributes
-from node.behaviors.schema import scope_field
 from node.interfaces import IAttributes
 from node.interfaces import INodeAttributes
 from node.interfaces import ISchema
@@ -19,13 +18,15 @@ class TestSchema(NodeTestCase):
 
     def test_Field(self):
         field = schema.Field(str)
-
         self.assertEqual(field.type_, str)
         self.assertEqual(field.dump, schema._undefined)
         self.assertEqual(field.load, schema._undefined)
+        self.assertEqual(field.default, schema._undefined)
+
         self.assertIsNone(field.validate('value'))
         with self.assertRaises(ValueError):
             field.validate(1)
+
         self.assertEqual(field.serialize('value'), 'value')
         self.assertEqual(field.deserialize('value'), 'value')
 
@@ -33,23 +34,27 @@ class TestSchema(NodeTestCase):
         self.assertEqual(field.type_, uuid.UUID)
         self.assertEqual(field.dump, str)
         self.assertEqual(field.load, uuid.UUID)
+
         uid = uuid.uuid4()
         self.assertIsNone(field.validate(uid))
         with self.assertRaises(ValueError):
             field.validate(1)
+
         self.assertEqual(field.serialize(uid), str(uid))
         self.assertEqual(field.deserialize(str(uid)), uid)
 
         def load(value):
             return uuid.UUID(value)
+
         field = schema.Field(uuid.UUID, dump=str, load=load)
         self.assertEqual(field.type_, uuid.UUID)
         self.assertEqual(field.dump, str)
         self.assertEqual(field.load, load)
-        uid = uuid.uuid4()
+
         self.assertIsNone(field.validate(uid))
         with self.assertRaises(ValueError):
             field.validate(1)
+
         self.assertEqual(field.serialize(uid), str(uid))
         self.assertEqual(field.deserialize(str(uid)), uid)
 
@@ -61,6 +66,32 @@ class TestSchema(NodeTestCase):
         field.reset_scope()
         self.assertEqual(field.name, None)
         self.assertEqual(field.parent, None)
+
+    def test_IterableField(self):
+        field = schema.IterableField(list)
+        self.assertIsInstance(field, schema.Field)
+        self.assertEqual(field.type_, list)
+        self.assertEqual(field.dump, schema._undefined)
+        self.assertEqual(field.load, schema._undefined)
+        self.assertEqual(field.default, schema._undefined)
+        self.assertEqual(field.value_type, schema._undefined)
+        self.assertEqual(field.size, schema._undefined)
+
+        self.assertIsNone(field.validate([]))
+        with self.assertRaises(ValueError):
+            field.validate(set())
+        self.assertEqual(field.serialize([]), [])
+        self.assertEqual(field.deserialize([]), [])
+
+        field = schema.IterableField(list, size=1)
+        self.assertIsNone(field.validate([1]))
+        with self.assertRaises(ValueError):
+            field.validate([])
+
+        field = schema.IterableField(list, value_type=schema.Int())
+        self.assertIsNone(field.validate([1]))
+        with self.assertRaises(ValueError):
+            field.validate(['1'])
 
     def test_Bool(self):
         field = schema.Bool()
@@ -125,7 +156,7 @@ class TestSchema(NodeTestCase):
     def test_scope_field(self):
         field = schema.Field(str)
         parent = object()
-        with scope_field(field, 'name', parent):
+        with schema.scope_field(field, 'name', parent):
             self.assertEqual(field.name, 'name')
             self.assertTrue(field.parent is parent)
         self.assertEqual(field.name, None)

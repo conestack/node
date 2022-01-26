@@ -1,26 +1,17 @@
-from contextlib import contextmanager
 from node.behaviors import Nodify
 from node.interfaces import IAttributes
 from node.interfaces import INodeAttributes
 from node.interfaces import ISchema
 from node.interfaces import ISchemaAsAttributes
-from node.utils import AttributeAccess
 from node.schema import _undefined
+from node.schema import scope_field
+from node.utils import AttributeAccess
 from plumber import Behavior
 from plumber import default
 from plumber import finalize
 from plumber import plumb
 from plumber import plumbing
 from zope.interface import implementer
-
-
-@contextmanager
-def scope_field(field, name, parent):
-    field.set_scope(name, parent)
-    try:
-        yield field
-    finally:
-        field.reset_scope()
 
 
 @implementer(ISchema)
