@@ -440,11 +440,6 @@ class TestSchema(NodeTestCase):
         self.assertEqual(node['bool'], False)
         self.assertEqual(node['str'], UNSET)
 
-        node.schema['*'] = schema.UUID()
-        with self.assertRaises(ValueError):
-            node['arbitrary'] = '1234'
-        node['arbitrary'] = uuid.uuid4()
-
     def test_SchemaAsAttributes(self):
         @plumbing(SchemaAsAttributes)
         class SchemaAsAttributesNode(BaseNode):

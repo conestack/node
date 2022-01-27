@@ -23,7 +23,7 @@ class Schema(Behavior):
 
     @plumb
     def __getitem__(next_, self, name):
-        field = self.schema.get(name, self.schema.get('*'))
+        field = self.schema.get(name)
         if not field:
             return next_(self, name)
         with scope_field(field, name, self):
@@ -34,7 +34,7 @@ class Schema(Behavior):
 
     @plumb
     def __setitem__(next_, self, name, value):
-        field = self.schema.get(name, self.schema.get('*'))
+        field = self.schema.get(name)
         if not field:
             next_(self, name, value)
             return
