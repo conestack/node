@@ -587,23 +587,73 @@ class Dict(Field):
                     value_type.validate(val)
 
 
+class Node(Field):
+
+    def __init__(
+        self,
+        type_,
+        serializer=UNSET,
+        dump=UNSET,
+        load=UNSET
+    ):
+        """Create node schema field.
+
+        :param type_: Type of the field value.
+        :param serializer: ``Serializer`` instance. Supposed to be used if
+        field value needs to be converted for serialization. Optional.
+        :param dump: Callable for field value serialization. Optional. Taken
+        from ``serializer`` if given.
+        :param load: Callable for field value deserialization. Optional. Taken
+        from ``serializer`` if given. If ``dump`` is set and ``load`` is
+        omitted, ``type_`` is used instead.
+        """
+        super(Node, self).__init__(
+            type_=type_,
+            serializer=serializer,
+            dump=dump,
+            load=load,
+        )
+
+    def deserialize(self, value):
+        """Deserialize node from value.
+
+        The ``load`` callable respective the ``type_`` gets passed ``name``
+        and ``parent`` as keyword arguments.
+
+        :param value: The value to deserialize.
+        :return: The deserialized node.
+        """
+        if isinstance(value, self.type_):
+            return value
+        elif self.load is not UNSET:
+            # XXX: hook to parent?
+            return self.load(value, name=self.name, parent=self.parent)
+        else:
+            # XXX: hook to parent?
+            return self.type_(name=self.name, parent=self.parent)
+
+
 class Serializer(ABC):
     """Field serializer.
     """
 
     @abstractmethod
-    def dump(self, value):
+    def dump(self, value, **kwargs):
         """Serialize given value.
 
         :param value: The value to serialize.
+        :param kwargs: Keyword arguments for serialization if any. Depends
+        on the field type.
         :return: The serialized value.
         """
 
     @abstractmethod
-    def load(self, value):
+    def load(self, value, **kwargs):
         """Deserialize given value.
 
         :param value: The value to deserialize.
+        :param kwargs: Keyword arguments for deserialization if any. Depends
+        on the field type.
         :return: The deserialized value.
         """
 

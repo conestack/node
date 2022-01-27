@@ -325,6 +325,37 @@ class TestSchema(NodeTestCase):
         self.assertEqual(field.serialize({1: {1: 1}}), b'1,1%2C1')
         self.assertEqual(field.deserialize(b'1,1%2C1'), {1: {1: 1}})
 
+    def test_Node(self):
+        field = schema.Node(BaseNode)
+        self.assertIsNone(field.validate(BaseNode()))
+        with self.assertRaises(ValueError):
+            field.validate({})
+
+        parent = BaseNode()
+        child = parent['child'] = BaseNode()
+        self.assertEqual(field.serialize(child), child)
+        with schema.scope_field(field, 'child', parent):
+            self.assertEqual(field.deserialize(child), child)
+
+        parent = BaseNode()
+        with schema.scope_field(field, 'child', parent):
+            child = field.deserialize('data')
+        self.assertIsInstance(child, BaseNode)
+        self.assertEqual(child.name, 'child')
+        self.assertEqual(child.parent, parent)
+
+        def load(value, name, parent):
+            child = parent[name] = BaseNode()
+            return child
+
+        field = schema.Node(BaseNode, load=load)
+        with schema.scope_field(field, 'sub', parent):
+            child = field.deserialize('data')
+        self.assertIsInstance(child, BaseNode)
+        self.assertEqual(child.name, 'sub')
+        self.assertEqual(child.parent, parent)
+        self.assertEqual(list(parent.keys()), ['sub'])
+
     def test_Serializer(self):
         with self.assertRaises(TypeError):
             schema.Serializer()
@@ -417,7 +448,8 @@ class TestSchema(NodeTestCase):
                 'int': schema.Int(),
                 'float': schema.Float(default=1.),
                 'str': schema.Str(),
-                'bool': schema.Bool(default=False)
+                'bool': schema.Bool(default=False),
+                'node': schema.Node(BaseNode)
             }
 
         node = SchemaNode()
@@ -439,6 +471,19 @@ class TestSchema(NodeTestCase):
         self.assertEqual(node['float'], 1.)
         self.assertEqual(node['bool'], False)
         self.assertEqual(node['str'], UNSET)
+        self.assertEqual(node['node'], UNSET)
+
+        with self.assertRaises(ValueError):
+            node['node'] = 'invalid type'
+        child_node = node['node'] = BaseNode()
+        self.assertEqual(node['node'], child_node)
+
+        self.checkOutput("""
+        <class 'node.tests.test_schema.SchemaNode'>: None
+        __any: 'foo'
+        __int: 0
+        __<class 'node.base.BaseNode'>: node
+        """, node.treerepr(prefix='_'))
 
     def test_SchemaAsAttributes(self):
         @plumbing(SchemaAsAttributes)
@@ -447,7 +492,8 @@ class TestSchema(NodeTestCase):
                 'int': schema.Int(),
                 'float': schema.Float(default=1.),
                 'str': schema.Str(),
-                'bool': schema.Bool()
+                'bool': schema.Bool(),
+                'node': schema.Node(BaseNode)
             }
 
         node = SchemaAsAttributesNode()
@@ -457,17 +503,22 @@ class TestSchema(NodeTestCase):
         attrs = node.attrs
         self.assertTrue(INodeAttributes.providedBy(attrs))
         self.assertIsInstance(attrs, SchemaAttributes)
-        self.assertEqual(sorted(iter(attrs)), ['bool', 'float', 'int', 'str'])
+        self.assertEqual(
+            sorted(iter(attrs)),
+            ['bool', 'float', 'int', 'node', 'str']
+        )
 
         attrs['int'] = 1
         attrs['float'] = 2.
         attrs['str'] = u'foo'
         attrs['bool'] = True
+        child_node = attrs['node'] = BaseNode()
         self.assertEqual(node.storage, {
             'float': 2.,
             'int': 1,
             'str': u'foo',
-            'bool': True
+            'bool': True,
+            'node': child_node
         })
         del attrs['bool']
         with self.assertRaises(ValueError):
@@ -485,15 +536,22 @@ class TestSchema(NodeTestCase):
         self.assertEqual(attrs.int, 1)
         self.assertEqual(attrs.float, 2.)
         self.assertEqual(attrs.str, u'foo')
+        self.assertEqual(attrs.node, child_node)
 
         attrs.int = 2
         attrs.float = 3.
         attrs.str = u'bar'
-        self.assertEqual(node.storage, {'float': 3., 'int': 2, 'str': u'bar'})
+        self.assertEqual(
+            node.storage,
+            {'float': 3., 'int': 2, 'str': u'bar', 'node': child_node}
+        )
 
         attrs.float = UNSET
         self.assertEqual(attrs.float, 1.)
-        self.assertEqual(node.storage, {'int': 2, 'str': u'bar'})
+        self.assertEqual(
+            node.storage,
+            {'int': 2, 'str': u'bar', 'node': child_node}
+        )
 
         child = node['child'] = BaseNode()
         self.checkOutput("""
@@ -520,22 +578,26 @@ class TestSchema(NodeTestCase):
         @plumbing(SchemaProperties)
         class SchemaPropertiesNode(BaseNode):
             allow_non_node_children = True
-
             str_field = schema.Str()
             int_field = schema.Int(default=1)
             float_field = schema.Float(default=1.)
             bool_field = schema.Bool(default=True)
             uuid_field = schema.UUID(dump=str)
+            node_field = schema.Node(BaseNode)
 
         self.assertEqual(
             sorted(SchemaPropertiesNode.__schema_members__),
-            ['bool_field', 'float_field', 'int_field', 'str_field', 'uuid_field']
+            [
+                'bool_field', 'float_field', 'int_field',
+                'node_field', 'str_field', 'uuid_field'
+            ]
         )
         self.assertEqual(SchemaPropertiesNode.str_field, UNSET)
         self.assertEqual(SchemaPropertiesNode.int_field, 1)
         self.assertEqual(SchemaPropertiesNode.float_field, 1.)
         self.assertEqual(SchemaPropertiesNode.bool_field, True)
         self.assertEqual(SchemaPropertiesNode.uuid_field, UNSET)
+        self.assertEqual(SchemaPropertiesNode.node_field, UNSET)
 
         node = SchemaPropertiesNode()
         self.assertEqual(list(node.storage.keys()), [])
@@ -544,20 +606,26 @@ class TestSchema(NodeTestCase):
         self.assertEqual(node.float_field, 1.)
         self.assertEqual(node.bool_field, True)
         self.assertEqual(node.uuid_field, UNSET)
+        self.assertEqual(node.node_field, UNSET)
 
         node.str_field = u'Value'
         node.int_field = 2
         node.float_field = 2.
         node.bool_field = False
+        child_node = node.node_field = BaseNode()
         self.assertEqual(
             sorted(node.storage.keys()),
-            ['bool_field', 'float_field', 'int_field', 'str_field']
+            [
+                'bool_field', 'float_field',
+                'int_field', 'node_field', 'str_field'
+            ]
         )
 
         self.assertEqual(node.storage['str_field'], u'Value')
         self.assertEqual(node.storage['int_field'], 2)
         self.assertEqual(node.storage['float_field'], 2.)
         self.assertEqual(node.storage['bool_field'], False)
+        self.assertEqual(node.storage['node_field'], child_node)
 
         self.assertEqual(sorted(node.keys()), [])
         with self.assertRaises(KeyError):
