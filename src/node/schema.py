@@ -121,7 +121,7 @@ class Field(object):
         return value
 
     def deserialize(self, value):
-        """Deerialize value.
+        """Deserialize value.
 
         :param value: The value to deserialize.
         :return: The deserialized value.
@@ -203,7 +203,7 @@ class IterableField(Field):
         return super(IterableField, self).serialize(value)
 
     def deserialize(self, value):
-        """Deerialize value.
+        """Deserialize value.
 
         :param value: The value to deserialize.
         :return: The deserialized value.
@@ -453,10 +453,100 @@ class Set(IterableField):
 
 class Dict(Field):
 
-    def __init__(self, dump=_undefined, load=_undefined, default=_undefined):
+    def __init__(
+        self,
+        dump=_undefined,
+        load=_undefined,
+        default=_undefined,
+        key_type=_undefined,
+        value_type=_undefined,
+        size=_undefined
+    ):
+        """Create dict schema field.
+
+        :param dump: Callable for serialization. Supposed to be used if value
+        needs to be converted to a different format for serialization. Optional.
+        :param load: Callable for deserialization. Supposed to be used if value
+        needs to be parsed from a foreign format. Optional. If dump is set and
+        load is omitted, type_ is used instead.
+        :param default: Default value of the field. Optional.
+        :param key_type: Field instance defining the key type of the
+        iterable. Optional.
+        :param value_type: Field instance defining the value type of the
+        iterable. Optional.
+        :param size: The allowed size of the iterable. Optional.
+        """
         super(Dict, self).__init__(
             type_=dict,
             dump=dump,
             load=load,
             default=default
         )
+        self.key_type = key_type
+        self.value_type = value_type
+        self.size = size
+
+    def serialize(self, value):
+        """Serialize value.
+
+        :param value: The value to serialize.
+        :return: The serialized value.
+        """
+        key_type = self.key_type
+        if key_type is not _undefined:
+            with scope_field(key_type, self.name, self.parent):
+                new_value = dict()
+                for key, val in value.items():
+                    new_value[key_type.serialize(key)] = val
+                value = new_value
+        value_type = self.value_type
+        if value_type is not _undefined:
+            with scope_field(value_type, self.name, self.parent):
+                for key, val in value.items():
+                    value[key] = value_type.serialize(val)
+        return super(Dict, self).serialize(value)
+
+    def deserialize(self, value):
+        """Deserialize value.
+
+        :param value: The value to deserialize.
+        :return: The deserialized value.
+        """
+        value = super(Dict, self).deserialize(value)
+        key_type = self.key_type
+        if key_type is not _undefined:
+            with scope_field(key_type, self.name, self.parent):
+                new_value = dict()
+                for key, val in value.items():
+                    new_value[key_type.deserialize(key)] = val
+                value = new_value
+        value_type = self.value_type
+        if value_type is not _undefined:
+            with scope_field(value_type, self.name, self.parent):
+                for key, val in value.items():
+                    value[key] = value_type.deserialize(val)
+        return value
+
+    def validate(self, value):
+        """Validate value.
+
+        :param value: The value to validate.
+        :raises Exception: If validation fails.
+        """
+        super(Dict, self).validate(value)
+        if self.size is not _undefined and len(value) != self.size:
+            raise ValueError(u'{} has invalid size {} != {}'.format(
+                value,
+                len(value),
+                self.size
+            ))
+        key_type = self.key_type
+        if key_type is not _undefined:
+            with scope_field(key_type, self.name, self.parent):
+                for key in value:
+                    key_type.validate(key)
+        value_type = self.value_type
+        if value_type is not _undefined:
+            with scope_field(value_type, self.name, self.parent):
+                for val in value.values():
+                    value_type.validate(val)
