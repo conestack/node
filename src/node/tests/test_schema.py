@@ -532,6 +532,12 @@ class TestSchema(NodeTestCase):
             bool_field = schema.Bool(default=True)
             uuid_field = schema.UUID(dump=str)
 
+        self.assertEqual(SchemaPropertiesNode.str_field, UNSET)
+        self.assertEqual(SchemaPropertiesNode.int_field, 1)
+        self.assertEqual(SchemaPropertiesNode.float_field, 1.)
+        self.assertEqual(SchemaPropertiesNode.bool_field, True)
+        self.assertEqual(SchemaPropertiesNode.uuid_field, UNSET)
+
         node = SchemaPropertiesNode()
         self.assertEqual(list(node.keys()), [])
         self.assertEqual(node.str_field, UNSET)

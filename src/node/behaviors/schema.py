@@ -128,12 +128,38 @@ def schema_properties_metclass_hook(cls, name, bases, dct):
 
 
 class SchemaProperty(object):
+    """Descriptor object for schema properties.
+
+    If a class gets plumbed with ``node.behaviors.SchemaProperties`` behavior,
+    all class members holding a ``node.schema.Field`` instance get replaced by
+    a ``SchemaProperty``.
+
+    This descriptor used field validation and serialization for accessing
+    and writing to the related object.
+
+    The related object must be a mapping type and at least implement
+    ``__getitem__``, ``__setitem__`` and ``__delitem__``.
+    """
 
     def __init__(self, name, field):
+        """Create schema property instance.
+
+        :param name: The property name.
+        :param field: The related ``node.schema.Field`` instance.
+        """
         self.name = name
         self.field = field
 
     def __get__(self, obj, type_=None):
+        """Get field value.
+
+        :param obj: The related object.
+        :param type_: The related object type. Not used.
+        :return: If property gets accessed on class directly, field default
+        value is returned. Otherwise read raw value from related object and
+        return deserialized value. If related object not holds a value by
+        field name, default value gets returned.
+        """
         field = self.field
         if obj is None:
             return field.default
@@ -145,6 +171,13 @@ class SchemaProperty(object):
                 return field.default
 
     def __set__(self, obj, value):
+        """Set field value.
+
+        :param obj: The related object.
+        :param value: The field value to set. If value is ``UNSET``, it gets
+        deleted from related object. Otherwise validate given value and
+        serialize it on related object.
+        """
         if value is UNSET:
             del obj[self.name]
             return
@@ -155,9 +188,53 @@ class SchemaProperty(object):
             obj[name] = field.serialize(value)
 
     def __delete__(self, obj):
+        """Delete field value from related object.
+
+        :param obj: The related object.
+        """
         del obj[self.name]
 
 
 @implementer(ISchemaProperties)
 class SchemaProperties(Behavior):
-    pass
+    """Plumbing behavior to provide schema fields as class properties.
+
+    If a class gets plumbed with this behavior, all members which are an
+    instance of ``node.schema.Field`` get replaced by a
+    ``node.behaviors.SchemaProperty`` instance, which provides access to this
+    object's data while taking validation and serialization into account.
+
+    A class using this behavior must be a mapping type and at least implement
+    ``__getitem__``, ``__setitem__`` and ``__delitem__``.
+
+    Example usage:
+
+    .. code-block:: python
+
+        from node import schema
+        from node.behaviors import SchemaProperties
+        from node.utils import UNSET
+        from plumber import plumbing
+
+        @plumbing(SchemaProperties)
+        class ObjectWithSchemaProperties(dict):
+            title = schema.Str(default=u'No Title')
+            description = schema.Str()
+
+        obj = ObjectWithSchemaProperties()
+
+        # values not set yet, defaults are returned.
+        assert(obj.title == u'No Title')
+        assert(obj.description is UNSET)
+        assert(list(obj.keys()) == [])
+
+        # when setting values, the get set on the mapping.
+        obj.title = u'Title'
+        obj.description = u'Description'
+        assert(obj['title'] == u'Title')
+        assert(obj['description'] == u'Description')
+
+        # when setting values with UNSET, value gets deleted from mapping.
+        obj.description = UNSET
+        assert('description' not in obj)
+    """
