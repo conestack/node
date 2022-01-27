@@ -28,9 +28,9 @@ class TestSchema(NodeTestCase):
     def test_Field(self):
         field = schema.Field(str)
         self.assertEqual(field.type_, str)
+        self.assertEqual(field.default, schema._undefined)
         self.assertEqual(field.dump, schema._undefined)
         self.assertEqual(field.load, schema._undefined)
-        self.assertEqual(field.default, schema._undefined)
 
         self.assertIsNone(field.validate('value'))
         with self.assertRaises(ValueError):
@@ -66,6 +66,19 @@ class TestSchema(NodeTestCase):
 
         self.assertEqual(field.serialize(uid), str(uid))
         self.assertEqual(field.deserialize(str(uid)), uid)
+
+        class TestSerializer(schema.Serializer):
+            def dump(self, value):
+                return 'serialized'
+            def load(self, value):
+                return 'deserialized'
+
+        serializer = TestSerializer()
+        field = schema.Field(str, serializer=serializer)
+        self.assertEqual(field.dump, serializer.dump)
+        self.assertEqual(field.load, serializer.load)
+        self.assertEqual(field.serialize(''), 'serialized')
+        self.assertEqual(field.deserialize(''), 'deserialized')
 
         parent = object()
         field.set_scope('name', parent)
@@ -112,18 +125,13 @@ class TestSchema(NodeTestCase):
         with self.assertRaises(TypeError):
             field.serialize([1, 2, 3])
 
-        field = schema.IterableField(
-            tuple,
-            dump=schema.iter_join,
-            load=schema.iter_split
-        )
+        field = schema.IterableField(tuple, serializer=schema.iter_serializer)
         self.assertEqual(field.serialize(('a', 'b', 'c')), b'a,b,c')
         self.assertEqual(field.deserialize(b'a,b,c'), ('a', 'b', 'c'))
 
         field = schema.IterableField(
             tuple,
-            dump=schema.iter_join,
-            load=schema.iter_split,
+            serializer=schema.iter_serializer,
             value_type=schema.Int(dump=str)
         )
         self.assertEqual(field.serialize((1, 2, 3)), b'1,2,3')
@@ -131,8 +139,7 @@ class TestSchema(NodeTestCase):
 
         field = schema.IterableField(
             set,
-            dump=schema.iter_join,
-            load=schema.iter_split,
+            serializer=schema.iter_serializer,
             value_type=schema.UUID(dump=str)
         )
         uid = uuid.UUID('1f4be432-a693-44bd-9eb8-e0b8d3aec82d')
@@ -146,21 +153,16 @@ class TestSchema(NodeTestCase):
         )
 
     def test_nested_IterableField(self):
-        field = schema.IterableField(
-            list,
-            value_type=schema.List(size=1)
-        )
+        field = schema.IterableField(list, value_type=schema.List(size=1))
         self.assertIsNone(field.validate([[1]]))
         with self.assertRaises(ValueError):
             field.validate([[1, 2]])
 
         field = schema.IterableField(
             list,
-            dump=schema.iter_join,
-            load=schema.iter_split,
+            serializer=schema.iter_serializer,
             value_type=schema.Tuple(
-                dump=schema.iter_join,
-                load=schema.iter_split,
+                serializer=schema.iter_serializer,
                 value_type=schema.Int(dump=str)
             )
         )
@@ -172,14 +174,11 @@ class TestSchema(NodeTestCase):
 
         field = schema.IterableField(
             list,
-            dump=schema.iter_join,
-            load=schema.iter_split,
+            serializer=schema.iter_serializer,
             value_type=schema.Set(
-                dump=schema.iter_join,
-                load=schema.iter_split,
+                serializer=schema.iter_serializer,
                 value_type=schema.Tuple(
-                    dump=schema.iter_join,
-                    load=schema.iter_split,
+                    serializer=schema.iter_serializer,
                     value_type=schema.Int(dump=str)
                 )
             )
@@ -305,12 +304,10 @@ class TestSchema(NodeTestCase):
             field.validate({'foo': {}})
 
         field = schema.Dict(
-            dump=schema.dict_join,
-            load=schema.dict_split,
+            serializer=schema.dict_serializer,
             key_type=schema.Int(dump=str),
             value_type=schema.Dict(
-                dump=schema.dict_join,
-                load=schema.dict_split,
+                serializer=schema.dict_serializer,
                 key_type=schema.Int(dump=str),
                 value_type=schema.Int(dump=str)
             )
