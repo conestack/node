@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 from node.behaviors import Nodify
 from node.interfaces import IAttributes
 from node.interfaces import INodeAttributes
@@ -15,6 +16,7 @@ from plumber import plumb
 from plumber import plumber
 from plumber import plumbing
 from zope.interface import implementer
+import threading
 
 
 @implementer(ISchema)
@@ -122,9 +124,26 @@ def schema_properties_metclass_hook(cls, name, bases, dct):
     """
     if not ISchemaProperties.implementedBy(cls):
         return
+    members = cls.__schema_members__ = list()
     for key, val in dct.items():
         if isinstance(val, Field):
+            members.append(key)
             setattr(cls, key, SchemaProperty(key, val))
+
+
+_schema_property = threading.local()
+_schema_property.name = None
+
+
+@contextmanager
+def _property_access(name):
+    """Context manager to mark object property access from descriptor.
+    """
+    _schema_property.name = name
+    try:
+        yield
+    finally:
+        _schema_property.name = None
 
 
 class SchemaProperty(object):
@@ -166,7 +185,8 @@ class SchemaProperty(object):
         name = self.name
         with scope_field(field, name, obj):
             try:
-                return field.deserialize(obj[name])
+                with _property_access(name):
+                    return field.deserialize(obj[name])
             except KeyError as e:
                 return field.default
 
@@ -178,21 +198,25 @@ class SchemaProperty(object):
         deleted from related object. Otherwise validate given value and
         serialize it on related object.
         """
-        if value is UNSET:
-            del obj[self.name]
-            return
         name = self.name
+        if value is UNSET:
+            with _property_access(name):
+                del obj[name]
+            return
         field = self.field
         with scope_field(field, name, self):
             field.validate(value)
-            obj[name] = field.serialize(value)
+            with _property_access(name):
+                obj[name] = field.serialize(value)
 
     def __delete__(self, obj):
         """Delete field value from related object.
 
         :param obj: The related object.
         """
-        del obj[self.name]
+        name = self.name
+        with _property_access(name):
+            del obj[name]
 
 
 @implementer(ISchemaProperties)
@@ -238,3 +262,29 @@ class SchemaProperties(Behavior):
         obj.description = UNSET
         assert('description' not in obj)
     """
+
+    @plumb
+    def __setitem__(next_, self, name, value):
+        if _schema_property.name != name and name in self.__schema_members__:
+            raise KeyError('{} is a schema property'.format(name))
+        next_(self, name, value)
+
+    @plumb
+    def __getitem__(next_, self, name):
+        if _schema_property.name != name and name in self.__schema_members__:
+            raise KeyError('{} is a schema property'.format(name))
+        return next_(self, name)
+
+    @plumb
+    def __delitem__(next_, self, name):
+        if _schema_property.name != name and name in self.__schema_members__:
+            raise KeyError('{} is a schema property'.format(name))
+        next_(self, name)
+
+    @plumb
+    def __iter__(next_, self):
+        members = self.__schema_members__
+        for name in next_(self):
+            if name in members:
+                continue
+            yield name

@@ -527,6 +527,10 @@ class TestSchema(NodeTestCase):
             bool_field = schema.Bool(default=True)
             uuid_field = schema.UUID(dump=str)
 
+        self.assertEqual(
+            sorted(SchemaPropertiesNode.__schema_members__),
+            ['bool_field', 'float_field', 'int_field', 'str_field', 'uuid_field']
+        )
         self.assertEqual(SchemaPropertiesNode.str_field, UNSET)
         self.assertEqual(SchemaPropertiesNode.int_field, 1)
         self.assertEqual(SchemaPropertiesNode.float_field, 1.)
@@ -534,7 +538,7 @@ class TestSchema(NodeTestCase):
         self.assertEqual(SchemaPropertiesNode.uuid_field, UNSET)
 
         node = SchemaPropertiesNode()
-        self.assertEqual(list(node.keys()), [])
+        self.assertEqual(list(node.storage.keys()), [])
         self.assertEqual(node.str_field, UNSET)
         self.assertEqual(node.int_field, 1)
         self.assertEqual(node.float_field, 1.)
@@ -546,23 +550,63 @@ class TestSchema(NodeTestCase):
         node.float_field = 2.
         node.bool_field = False
         self.assertEqual(
-            sorted(node.keys()),
+            sorted(node.storage.keys()),
             ['bool_field', 'float_field', 'int_field', 'str_field']
         )
 
-        self.assertEqual(node['str_field'], u'Value')
-        self.assertEqual(node['int_field'], 2)
-        self.assertEqual(node['float_field'], 2.)
-        self.assertEqual(node['bool_field'], False)
+        self.assertEqual(node.storage['str_field'], u'Value')
+        self.assertEqual(node.storage['int_field'], 2)
+        self.assertEqual(node.storage['float_field'], 2.)
+        self.assertEqual(node.storage['bool_field'], False)
+
+        self.assertEqual(sorted(node.keys()), [])
+        with self.assertRaises(KeyError):
+            node['str_field']
+        with self.assertRaises(KeyError):
+            node['str_field'] = u'Value'
+        with self.assertRaises(KeyError):
+            del node['str_field']
 
         uid = uuid.UUID('733698c5-aaa9-4baa-9d62-35b627feee04')
         node.uuid_field = uid
         self.assertEqual(
-            node['uuid_field'],
+            node.storage['uuid_field'],
             '733698c5-aaa9-4baa-9d62-35b627feee04'
         )
         self.assertEqual(node.uuid_field, uid)
         node.uuid_field = UNSET
         self.assertEqual(node.uuid_field, UNSET)
         with self.assertRaises(KeyError):
-            node['uuid_field']
+            node.storage['uuid_field']
+
+        node['child'] = BaseNode()
+        self.assertEqual(sorted(node.keys()), ['child'])
+
+        @plumbing(SchemaProperties)
+        class SchemaPropertiesDict(dict):
+            str_field = schema.Str(default=u'Value')
+
+        self.assertEqual(
+            sorted(SchemaPropertiesDict.__schema_members__),
+            ['str_field']
+        )
+        self.assertEqual(SchemaPropertiesDict.str_field, u'Value')
+
+        dict_ = SchemaPropertiesDict()
+        self.assertEqual(list(dict.keys(dict_)), [])
+        self.assertEqual(dict_.str_field, u'Value')
+
+        dict_.str_field = u'Other Value'
+        self.assertEqual(list(dict.keys(dict_)), ['str_field'])
+        self.assertEqual(dict.__getitem__(dict_, 'str_field'), u'Other Value')
+
+        self.assertEqual(sorted(iter(dict_)), [])
+        with self.assertRaises(KeyError):
+            dict_['str_field']
+        with self.assertRaises(KeyError):
+            dict_['str_field'] = u'Value'
+        with self.assertRaises(KeyError):
+            del dict_['str_field']
+
+        dict_['child'] = 1
+        self.assertEqual(sorted(iter(dict_)), ['child'])
