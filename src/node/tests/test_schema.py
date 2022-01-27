@@ -192,63 +192,134 @@ class TestSchema(NodeTestCase):
 
     def test_Bool(self):
         field = schema.Bool()
+        self.assertIsInstance(field, schema.Field)
         self.assertIsNone(field.validate(True))
         with self.assertRaises(ValueError):
             field.validate(1)
 
     def test_Int(self):
         field = schema.Int()
+        self.assertIsInstance(field, schema.Field)
         self.assertIsNone(field.validate(1))
         with self.assertRaises(ValueError):
             field.validate('1')
 
     def test_Float(self):
         field = schema.Float()
+        self.assertIsInstance(field, schema.Field)
         self.assertIsNone(field.validate(1.))
         with self.assertRaises(ValueError):
             field.validate(1)
 
     def test_Bytes(self):
         field = schema.Bytes()
+        self.assertIsInstance(field, schema.Field)
         self.assertIsNone(field.validate(b'xxx'))
         with self.assertRaises(ValueError):
             field.validate(u'xxx')
 
     def test_Str(self):
         field = schema.Str()
+        self.assertIsInstance(field, schema.Field)
         self.assertIsNone(field.validate(u'xxx'))
         with self.assertRaises(ValueError):
             field.validate(b'xxx')
 
     def test_UUID(self):
         field = schema.UUID()
+        self.assertIsInstance(field, schema.Field)
         self.assertIsNone(field.validate(uuid.uuid4()))
         with self.assertRaises(ValueError):
             field.validate('1234')
 
     def test_Tuple(self):
         field = schema.Tuple()
+        self.assertIsInstance(field, schema.IterableField)
         self.assertIsNone(field.validate((1, 2)))
         with self.assertRaises(ValueError):
             field.validate([1, 2])
 
     def test_List(self):
         field = schema.List()
+        self.assertIsInstance(field, schema.IterableField)
         self.assertIsNone(field.validate([1, 2]))
         with self.assertRaises(ValueError):
             field.validate((1, 2))
 
     def test_Set(self):
         field = schema.Set()
+        self.assertIsInstance(field, schema.IterableField)
         self.assertIsNone(field.validate({1, 2}))
         with self.assertRaises(ValueError):
             field.validate([])
 
     def test_Dict(self):
         field = schema.Dict()
+        self.assertIsInstance(field, schema.Field)
+        self.assertEqual(field.type_, dict)
+        self.assertEqual(field.dump, schema._undefined)
+        self.assertEqual(field.load, schema._undefined)
+        self.assertEqual(field.default, schema._undefined)
+        self.assertEqual(field.key_type, schema._undefined)
+        self.assertEqual(field.value_type, schema._undefined)
+        self.assertEqual(field.size, schema._undefined)
+
         self.assertIsNone(field.validate({}))
         with self.assertRaises(ValueError):
             field.validate([])
+
+        self.assertEqual(field.serialize({}), {})
+        self.assertEqual(field.deserialize({}), {})
+
+        field = schema.Dict(size=1)
+        self.assertIsNone(field.validate({'foo': 'bar'}))
+        with self.assertRaises(ValueError):
+            field.validate({})
+
+        field = schema.Dict(key_type=schema.Int())
+        self.assertIsNone(field.validate({1: 'foo'}))
+        with self.assertRaises(ValueError):
+            field.validate({'1': 'foo'})
+
+        field = schema.Dict(value_type=schema.Int())
+        self.assertIsNone(field.validate({'foo': 1}))
+        with self.assertRaises(ValueError):
+            field.validate({'foo': '1'})
+
+        field = schema.Dict(dump=schema.dict_join, load=schema.dict_split)
+        self.assertEqual(
+            field.serialize({'foo': 'bar', 'baz': 'bam'}),
+            b'foo,bar;baz,bam'
+        )
+        self.assertEqual(
+            field.deserialize(b'foo,bar;baz,bam'),
+            {'foo': 'bar', 'baz': 'bam'}
+        )
+        with self.assertRaises(TypeError):
+            field.serialize({1: 1})
+
+    def test_nested_Dict(self):
+        field = schema.Dict(value_type=schema.Dict(size=1))
+        self.assertIsNone(field.validate({'foo': {'1': '1'}}))
+        with self.assertRaises(ValueError):
+            field.validate({'foo': {}})
+
+        field = schema.Dict(
+            dump=schema.dict_join,
+            load=schema.dict_split,
+            key_type=schema.Int(dump=str),
+            value_type=schema.Dict(
+                dump=schema.dict_join,
+                load=schema.dict_split,
+                key_type=schema.Int(dump=str),
+                value_type=schema.Int(dump=str)
+            )
+        )
+        self.assertIsNone(field.validate({1: {1: 1}}))
+        with self.assertRaises(ValueError):
+            field.validate({1: 1})
+        self.assertEqual(field.serialize({1: {1: 1}}), b'1,1%2C1')
+        self.assertEqual(field.deserialize(b'1,1%2C1'), {1: {1: 1}})
 
     def test_IterJoin(self):
         join = schema.IterJoin()
