@@ -2,6 +2,7 @@ from abc import ABC
 from abc import abstractmethod
 from contextlib import contextmanager
 from node import compat
+from node.utils import UNSET
 try:
     from urllib import quote
     from urllib import unquote
@@ -12,9 +13,6 @@ import base64
 import json
 import pickle
 import uuid
-
-
-_undefined = object()
 
 
 @contextmanager
@@ -47,10 +45,10 @@ class Field(object):
     def __init__(
         self,
         type_,
-        default=_undefined,
-        serializer=_undefined,
-        dump=_undefined,
-        load=_undefined,
+        default=UNSET,
+        serializer=UNSET,
+        dump=UNSET,
+        load=UNSET,
     ):
         """Create schema field.
 
@@ -64,9 +62,9 @@ class Field(object):
         from ``serializer`` if given. If ``dump`` is set and ``load`` is
         omitted, ``type_`` is used instead.
         """
-        dump = serializer.dump if serializer is not _undefined else dump
-        load = serializer.load if serializer is not _undefined else load
-        if dump is not _undefined and load is _undefined:
+        dump = serializer.dump if serializer is not UNSET else dump
+        load = serializer.load if serializer is not UNSET else load
+        if dump is not UNSET and load is UNSET:
             load = type_
         self.type_ = type_
         self.default = default
@@ -79,7 +77,7 @@ class Field(object):
         :param value: The value to serialize.
         :return: The serialized value.
         """
-        if self.dump is not _undefined:
+        if self.dump is not UNSET:
             return self.dump(value)
         return value
 
@@ -89,7 +87,7 @@ class Field(object):
         :param value: The value to deserialize.
         :return: The deserialized value.
         """
-        if self.load is not _undefined:
+        if self.load is not UNSET:
             return self.load(value)
         return value
 
@@ -123,12 +121,12 @@ class IterableField(Field):
     def __init__(
         self,
         type_,
-        default=_undefined,
-        serializer=_undefined,
-        dump=_undefined,
-        load=_undefined,
-        value_type=_undefined,
-        size=_undefined
+        default=UNSET,
+        serializer=UNSET,
+        dump=UNSET,
+        load=UNSET,
+        value_type=UNSET,
+        size=UNSET
     ):
         """Create iterable schema field.
 
@@ -162,7 +160,7 @@ class IterableField(Field):
         :return: The serialized value.
         """
         value_type = self.value_type
-        if value_type is not _undefined:
+        if value_type is not UNSET:
             with scope_field(value_type, self.name, self.parent):
                 value = self.type_(
                     [value_type.serialize(item) for item in value]
@@ -177,7 +175,7 @@ class IterableField(Field):
         """
         value = super(IterableField, self).deserialize(value)
         value_type = self.value_type
-        if value_type is not _undefined:
+        if value_type is not UNSET:
             with scope_field(value_type, self.name, self.parent):
                 value = [value_type.deserialize(item) for item in value]
         return self.type_(value)
@@ -189,14 +187,14 @@ class IterableField(Field):
         :raises Exception: If validation fails.
         """
         super(IterableField, self).validate(value)
-        if self.size is not _undefined and len(value) != self.size:
+        if self.size is not UNSET and len(value) != self.size:
             raise ValueError(u'{} has invalid size {} != {}'.format(
                 value,
                 len(value),
                 self.size
             ))
         value_type = self.value_type
-        if value_type is not _undefined:
+        if value_type is not UNSET:
             with scope_field(value_type, self.name, self.parent):
                 for item in value:
                     value_type.validate(item)
@@ -206,10 +204,10 @@ class Bool(Field):
 
     def __init__(
             self,
-            default=_undefined,
-            serializer=_undefined,
-            dump=_undefined,
-            load=_undefined
+            default=UNSET,
+            serializer=UNSET,
+            dump=UNSET,
+            load=UNSET
         ):
         """Create bool schema field.
 
@@ -235,10 +233,10 @@ class Int(Field):
 
     def __init__(
             self,
-            default=_undefined,
-            serializer=_undefined,
-            dump=_undefined,
-            load=_undefined
+            default=UNSET,
+            serializer=UNSET,
+            dump=UNSET,
+            load=UNSET
         ):
         """Create int field.
 
@@ -264,10 +262,10 @@ class Float(Field):
 
     def __init__(
             self,
-            default=_undefined,
-            serializer=_undefined,
-            dump=_undefined,
-            load=_undefined
+            default=UNSET,
+            serializer=UNSET,
+            dump=UNSET,
+            load=UNSET
         ):
         """Create float schema field.
 
@@ -293,10 +291,10 @@ class Bytes(Field):
 
     def __init__(
             self,
-            default=_undefined,
-            serializer=_undefined,
-            dump=_undefined,
-            load=_undefined
+            default=UNSET,
+            serializer=UNSET,
+            dump=UNSET,
+            load=UNSET
         ):
         """Create bytes schema field.
 
@@ -322,10 +320,10 @@ class Str(Field):
 
     def __init__(
             self,
-            default=_undefined,
-            serializer=_undefined,
-            dump=_undefined,
-            load=_undefined
+            default=UNSET,
+            serializer=UNSET,
+            dump=UNSET,
+            load=UNSET
         ):
         """Create str schema field.
 
@@ -351,10 +349,10 @@ class UUID(Field):
 
     def __init__(
             self,
-            default=_undefined,
-            serializer=_undefined,
-            dump=_undefined,
-            load=_undefined
+            default=UNSET,
+            serializer=UNSET,
+            dump=UNSET,
+            load=UNSET
         ):
         """Create UUID schema field.
 
@@ -380,12 +378,12 @@ class Tuple(IterableField):
 
     def __init__(
         self,
-        default=_undefined,
-        serializer=_undefined,
-        dump=_undefined,
-        load=_undefined,
-        value_type=_undefined,
-        size=_undefined
+        default=UNSET,
+        serializer=UNSET,
+        dump=UNSET,
+        load=UNSET,
+        value_type=UNSET,
+        size=UNSET
     ):
         """Create tuple schema field.
 
@@ -416,12 +414,12 @@ class List(IterableField):
 
     def __init__(
         self,
-        default=_undefined,
-        serializer=_undefined,
-        dump=_undefined,
-        load=_undefined,
-        value_type=_undefined,
-        size=_undefined
+        default=UNSET,
+        serializer=UNSET,
+        dump=UNSET,
+        load=UNSET,
+        value_type=UNSET,
+        size=UNSET
     ):
         """Create list schema field.
 
@@ -452,12 +450,12 @@ class Set(IterableField):
 
     def __init__(
         self,
-        default=_undefined,
-        serializer=_undefined,
-        dump=_undefined,
-        load=_undefined,
-        value_type=_undefined,
-        size=_undefined
+        default=UNSET,
+        serializer=UNSET,
+        dump=UNSET,
+        load=UNSET,
+        value_type=UNSET,
+        size=UNSET
     ):
         """Create set schema field.
 
@@ -488,13 +486,13 @@ class Dict(Field):
 
     def __init__(
         self,
-        default=_undefined,
-        serializer=_undefined,
-        dump=_undefined,
-        load=_undefined,
-        key_type=_undefined,
-        value_type=_undefined,
-        size=_undefined
+        default=UNSET,
+        serializer=UNSET,
+        dump=UNSET,
+        load=UNSET,
+        key_type=UNSET,
+        value_type=UNSET,
+        size=UNSET
     ):
         """Create dict schema field.
 
@@ -530,14 +528,14 @@ class Dict(Field):
         :return: The serialized value.
         """
         key_type = self.key_type
-        if key_type is not _undefined:
+        if key_type is not UNSET:
             with scope_field(key_type, self.name, self.parent):
                 new_value = dict()
                 for key, val in value.items():
                     new_value[key_type.serialize(key)] = val
                 value = new_value
         value_type = self.value_type
-        if value_type is not _undefined:
+        if value_type is not UNSET:
             with scope_field(value_type, self.name, self.parent):
                 for key, val in value.items():
                     value[key] = value_type.serialize(val)
@@ -551,14 +549,14 @@ class Dict(Field):
         """
         value = super(Dict, self).deserialize(value)
         key_type = self.key_type
-        if key_type is not _undefined:
+        if key_type is not UNSET:
             with scope_field(key_type, self.name, self.parent):
                 new_value = dict()
                 for key, val in value.items():
                     new_value[key_type.deserialize(key)] = val
                 value = new_value
         value_type = self.value_type
-        if value_type is not _undefined:
+        if value_type is not UNSET:
             with scope_field(value_type, self.name, self.parent):
                 for key, val in value.items():
                     value[key] = value_type.deserialize(val)
@@ -571,19 +569,19 @@ class Dict(Field):
         :raises Exception: If validation fails.
         """
         super(Dict, self).validate(value)
-        if self.size is not _undefined and len(value) != self.size:
+        if self.size is not UNSET and len(value) != self.size:
             raise ValueError(u'{} has invalid size {} != {}'.format(
                 value,
                 len(value),
                 self.size
             ))
         key_type = self.key_type
-        if key_type is not _undefined:
+        if key_type is not UNSET:
             with scope_field(key_type, self.name, self.parent):
                 for key in value:
                     key_type.validate(key)
         value_type = self.value_type
-        if value_type is not _undefined:
+        if value_type is not UNSET:
             with scope_field(value_type, self.name, self.parent):
                 for val in value.values():
                     value_type.validate(val)

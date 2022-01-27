@@ -653,6 +653,15 @@ class ISchemaAsAttributes(IAttributes):
         'or deriving instances as values.')
 
 
+class ISchemaProperties(Interface):
+    """Plumbing behavior for providing schema fields as class properties.
+
+    For all ``node.schema.Field`` instances found on class
+    ``node.behaviors.schema.SchemaProperty`` descriptors are created handling
+    the field values.
+    """
+
+
 class IBoundContext(Interface):
     """Plumbing behavior for scoping objects to interfaces and classes.
     """

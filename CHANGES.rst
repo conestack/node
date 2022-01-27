@@ -5,10 +5,10 @@ Changes
 0.9.29 (unreleased)
 -------------------
 
-- Move ``scope_field`` from ``node.behaviors.schema`` to ``node.schema``.
+- Introduce ``node.schema.Serializer``.
   [rnix]
 
-- Introduce ``node.schema.Serializer``.
+- Move ``scope_field`` from ``node.behaviors.schema`` to ``node.schema``.
   [rnix]
 
 - Introduce ``node.behaviors.context.BoundContext``.

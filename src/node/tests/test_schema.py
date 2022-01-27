@@ -3,6 +3,7 @@ from node.base import BaseNode
 from node.behaviors import Schema
 from node.behaviors import SchemaAsAttributes
 from node.behaviors import SchemaAttributes
+from node.behaviors import SchemaProperties
 from node.interfaces import IAttributes
 from node.interfaces import INodeAttributes
 from node.interfaces import ISchema
@@ -34,9 +35,9 @@ class TestSchema(NodeTestCase):
     def test_Field(self):
         field = schema.Field(str)
         self.assertEqual(field.type_, str)
-        self.assertEqual(field.default, schema._undefined)
-        self.assertEqual(field.dump, schema._undefined)
-        self.assertEqual(field.load, schema._undefined)
+        self.assertEqual(field.default, UNSET)
+        self.assertEqual(field.dump, UNSET)
+        self.assertEqual(field.load, UNSET)
 
         self.assertIsNone(field.validate('value'))
         with self.assertRaises(ValueError):
@@ -99,11 +100,11 @@ class TestSchema(NodeTestCase):
         field = schema.IterableField(list)
         self.assertIsInstance(field, schema.Field)
         self.assertEqual(field.type_, list)
-        self.assertEqual(field.dump, schema._undefined)
-        self.assertEqual(field.load, schema._undefined)
-        self.assertEqual(field.default, schema._undefined)
-        self.assertEqual(field.value_type, schema._undefined)
-        self.assertEqual(field.size, schema._undefined)
+        self.assertEqual(field.dump, UNSET)
+        self.assertEqual(field.load, UNSET)
+        self.assertEqual(field.default, UNSET)
+        self.assertEqual(field.value_type, UNSET)
+        self.assertEqual(field.size, UNSET)
 
         self.assertIsNone(field.validate([]))
         with self.assertRaises(ValueError):
@@ -262,12 +263,12 @@ class TestSchema(NodeTestCase):
         field = schema.Dict()
         self.assertIsInstance(field, schema.Field)
         self.assertEqual(field.type_, dict)
-        self.assertEqual(field.dump, schema._undefined)
-        self.assertEqual(field.load, schema._undefined)
-        self.assertEqual(field.default, schema._undefined)
-        self.assertEqual(field.key_type, schema._undefined)
-        self.assertEqual(field.value_type, schema._undefined)
-        self.assertEqual(field.size, schema._undefined)
+        self.assertEqual(field.dump, UNSET)
+        self.assertEqual(field.load, UNSET)
+        self.assertEqual(field.default, UNSET)
+        self.assertEqual(field.key_type, UNSET)
+        self.assertEqual(field.value_type, UNSET)
+        self.assertEqual(field.size, UNSET)
 
         self.assertIsNone(field.validate({}))
         with self.assertRaises(ValueError):
@@ -416,7 +417,7 @@ class TestSchema(NodeTestCase):
                 'int': schema.Int(),
                 'float': schema.Float(default=1.),
                 'str': schema.Str(),
-                'bool': schema.Bool(default=UNSET)
+                'bool': schema.Bool(default=False)
             }
 
         node = SchemaNode()
@@ -436,9 +437,8 @@ class TestSchema(NodeTestCase):
         self.assertEqual(node['any'], 'foo')
         self.assertEqual(node['int'], 0)
         self.assertEqual(node['float'], 1.)
-        self.assertEqual(node['bool'], UNSET)
-        with self.assertRaises(KeyError):
-            node['str']
+        self.assertEqual(node['bool'], False)
+        self.assertEqual(node['str'], UNSET)
 
         node.schema['*'] = schema.UUID()
         with self.assertRaises(ValueError):
@@ -516,3 +516,11 @@ class TestSchema(NodeTestCase):
             node['int']
         with self.assertRaises(KeyError):
             del node['int']
+
+    def test_SchemaProperties(self):
+        @plumbing(SchemaProperties)
+        class SchemaPropertiesNode(dict):
+            int = schema.Int()
+            float = schema.Float(default=1.)
+            str = schema.Str()
+            bool = schema.Bool()

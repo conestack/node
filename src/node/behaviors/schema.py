@@ -3,13 +3,16 @@ from node.interfaces import IAttributes
 from node.interfaces import INodeAttributes
 from node.interfaces import ISchema
 from node.interfaces import ISchemaAsAttributes
-from node.schema import _undefined
+from node.interfaces import ISchemaProperties
+from node.schema import Field
 from node.schema import scope_field
 from node.utils import AttributeAccess
+from node.utils import UNSET
 from plumber import Behavior
 from plumber import default
 from plumber import finalize
 from plumber import plumb
+from plumber import plumber
 from plumber import plumbing
 from zope.interface import implementer
 
@@ -27,9 +30,7 @@ class Schema(Behavior):
             try:
                 return field.deserialize(next_(self, name))
             except KeyError as e:
-                if field.default is not _undefined:
-                    return field.default
-                raise e
+                return field.default
 
     @plumb
     def __setitem__(next_, self, name, value):
@@ -109,3 +110,48 @@ class SchemaAsAttributes(Behavior):
             if name in schema:
                 continue
             yield name
+
+
+@plumber.metaclasshook
+def schema_properties_metclass_hook(cls, name, bases, dct):
+    """Plumber metaclass hook handling proper post initialization of
+    ``SchemaProperty`` instances on plumbing classes.
+    """
+    if not ISchemaProperties.implementedBy(cls):
+        return
+    for name, val in dct.items():
+        if isinstance(val, Field):
+            dct[name] = SchemaProperty(name, val)
+
+
+class SchemaProperty(object):
+
+    def __init__(self, name, field):
+        self.name = name
+        self.field = field
+
+    def __get__(self, obj, type_=None):
+        field = self.field
+        if obj is None:
+            return field.default
+        name = self.name
+        with scope_field(field, name, obj):
+            try:
+                return field.deserialize(obj[name])
+            except KeyError as e:
+                return field.default
+
+    def __set__(self, obj, value):
+        name = self.name
+        field = self.field
+        with scope_field(field, name, self):
+            field.validate(value)
+            obj[name] = field.serialize(value)
+
+    def __delete__(self, obj):
+        del obj[self.name]
+
+
+@implementer(ISchemaProperties)
+class SchemaProperties(Behavior):
+    pass
