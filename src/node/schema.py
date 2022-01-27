@@ -12,53 +12,6 @@ import uuid
 _undefined = object()
 
 
-class IterJoin(object):
-    """Join iterable into string."""
-
-    def __init__(self, coding=u'utf-8'):
-        """Create IterJoin instance.
-
-        :param coding: Coding to use. defaults to 'utf-8'
-        """
-        self.coding = coding
-
-    def __call__(self, value):
-        """Join iterable value to string.
-
-        :param value: The iterable to join. Must contain strings as values.
-        :return: Items of iterable joined by ',' as string. If items contain
-        commas themself, they get quoted.
-        """
-        return u','.join([quote(item) for item in value]).encode(self.coding)
-
-
-iter_join = IterJoin()
-
-
-class IterSplit(object):
-    """Split string into iterable."""
-
-    def __init__(self, coding=u'utf-8'):
-        """Create IterSplit instance.
-
-        :param coding: Coding to use. defaults to 'utf-8'
-        """
-        self.coding = coding
-
-    def __call__(self, value):
-        """Split string into iterable.
-
-        :param value: The string to split.
-        :return: List of strings split by ',' from value.
-        """
-        if not isinstance(value, compat.UNICODE_TYPE):
-            value = value.decode(self.coding)
-        return [unquote(item) for item in value.split(u',')]
-
-
-iter_split = IterSplit()
-
-
 @contextmanager
 def scope_field(field, name, parent):
     """Context manager for setting field scope.
@@ -550,3 +503,104 @@ class Dict(Field):
             with scope_field(value_type, self.name, self.parent):
                 for val in value.values():
                     value_type.validate(val)
+
+
+class IterJoin(object):
+    """Join iterable into string."""
+
+    def __init__(self, coding=u'utf-8'):
+        """Create IterJoin instance.
+
+        :param coding: Coding to use. defaults to 'utf-8'
+        """
+        self.coding = coding
+
+    def __call__(self, value):
+        """Join iterable value to string.
+
+        :param value: The iterable to join. Must contain strings as values.
+        :return: Items of iterable joined by ',' as string.
+        """
+        return u','.join([quote(item) for item in value]).encode(self.coding)
+
+
+iter_join = IterJoin()
+
+
+class IterSplit(object):
+    """Split string into iterable."""
+
+    def __init__(self, coding=u'utf-8'):
+        """Create IterSplit instance.
+
+        :param coding: Coding to use. defaults to 'utf-8'
+        """
+        self.coding = coding
+
+    def __call__(self, value):
+        """Split string into iterable.
+
+        :param value: The string to split.
+        :return: List of strings split by ',' from value.
+        """
+        if not isinstance(value, compat.UNICODE_TYPE):
+            value = value.decode(self.coding)
+        return [unquote(item) for item in value.split(u',')]
+
+
+iter_split = IterSplit()
+
+
+class DictJoin(object):
+    """Join dict key/value pairs into string."""
+
+    def __init__(self, coding=u'utf-8'):
+        """Create DictJoin instance.
+
+        :param coding: Coding to use. defaults to 'utf-8'
+        """
+        self.coding = coding
+
+    def __call__(self, value):
+        """Join dict key/value pairs into string.
+
+        :param value: The dict to join. Keys and values must be strings.
+        :return: Items of dict joined by ';' as string. Key/value pairs are
+        joined by ','.
+        """
+        return u';'.join([
+            u'{key},{value}'.format(key=quote(key), value=quote(val))
+            for key, val in value.items()
+        ]).encode(self.coding)
+
+
+dict_join = DictJoin()
+
+
+class DictSplit(object):
+    """Split string into dict."""
+
+    def __init__(self, coding=u'utf-8'):
+        """Create DictSplit instance.
+
+        :param coding: Coding to use. defaults to 'utf-8'
+        """
+        self.coding = coding
+
+    def __call__(self, value):
+        """Split string into dict.
+
+        :param value: The string to split.
+        :return: Dict from value. Items of dict are split by ';'. Key/value
+        pairs are split by ','.
+        """
+        if not isinstance(value, compat.UNICODE_TYPE):
+            value = value.decode(self.coding)
+        ret = {}
+        for item in value.split(';'):
+            key, val = item.split(',')
+            ret[unquote(key)] = unquote(val)
+        return ret
+
+
+dict_split = DictSplit()

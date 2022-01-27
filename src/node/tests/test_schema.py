@@ -16,19 +16,6 @@ import uuid
 
 class TestSchema(NodeTestCase):
 
-    def test_IterJoin(self):
-        join = schema.IterJoin()
-        self.assertEqual(join((u'a', u'b', u'c')), b'a,b,c')
-        self.assertEqual(join([u'a', u'b', u'c']), b'a,b,c')
-        self.assertEqual(join([u'a,', u'b', u'c']), b'a%2C,b,c')
-        self.assertIsInstance(schema.iter_join, schema.IterJoin)
-
-    def test_IterSplit(self):
-        split = schema.IterSplit()
-        self.assertEqual(split(b'a,b,c'), [u'a', u'b', u'c'])
-        self.assertEqual(split(b'a%2C,b,c'), [u'a,', u'b', u'c'])
-        self.assertIsInstance(schema.iter_split, schema.IterSplit)
-
     def test_scope_field(self):
         field = schema.Field(str)
         parent = object()
@@ -262,6 +249,31 @@ class TestSchema(NodeTestCase):
         self.assertIsNone(field.validate({}))
         with self.assertRaises(ValueError):
             field.validate([])
+
+    def test_IterJoin(self):
+        join = schema.IterJoin()
+        self.assertEqual(join((u'a', u'b', u'c')), b'a,b,c')
+        self.assertEqual(join([u'a', u'b', u'c']), b'a,b,c')
+        self.assertEqual(join([u'a,', u'b', u'c']), b'a%2C,b,c')
+        self.assertIsInstance(schema.iter_join, schema.IterJoin)
+
+    def test_IterSplit(self):
+        split = schema.IterSplit()
+        self.assertEqual(split(b'a,b,c'), [u'a', u'b', u'c'])
+        self.assertEqual(split(b'a%2C,b,c'), [u'a,', u'b', u'c'])
+        self.assertIsInstance(schema.iter_split, schema.IterSplit)
+
+    def test_DictJoin(self):
+        join = schema.DictJoin()
+        self.assertEqual(join({'foo': 'bar', 'baz': 'bam'}), b'foo,bar;baz,bam')
+        self.assertEqual(join({'foo,': 'bar;'}), b'foo%2C,bar%3B')
+        self.assertIsInstance(schema.dict_join, schema.DictJoin)
+
+    def test_DictSplit(self):
+        split = schema.DictSplit()
+        self.assertEqual(split(b'foo,bar;baz,bam'), {'foo': 'bar', 'baz': 'bam'})
+        self.assertEqual(split(b'foo%2C,bar%3B'), {'foo,': 'bar;'})
+        self.assertIsInstance(schema.dict_split, schema.DictSplit)
 
     def test_Schema(self):
         @plumbing(Schema)
