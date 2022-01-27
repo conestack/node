@@ -31,7 +31,6 @@ except ImportError as e:
 # events
 ###############################################################################
 
-
 class INodeCreatedEvent(IObjectCreatedEvent):
     """An new Node was born.
     """
@@ -60,7 +59,6 @@ class INodeDetachedEvent(IObjectRemovedEvent):
 ###############################################################################
 # helpers
 ###############################################################################
-
 
 class IAttributeAccess(Interface):
     """Provides Attribute access to dict like context.
@@ -104,7 +102,6 @@ class IAliaser(Interface):
 # markers
 ###############################################################################
 
-
 class IRoot(Interface):
     """Marker for a root node.
     """
@@ -132,7 +129,6 @@ class ICallable(Interface):
 ###############################################################################
 # node
 ###############################################################################
-
 
 class INode(ILocation, IFullMapping):
     """Basic node interface.
@@ -169,7 +165,6 @@ class INode(ILocation, IFullMapping):
 ###############################################################################
 # plumbing behaviors
 ###############################################################################
-
 
 class IDefaultInit(Interface):
     """Plumbing behavior providing default ``__init__`` function on node.

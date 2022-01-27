@@ -255,6 +255,10 @@ The ``node`` package provides several plumbing behaviors:
     dedicated attributes object.
     See ``node.interfaces.ISchemaAsAttributes``.
 
+**node.behaviors.SchemaProperties**
+    Provide schema fields as class properties.
+    See ``node.interfaces.ISchemaProperties``.
+
 **node.behaviors.BoundContext**
     Plumbing behavior for scoping objects to interfaces and classes.
     See ``node.interfaces.IBoundContext``.
