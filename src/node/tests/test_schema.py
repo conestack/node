@@ -321,6 +321,10 @@ class TestSchema(NodeTestCase):
         self.assertEqual(field.serialize({1: {1: 1}}), b'1,1%2C1')
         self.assertEqual(field.deserialize(b'1,1%2C1'), {1: {1: 1}})
 
+    def test_Serializer(self):
+        with self.assertRaises(TypeError):
+            schema.Serializer()
+
     def test_IterJoin(self):
         join = schema.IterJoin()
         self.assertEqual(join((u'a', u'b', u'c')), b'a,b,c')
@@ -334,6 +338,15 @@ class TestSchema(NodeTestCase):
         self.assertEqual(split(b'a%2C,b,c'), [u'a,', u'b', u'c'])
         self.assertIsInstance(schema.iter_split, schema.IterSplit)
 
+    def test_IterSerializer(self):
+        serializer = schema.IterSerializer()
+        self.assertIsInstance(serializer, schema.Serializer)
+        self.assertIsInstance(serializer.dumper, schema.IterJoin)
+        self.assertIsInstance(serializer.loader, schema.IterSplit)
+        self.assertIsInstance(schema.iter_serializer, schema.IterSerializer)
+        self.assertEqual(serializer.dump((u'a', u'b', u'c')), b'a,b,c')
+        self.assertEqual(serializer.load(b'a,b,c'), [u'a', u'b', u'c'])
+
     def test_DictJoin(self):
         join = schema.DictJoin()
         self.assertEqual(join({'foo': 'bar', 'baz': 'bam'}), b'foo,bar;baz,bam')
@@ -345,6 +358,21 @@ class TestSchema(NodeTestCase):
         self.assertEqual(split(b'foo,bar;baz,bam'), {'foo': 'bar', 'baz': 'bam'})
         self.assertEqual(split(b'foo%2C,bar%3B'), {'foo,': 'bar;'})
         self.assertIsInstance(schema.dict_split, schema.DictSplit)
+
+    def test_DictSerializer(self):
+        serializer = schema.DictSerializer()
+        self.assertIsInstance(serializer, schema.Serializer)
+        self.assertIsInstance(serializer.dumper, schema.DictJoin)
+        self.assertIsInstance(serializer.loader, schema.DictSplit)
+        self.assertIsInstance(schema.dict_serializer, schema.DictSerializer)
+        self.assertEqual(
+            serializer.dump({'foo': 'bar', 'baz': 'bam'}),
+            b'foo,bar;baz,bam'
+        )
+        self.assertEqual(
+            serializer.load(b'foo,bar;baz,bam'),
+            {'foo': 'bar', 'baz': 'bam'}
+        )
 
     def test_Schema(self):
         @plumbing(Schema)

@@ -1,3 +1,5 @@
+from abc import ABC
+from abc import abstractmethod
 from contextlib import contextmanager
 from node import compat
 try:
@@ -505,6 +507,27 @@ class Dict(Field):
                     value_type.validate(val)
 
 
+class Serializer(ABC):
+    """Field serializer.
+    """
+
+    @abstractmethod
+    def dump(self, value):
+        """Serialize given value.
+
+        :param value: The value to serialize.
+        :return: The serialized value.
+        """
+
+    @abstractmethod
+    def load(self, value):
+        """Deserialize given value.
+
+        :param value: The value to deserialize.
+        :return: The deserialized value.
+        """
+
+
 class IterJoin(object):
     """Join iterable into string."""
 
@@ -549,6 +572,38 @@ class IterSplit(object):
 
 
 iter_split = IterSplit()
+
+
+class IterSerializer(Serializer):
+    """Serializer utilizing IterJoin and IterSplit.
+    """
+
+    def __init__(self, coding='utf-8'):
+        """Create IterSerializer instance.
+
+        :param coding: Coding to use. defaults to 'utf-8'
+        """
+        self.dumper = IterJoin(coding=coding)
+        self.loader = IterSplit(coding=coding)
+
+    def dump(self, value):
+        """Join iterable value to string.
+
+        :param value: The iterable to join. Must contain strings as values.
+        :return: Items of iterable joined by ',' as string.
+        """
+        return self.dumper(value)
+
+    def load(self, value):
+        """Split string into iterable.
+
+        :param value: The string to split.
+        :return: List of strings split by ',' from value.
+        """
+        return self.loader(value)
+
+
+iter_serializer = IterSerializer()
 
 
 class DictJoin(object):
@@ -604,3 +659,37 @@ class DictSplit(object):
 
 
 dict_split = DictSplit()
+
+
+class DictSerializer(Serializer):
+    """Serializer utilizing DictJoin and DictSplit.
+    """
+
+    def __init__(self, coding='utf-8'):
+        """Create DictSerializer instance.
+
+        :param coding: Coding to use. defaults to 'utf-8'
+        """
+        self.dumper = DictJoin(coding=coding)
+        self.loader = DictSplit(coding=coding)
+
+    def dump(self, value):
+        """Join dict key/value pairs into string.
+
+        :param value: The dict to join. Keys and values must be strings.
+        :return: Items of dict joined by ';' as string. Key/value pairs are
+        joined by ','.
+        """
+        return self.dumper(value)
+
+    def load(self, value):
+        """Split string into dict.
+
+        :param value: The string to split.
+        :return: Dict from value. Items of dict are split by ';'. Key/value
+        pairs are split by ','.
+        """
+        return self.loader(value)
+
+
+dict_serializer = DictSerializer()
