@@ -38,6 +38,9 @@ class Schema(Behavior):
         if not field:
             next_(self, name, value)
             return
+        if value is UNSET:
+            del self[name]
+            return
         with scope_field(field, name, self):
             field.validate(value)
             next_(self, name, field.serialize(value))
@@ -119,9 +122,9 @@ def schema_properties_metclass_hook(cls, name, bases, dct):
     """
     if not ISchemaProperties.implementedBy(cls):
         return
-    for name, val in dct.items():
+    for key, val in dct.items():
         if isinstance(val, Field):
-            dct[name] = SchemaProperty(name, val)
+            setattr(cls, key, SchemaProperty(key, val))
 
 
 class SchemaProperty(object):
@@ -142,6 +145,9 @@ class SchemaProperty(object):
                 return field.default
 
     def __set__(self, obj, value):
+        if value is UNSET:
+            del obj[self.name]
+            return
         name = self.name
         field = self.field
         with scope_field(field, name, self):

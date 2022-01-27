@@ -496,6 +496,10 @@ class TestSchema(NodeTestCase):
         attrs.str = u'bar'
         self.assertEqual(node.storage, {'float': 3., 'int': 2, 'str': u'bar'})
 
+        attrs.float = UNSET
+        self.assertEqual(attrs.float, 1.)
+        self.assertEqual(node.storage, {'int': 2, 'str': u'bar'})
+
         child = node['child'] = BaseNode()
         self.checkOutput("""
         <class 'node.tests.test_schema.SchemaAsAttributesNode'>: None
@@ -520,7 +524,42 @@ class TestSchema(NodeTestCase):
     def test_SchemaProperties(self):
         @plumbing(SchemaProperties)
         class SchemaPropertiesNode(dict):
-            int = schema.Int()
-            float = schema.Float(default=1.)
-            str = schema.Str()
-            bool = schema.Bool()
+            str_prop = schema.Str()
+            int_prop = schema.Int(default=1)
+            float_prop = schema.Float(default=1.)
+            bool_prop = schema.Bool(default=True)
+            uuid_prop = schema.UUID(dump=str)
+
+        node = SchemaPropertiesNode()
+        self.assertEqual(list(node.keys()), [])
+        self.assertEqual(node.str_prop, UNSET)
+        self.assertEqual(node.int_prop, 1)
+        self.assertEqual(node.float_prop, 1.)
+        self.assertEqual(node.bool_prop, True)
+        self.assertEqual(node.uuid_prop, UNSET)
+
+        node.str_prop = u'Value'
+        node.int_prop = 2
+        node.float_prop = 2.
+        node.bool_prop = False
+        self.assertEqual(
+            sorted(node.keys()),
+            ['bool_prop', 'float_prop', 'int_prop', 'str_prop']
+        )
+
+        self.assertEqual(node['str_prop'], u'Value')
+        self.assertEqual(node['int_prop'], 2)
+        self.assertEqual(node['float_prop'], 2.)
+        self.assertEqual(node['bool_prop'], False)
+
+        uid = uuid.UUID('733698c5-aaa9-4baa-9d62-35b627feee04')
+        node.uuid_prop = uid
+        self.assertEqual(
+            node['uuid_prop'],
+            '733698c5-aaa9-4baa-9d62-35b627feee04'
+        )
+        self.assertEqual(node.uuid_prop, uid)
+        node.uuid_prop = UNSET
+        self.assertEqual(node.uuid_prop, UNSET)
+        with self.assertRaises(KeyError):
+            node['uuid_prop']
