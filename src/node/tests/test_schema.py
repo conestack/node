@@ -523,43 +523,45 @@ class TestSchema(NodeTestCase):
 
     def test_SchemaProperties(self):
         @plumbing(SchemaProperties)
-        class SchemaPropertiesNode(dict):
-            str_prop = schema.Str()
-            int_prop = schema.Int(default=1)
-            float_prop = schema.Float(default=1.)
-            bool_prop = schema.Bool(default=True)
-            uuid_prop = schema.UUID(dump=str)
+        class SchemaPropertiesNode(BaseNode):
+            allow_non_node_children = True
+
+            str_field = schema.Str()
+            int_field = schema.Int(default=1)
+            float_field = schema.Float(default=1.)
+            bool_field = schema.Bool(default=True)
+            uuid_field = schema.UUID(dump=str)
 
         node = SchemaPropertiesNode()
         self.assertEqual(list(node.keys()), [])
-        self.assertEqual(node.str_prop, UNSET)
-        self.assertEqual(node.int_prop, 1)
-        self.assertEqual(node.float_prop, 1.)
-        self.assertEqual(node.bool_prop, True)
-        self.assertEqual(node.uuid_prop, UNSET)
+        self.assertEqual(node.str_field, UNSET)
+        self.assertEqual(node.int_field, 1)
+        self.assertEqual(node.float_field, 1.)
+        self.assertEqual(node.bool_field, True)
+        self.assertEqual(node.uuid_field, UNSET)
 
-        node.str_prop = u'Value'
-        node.int_prop = 2
-        node.float_prop = 2.
-        node.bool_prop = False
+        node.str_field = u'Value'
+        node.int_field = 2
+        node.float_field = 2.
+        node.bool_field = False
         self.assertEqual(
             sorted(node.keys()),
-            ['bool_prop', 'float_prop', 'int_prop', 'str_prop']
+            ['bool_field', 'float_field', 'int_field', 'str_field']
         )
 
-        self.assertEqual(node['str_prop'], u'Value')
-        self.assertEqual(node['int_prop'], 2)
-        self.assertEqual(node['float_prop'], 2.)
-        self.assertEqual(node['bool_prop'], False)
+        self.assertEqual(node['str_field'], u'Value')
+        self.assertEqual(node['int_field'], 2)
+        self.assertEqual(node['float_field'], 2.)
+        self.assertEqual(node['bool_field'], False)
 
         uid = uuid.UUID('733698c5-aaa9-4baa-9d62-35b627feee04')
-        node.uuid_prop = uid
+        node.uuid_field = uid
         self.assertEqual(
-            node['uuid_prop'],
+            node['uuid_field'],
             '733698c5-aaa9-4baa-9d62-35b627feee04'
         )
-        self.assertEqual(node.uuid_prop, uid)
-        node.uuid_prop = UNSET
-        self.assertEqual(node.uuid_prop, UNSET)
+        self.assertEqual(node.uuid_field, uid)
+        node.uuid_field = UNSET
+        self.assertEqual(node.uuid_field, UNSET)
         with self.assertRaises(KeyError):
-            node['uuid_prop']
+            node['uuid_field']
