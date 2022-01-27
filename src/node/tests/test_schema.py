@@ -14,6 +14,12 @@ from plumber import plumbing
 import uuid
 
 
+class TestObject(object):
+
+    def __init__(self, value):
+        self.value = value
+
+
 class TestSchema(NodeTestCase):
 
     def test_scope_field(self):
@@ -370,6 +376,37 @@ class TestSchema(NodeTestCase):
             serializer.load(b'foo,bar;baz,bam'),
             {'foo': 'bar', 'baz': 'bam'}
         )
+
+    def test_Base64Serializer(self):
+        serializer = schema.Base64Serializer()
+        self.assertIsInstance(serializer, schema.Serializer)
+        self.assertIsInstance(schema.base64_serializer, schema.Base64Serializer)
+        self.assertEqual(serializer.dump(u'value'), b'dmFsdWU=')
+        self.assertEqual(serializer.load(b'dmFsdWU='), u'value')
+
+        serializer = schema.Base64Serializer(type_=bytes)
+        self.assertEqual(serializer.dump(b'value'), b'dmFsdWU=')
+        self.assertEqual(serializer.load(b'dmFsdWU='), b'value')
+
+    def test_JSONSerializer(self):
+        serializer = schema.JSONSerializer()
+        self.assertIsInstance(serializer, schema.Serializer)
+        self.assertIsInstance(schema.json_serializer, schema.JSONSerializer)
+        self.assertEqual(serializer.dump({'foo': 'bar'}), '{"foo": "bar"}')
+        self.assertEqual(serializer.load('{"foo": "bar"}'), {'foo': 'bar'})
+
+    def test_PickleSerializer(self):
+        serializer = schema.PickleSerializer()
+        self.assertIsInstance(serializer, schema.Serializer)
+        self.assertIsInstance(schema.pickle_serializer, schema.PickleSerializer)
+        data = (
+            b'\x80\x03cnode.tests.test_schema\nTestObject\nq\x00)'
+            b'\x81q\x01}q\x02X\x05\x00\x00\x00valueq\x03h\x03sb.'
+        )
+        self.assertEqual(serializer.dump(TestObject('value')), data)
+        obj = serializer.load(data)
+        self.assertIsInstance(obj, TestObject)
+        self.assertEqual(obj.value, 'value')
 
     def test_Schema(self):
         @plumbing(Schema)

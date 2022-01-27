@@ -8,6 +8,9 @@ try:
 except ImportError:
     from urllib.parse import quote
     from urllib.parse import unquote
+import base64
+import json
+import pickle
 import uuid
 
 
@@ -613,7 +616,7 @@ class IterJoin(object):
     def __init__(self, coding=u'utf-8'):
         """Create IterJoin instance.
 
-        :param coding: Coding to use. defaults to 'utf-8'
+        :param coding: Coding to use. defaults to 'utf-8'.
         """
         self.coding = coding
 
@@ -635,7 +638,7 @@ class IterSplit(object):
     def __init__(self, coding=u'utf-8'):
         """Create IterSplit instance.
 
-        :param coding: Coding to use. defaults to 'utf-8'
+        :param coding: Coding to use. defaults to 'utf-8'.
         """
         self.coding = coding
 
@@ -660,7 +663,7 @@ class IterSerializer(Serializer):
     def __init__(self, coding='utf-8'):
         """Create IterSerializer instance.
 
-        :param coding: Coding to use. defaults to 'utf-8'
+        :param coding: Coding to use. defaults to 'utf-8'.
         """
         self.dumper = IterJoin(coding=coding)
         self.loader = IterSplit(coding=coding)
@@ -691,7 +694,7 @@ class DictJoin(object):
     def __init__(self, coding=u'utf-8'):
         """Create DictJoin instance.
 
-        :param coding: Coding to use. defaults to 'utf-8'
+        :param coding: Coding to use. defaults to 'utf-8'.
         """
         self.coding = coding
 
@@ -717,7 +720,7 @@ class DictSplit(object):
     def __init__(self, coding=u'utf-8'):
         """Create DictSplit instance.
 
-        :param coding: Coding to use. defaults to 'utf-8'
+        :param coding: Coding to use. defaults to 'utf-8'.
         """
         self.coding = coding
 
@@ -747,7 +750,7 @@ class DictSerializer(Serializer):
     def __init__(self, coding='utf-8'):
         """Create DictSerializer instance.
 
-        :param coding: Coding to use. defaults to 'utf-8'
+        :param coding: Coding to use. defaults to 'utf-8'.
         """
         self.dumper = DictJoin(coding=coding)
         self.loader = DictSplit(coding=coding)
@@ -772,3 +775,89 @@ class DictSerializer(Serializer):
 
 
 dict_serializer = DictSerializer()
+
+
+class Base64Serializer(Serializer):
+    """Serializer for encoding/decoding values with base64 coding."""
+
+    def __init__(self, type_=compat.UNICODE_TYPE, coding='utf-8'):
+        """Create Base64Serializer instance.
+
+        :param type_: Value type. Either unicode type or ``bytes``. Defaults to
+        unicode type.
+        :param coding: Coding to use for encoding values if ``type_`` is
+        unicode type.
+        Defaults to 'utf-8'.
+        """
+        self.type_ = type_
+        self.coding = coding
+
+    def dump(self, value):
+        """Encode value with base64.
+
+        :param value: The value to encode.
+        :return: Base64 encoded value.
+        """
+        if self.type_ is compat.UNICODE_TYPE:
+            value = value.encode(self.coding)
+        return base64.b64encode(value)
+
+    def load(self, value):
+        """Encode base64 encoded value.
+
+        :param value: The base64 encoded string.
+        :return: Decoded value.
+        """
+        value = base64.b64decode(value)
+        if self.type_ is compat.UNICODE_TYPE:
+            value = value.decode(self.coding)
+        return value
+
+
+base64_serializer = Base64Serializer()
+
+
+class JSONSerializer(Serializer):
+    """Serializer dumpin/loading values as JSON."""
+
+    def dump(self, value):
+        """Dump value as JSON string.
+
+        :param value: The value to serialize.
+        :return: JSON string.
+        """
+        return json.dumps(value)
+
+    def load(self, value):
+        """Load value from JSON string.
+
+        :param value: The JSON string to deserialize.
+        :return: Value loaded from JSON.
+        """
+        return json.loads(value)
+
+
+json_serializer = JSONSerializer()
+
+
+class PickleSerializer(Serializer):
+    """Serializer dumpin/loading values as pickels."""
+
+    def dump(self, value):
+        """Dump value as pickle.
+
+        :param value: The object to serialize.
+        :return: Pickled object.
+        """
+        return pickle.dumps(value)
+
+    def load(self, value):
+        """Load value from pickle.
+
+        :param value: The object pickle to deserialize.
+        :return: Object loaded from pickle.
+        """
+        return pickle.loads(value)
+
+
+pickle_serializer = PickleSerializer()
