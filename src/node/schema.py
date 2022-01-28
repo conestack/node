@@ -1,5 +1,3 @@
-from abc import ABC
-from abc import abstractmethod
 from contextlib import contextmanager
 from node import compat
 from node.utils import UNSET
@@ -67,8 +65,10 @@ class Field(ScopeContext):
         :param value: The value to serialize.
         :return: The serialized value.
         """
-        if self.serializer is not UNSET:
-            return self.serializer.dump(value)
+        serializer = self.serializer
+        if serializer is not UNSET:
+            with scope_context(serializer, self.name, self.parent):
+                return serializer.dump(value)
         return value
 
     def deserialize(self, value):
@@ -77,8 +77,10 @@ class Field(ScopeContext):
         :param value: The value to deserialize.
         :return: The deserialized value.
         """
-        if self.serializer is not UNSET:
-            return self.serializer.load(value)
+        serializer = self.serializer
+        if serializer is not UNSET:
+            with scope_context(serializer, self.name, self.parent):
+                return serializer.load(value)
         return value
 
     def validate(self, value):
@@ -501,29 +503,29 @@ class Node(Field):
             return self.type_(name=self.name, parent=self.parent)
 
 
-class FieldSerializer(ABC):
+class FieldSerializer(ScopeContext):
     """Field serializer.
     """
 
-    @abstractmethod
-    def dump(self, value, **kwargs):
+    def dump(self, value):
         """Serialize given value.
 
         :param value: The value to serialize.
-        :param kwargs: Keyword arguments for serialization if any. Depends
-        on the field type.
         :return: The serialized value.
         """
+        raise NotImplementedError(
+            'Abstract ``FieldSerializer`` does not implement ``dump``'
+        )
 
-    @abstractmethod
-    def load(self, value, **kwargs):
+    def load(self, value):
         """Deserialize given value.
 
         :param value: The value to deserialize.
-        :param kwargs: Keyword arguments for deserialization if any. Depends
-        on the field type.
         :return: The deserialized value.
         """
+        raise NotImplementedError(
+            'Abstract ``FieldSerializer`` does not implement ``load``'
+        )
 
 
 class TypeSerializer(FieldSerializer):

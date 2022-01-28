@@ -57,17 +57,28 @@ class TestSchema(NodeTestCase):
         self.assertEqual(field.serialize(uid), str(uid))
         self.assertEqual(field.deserialize(str(uid)), uid)
 
+        self.assertIsInstance(field, schema.ScopeContext)
+        parent = object()
+        with schema.scope_context(field, 'name', parent):
+            self.assertEqual(field.name, 'name')
+            self.assertEqual(field.parent, parent)
+        self.assertEqual(field.name, None)
+        self.assertEqual(field.parent, None)
+
         class TestSerializer(schema.FieldSerializer):
             def dump(self, value):
-                return 'serialized'
+                return self.name, self.parent
             def load(self, value):
-                return 'deserialized'
+                return self.name, self.parent
 
         serializer = TestSerializer()
         field = schema.Field(str, serializer=serializer)
         self.assertEqual(field.serializer, serializer)
-        self.assertEqual(field.serialize(''), 'serialized')
-        self.assertEqual(field.deserialize(''), 'deserialized')
+        with schema.scope_context(field, 'name', parent):
+            self.assertEqual(field.serialize(None), ('name', parent))
+            self.assertEqual(field.deserialize(None), ('name', parent))
+        self.assertEqual(field.serialize(None), (None, None))
+        self.assertEqual(field.deserialize(None), (None, None))
 
     def test_IterableField(self):
         field = schema.IterableField(list)
@@ -388,8 +399,19 @@ class TestSchema(NodeTestCase):
         self.assertEqual(list(parent.keys()), ['sub'])
 
     def test_FieldSerializer(self):
-        with self.assertRaises(TypeError):
-            schema.FieldSerializer()
+        serializer = schema.FieldSerializer()
+        with self.assertRaises(NotImplementedError):
+            serializer.dump(None)
+        with self.assertRaises(NotImplementedError):
+            serializer.load(None)
+
+        self.assertIsInstance(serializer, schema.ScopeContext)
+        parent = object()
+        with schema.scope_context(serializer, 'name', parent):
+            self.assertEqual(serializer.name, 'name')
+            self.assertEqual(serializer.parent, parent)
+        self.assertEqual(serializer.name, None)
+        self.assertEqual(serializer.parent, None)
 
     def test_TypeSerializer(self):
         serializer = schema.TypeSerializer(int)
