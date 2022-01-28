@@ -162,6 +162,16 @@ class TestSchemaSerializer(unittest.TestCase):
         self.assertIsInstance(obj, TestObject)
         self.assertEqual(obj.value, 'value')
 
+    def test_NodeSerializer(self):
+        serializer = schema.NodeSerializer(BaseNode)
+        self.assertIsInstance(serializer, schema.FieldSerializer)
+        self.assertEqual(serializer.type_, BaseNode)
+        node = BaseNode()
+        self.assertEqual(serializer.dump(node), node)
+        self.assertEqual(serializer.load(node), node)
+        with schema.scope_context(serializer, 'name', node):
+            self.assertEqual(serializer.load('data'), node['name'])
+
 
 class TestSchemaFields(unittest.TestCase):
 
@@ -514,21 +524,16 @@ class TestSchemaFields(unittest.TestCase):
         self.assertIsInstance(child, BaseNode)
         self.assertEqual(child.name, 'child')
         self.assertEqual(child.parent, parent)
+        self.assertEqual(list(parent.keys()), ['child'])
 
-        class TestNodeSerializer(schema.FieldSerializer):
-            def dump(self, value):
-                return value
-            def load(self, value, name, parent):
-                child = parent[name] = BaseNode()
-                return child
-
-        field = schema.Node(BaseNode, serializer=TestNodeSerializer())
+        field = schema.Node(serializer=schema.NodeSerializer(BaseNode))
+        self.assertEqual(field.type_, BaseNode)
         with schema.scope_context(field, 'sub', parent):
             child = field.deserialize('data')
         self.assertIsInstance(child, BaseNode)
         self.assertEqual(child.name, 'sub')
         self.assertEqual(child.parent, parent)
-        self.assertEqual(list(parent.keys()), ['sub'])
+        self.assertEqual(list(parent.keys()), ['child', 'sub'])
 
 
 class TestBehaviorsSchema(NodeTestCase):

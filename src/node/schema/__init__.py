@@ -19,6 +19,7 @@ from .serializer import FieldSerializer  # noqa
 from .serializer import IterableSerializer  # noqa
 from .serializer import JSONSerializer  # noqa
 from .serializer import MappingSerializer  # noqa
+from .serializer import NodeSerializer  # noqa
 from .serializer import PickleSerializer  # noqa
 from .serializer import TypeSerializer  # noqa
 from .serializer import base64_serializer  # noqa

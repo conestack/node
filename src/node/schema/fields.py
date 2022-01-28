@@ -1,6 +1,7 @@
 from node import compat
 from node.schema.scope import ScopeContext
 from node.schema.scope import scope_context
+from node.schema.serializer import NodeSerializer
 from node.utils import UNSET
 from odict import odict
 import uuid
@@ -437,29 +438,17 @@ class ODict(Dict):
 
 class Node(Field):
 
-    def __init__(self, type_, serializer=UNSET):
+    def __init__(self, type_=UNSET, serializer=UNSET):
         """Create node schema field.
 
         :param type_: Type of the field value.
-        :param serializer: ``Serializer`` instance. Supposed to be used if
-        field value needs to be converted for serialization. Optional.
+        :param serializer: ``NodeSerializer`` instance. Optional. If given,
+        ``type_`` is taken from it and can be omitted in keyword arguments.
         """
-        super(Node, self).__init__(type_=type_, serializer=serializer)
-
-    def deserialize(self, value):
-        """Deserialize node from value.
-
-        The ``load`` callable respective the ``type_`` gets passed ``name``
-        and ``parent`` as keyword arguments.
-
-        :param value: The value to deserialize.
-        :return: The deserialized node.
-        """
-        if isinstance(value, self.type_):
-            return value
-        elif self.serializer is not UNSET:
-            # XXX: hook to parent?
-            return self.serializer.load(value, name=self.name, parent=self.parent)
+        if serializer is not UNSET:
+            type_ = serializer.type_
+        elif type_ is not UNSET:
+            serializer = NodeSerializer(type_)
         else:
-            # XXX: hook to parent?
-            return self.type_(name=self.name, parent=self.parent)
+            raise TypeError('Either ``type_`` or ``serializer`` must be given')
+        super(Node, self).__init__(type_=type_, serializer=serializer)

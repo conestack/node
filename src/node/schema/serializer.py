@@ -226,3 +226,35 @@ class PickleSerializer(FieldSerializer):
 
 
 pickle_serializer = PickleSerializer()
+
+
+class NodeSerializer(FieldSerializer):
+    """Serializer for handling node instances."""
+
+    def __init__(self, type_):
+        """Create NodeSerializer instance.
+
+        :param type_: The node type.
+        """
+        self.type_ = type_
+
+    def dump(self, value):
+        """Dump value as is.
+
+        :param value: The node instance to serialize.
+        :return: The node instance.
+        """
+        return value
+
+    def load(self, value):
+        """Load value from parent.
+
+        :param value: The object pickle to deserialize.
+        :return: Object loaded from pickle.
+        """
+        if isinstance(value, self.type_):
+            return value
+        name = self.name
+        parent = self.parent
+        value = parent[name] = self.type_(name=name, parent=parent)
+        return value
