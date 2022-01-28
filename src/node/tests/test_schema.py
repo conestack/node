@@ -11,6 +11,7 @@ from node.interfaces import ISchemaAsAttributes
 from node.tests import NodeTestCase
 from node.utils import AttributeAccess
 from node.utils import UNSET
+from odict import odict
 from plumber import plumbing
 import uuid
 
@@ -325,6 +326,63 @@ class TestSchema(NodeTestCase):
         self.assertEqual(field.serialize({1: {1: 1}}), b'1,1%2C1')
         self.assertEqual(field.deserialize(b'1,1%2C1'), {1: {1: 1}})
 
+    def test_ODict(self):
+        field = schema.ODict()
+        self.assertIsInstance(field, schema.Field)
+        self.assertEqual(field.type_, odict)
+        self.assertEqual(field.dump, UNSET)
+        self.assertEqual(field.load, UNSET)
+        self.assertEqual(field.default, UNSET)
+        self.assertEqual(field.key_type, UNSET)
+        self.assertEqual(field.value_type, UNSET)
+        self.assertEqual(field.size, UNSET)
+
+        self.assertIsNone(field.validate(odict()))
+        with self.assertRaises(ValueError):
+            field.validate(dict)
+
+        self.assertEqual(field.serialize(odict()), odict())
+        self.assertEqual(field.deserialize(odict()), odict())
+
+        field = schema.Dict(size=1)
+        od = odict()
+        od['foo'] = 'bar'
+        self.assertIsNone(field.validate(od))
+        with self.assertRaises(ValueError):
+            field.validate(odict())
+
+        field = schema.Dict(key_type=schema.Int())
+        od = odict()
+        od[1] = 'foo'
+        self.assertIsNone(field.validate(od))
+        with self.assertRaises(ValueError):
+            od = odict()
+            od['1'] = 'foo'
+            field.validate(od)
+
+        field = schema.Dict(value_type=schema.Int())
+        od = odict()
+        od['foo'] = 1
+        self.assertIsNone(field.validate(od))
+        with self.assertRaises(ValueError):
+            od = odict()
+            od['foo'] = '1'
+            field.validate(od)
+
+        field = schema.Dict(dump=schema.dict_join, load=schema.odict_split)
+        od = odict()
+        od['foo'] = 'bar'
+        od['baz'] = 'bam'
+        self.assertEqual(
+            field.serialize(od),
+            b'foo,bar;baz,bam'
+        )
+        self.assertEqual(field.deserialize(b'foo,bar;baz,bam'), od)
+        with self.assertRaises(TypeError):
+            od = odict()
+            od[1] = 1
+            field.serialize(od)
+
     def test_Node(self):
         field = schema.Node(BaseNode)
         self.assertIsNone(field.validate(BaseNode()))
@@ -394,6 +452,13 @@ class TestSchema(NodeTestCase):
         self.assertEqual(split(b'foo%2C,bar%3B'), {'foo,': 'bar;'})
         self.assertIsInstance(schema.dict_split, schema.DictSplit)
 
+        self.assertIsInstance(schema.odict_split, schema.DictSplit)
+        self.assertEqual(schema.odict_split.type_, odict)
+        od = odict()
+        od['foo'] = 'bar'
+        od['baz'] = 'bam'
+        self.assertEqual(schema.odict_split(b'foo,bar;baz,bam'), od)
+
     def test_DictSerializer(self):
         serializer = schema.DictSerializer()
         self.assertIsInstance(serializer, schema.Serializer)
@@ -407,6 +472,16 @@ class TestSchema(NodeTestCase):
         self.assertEqual(
             serializer.load(b'foo,bar;baz,bam'),
             {'foo': 'bar', 'baz': 'bam'}
+        )
+
+        self.assertIsInstance(schema.odict_serializer, schema.DictSerializer)
+        self.assertEqual(schema.odict_serializer.loader.type_, odict)
+        od = odict()
+        od['foo'] = 'bar'
+        od['baz'] = 'bam'
+        self.assertEqual(
+            schema.odict_serializer.load(b'foo,bar;baz,bam'),
+            od
         )
 
     def test_Base64Serializer(self):

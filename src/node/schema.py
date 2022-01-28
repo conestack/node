@@ -3,6 +3,7 @@ from abc import abstractmethod
 from contextlib import contextmanager
 from node import compat
 from node.utils import UNSET
+from odict import odict
 try:
     from urllib import quote
     from urllib import unquote
@@ -587,6 +588,46 @@ class Dict(Field):
                     value_type.validate(val)
 
 
+class ODict(Dict):
+
+    def __init__(
+        self,
+        default=UNSET,
+        serializer=UNSET,
+        dump=UNSET,
+        load=UNSET,
+        key_type=UNSET,
+        value_type=UNSET,
+        size=UNSET
+    ):
+        """Create ordered dict schema field.
+
+        :param default: Default value of the field. Optional.
+        :param serializer: ``Serializer`` instance. Supposed to be used if
+        field value needs to be converted for serialization. Optional.
+        :param dump: Callable for field value serialization. Optional. Taken
+        from ``serializer`` if given.
+        :param load: Callable for field value deserialization. Optional. Taken
+        from ``serializer`` if given. If ``dump`` is set and ``load`` is
+        omitted, ``type_`` is used instead.
+        :param key_type: ``Field`` instance defining the key type of the
+        iterable. Optional.
+        :param value_type: ``Field`` instance defining the value type of the
+        iterable. Optional.
+        :param size: The allowed size of the iterable. Optional.
+        """
+        super(ODict, self).__init__(
+            default=default,
+            serializer=serializer,
+            dump=dump,
+            load=load,
+            key_type=key_type,
+            value_type=value_type,
+            size=size
+        )
+        self.type_=odict
+
+
 class Node(Field):
 
     def __init__(
@@ -765,12 +806,14 @@ dict_join = DictJoin()
 class DictSplit(object):
     """Split string into dict."""
 
-    def __init__(self, coding=u'utf-8'):
+    def __init__(self, coding=u'utf-8', type_=dict):
         """Create DictSplit instance.
 
         :param coding: Coding to use. defaults to 'utf-8'.
+        :param type_: Type to create at deserialization
         """
         self.coding = coding
+        self.type_ = type_
 
     def __call__(self, value):
         """Split string into dict.
@@ -781,7 +824,7 @@ class DictSplit(object):
         """
         if not isinstance(value, compat.UNICODE_TYPE):
             value = value.decode(self.coding)
-        ret = {}
+        ret = self.type_()
         for item in value.split(';'):
             key, val = item.split(',')
             ret[unquote(key)] = unquote(val)
@@ -789,19 +832,21 @@ class DictSplit(object):
 
 
 dict_split = DictSplit()
+odict_split = DictSplit(type_=odict)
 
 
 class DictSerializer(Serializer):
     """Serializer utilizing DictJoin and DictSplit.
     """
 
-    def __init__(self, coding='utf-8'):
+    def __init__(self, coding='utf-8', type_=dict):
         """Create DictSerializer instance.
 
         :param coding: Coding to use. defaults to 'utf-8'.
+        :param type_: Type to create at deserialization
         """
         self.dumper = DictJoin(coding=coding)
-        self.loader = DictSplit(coding=coding)
+        self.loader = DictSplit(coding=coding, type_=type_)
 
     def dump(self, value):
         """Join dict key/value pairs into string.
@@ -823,6 +868,7 @@ class DictSerializer(Serializer):
 
 
 dict_serializer = DictSerializer()
+odict_serializer = DictSerializer(type_=odict)
 
 
 class Base64Serializer(Serializer):
