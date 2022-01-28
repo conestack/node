@@ -674,7 +674,7 @@ class Node(Field):
             return self.type_(name=self.name, parent=self.parent)
 
 
-class Serializer(ABC):
+class FieldSerializer(ABC):
     """Field serializer.
     """
 
@@ -699,17 +699,54 @@ class Serializer(ABC):
         """
 
 
-class IterableSerializer(Serializer):
+class TypeSerializer(FieldSerializer):
+    """Serializer for arbitrary types.
+
+    Converts value to string on serialization.
+    Creates instance of type from string on deserialization.
+    """
+
+    def __init__(self, type_):
+        """Create TypeSerializer instance.
+
+        :param type_: Type to create at deserialization.
+        """
+        self.type_ = type_
+
+    def dump(self, value):
+        """Convert value to string.
+
+        :param value: The value to convert. Must implement ``__str__``
+        :return: Converted value as string.
+        """
+        return str(value)
+
+    def load(self, value):
+        """Create instance of ``type_`` from string.
+
+        :param value: The string to convert. Gets passed to ``type_`` as only
+        argument. ``type_`` must support creation from string.
+        :return: Instance of ``type_``.
+        """
+        return self.type_(value)
+
+
+int_serializer = TypeSerializer(int)
+float_serializer = TypeSerializer(float)
+uuid_serializer = TypeSerializer(uuid.UUID)
+
+
+class IterableSerializer(FieldSerializer):
     """Serializer for iterables.
 
     Joins iterable into comma separated strings on serialization.
     Splits comma separated string into iterable on deserialization.
     """
 
-    def __init__(self, type_=list, coding='utf-8'):
+    def __init__(self, type_, coding='utf-8'):
         """Create IterableSerializer instance.
 
-        :param type_: Type to create at deserialization. Defaults to ``list``.
+        :param type_: Type to create at deserialization.
         :param coding: Coding to use. Defaults to 'utf-8'.
         """
         self.type_ = type_
@@ -736,22 +773,22 @@ class IterableSerializer(Serializer):
         return self.type_([unquote(item) for item in value.split(u',')])
 
 
-list_serializer = IterableSerializer()
-tuple_serializer = IterableSerializer(type_=tuple)
-set_serializer = IterableSerializer(type_=set)
+list_serializer = IterableSerializer(list)
+tuple_serializer = IterableSerializer(tuple)
+set_serializer = IterableSerializer(set)
 
 
-class MappingSerializer(Serializer):
+class MappingSerializer(FieldSerializer):
     """Serializer for mappings.
 
     Joins mapping key/value pairs into string on serialization.
     Splits string into mapping on deserialization.
     """
 
-    def __init__(self, type_=dict, coding='utf-8'):
+    def __init__(self, type_, coding='utf-8'):
         """Create MappingSerializer instance.
 
-        :param type_: Type to create at deserialization. Defaults to ``dict``.
+        :param type_: Type to create at deserialization.
         :param coding: Coding to use. Defaults to 'utf-8'.
         """
         self.type_ = type_
@@ -785,11 +822,11 @@ class MappingSerializer(Serializer):
         return ret
 
 
-dict_serializer = MappingSerializer()
-odict_serializer = MappingSerializer(type_=odict)
+dict_serializer = MappingSerializer(dict)
+odict_serializer = MappingSerializer(odict)
 
 
-class Base64Serializer(Serializer):
+class Base64Serializer(FieldSerializer):
     """Serializer for encoding/decoding values with base64 coding."""
 
     def __init__(self, type_=compat.UNICODE_TYPE, coding='utf-8'):
@@ -828,7 +865,7 @@ class Base64Serializer(Serializer):
 base64_serializer = Base64Serializer()
 
 
-class JSONSerializer(Serializer):
+class JSONSerializer(FieldSerializer):
     """Serializer dumpin/loading values as JSON."""
 
     def dump(self, value):
@@ -851,7 +888,7 @@ class JSONSerializer(Serializer):
 json_serializer = JSONSerializer()
 
 
-class PickleSerializer(Serializer):
+class PickleSerializer(FieldSerializer):
     """Serializer dumpin/loading values as pickels."""
 
     def dump(self, value):
