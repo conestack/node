@@ -520,6 +520,16 @@ class TestSchema(NodeTestCase):
             'bool': True,
             'node': child_node
         })
+
+        self.checkOutput("""
+        <class 'node.behaviors.schema.SchemaAttributes'>: __attrs__
+        __bool: True
+        __float: 2.0
+        __int: 1
+        __<class 'node.base.BaseNode'>: None
+        __str: 'foo'
+        """, attrs.treerepr(prefix='_'))
+
         del attrs['bool']
         with self.assertRaises(ValueError):
             attrs['str'] = 1
@@ -626,6 +636,16 @@ class TestSchema(NodeTestCase):
         self.assertEqual(node.storage['float_field'], 2.)
         self.assertEqual(node.storage['bool_field'], False)
         self.assertEqual(node.storage['node_field'], child_node)
+
+        self.checkOutput("""
+        <class 'node.tests.test_schema.SchemaPropertiesNode'>: None
+        __bool_field: False
+        __float_field: 2.0
+        __int_field: 2
+        __<class 'node.base.BaseNode'>: node_field
+        __str_field: 'Value'
+        __uuid_field: <UNSET>
+        """, node.treerepr(prefix='_'))
 
         self.assertEqual(sorted(node.keys()), [])
         with self.assertRaises(KeyError):
