@@ -6,7 +6,7 @@ from node.interfaces import ISchema
 from node.interfaces import ISchemaAsAttributes
 from node.interfaces import ISchemaProperties
 from node.schema import Field
-from node.schema import scope_field
+from node.schema import scope_context
 from node.utils import AttributeAccess
 from node.utils import UNSET
 from plumber import Behavior
@@ -28,7 +28,7 @@ class Schema(Behavior):
         field = self.schema.get(name)
         if not field:
             return next_(self, name)
-        with scope_field(field, name, self):
+        with scope_context(field, name, self):
             try:
                 return field.deserialize(next_(self, name))
             except KeyError as e:
@@ -43,7 +43,7 @@ class Schema(Behavior):
         if value is UNSET:
             del self[name]
             return
-        with scope_field(field, name, self):
+        with scope_context(field, name, self):
             field.validate(value)
             next_(self, name, field.serialize(value))
 
@@ -183,7 +183,7 @@ class SchemaProperty(object):
         if obj is None:
             return field.default
         name = self.name
-        with scope_field(field, name, obj):
+        with scope_context(field, name, obj):
             try:
                 with _property_access(name):
                     return field.deserialize(obj[name])
@@ -204,7 +204,7 @@ class SchemaProperty(object):
                 del obj[name]
             return
         field = self.field
-        with scope_field(field, name, self):
+        with scope_context(field, name, self):
             field.validate(value)
             with _property_access(name):
                 obj[name] = field.serialize(value)

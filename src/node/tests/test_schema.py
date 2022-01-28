@@ -24,14 +24,14 @@ class TestObject(object):
 
 class TestSchema(NodeTestCase):
 
-    def test_scope_field(self):
-        field = schema.Field(str)
+    def test_scope_context(self):
+        context = schema.ScopeContext()
         parent = object()
-        with schema.scope_field(field, 'name', parent):
-            self.assertEqual(field.name, 'name')
-            self.assertTrue(field.parent is parent)
-        self.assertEqual(field.name, None)
-        self.assertEqual(field.parent, None)
+        with schema.scope_context(context, 'name', parent):
+            self.assertEqual(context.name, 'name')
+            self.assertTrue(context.parent is parent)
+        self.assertEqual(context.name, None)
+        self.assertEqual(context.parent, None)
 
     def test_Field(self):
         field = schema.Field(str)
@@ -68,15 +68,6 @@ class TestSchema(NodeTestCase):
         self.assertEqual(field.serializer, serializer)
         self.assertEqual(field.serialize(''), 'serialized')
         self.assertEqual(field.deserialize(''), 'deserialized')
-
-        parent = object()
-        field.set_scope('name', parent)
-        self.assertEqual(field.name, 'name')
-        self.assertTrue(field.parent is parent)
-
-        field.reset_scope()
-        self.assertEqual(field.name, None)
-        self.assertEqual(field.parent, None)
 
     def test_IterableField(self):
         field = schema.IterableField(list)
@@ -371,11 +362,11 @@ class TestSchema(NodeTestCase):
         parent = BaseNode()
         child = parent['child'] = BaseNode()
         self.assertEqual(field.serialize(child), child)
-        with schema.scope_field(field, 'child', parent):
+        with schema.scope_context(field, 'child', parent):
             self.assertEqual(field.deserialize(child), child)
 
         parent = BaseNode()
-        with schema.scope_field(field, 'child', parent):
+        with schema.scope_context(field, 'child', parent):
             child = field.deserialize('data')
         self.assertIsInstance(child, BaseNode)
         self.assertEqual(child.name, 'child')
@@ -389,7 +380,7 @@ class TestSchema(NodeTestCase):
                 return child
 
         field = schema.Node(BaseNode, serializer=TestNodeSerializer())
-        with schema.scope_field(field, 'sub', parent):
+        with schema.scope_context(field, 'sub', parent):
             child = field.deserialize('data')
         self.assertIsInstance(child, BaseNode)
         self.assertEqual(child.name, 'sub')

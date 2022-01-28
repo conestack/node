@@ -17,31 +17,37 @@ import uuid
 
 
 @contextmanager
-def scope_field(field, name, parent):
-    """Context manager for setting field scope.
+def scope_context(context, name, parent):
+    """Context manager for setting scope on context.
 
-    Gets called by ``Schema.__getitem__`` and ``Schema.__setitem__``. Useful
-    if custom field implementations want to gather information from the model.
+    Useful if ``Field`` or ``FieldSerializer`` implementations want to gather
+    information from related model.
 
-    :param field: The field instance to scope.
+    :param context: ``ScopeContext`` instance.
     :param name: The field name in this scope.
     :param parent: The field containing model for this scope.
     """
-    field.set_scope(name, parent)
+    context.name = name
+    context.parent = parent
     try:
-        yield field
+        yield context
     finally:
-        field.reset_scope()
+        context.name = context.parent = None
 
 
-class Field(object):
-    """A schema field."""
+class ScopeContext(object):
+    """A scoped context.
+    """
 
     name = None
     """Name of the field while scoped."""
 
     parent = None
-    """Parent of the field while scoped."""
+    """The field containing model while scoped."""
+
+
+class Field(ScopeContext):
+    """A schema field."""
 
     def __init__(self, type_, default=UNSET, serializer=UNSET):
         """Create schema field.
@@ -84,20 +90,6 @@ class Field(object):
         if not isinstance(value, self.type_):
             raise ValueError(u'{} is no {} type'.format(value, self.type_))
 
-    def set_scope(self, name, parent):
-        """Set scope of field. Handled by ``scope_field`` context manager.
-
-        :param name: The field name.
-        :param parent: The parent object.
-        """
-        self.name = name
-        self.parent = parent
-
-    def reset_scope(self):
-        """Reset scope of field. Handled by ``scope_field`` context manager.
-        """
-        self.set_scope(None, None)
-
 
 class IterableField(Field):
     """An iterable schema field."""
@@ -136,7 +128,7 @@ class IterableField(Field):
         """
         value_type = self.value_type
         if value_type is not UNSET:
-            with scope_field(value_type, self.name, self.parent):
+            with scope_context(value_type, self.name, self.parent):
                 value = self.type_(
                     [value_type.serialize(item) for item in value]
                 )
@@ -151,7 +143,7 @@ class IterableField(Field):
         value = super(IterableField, self).deserialize(value)
         value_type = self.value_type
         if value_type is not UNSET:
-            with scope_field(value_type, self.name, self.parent):
+            with scope_context(value_type, self.name, self.parent):
                 value = [value_type.deserialize(item) for item in value]
         return self.type_(value)
 
@@ -170,7 +162,7 @@ class IterableField(Field):
             ))
         value_type = self.value_type
         if value_type is not UNSET:
-            with scope_field(value_type, self.name, self.parent):
+            with scope_context(value_type, self.name, self.parent):
                 for item in value:
                     value_type.validate(item)
 
@@ -390,14 +382,14 @@ class Dict(Field):
         """
         key_type = self.key_type
         if key_type is not UNSET:
-            with scope_field(key_type, self.name, self.parent):
+            with scope_context(key_type, self.name, self.parent):
                 new_value = self.type_()
                 for key, val in value.items():
                     new_value[key_type.serialize(key)] = val
                 value = new_value
         value_type = self.value_type
         if value_type is not UNSET:
-            with scope_field(value_type, self.name, self.parent):
+            with scope_context(value_type, self.name, self.parent):
                 for key, val in value.items():
                     value[key] = value_type.serialize(val)
         return super(Dict, self).serialize(value)
@@ -411,14 +403,14 @@ class Dict(Field):
         value = super(Dict, self).deserialize(value)
         key_type = self.key_type
         if key_type is not UNSET:
-            with scope_field(key_type, self.name, self.parent):
+            with scope_context(key_type, self.name, self.parent):
                 new_value = self.type_()
                 for key, val in value.items():
                     new_value[key_type.deserialize(key)] = val
                 value = new_value
         value_type = self.value_type
         if value_type is not UNSET:
-            with scope_field(value_type, self.name, self.parent):
+            with scope_context(value_type, self.name, self.parent):
                 for key, val in value.items():
                     value[key] = value_type.deserialize(val)
         return value
@@ -438,12 +430,12 @@ class Dict(Field):
             ))
         key_type = self.key_type
         if key_type is not UNSET:
-            with scope_field(key_type, self.name, self.parent):
+            with scope_context(key_type, self.name, self.parent):
                 for key in value:
                     key_type.validate(key)
         value_type = self.value_type
         if value_type is not UNSET:
-            with scope_field(value_type, self.name, self.parent):
+            with scope_context(value_type, self.name, self.parent):
                 for val in value.values():
                     value_type.validate(val)
 
