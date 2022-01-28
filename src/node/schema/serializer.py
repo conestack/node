@@ -1,10 +1,10 @@
 from node import compat
 from node.schema.scope import ScopeContext
 from odict import odict
-try:
+try:  # pragma: no cover
     from urllib import quote
     from urllib import unquote
-except ImportError:
+except ImportError:  # pragma: no cover
     from urllib.parse import quote
     from urllib.parse import unquote
 import base64

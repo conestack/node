@@ -1,3 +1,4 @@
+from node import compat
 from node import schema
 from node.base import BaseNode
 from node.behaviors import Schema
@@ -66,14 +67,14 @@ class TestSchemaSerializer(unittest.TestCase):
         self.assertEqual(serializer.dump(1), u'1')
         self.assertEqual(serializer.load(u'1'), 1)
 
-    def float_serializer(self):
+    def test_float_serializer(self):
         serializer = schema.float_serializer
         self.assertIsInstance(serializer, schema.TypeSerializer)
         self.assertEqual(serializer.type_, float)
         self.assertEqual(serializer.dump(1.), u'1.0')
         self.assertEqual(serializer.load(u'1.0'), 1.)
 
-    def uuid_serializer(self):
+    def test_uuid_serializer(self):
         serializer = schema.uuid_serializer
         self.assertIsInstance(serializer, schema.TypeSerializer)
         self.assertEqual(serializer.type_, uuid.UUID)
@@ -153,11 +154,7 @@ class TestSchemaSerializer(unittest.TestCase):
         serializer = schema.PickleSerializer()
         self.assertIsInstance(serializer, schema.FieldSerializer)
         self.assertIsInstance(schema.pickle_serializer, schema.PickleSerializer)
-        data = (
-            b'\x80\x03cnode.tests.test_schema\nTestObject\nq\x00)'
-            b'\x81q\x01}q\x02X\x05\x00\x00\x00valueq\x03h\x03sb.'
-        )
-        self.assertEqual(serializer.dump(TestObject('value')), data)
+        data = serializer.dump(TestObject('value'))
         obj = serializer.load(data)
         self.assertIsInstance(obj, TestObject)
         self.assertEqual(obj.value, 'value')
@@ -250,7 +247,7 @@ class TestSchemaFields(unittest.TestCase):
         field = schema.IterableField(tuple, serializer=schema.list_serializer)
         self.assertEqual(field.serialize((u'a', u'b', u'c')), u'a,b,c')
         self.assertEqual(field.deserialize(u'a,b,c'), (u'a', u'b', u'c'))
-        with self.assertRaises(TypeError):
+        with self.assertRaises(AttributeError if compat.IS_PY2 else TypeError):
             field.serialize([1, 2, 3])
 
         field = schema.IterableField(
@@ -417,7 +414,7 @@ class TestSchemaFields(unittest.TestCase):
             field.deserialize(u'foo,bar'),
             {u'foo': u'bar'}
         )
-        with self.assertRaises(TypeError):
+        with self.assertRaises(AttributeError if compat.IS_PY2 else TypeError):
             field.serialize({1: 1})
 
         field = schema.Dict(
@@ -501,12 +498,15 @@ class TestSchemaFields(unittest.TestCase):
             u'foo,bar;baz,bam'
         )
         self.assertEqual(field.deserialize(u'foo,bar;baz,bam'), od)
-        with self.assertRaises(TypeError):
+        with self.assertRaises(AttributeError if compat.IS_PY2 else TypeError):
             od = odict()
             od[1] = 1
             field.serialize(od)
 
     def test_Node(self):
+        with self.assertRaises(TypeError):
+            schema.Node()
+
         field = schema.Node(BaseNode)
         self.assertIsNone(field.validate(BaseNode()))
         with self.assertRaises(ValueError):
@@ -533,7 +533,7 @@ class TestSchemaFields(unittest.TestCase):
         self.assertIsInstance(child, BaseNode)
         self.assertEqual(child.name, 'sub')
         self.assertEqual(child.parent, parent)
-        self.assertEqual(list(parent.keys()), ['child', 'sub'])
+        self.assertEqual(sorted(parent.keys()), ['child', 'sub'])
 
 
 class TestBehaviorsSchema(NodeTestCase):
@@ -625,7 +625,7 @@ class TestBehaviorsSchema(NodeTestCase):
         __float: 2.0
         __int: 1
         __<class 'node.base.BaseNode'>: None
-        __str: 'foo'
+        __str: ...'foo'
         """, attrs.treerepr(prefix='_'))
 
         del attrs['bool']
@@ -741,7 +741,7 @@ class TestBehaviorsSchema(NodeTestCase):
         __float_field: 2.0
         __int_field: 2
         __<class 'node.base.BaseNode'>: node_field
-        __str_field: 'Value'
+        __str_field: ...'Value'
         __uuid_field: <UNSET>
         """, node.treerepr(prefix='_'))
 
@@ -796,3 +796,8 @@ class TestBehaviorsSchema(NodeTestCase):
 
         dict_['child'] = 1
         self.assertEqual(sorted(iter(dict_)), ['child'])
+
+        self.assertTrue('int_field' in node.storage)
+        del node.int_field
+        self.assertFalse('int_field' in node.storage)
+        self.assertEqual(node.int_field, 1)
