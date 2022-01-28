@@ -699,63 +699,21 @@ class Serializer(ABC):
         """
 
 
-class IterJoin(object):
-    """Join iterable into string."""
+class IterableSerializer(Serializer):
+    """Serializer for iterables.
 
-    def __init__(self, coding=u'utf-8'):
-        """Create IterJoin instance.
-
-        :param coding: Coding to use. defaults to 'utf-8'.
-        """
-        self.coding = coding
-
-    def __call__(self, value):
-        """Join iterable value to string.
-
-        :param value: The iterable to join. Must contain strings as values.
-        :return: Items of iterable joined by ',' as string.
-        """
-        return u','.join([quote(item) for item in value]).encode(self.coding)
-
-
-iter_join = IterJoin()
-
-
-class IterSplit(object):
-    """Split string into iterable."""
-
-    def __init__(self, coding=u'utf-8'):
-        """Create IterSplit instance.
-
-        :param coding: Coding to use. defaults to 'utf-8'.
-        """
-        self.coding = coding
-
-    def __call__(self, value):
-        """Split string into iterable.
-
-        :param value: The string to split.
-        :return: List of strings split by ',' from value.
-        """
-        if not isinstance(value, compat.UNICODE_TYPE):
-            value = value.decode(self.coding)
-        return [unquote(item) for item in value.split(u',')]
-
-
-iter_split = IterSplit()
-
-
-class IterSerializer(Serializer):
-    """Serializer utilizing IterJoin and IterSplit.
+    Joins iterable into comma separated strings on serialization.
+    Splits comma separated string into iterable on deserialization.
     """
 
-    def __init__(self, coding='utf-8'):
-        """Create IterSerializer instance.
+    def __init__(self, type_=list, coding='utf-8'):
+        """Create IterableSerializer instance.
 
-        :param coding: Coding to use. defaults to 'utf-8'.
+        :param type_: Type to create at deserialization. Defaults to ``list``.
+        :param coding: Coding to use. Defaults to 'utf-8'.
         """
-        self.dumper = IterJoin(coding=coding)
-        self.loader = IterSplit(coding=coding)
+        self.type_ = type_
+        self.coding = coding
 
     def dump(self, value):
         """Join iterable value to string.
@@ -763,31 +721,43 @@ class IterSerializer(Serializer):
         :param value: The iterable to join. Must contain strings as values.
         :return: Items of iterable joined by ',' as string.
         """
-        return self.dumper(value)
+        items = sorted([quote(item) for item in value])
+        return u','.join(items).encode(self.coding)
 
     def load(self, value):
         """Split string into iterable.
 
         :param value: The string to split.
-        :return: List of strings split by ',' from value.
+        :return: Instance of ``type_`` containing strings split by ',' from
+        value.
         """
-        return self.loader(value)
+        if not isinstance(value, compat.UNICODE_TYPE):
+            value = value.decode(self.coding)
+        return self.type_([unquote(item) for item in value.split(u',')])
 
 
-iter_serializer = IterSerializer()
+list_serializer = IterableSerializer()
+tuple_serializer = IterableSerializer(type_=tuple)
+set_serializer = IterableSerializer(type_=set)
 
 
-class DictJoin(object):
-    """Join dict key/value pairs into string."""
+class MappingSerializer(Serializer):
+    """Serializer for mappings.
 
-    def __init__(self, coding=u'utf-8'):
-        """Create DictJoin instance.
+    Joins mapping key/value pairs into string on serialization.
+    Splits string into mapping on deserialization.
+    """
 
-        :param coding: Coding to use. defaults to 'utf-8'.
+    def __init__(self, type_=dict, coding='utf-8'):
+        """Create MappingSerializer instance.
+
+        :param type_: Type to create at deserialization. Defaults to ``dict``.
+        :param coding: Coding to use. Defaults to 'utf-8'.
         """
+        self.type_ = type_
         self.coding = coding
 
-    def __call__(self, value):
+    def dump(self, value):
         """Join dict key/value pairs into string.
 
         :param value: The dict to join. Keys and values must be strings.
@@ -799,23 +769,7 @@ class DictJoin(object):
             for key, val in value.items()
         ]).encode(self.coding)
 
-
-dict_join = DictJoin()
-
-
-class DictSplit(object):
-    """Split string into dict."""
-
-    def __init__(self, coding=u'utf-8', type_=dict):
-        """Create DictSplit instance.
-
-        :param coding: Coding to use. defaults to 'utf-8'.
-        :param type_: Type to create at deserialization
-        """
-        self.coding = coding
-        self.type_ = type_
-
-    def __call__(self, value):
+    def load(self, value):
         """Split string into dict.
 
         :param value: The string to split.
@@ -831,44 +785,8 @@ class DictSplit(object):
         return ret
 
 
-dict_split = DictSplit()
-odict_split = DictSplit(type_=odict)
-
-
-class DictSerializer(Serializer):
-    """Serializer utilizing DictJoin and DictSplit.
-    """
-
-    def __init__(self, coding='utf-8', type_=dict):
-        """Create DictSerializer instance.
-
-        :param coding: Coding to use. defaults to 'utf-8'.
-        :param type_: Type to create at deserialization
-        """
-        self.dumper = DictJoin(coding=coding)
-        self.loader = DictSplit(coding=coding, type_=type_)
-
-    def dump(self, value):
-        """Join dict key/value pairs into string.
-
-        :param value: The dict to join. Keys and values must be strings.
-        :return: Items of dict joined by ';' as string. Key/value pairs are
-        joined by ','.
-        """
-        return self.dumper(value)
-
-    def load(self, value):
-        """Split string into dict.
-
-        :param value: The string to split.
-        :return: Dict from value. Items of dict are split by ';'. Key/value
-        pairs are split by ','.
-        """
-        return self.loader(value)
-
-
-dict_serializer = DictSerializer()
-odict_serializer = DictSerializer(type_=odict)
+dict_serializer = MappingSerializer()
+odict_serializer = MappingSerializer(type_=odict)
 
 
 class Base64Serializer(Serializer):
@@ -880,8 +798,7 @@ class Base64Serializer(Serializer):
         :param type_: Value type. Either unicode type or ``bytes``. Defaults to
         unicode type.
         :param coding: Coding to use for encoding values if ``type_`` is
-        unicode type.
-        Defaults to 'utf-8'.
+        unicode type. Defaults to 'utf-8'.
         """
         self.type_ = type_
         self.coding = coding
