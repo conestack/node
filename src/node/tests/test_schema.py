@@ -37,8 +37,7 @@ class TestSchema(NodeTestCase):
         field = schema.Field(str)
         self.assertEqual(field.type_, str)
         self.assertEqual(field.default, UNSET)
-        self.assertEqual(field.dump, UNSET)
-        self.assertEqual(field.load, UNSET)
+        self.assertEqual(field.serializer, UNSET)
 
         self.assertIsNone(field.validate('value'))
         with self.assertRaises(ValueError):
@@ -47,27 +46,10 @@ class TestSchema(NodeTestCase):
         self.assertEqual(field.serialize('value'), 'value')
         self.assertEqual(field.deserialize('value'), 'value')
 
-        field = schema.Field(uuid.UUID, dump=str)
+        field = schema.Field(uuid.UUID, serializer=schema.uuid_serializer)
         self.assertEqual(field.type_, uuid.UUID)
-        self.assertEqual(field.dump, str)
-        self.assertEqual(field.load, uuid.UUID)
-
+        self.assertEqual(field.serializer, schema.uuid_serializer)
         uid = uuid.uuid4()
-        self.assertIsNone(field.validate(uid))
-        with self.assertRaises(ValueError):
-            field.validate(1)
-
-        self.assertEqual(field.serialize(uid), str(uid))
-        self.assertEqual(field.deserialize(str(uid)), uid)
-
-        def load(value):
-            return uuid.UUID(value)
-
-        field = schema.Field(uuid.UUID, dump=str, load=load)
-        self.assertEqual(field.type_, uuid.UUID)
-        self.assertEqual(field.dump, str)
-        self.assertEqual(field.load, load)
-
         self.assertIsNone(field.validate(uid))
         with self.assertRaises(ValueError):
             field.validate(1)
@@ -83,8 +65,7 @@ class TestSchema(NodeTestCase):
 
         serializer = TestSerializer()
         field = schema.Field(str, serializer=serializer)
-        self.assertEqual(field.dump, serializer.dump)
-        self.assertEqual(field.load, serializer.load)
+        self.assertEqual(field.serializer, serializer)
         self.assertEqual(field.serialize(''), 'serialized')
         self.assertEqual(field.deserialize(''), 'deserialized')
 
@@ -101,8 +82,7 @@ class TestSchema(NodeTestCase):
         field = schema.IterableField(list)
         self.assertIsInstance(field, schema.Field)
         self.assertEqual(field.type_, list)
-        self.assertEqual(field.dump, UNSET)
-        self.assertEqual(field.load, UNSET)
+        self.assertEqual(field.serializer, UNSET)
         self.assertEqual(field.default, UNSET)
         self.assertEqual(field.value_type, UNSET)
         self.assertEqual(field.size, UNSET)
@@ -124,31 +104,31 @@ class TestSchema(NodeTestCase):
             field.validate(['1'])
 
         field = schema.IterableField(tuple, serializer=schema.list_serializer)
-        self.assertEqual(field.serialize(('a', 'b', 'c')), b'a,b,c')
-        self.assertEqual(field.deserialize(b'a,b,c'), ('a', 'b', 'c'))
+        self.assertEqual(field.serialize((u'a', u'b', u'c')), u'a,b,c')
+        self.assertEqual(field.deserialize(u'a,b,c'), (u'a', u'b', u'c'))
         with self.assertRaises(TypeError):
             field.serialize([1, 2, 3])
 
         field = schema.IterableField(
             tuple,
             serializer=schema.tuple_serializer,
-            value_type=schema.Int(dump=str)
+            value_type=schema.Int(serializer=schema.int_serializer)
         )
-        self.assertEqual(field.serialize((1, 2, 3)), b'1,2,3')
-        self.assertEqual(field.deserialize(b'1,2,3'), (1, 2, 3))
+        self.assertEqual(field.serialize((1, 2, 3)), u'1,2,3')
+        self.assertEqual(field.deserialize(u'1,2,3'), (1, 2, 3))
 
         field = schema.IterableField(
             set,
             serializer=schema.set_serializer,
-            value_type=schema.UUID(dump=str)
+            value_type=schema.UUID(serializer=schema.uuid_serializer)
         )
-        uid = uuid.UUID('1f4be432-a693-44bd-9eb8-e0b8d3aec82d')
+        uid = uuid.UUID(u'1f4be432-a693-44bd-9eb8-e0b8d3aec82d')
         self.assertEqual(
             field.serialize({uid}),
-            b'1f4be432-a693-44bd-9eb8-e0b8d3aec82d'
+            u'1f4be432-a693-44bd-9eb8-e0b8d3aec82d'
         )
         self.assertEqual(
-            field.deserialize(b'1f4be432-a693-44bd-9eb8-e0b8d3aec82d'),
+            field.deserialize(u'1f4be432-a693-44bd-9eb8-e0b8d3aec82d'),
             {uid}
         )
 
@@ -163,14 +143,14 @@ class TestSchema(NodeTestCase):
             serializer=schema.list_serializer,
             value_type=schema.Tuple(
                 serializer=schema.tuple_serializer,
-                value_type=schema.Int(dump=str)
+                value_type=schema.Int(serializer=schema.int_serializer)
             )
         )
         self.assertIsNone(field.validate([(1, 2), (3,)]))
         with self.assertRaises(ValueError):
             field.validate([(1, 2), 3])
-        self.assertEqual(field.serialize([(1, 2), (3,)]), b'1%2C2,3')
-        self.assertEqual(field.deserialize(b'1%2C2,3'), [(1, 2), (3,)])
+        self.assertEqual(field.serialize([(1, 2), (3,)]), u'1%2C2,3')
+        self.assertEqual(field.deserialize(u'1%2C2,3'), [(1, 2), (3,)])
 
         field = schema.IterableField(
             list,
@@ -179,15 +159,15 @@ class TestSchema(NodeTestCase):
                 serializer=schema.set_serializer,
                 value_type=schema.Tuple(
                     serializer=schema.tuple_serializer,
-                    value_type=schema.Int(dump=str)
+                    value_type=schema.Int(serializer=schema.int_serializer)
                 )
             )
         )
         self.assertIsNone(field.validate([{(1, 2)}, {(3,)}]))
         with self.assertRaises(ValueError):
             field.validate([{(1, 2)}, {3}])
-        self.assertEqual(field.serialize([{(1, 2)}, {(3,)}]), b'1%252C2,3')
-        self.assertEqual(field.deserialize(b'1%252C2,3'), [{(1, 2)}, {(3,)}])
+        self.assertEqual(field.serialize([{(1, 2)}, {(3,)}]), u'1%252C2,3')
+        self.assertEqual(field.deserialize(u'1%252C2,3'), [{(1, 2)}, {(3,)}])
 
     def test_Bool(self):
         field = schema.Bool()
@@ -229,7 +209,7 @@ class TestSchema(NodeTestCase):
         self.assertIsInstance(field, schema.Field)
         self.assertIsNone(field.validate(uuid.uuid4()))
         with self.assertRaises(ValueError):
-            field.validate('1234')
+            field.validate(u'1234')
 
     def test_Tuple(self):
         field = schema.Tuple()
@@ -256,8 +236,7 @@ class TestSchema(NodeTestCase):
         field = schema.Dict()
         self.assertIsInstance(field, schema.Field)
         self.assertEqual(field.type_, dict)
-        self.assertEqual(field.dump, UNSET)
-        self.assertEqual(field.load, UNSET)
+        self.assertEqual(field.serializer, UNSET)
         self.assertEqual(field.default, UNSET)
         self.assertEqual(field.key_type, UNSET)
         self.assertEqual(field.value_type, UNSET)
@@ -271,59 +250,67 @@ class TestSchema(NodeTestCase):
         self.assertEqual(field.deserialize({}), {})
 
         field = schema.Dict(size=1)
-        self.assertIsNone(field.validate({'foo': 'bar'}))
+        self.assertIsNone(field.validate({u'foo': u'bar'}))
         with self.assertRaises(ValueError):
             field.validate({})
 
         field = schema.Dict(key_type=schema.Int())
-        self.assertIsNone(field.validate({1: 'foo'}))
+        self.assertIsNone(field.validate({1: u'foo'}))
         with self.assertRaises(ValueError):
-            field.validate({'1': 'foo'})
+            field.validate({u'1': u'foo'})
 
         field = schema.Dict(value_type=schema.Int())
-        self.assertIsNone(field.validate({'foo': 1}))
+        self.assertIsNone(field.validate({u'foo': 1}))
         with self.assertRaises(ValueError):
-            field.validate({'foo': '1'})
+            field.validate({u'foo': u'1'})
 
         field = schema.Dict(serializer=schema.dict_serializer)
         self.assertEqual(
-            field.serialize({'foo': 'bar'}),
-            b'foo,bar'
+            field.serialize({u'foo': u'bar'}),
+            u'foo,bar'
         )
         self.assertEqual(
-            field.deserialize(b'foo,bar'),
-            {'foo': 'bar'}
+            field.deserialize(u'foo,bar'),
+            {u'foo': u'bar'}
         )
         with self.assertRaises(TypeError):
             field.serialize({1: 1})
 
+        field = schema.Dict(
+            serializer=schema.dict_serializer,
+            key_type=schema.Int(serializer=schema.int_serializer),
+            value_type=schema.Int(serializer=schema.int_serializer)
+        )
+        self.assertEqual(field.serialize({1: 1}), u'1,1')
+        self.assertEqual(field.deserialize(u'1,1'), {1: 1})
+
     def test_nested_Dict(self):
         field = schema.Dict(value_type=schema.Dict(size=1))
-        self.assertIsNone(field.validate({'foo': {'1': '1'}}))
+        self.assertIsNone(field.validate({u'foo': {u'1': u'1'}}))
         with self.assertRaises(ValueError):
-            field.validate({'foo': {}})
+            field.validate({u'foo': {}})
 
         field = schema.Dict(
             serializer=schema.dict_serializer,
-            key_type=schema.Int(dump=str),
+            key_type=schema.Int(serializer=schema.int_serializer),
             value_type=schema.Dict(
                 serializer=schema.dict_serializer,
-                key_type=schema.Int(dump=str),
-                value_type=schema.Int(dump=str)
+                key_type=schema.Int(serializer=schema.int_serializer),
+                value_type=schema.Int(serializer=schema.int_serializer)
             )
         )
         self.assertIsNone(field.validate({1: {1: 1}}))
         with self.assertRaises(ValueError):
             field.validate({1: 1})
-        self.assertEqual(field.serialize({1: {1: 1}}), b'1,1%2C1')
-        self.assertEqual(field.deserialize(b'1,1%2C1'), {1: {1: 1}})
+        field.serialize({1: {1: 1}})
+        self.assertEqual(field.serialize({1: {1: 1}}), u'1,1%2C1')
+        self.assertEqual(field.deserialize(u'1,1%2C1'), {1: {1: 1}})
 
     def test_ODict(self):
         field = schema.ODict()
         self.assertIsInstance(field, schema.Field)
         self.assertEqual(field.type_, odict)
-        self.assertEqual(field.dump, UNSET)
-        self.assertEqual(field.load, UNSET)
+        self.assertEqual(field.serializer, UNSET)
         self.assertEqual(field.default, UNSET)
         self.assertEqual(field.key_type, UNSET)
         self.assertEqual(field.value_type, UNSET)
@@ -338,38 +325,38 @@ class TestSchema(NodeTestCase):
 
         field = schema.Dict(size=1)
         od = odict()
-        od['foo'] = 'bar'
+        od[u'foo'] = u'bar'
         self.assertIsNone(field.validate(od))
         with self.assertRaises(ValueError):
             field.validate(odict())
 
         field = schema.Dict(key_type=schema.Int())
         od = odict()
-        od[1] = 'foo'
+        od[1] = u'foo'
         self.assertIsNone(field.validate(od))
         with self.assertRaises(ValueError):
             od = odict()
-            od['1'] = 'foo'
+            od[u'1'] = u'foo'
             field.validate(od)
 
         field = schema.Dict(value_type=schema.Int())
         od = odict()
-        od['foo'] = 1
+        od[u'foo'] = 1
         self.assertIsNone(field.validate(od))
         with self.assertRaises(ValueError):
             od = odict()
-            od['foo'] = '1'
+            od[u'foo'] = u'1'
             field.validate(od)
 
         field = schema.Dict(serializer=schema.odict_serializer)
         od = odict()
-        od['foo'] = 'bar'
-        od['baz'] = 'bam'
+        od[u'foo'] = u'bar'
+        od[u'baz'] = u'bam'
         self.assertEqual(
             field.serialize(od),
-            b'foo,bar;baz,bam'
+            u'foo,bar;baz,bam'
         )
-        self.assertEqual(field.deserialize(b'foo,bar;baz,bam'), od)
+        self.assertEqual(field.deserialize(u'foo,bar;baz,bam'), od)
         with self.assertRaises(TypeError):
             od = odict()
             od[1] = 1
@@ -394,11 +381,14 @@ class TestSchema(NodeTestCase):
         self.assertEqual(child.name, 'child')
         self.assertEqual(child.parent, parent)
 
-        def load(value, name, parent):
-            child = parent[name] = BaseNode()
-            return child
+        class TestNodeSerializer(schema.FieldSerializer):
+            def dump(self, value):
+                return value
+            def load(self, value, name, parent):
+                child = parent[name] = BaseNode()
+                return child
 
-        field = schema.Node(BaseNode, load=load)
+        field = schema.Node(BaseNode, serializer=TestNodeSerializer())
         with schema.scope_field(field, 'sub', parent):
             child = field.deserialize('data')
         self.assertIsInstance(child, BaseNode)
@@ -414,22 +404,22 @@ class TestSchema(NodeTestCase):
         serializer = schema.TypeSerializer(int)
         self.assertIsInstance(serializer, schema.FieldSerializer)
         self.assertEqual(serializer.type_, int)
-        self.assertEqual(serializer.dump(1), '1')
-        self.assertEqual(serializer.load('1'), 1)
+        self.assertEqual(serializer.dump(1), u'1')
+        self.assertEqual(serializer.load(u'1'), 1)
 
     def test_int_serializer(self):
         serializer = schema.int_serializer
         self.assertIsInstance(serializer, schema.TypeSerializer)
         self.assertEqual(serializer.type_, int)
-        self.assertEqual(serializer.dump(1), '1')
-        self.assertEqual(serializer.load('1'), 1)
+        self.assertEqual(serializer.dump(1), u'1')
+        self.assertEqual(serializer.load(u'1'), 1)
 
     def float_serializer(self):
         serializer = schema.float_serializer
         self.assertIsInstance(serializer, schema.TypeSerializer)
         self.assertEqual(serializer.type_, float)
-        self.assertEqual(serializer.dump(1.), '1.0')
-        self.assertEqual(serializer.load('1.0'), 1.)
+        self.assertEqual(serializer.dump(1.), u'1.0')
+        self.assertEqual(serializer.load(u'1.0'), 1.)
 
     def uuid_serializer(self):
         serializer = schema.uuid_serializer
@@ -442,76 +432,70 @@ class TestSchema(NodeTestCase):
     def test_IterableSerializer(self):
         serializer = schema.IterableSerializer(list)
         self.assertIsInstance(serializer, schema.FieldSerializer)
-        self.assertEqual(serializer.coding, 'utf-8')
         self.assertEqual(serializer.type_, list)
-        self.assertEqual(serializer.dump([u'a', u'b', u'c']), b'a,b,c')
-        self.assertEqual(serializer.load(b'a,b,c'), [u'a', u'b', u'c'])
-        self.assertEqual(serializer.dump([u'a,', u'b', u'c']), b'a%2C,b,c')
-        self.assertEqual(serializer.load(b'a%2C,b,c'), [u'a,', u'b', u'c'])
+        self.assertEqual(serializer.dump([u'a', u'b', u'c']), u'a,b,c')
+        self.assertEqual(serializer.load(u'a,b,c'), [u'a', u'b', u'c'])
+        self.assertEqual(serializer.dump([u'a,', u'b', u'c']), u'a%2C,b,c')
+        self.assertEqual(serializer.load(u'a%2C,b,c'), [u'a,', u'b', u'c'])
 
     def test_list_serializer(self):
         serializer = schema.list_serializer
         self.assertIsInstance(serializer, schema.IterableSerializer)
         self.assertEqual(serializer.type_, list)
-        self.assertEqual(serializer.dump([u'a', u'b', u'c']), b'a,b,c')
-        self.assertEqual(serializer.load(b'a,b,c'), [u'a', u'b', u'c'])
+        self.assertEqual(serializer.dump([u'a', u'b', u'c']), u'a,b,c')
+        self.assertEqual(serializer.load(u'a,b,c'), [u'a', u'b', u'c'])
 
     def test_tuple_serializer(self):
         serializer = schema.tuple_serializer
         self.assertIsInstance(serializer, schema.IterableSerializer)
         self.assertEqual(serializer.type_, tuple)
-        self.assertEqual(serializer.dump((u'a', u'b', u'c')), b'a,b,c')
-        self.assertEqual(serializer.load(b'a,b,c'), (u'a', u'b', u'c'))
+        self.assertEqual(serializer.dump((u'a', u'b', u'c')), u'a,b,c')
+        self.assertEqual(serializer.load(u'a,b,c'), (u'a', u'b', u'c'))
 
     def test_set_serializer(self):
         serializer = schema.set_serializer
         self.assertIsInstance(serializer, schema.IterableSerializer)
         self.assertEqual(serializer.type_, set)
-        self.assertEqual(serializer.dump({u'a', u'b', u'c'}), b'a,b,c')
-        self.assertEqual(serializer.load(b'a,b,c'), {u'a', u'b', u'c'})
+        self.assertEqual(serializer.dump({u'a', u'b', u'c'}), u'a,b,c')
+        self.assertEqual(serializer.load(u'a,b,c'), {u'a', u'b', u'c'})
 
     def test_MappingSerializer(self):
         serializer = schema.MappingSerializer(dict)
         self.assertIsInstance(serializer, schema.FieldSerializer)
-        self.assertEqual(serializer.coding, 'utf-8')
         self.assertEqual(serializer.type_, dict)
-        self.assertEqual(serializer.dump({'foo,': 'bar;'}), b'foo%2C,bar%3B')
-        self.assertEqual(serializer.load(b'foo%2C,bar%3B'), {'foo,': 'bar;'})
+        self.assertEqual(serializer.dump({u'foo,': u'bar;'}), u'foo%2C,bar%3B')
+        self.assertEqual(serializer.load(u'foo%2C,bar%3B'), {u'foo,': u'bar;'})
 
     def test_dict_serializer(self):
         serializer = schema.dict_serializer
         self.assertIsInstance(serializer, schema.MappingSerializer)
         self.assertEqual(serializer.type_, dict)
-        self.assertEqual(serializer.dump({'foo': 'bar'}), b'foo,bar')
-        self.assertEqual(serializer.load(b'foo,bar'), {'foo': 'bar'})
+        self.assertEqual(serializer.dump({u'foo': u'bar'}), u'foo,bar')
+        self.assertEqual(serializer.load(u'foo,bar'), {u'foo': u'bar'})
 
     def test_odict_serializer(self):
         serializer = schema.odict_serializer
         self.assertIsInstance(serializer, schema.MappingSerializer)
         self.assertEqual(serializer.type_, odict)
         od = odict()
-        od['foo'] = 'bar,'
-        od['baz'] = 'bam'
-        self.assertEqual(serializer.dump(od), b'foo,bar%2C;baz,bam')
-        self.assertEqual(serializer.load(b'foo,bar%2C;baz,bam'), od)
+        od[u'foo'] = u'bar,'
+        od[u'baz'] = u'bam'
+        self.assertEqual(serializer.dump(od), u'foo,bar%2C;baz,bam')
+        self.assertEqual(serializer.load(u'foo,bar%2C;baz,bam'), od)
 
     def test_Base64Serializer(self):
         serializer = schema.Base64Serializer()
         self.assertIsInstance(serializer, schema.FieldSerializer)
         self.assertIsInstance(schema.base64_serializer, schema.Base64Serializer)
-        self.assertEqual(serializer.dump(u'value'), b'dmFsdWU=')
-        self.assertEqual(serializer.load(b'dmFsdWU='), u'value')
-
-        serializer = schema.Base64Serializer(type_=bytes)
-        self.assertEqual(serializer.dump(b'value'), b'dmFsdWU=')
-        self.assertEqual(serializer.load(b'dmFsdWU='), b'value')
+        self.assertEqual(serializer.dump(u'value'), u'dmFsdWU=')
+        self.assertEqual(serializer.load(u'dmFsdWU='), u'value')
 
     def test_JSONSerializer(self):
         serializer = schema.JSONSerializer()
         self.assertIsInstance(serializer, schema.FieldSerializer)
         self.assertIsInstance(schema.json_serializer, schema.JSONSerializer)
-        self.assertEqual(serializer.dump({'foo': 'bar'}), '{"foo": "bar"}')
-        self.assertEqual(serializer.load('{"foo": "bar"}'), {'foo': 'bar'})
+        self.assertEqual(serializer.dump({u'foo': u'bar'}), u'{"foo": "bar"}')
+        self.assertEqual(serializer.load(u'{"foo": "bar"}'), {u'foo': u'bar'})
 
     def test_PickleSerializer(self):
         serializer = schema.PickleSerializer()
@@ -678,7 +662,7 @@ class TestSchema(NodeTestCase):
             int_field = schema.Int(default=1)
             float_field = schema.Float(default=1.)
             bool_field = schema.Bool(default=True)
-            uuid_field = schema.UUID(dump=str)
+            uuid_field = schema.UUID(serializer=schema.uuid_serializer)
             node_field = schema.Node(BaseNode)
 
         self.assertEqual(

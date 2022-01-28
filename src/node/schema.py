@@ -43,34 +43,17 @@ class Field(object):
     parent = None
     """Parent of the field while scoped."""
 
-    def __init__(
-        self,
-        type_,
-        default=UNSET,
-        serializer=UNSET,
-        dump=UNSET,
-        load=UNSET,
-    ):
+    def __init__(self, type_, default=UNSET, serializer=UNSET):
         """Create schema field.
 
         :param type_: Type of the field value.
         :param default: Default value of the field. Optional.
-        :param serializer: ``Serializer`` instance. Supposed to be used if
+        :param serializer: ``FieldSerializer`` instance. Supposed to be used if
         field value needs to be converted for serialization. Optional.
-        :param dump: Callable for field value serialization. Optional. Taken
-        from ``serializer`` if given.
-        :param load: Callable for field value deserialization. Optional. Taken
-        from ``serializer`` if given. If ``dump`` is set and ``load`` is
-        omitted, ``type_`` is used instead.
         """
-        dump = serializer.dump if serializer is not UNSET else dump
-        load = serializer.load if serializer is not UNSET else load
-        if dump is not UNSET and load is UNSET:
-            load = type_
         self.type_ = type_
         self.default = default
-        self.dump = dump
-        self.load = load
+        self.serializer = serializer
 
     def serialize(self, value):
         """Serialize value.
@@ -78,8 +61,8 @@ class Field(object):
         :param value: The value to serialize.
         :return: The serialized value.
         """
-        if self.dump is not UNSET:
-            return self.dump(value)
+        if self.serializer is not UNSET:
+            return self.serializer.dump(value)
         return value
 
     def deserialize(self, value):
@@ -88,8 +71,8 @@ class Field(object):
         :param value: The value to deserialize.
         :return: The deserialized value.
         """
-        if self.load is not UNSET:
-            return self.load(value)
+        if self.serializer is not UNSET:
+            return self.serializer.load(value)
         return value
 
     def validate(self, value):
@@ -124,8 +107,6 @@ class IterableField(Field):
         type_,
         default=UNSET,
         serializer=UNSET,
-        dump=UNSET,
-        load=UNSET,
         value_type=UNSET,
         size=UNSET
     ):
@@ -135,11 +116,6 @@ class IterableField(Field):
         :param default: Default value of the field. Optional.
         :param serializer: ``Serializer`` instance. Supposed to be used if
         field value needs to be converted for serialization. Optional.
-        :param dump: Callable for field value serialization. Optional. Taken
-        from ``serializer`` if given.
-        :param load: Callable for field value deserialization. Optional. Taken
-        from ``serializer`` if given. If ``dump`` is set and ``load`` is
-        omitted, ``type_`` is used instead.
         :param value_type: ``Field`` instance defining the value type of the
         iterable. Optional.
         :param size: The allowed size of the iterable. Optional.
@@ -147,9 +123,7 @@ class IterableField(Field):
         super(IterableField, self).__init__(
             type_,
             default=default,
-            serializer=serializer,
-            dump=dump,
-            load=load
+            serializer=serializer
         )
         self.value_type = value_type
         self.size = size
@@ -203,175 +177,97 @@ class IterableField(Field):
 
 class Bool(Field):
 
-    def __init__(
-            self,
-            default=UNSET,
-            serializer=UNSET,
-            dump=UNSET,
-            load=UNSET
-        ):
+    def __init__(self, default=UNSET, serializer=UNSET):
         """Create bool schema field.
 
         :param default: Default value of the field. Optional.
         :param serializer: ``Serializer`` instance. Supposed to be used if
         field value needs to be converted for serialization. Optional.
-        :param dump: Callable for field value serialization. Optional. Taken
-        from ``serializer`` if given.
-        :param load: Callable for field value deserialization. Optional. Taken
-        from ``serializer`` if given. If ``dump`` is set and ``load`` is
-        omitted, ``type_`` is used instead.
         """
         super(Bool, self).__init__(
             type_=bool,
             default=default,
-            serializer=serializer,
-            dump=dump,
-            load=load,
+            serializer=serializer
         )
 
 
 class Int(Field):
 
-    def __init__(
-            self,
-            default=UNSET,
-            serializer=UNSET,
-            dump=UNSET,
-            load=UNSET
-        ):
+    def __init__(self, default=UNSET, serializer=UNSET):
         """Create int field.
 
         :param default: Default value of the field. Optional.
         :param serializer: ``Serializer`` instance. Supposed to be used if
         field value needs to be converted for serialization. Optional.
-        :param dump: Callable for field value serialization. Optional. Taken
-        from ``serializer`` if given.
-        :param load: Callable for field value deserialization. Optional. Taken
-        from ``serializer`` if given. If ``dump`` is set and ``load`` is
-        omitted, ``type_`` is used instead.
         """
         super(Int, self).__init__(
             type_=int,
             default=default,
-            serializer=serializer,
-            dump=dump,
-            load=load,
+            serializer=serializer
         )
 
 
 class Float(Field):
 
-    def __init__(
-            self,
-            default=UNSET,
-            serializer=UNSET,
-            dump=UNSET,
-            load=UNSET
-        ):
+    def __init__(self, default=UNSET, serializer=UNSET):
         """Create float schema field.
 
         :param default: Default value of the field. Optional.
         :param serializer: ``Serializer`` instance. Supposed to be used if
         field value needs to be converted for serialization. Optional.
-        :param dump: Callable for field value serialization. Optional. Taken
-        from ``serializer`` if given.
-        :param load: Callable for field value deserialization. Optional. Taken
-        from ``serializer`` if given. If ``dump`` is set and ``load`` is
-        omitted, ``type_`` is used instead.
         """
         super(Float, self).__init__(
             type_=float,
             default=default,
-            serializer=serializer,
-            dump=dump,
-            load=load,
+            serializer=serializer
         )
 
 
 class Bytes(Field):
 
-    def __init__(
-            self,
-            default=UNSET,
-            serializer=UNSET,
-            dump=UNSET,
-            load=UNSET
-        ):
+    def __init__(self, default=UNSET, serializer=UNSET):
         """Create bytes schema field.
 
         :param default: Default value of the field. Optional.
         :param serializer: ``Serializer`` instance. Supposed to be used if
         field value needs to be converted for serialization. Optional.
-        :param dump: Callable for field value serialization. Optional. Taken
-        from ``serializer`` if given.
-        :param load: Callable for field value deserialization. Optional. Taken
-        from ``serializer`` if given. If ``dump`` is set and ``load`` is
-        omitted, ``type_`` is used instead.
         """
         super(Bytes, self).__init__(
             type_=bytes,
             default=default,
-            serializer=serializer,
-            dump=dump,
-            load=load,
+            serializer=serializer
         )
 
 
 class Str(Field):
 
-    def __init__(
-            self,
-            default=UNSET,
-            serializer=UNSET,
-            dump=UNSET,
-            load=UNSET
-        ):
+    def __init__(self, default=UNSET, serializer=UNSET):
         """Create str schema field.
 
         :param default: Default value of the field. Optional.
         :param serializer: ``Serializer`` instance. Supposed to be used if
         field value needs to be converted for serialization. Optional.
-        :param dump: Callable for field value serialization. Optional. Taken
-        from ``serializer`` if given.
-        :param load: Callable for field value deserialization. Optional. Taken
-        from ``serializer`` if given. If ``dump`` is set and ``load`` is
-        omitted, ``type_`` is used instead.
         """
         super(Str, self).__init__(
             type_=compat.UNICODE_TYPE,
             default=default,
-            serializer=serializer,
-            dump=dump,
-            load=load,
+            serializer=serializer
         )
 
 
 class UUID(Field):
 
-    def __init__(
-            self,
-            default=UNSET,
-            serializer=UNSET,
-            dump=UNSET,
-            load=UNSET
-        ):
+    def __init__(self, default=UNSET, serializer=UNSET):
         """Create UUID schema field.
 
         :param default: Default value of the field. Optional.
         :param serializer: ``Serializer`` instance. Supposed to be used if
         field value needs to be converted for serialization. Optional.
-        :param dump: Callable for field value serialization. Optional. Taken
-        from ``serializer`` if given.
-        :param load: Callable for field value deserialization. Optional. Taken
-        from ``serializer`` if given. If ``dump`` is set and ``load`` is
-        omitted, ``type_`` is used instead.
         """
         super(UUID, self).__init__(
             type_=uuid.UUID,
             default=default,
-            serializer=serializer,
-            dump=dump,
-            load=load,
+            serializer=serializer
         )
 
 
@@ -381,8 +277,6 @@ class Tuple(IterableField):
         self,
         default=UNSET,
         serializer=UNSET,
-        dump=UNSET,
-        load=UNSET,
         value_type=UNSET,
         size=UNSET
     ):
@@ -391,11 +285,6 @@ class Tuple(IterableField):
         :param default: Default value of the field. Optional.
         :param serializer: ``Serializer`` instance. Supposed to be used if
         field value needs to be converted for serialization. Optional.
-        :param dump: Callable for field value serialization. Optional. Taken
-        from ``serializer`` if given.
-        :param load: Callable for field value deserialization. Optional. Taken
-        from ``serializer`` if given. If ``dump`` is set and ``load`` is
-        omitted, ``type_`` is used instead.
         :param value_type: ``Field`` instance defining the value type of the
         iterable. Optional.
         :param size: The allowed size of the iterable. Optional.
@@ -404,8 +293,6 @@ class Tuple(IterableField):
             type_=tuple,
             default=default,
             serializer=serializer,
-            dump=dump,
-            load=load,
             value_type=value_type,
             size=size
         )
@@ -417,8 +304,6 @@ class List(IterableField):
         self,
         default=UNSET,
         serializer=UNSET,
-        dump=UNSET,
-        load=UNSET,
         value_type=UNSET,
         size=UNSET
     ):
@@ -427,11 +312,6 @@ class List(IterableField):
         :param default: Default value of the field. Optional.
         :param serializer: ``Serializer`` instance. Supposed to be used if
         field value needs to be converted for serialization. Optional.
-        :param dump: Callable for field value serialization. Optional. Taken
-        from ``serializer`` if given.
-        :param load: Callable for field value deserialization. Optional. Taken
-        from ``serializer`` if given. If ``dump`` is set and ``load`` is
-        omitted, ``type_`` is used instead.
         :param value_type: ``Field`` instance defining the value type of the
         iterable. Optional.
         :param size: The allowed size of the iterable. Optional.
@@ -440,8 +320,6 @@ class List(IterableField):
             type_=list,
             default=default,
             serializer=serializer,
-            dump=dump,
-            load=load,
             value_type=value_type,
             size=size
         )
@@ -453,8 +331,6 @@ class Set(IterableField):
         self,
         default=UNSET,
         serializer=UNSET,
-        dump=UNSET,
-        load=UNSET,
         value_type=UNSET,
         size=UNSET
     ):
@@ -463,11 +339,6 @@ class Set(IterableField):
         :param default: Default value of the field. Optional.
         :param serializer: ``Serializer`` instance. Supposed to be used if
         field value needs to be converted for serialization. Optional.
-        :param dump: Callable for field value serialization. Optional. Taken
-        from ``serializer`` if given.
-        :param load: Callable for field value deserialization. Optional. Taken
-        from ``serializer`` if given. If ``dump`` is set and ``load`` is
-        omitted, ``type_`` is used instead.
         :param value_type: ``Field`` instance defining the value type of the
         iterable. Optional.
         :param size: The allowed size of the iterable. Optional.
@@ -476,8 +347,6 @@ class Set(IterableField):
             type_=set,
             default=default,
             serializer=serializer,
-            dump=dump,
-            load=load,
             value_type=value_type,
             size=size
         )
@@ -489,8 +358,6 @@ class Dict(Field):
         self,
         default=UNSET,
         serializer=UNSET,
-        dump=UNSET,
-        load=UNSET,
         key_type=UNSET,
         value_type=UNSET,
         size=UNSET
@@ -500,11 +367,6 @@ class Dict(Field):
         :param default: Default value of the field. Optional.
         :param serializer: ``Serializer`` instance. Supposed to be used if
         field value needs to be converted for serialization. Optional.
-        :param dump: Callable for field value serialization. Optional. Taken
-        from ``serializer`` if given.
-        :param load: Callable for field value deserialization. Optional. Taken
-        from ``serializer`` if given. If ``dump`` is set and ``load`` is
-        omitted, ``type_`` is used instead.
         :param key_type: ``Field`` instance defining the key type of the
         iterable. Optional.
         :param value_type: ``Field`` instance defining the value type of the
@@ -514,9 +376,7 @@ class Dict(Field):
         super(Dict, self).__init__(
             type_=dict,
             default=default,
-            serializer=serializer,
-            dump=dump,
-            load=load,
+            serializer=serializer
         )
         self.key_type = key_type
         self.value_type = value_type
@@ -531,7 +391,7 @@ class Dict(Field):
         key_type = self.key_type
         if key_type is not UNSET:
             with scope_field(key_type, self.name, self.parent):
-                new_value = dict()
+                new_value = self.type_()
                 for key, val in value.items():
                     new_value[key_type.serialize(key)] = val
                 value = new_value
@@ -552,7 +412,7 @@ class Dict(Field):
         key_type = self.key_type
         if key_type is not UNSET:
             with scope_field(key_type, self.name, self.parent):
-                new_value = dict()
+                new_value = self.type_()
                 for key, val in value.items():
                     new_value[key_type.deserialize(key)] = val
                 value = new_value
@@ -594,8 +454,6 @@ class ODict(Dict):
         self,
         default=UNSET,
         serializer=UNSET,
-        dump=UNSET,
-        load=UNSET,
         key_type=UNSET,
         value_type=UNSET,
         size=UNSET
@@ -605,11 +463,6 @@ class ODict(Dict):
         :param default: Default value of the field. Optional.
         :param serializer: ``Serializer`` instance. Supposed to be used if
         field value needs to be converted for serialization. Optional.
-        :param dump: Callable for field value serialization. Optional. Taken
-        from ``serializer`` if given.
-        :param load: Callable for field value deserialization. Optional. Taken
-        from ``serializer`` if given. If ``dump`` is set and ``load`` is
-        omitted, ``type_`` is used instead.
         :param key_type: ``Field`` instance defining the key type of the
         iterable. Optional.
         :param value_type: ``Field`` instance defining the value type of the
@@ -619,8 +472,6 @@ class ODict(Dict):
         super(ODict, self).__init__(
             default=default,
             serializer=serializer,
-            dump=dump,
-            load=load,
             key_type=key_type,
             value_type=value_type,
             size=size
@@ -630,30 +481,14 @@ class ODict(Dict):
 
 class Node(Field):
 
-    def __init__(
-        self,
-        type_,
-        serializer=UNSET,
-        dump=UNSET,
-        load=UNSET
-    ):
+    def __init__(self, type_, serializer=UNSET):
         """Create node schema field.
 
         :param type_: Type of the field value.
         :param serializer: ``Serializer`` instance. Supposed to be used if
         field value needs to be converted for serialization. Optional.
-        :param dump: Callable for field value serialization. Optional. Taken
-        from ``serializer`` if given.
-        :param load: Callable for field value deserialization. Optional. Taken
-        from ``serializer`` if given. If ``dump`` is set and ``load`` is
-        omitted, ``type_`` is used instead.
         """
-        super(Node, self).__init__(
-            type_=type_,
-            serializer=serializer,
-            dump=dump,
-            load=load,
-        )
+        super(Node, self).__init__(type_=type_, serializer=serializer)
 
     def deserialize(self, value):
         """Deserialize node from value.
@@ -666,9 +501,9 @@ class Node(Field):
         """
         if isinstance(value, self.type_):
             return value
-        elif self.load is not UNSET:
+        elif self.serializer is not UNSET:
             # XXX: hook to parent?
-            return self.load(value, name=self.name, parent=self.parent)
+            return self.serializer.load(value, name=self.name, parent=self.parent)
         else:
             # XXX: hook to parent?
             return self.type_(name=self.name, parent=self.parent)
@@ -743,14 +578,12 @@ class IterableSerializer(FieldSerializer):
     Splits comma separated string into iterable on deserialization.
     """
 
-    def __init__(self, type_, coding='utf-8'):
+    def __init__(self, type_):
         """Create IterableSerializer instance.
 
         :param type_: Type to create at deserialization.
-        :param coding: Coding to use. Defaults to 'utf-8'.
         """
         self.type_ = type_
-        self.coding = coding
 
     def dump(self, value):
         """Join iterable value to string.
@@ -759,7 +592,7 @@ class IterableSerializer(FieldSerializer):
         :return: Items of iterable joined by ',' as string.
         """
         items = sorted([quote(item) for item in value])
-        return u','.join(items).encode(self.coding)
+        return u','.join(items)
 
     def load(self, value):
         """Split string into iterable.
@@ -768,8 +601,6 @@ class IterableSerializer(FieldSerializer):
         :return: Instance of ``type_`` containing strings split by ',' from
         value.
         """
-        if not isinstance(value, compat.UNICODE_TYPE):
-            value = value.decode(self.coding)
         return self.type_([unquote(item) for item in value.split(u',')])
 
 
@@ -785,14 +616,12 @@ class MappingSerializer(FieldSerializer):
     Splits string into mapping on deserialization.
     """
 
-    def __init__(self, type_, coding='utf-8'):
+    def __init__(self, type_):
         """Create MappingSerializer instance.
 
         :param type_: Type to create at deserialization.
-        :param coding: Coding to use. Defaults to 'utf-8'.
         """
         self.type_ = type_
-        self.coding = coding
 
     def dump(self, value):
         """Join dict key/value pairs into string.
@@ -804,7 +633,7 @@ class MappingSerializer(FieldSerializer):
         return u';'.join([
             u'{key},{value}'.format(key=quote(key), value=quote(val))
             for key, val in value.items()
-        ]).encode(self.coding)
+        ])
 
     def load(self, value):
         """Split string into dict.
@@ -813,11 +642,9 @@ class MappingSerializer(FieldSerializer):
         :return: Dict from value. Items of dict are split by ';'. Key/value
         pairs are split by ','.
         """
-        if not isinstance(value, compat.UNICODE_TYPE):
-            value = value.decode(self.coding)
         ret = self.type_()
-        for item in value.split(';'):
-            key, val = item.split(',')
+        for item in value.split(u';'):
+            key, val = item.split(u',')
             ret[unquote(key)] = unquote(val)
         return ret
 
@@ -829,16 +656,7 @@ odict_serializer = MappingSerializer(odict)
 class Base64Serializer(FieldSerializer):
     """Serializer for encoding/decoding values with base64 coding."""
 
-    def __init__(self, type_=compat.UNICODE_TYPE, coding='utf-8'):
-        """Create Base64Serializer instance.
-
-        :param type_: Value type. Either unicode type or ``bytes``. Defaults to
-        unicode type.
-        :param coding: Coding to use for encoding values if ``type_`` is
-        unicode type. Defaults to 'utf-8'.
-        """
-        self.type_ = type_
-        self.coding = coding
+    coding = 'utf-8'
 
     def dump(self, value):
         """Encode value with base64.
@@ -846,9 +664,7 @@ class Base64Serializer(FieldSerializer):
         :param value: The value to encode.
         :return: Base64 encoded value.
         """
-        if self.type_ is compat.UNICODE_TYPE:
-            value = value.encode(self.coding)
-        return base64.b64encode(value)
+        return base64.b64encode(value.encode(self.coding)).decode()
 
     def load(self, value):
         """Encode base64 encoded value.
@@ -856,10 +672,7 @@ class Base64Serializer(FieldSerializer):
         :param value: The base64 encoded string.
         :return: Decoded value.
         """
-        value = base64.b64decode(value)
-        if self.type_ is compat.UNICODE_TYPE:
-            value = value.decode(self.coding)
-        return value
+        return base64.b64decode(value).decode(self.coding)
 
 
 base64_serializer = Base64Serializer()
