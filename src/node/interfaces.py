@@ -31,7 +31,6 @@ except ImportError as e:
 # events
 ###############################################################################
 
-
 class INodeCreatedEvent(IObjectCreatedEvent):
     """An new Node was born.
     """
@@ -60,7 +59,6 @@ class INodeDetachedEvent(IObjectRemovedEvent):
 ###############################################################################
 # helpers
 ###############################################################################
-
 
 class IAttributeAccess(Interface):
     """Provides Attribute access to dict like context.
@@ -104,7 +102,6 @@ class IAliaser(Interface):
 # markers
 ###############################################################################
 
-
 class IRoot(Interface):
     """Marker for a root node.
     """
@@ -132,7 +129,6 @@ class ICallable(Interface):
 ###############################################################################
 # node
 ###############################################################################
-
 
 class INode(ILocation, IFullMapping):
     """Basic node interface.
@@ -169,7 +165,6 @@ class INode(ILocation, IFullMapping):
 ###############################################################################
 # plumbing behaviors
 ###############################################################################
-
 
 class IDefaultInit(Interface):
     """Plumbing behavior providing default ``__init__`` function on node.
@@ -604,17 +599,14 @@ class ISchema(Interface):
     Plumbing hooks:
 
     __getitem__
-        Check if name contained in schema. If not, return value as is. If
+        Check if ``name`` contained in schema. If not, return value as is. If
         schema field is found, return deserialized value. If no value for key
         yet, return default from schema field if defined.
 
     __setitem__
-        Check if name contained in schema. If not, set value as is. If
+        Check if ``name`` contained in schema. If not, set value as is. If
         schema field defined, validate given value. If validation succeeds,
         write serialized value.
-
-    Schema may contain special key '*', which is used as fallback for all
-    values if defined.
     """
 
     schema = Attribute(
@@ -633,24 +625,52 @@ class ISchemaAsAttributes(IAttributes):
     Plumbing hooks:
 
     __getitem__
-        Raises KeyError if name contained in schema. Schema attributes are
+        Raises ``KeyError`` if name contained in schema. Schema attributes are
         supposed to be accessed via ``attrs``.
 
     __setitem__
-        Raises KeyError if name contained in schema. Schema attributes are
+        Raises ``KeyError`` if name contained in schema. Schema attributes are
         supposed to be accessed via ``attrs``.
 
     __delitem__
-        Raises KeyError if name contained in schema. Schema attributes are
+        Raises ``KeyError`` if name contained in schema. Schema attributes are
         supposed to be accessed via ``attrs``.
 
     __iter__
-        Iterates downstream __iter__ and ignores all names contained in schema.
+        Iterates downstream ``__iter__`` and ignores all names contained in
+        schema.
     """
 
     schema = Attribute(
         'Dict of child names as keys and ``node.schema.Field`` '
         'or deriving instances as values.')
+
+
+class ISchemaProperties(Interface):
+    """Plumbing behavior for providing schema fields as class properties.
+
+    For all ``node.schema.Field`` instances found on class
+    ``node.behaviors.schema.SchemaProperty`` descriptors are created handling
+    the field values.
+
+    Plumbing hooks:
+
+    __getitem__
+        Raises ``KeyError`` if name used as schema property. Schema property
+        are supposed to be accessed via ``__getattribute__``.
+
+    __setitem__
+        Raises ``KeyError`` if name used as schema property. Schema property
+        are supposed to be accessed via ``__getattribute__``.
+
+    __delitem__
+        Raises ``KeyError`` if name used as schema property. Schema property
+        are supposed to be accessed via ``__getattribute__``.
+
+    __iter__
+        Iterates downstream ``__iter__`` and ignores all names used as schema
+        properties.
+    """
 
 
 class IBoundContext(Interface):

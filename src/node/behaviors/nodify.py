@@ -6,6 +6,7 @@ from node.interfaces import IDefaultInit
 from node.interfaces import INode
 from node.interfaces import INodify
 from node.interfaces import IOrdered
+from node.interfaces import ISchemaProperties
 from node.utils import LocationIterator
 from node.utils import safe_decode
 from plumber import Behavior
@@ -113,7 +114,13 @@ class Nodify(FullMapping):
     @override
     def treerepr(self, indent=0, prefix=' '):
         res = '{}{}\n'.format(indent * prefix, self.noderepr)
-        items = self.items() \
+        items = list()
+        if ISchemaProperties.providedBy(self):
+            items += sorted([
+                (name, getattr(self, name))
+                for name in self.__schema_members__
+            ], key=lambda x: x[0])
+        items += self.items() \
             if IOrdered.providedBy(self) \
             else sorted(self.items(), key=lambda x: safe_decode(x[0]))
         for key, value in items:

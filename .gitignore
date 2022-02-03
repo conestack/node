@@ -8,6 +8,7 @@
 /pip-selfcheck.json
 /.coverage
 /.settings/
+/.vscode/
 /htmlcov/
 /py2/
 /py3/

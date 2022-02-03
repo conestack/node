@@ -5,7 +5,47 @@ Changes
 0.9.29 (unreleased)
 -------------------
 
-- Introduce ``node.behaviors.context.BoundContext``.
+- Add key and value type validation to schema fields where appropriate.
+  [rnix]
+
+- Introduce serializer support to schema fields. Add a couple of concrete field
+  serializer implementations to ``node.schema.serializer``.
+  [rnix]
+
+- Add ``ODict`` and ``Node`` schema fields to ``node.schema.fields``.
+  [rnix]
+
+- Add ``node.schema.fields.IterableField`` and use as base class for
+  ``List``, ``Tuple`` and ``Set`` schema fields.
+
+- Introduce ``node.behaviors.schema.SchemaProperties`` plumbing behavior.
+  [rnix]
+
+- Split up ``node.schema`` module into a package.
+  [rnix]
+
+- Introduce ``node.behaviors.context.BoundContext`` plumbing behavior.
+  [rnix]
+
+**Breaking changes**:
+
+- ``node.behaviors.schema.Schema`` no longer considers wildcard fields.
+  [rnix]
+
+- ``node.behaviors.schema.Schema.__setitem__`` deletes value from related
+  storage for field if value is ``node.utils.UNSET``.
+  [rnix]
+
+- ``node.behaviors.schema.Schema.__getitem__`` always returns default value for
+  field instead of raising ``KeyError`` if no default is set.
+  [rnix]
+
+- Default value of ``node.schema.fields.Field.default`` is ``node.utils.UNSET``
+  now.
+  [rnix]
+
+- ``node.schema.fields.Field.validate`` raises exception if validation fails
+  instead of returning boolean.
   [rnix]
 
 

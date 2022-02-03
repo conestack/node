@@ -2,7 +2,7 @@ License
 =======
 
 Copyright (c) 2009-2021, BlueDynamics Alliance, Austria
-Copyright (c) 2021, Node Contributors
+Copyright (c) 2021-2022, Node Contributors
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
