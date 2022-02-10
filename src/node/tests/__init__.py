@@ -90,6 +90,7 @@ def test_suite():
     from node.tests import test_order
     from node.tests import test_reference
     from node.tests import test_schema
+    from node.tests import test_sequence
     from node.tests import test_serializer
     from node.tests import test_storage
     from node.tests import test_testing
@@ -116,6 +117,7 @@ def test_suite():
     suite.addTest(unittest.findTestCases(test_fallback))
     suite.addTest(unittest.findTestCases(test_lifecycle))
     suite.addTest(unittest.findTestCases(test_mapping))
+    suite.addTest(unittest.findTestCases(test_sequence))
     suite.addTest(unittest.findTestCases(test_nodespace))
     suite.addTest(unittest.findTestCases(test_nodify))
     suite.addTest(unittest.findTestCases(test_order))
