@@ -43,29 +43,29 @@ MutableSequence(Sequence)
 
 
 class Sequence(Behavior):
-    __iter__ = default(ABCSequence.__iter__)
     __contains__ = default(ABCSequence.__contains__)
+    __iter__ = default(ABCSequence.__iter__)
     __reversed__ = default(ABCSequence.__reversed__)
-    index = default(ABCSequence.index)
     count = default(ABCSequence.count)
-
-    @default
-    def __getitem__(self, idx):
-        raise NotImplementedError
+    index = default(ABCSequence.index)
 
     @default
     def __len__(self):
         raise NotImplementedError
 
+    @default
+    def __getitem__(self, idx):
+        raise NotImplementedError
+
 
 class MutableSequence(Sequence):
+    __iadd__ = default(ABCMutableSequence.__iadd__)
     append = default(ABCMutableSequence.append)
     clear = default(ABCMutableSequence.clear)
-    reverse = default(ABCMutableSequence.reverse)
     extend = default(ABCMutableSequence.extend)
     pop = default(ABCMutableSequence.pop)
     remove = default(ABCMutableSequence.remove)
-    __iadd__ = default(ABCMutableSequence.__iadd__)
+    reverse = default(ABCMutableSequence.reverse)
 
     @default
     def __setitem__(self, idx, val):
@@ -88,6 +88,10 @@ class ListStorage(Behavior):
         return list()
 
     @default
+    def __len__(self):
+        return len(self.storage)
+
+    @default
     def __getitem__(self, idx):
         return self.storage[idx]
 
@@ -102,7 +106,3 @@ class ListStorage(Behavior):
     @default
     def insert(self, idx, val):
         self.storage.insert(idx, val)
-
-    @default
-    def __len__(self):
-        return len(self.storage)
