@@ -8,6 +8,7 @@ except ImportError:
 from node.utils import instance_property
 from plumber import Behavior
 from plumber import default
+from plumber import override
 
 
 """
@@ -87,22 +88,22 @@ class ListStorage(Behavior):
     def storage(self):
         return list()
 
-    @default
+    @override
     def __len__(self):
         return len(self.storage)
 
-    @default
+    @override
     def __getitem__(self, idx):
         return self.storage[idx]
 
-    @default
+    @override
     def __setitem__(self, idx, val):
         self.storage[idx] = val
 
-    @default
+    @override
     def __delitem__(self, idx):
         del self.storage[idx]
 
-    @default
+    @override
     def insert(self, idx, val):
         self.storage.insert(idx, val)
