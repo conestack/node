@@ -27,7 +27,7 @@ class DefaultInit(Behavior):
 
 
 @implementer(INode)
-class Nodification(Behavior):
+class Node(Behavior):
     __name__ = default(None)
     __parent__ = default(None)
 
@@ -140,7 +140,7 @@ class Nodification(Behavior):
 
 
 @implementer(IMappingNode)
-class MappingNode(Nodification, FullMapping):
+class MappingNode(Node, FullMapping):
 
     @plumb
     def copy(_next, self):

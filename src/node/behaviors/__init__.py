@@ -34,7 +34,7 @@ from .mapping import WriteMapping  # noqa
 from .nodespace import Nodespaces  # noqa
 from .nodify import DefaultInit  # noqa
 from .nodify import MappingNode  # noqa
-from .nodify import Nodification  # noqa
+from .nodify import Node  # noqa
 from .nodify import Nodify  # noqa
 from .order import Order  # noqa
 from .reference import NodeIndex  # noqa

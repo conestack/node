@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from node.behaviors import Adopt
 from node.behaviors import DefaultInit
-from node.behaviors import MappingNode
+from node.behaviors import MappingNode as MappingNodeBehavior
 from node.behaviors import OdictStorage
 from node.interfaces import INode
 from node.testing import FullMappingTester
@@ -18,13 +18,13 @@ from zope.interface import Interface
 @plumbing(
     Adopt,
     DefaultInit,
-    MappingNode,
+    MappingNodeBehavior,
     OdictStorage)
-class Node(object):
+class MappingNode(object):
     pass
 
 
-class RootNode(Node):
+class RootMappingNode(MappingNode):
     pass
 
 
@@ -42,9 +42,9 @@ class INoInterface(Interface):
 
 class TestNodify(NodeTestCase):
 
-    def test_Nodify(self):
-        root = Node(name='root')
-        root['child'] = Node()
+    def test_MappingNode(self):
+        root = MappingNode(name='root')
+        root['child'] = MappingNode()
         self.assertEqual(root.name, 'root')
         self.assertEqual(root.parent, None)
 
@@ -52,12 +52,12 @@ class TestNodify(NodeTestCase):
         self.assertEqual(child.name, 'child')
         self.assertEqual(child.parent, root)
         self.assertEqual(root.treerepr(), (
-            '<class \'node.tests.test_nodify.Node\'>: root\n'
-            '  <class \'node.tests.test_nodify.Node\'>: child\n'
+            '<class \'node.tests.test_nodify.MappingNode\'>: root\n'
+            '  <class \'node.tests.test_nodify.MappingNode\'>: child\n'
         ))
         self.assertTrue(bool(root))
 
-        tester = FullMappingTester(Node)
+        tester = FullMappingTester(MappingNode)
         tester.run()
         self.assertEqual(tester.combined, (
             '``__contains__``: OK\n'
@@ -82,29 +82,29 @@ class TestNodify(NodeTestCase):
             '``values``: OK'
         ))
 
-        root = RootNode('root')
-        child = root['child'] = Node()
-        subchild = child['subchild'] = Node()
+        root = RootMappingNode('root')
+        child = root['child'] = MappingNode()
+        subchild = child['subchild'] = MappingNode()
         self.assertEqual(root.treerepr(), (
-            '<class \'node.tests.test_nodify.RootNode\'>: root\n'
-            '  <class \'node.tests.test_nodify.Node\'>: child\n'
-            '    <class \'node.tests.test_nodify.Node\'>: subchild\n'
+            '<class \'node.tests.test_nodify.RootMappingNode\'>: root\n'
+            '  <class \'node.tests.test_nodify.MappingNode\'>: child\n'
+            '    <class \'node.tests.test_nodify.MappingNode\'>: subchild\n'
         ))
 
-        root[u'\xf6'] = Node()
+        root[u'\xf6'] = MappingNode()
         self.checkOutput("""\
-        <class 'node.tests.test_nodify.RootNode'>: root
-        __<class 'node.tests.test_nodify.Node'>: child
-        ____<class 'node.tests.test_nodify.Node'>: subchild
-        __<class 'node.tests.test_nodify.Node'>: ...
+        <class 'node.tests.test_nodify.RootMappingNode'>: root
+        __<class 'node.tests.test_nodify.MappingNode'>: child
+        ____<class 'node.tests.test_nodify.MappingNode'>: subchild
+        __<class 'node.tests.test_nodify.MappingNode'>: ...
         """, root.treerepr(prefix='_'))
 
         self.checkOutput("""\
-        <Node object '...' at ...>
+        <MappingNode object '...' at ...>
         """, repr(root[u'\xf6']))
 
         alsoProvides(child, INodeInterface)
-        self.assertEqual(subchild.acquire(RootNode), root)
+        self.assertEqual(subchild.acquire(RootMappingNode), root)
         self.assertEqual(subchild.acquire(INodeInterface), child)
         self.assertEqual(subchild.acquire(INode), child)
         self.assertEqual(subchild.acquire(INoInterface), None)

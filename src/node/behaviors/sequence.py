@@ -5,7 +5,7 @@ try:
 except ImportError:
     from _abccoll import MutableSequence as ABCMutableSequence
     from _abccoll import Sequence as ABCSequence
-from node.behaviors import Nodification
+from node.behaviors import Node
 from node.interfaces import ISequenceNode
 from node.interfaces import ISequenceStorage
 from node.utils import instance_property
@@ -88,7 +88,7 @@ class ListStorage(Behavior):
 
 
 @implementer(ISequenceNode)
-class SequenceNode(Nodification, MutableSequence):
+class SequenceNode(Node, MutableSequence):
 
     @override
     def __index__(self):
