@@ -5,42 +5,11 @@ try:
 except ImportError:
     from _abccoll import MutableSequence as ABCMutableSequence
     from _abccoll import Sequence as ABCSequence
+from node.behaviors import Nodification
 from node.utils import instance_property
 from plumber import Behavior
 from plumber import default
 from plumber import override
-
-
-"""
-Sized:
-    __len__ (abstract)
-Iterable:
-    __iter__ (abstract)
-Container:
-    __contains__ (abstract)
-Collection(Sized, Iterable, Container)
-Reversible:
-    __reversed__ (abstract)
-Sequence(Reversible, Collection)
-    __getitem__ (abstract)
-    __len__ (abstract, from Sized)
-    __iter__ (Iterable implementation)
-    __contains__ (Container implementation)
-    __reversed__ (Reversible impementation)
-    index
-    count
-MutableSequence(Sequence)
-    __setitem__ (abstract)
-    __delitem__ (abstract)
-    insert (abstract)
-    append
-    clear
-    reverse
-    extend
-    pop
-    remove
-    __iadd__
-"""
 
 
 class Sequence(Behavior):
@@ -55,7 +24,7 @@ class Sequence(Behavior):
         raise NotImplementedError
 
     @default
-    def __getitem__(self, idx):
+    def __getitem__(self, index):
         raise NotImplementedError
 
 
@@ -69,15 +38,15 @@ class MutableSequence(Sequence):
     reverse = default(ABCMutableSequence.reverse)
 
     @default
-    def __setitem__(self, idx, val):
+    def __setitem__(self, index, value):
         raise NotImplementedError
 
     @default
-    def __delitem__(self, idx):
+    def __delitem__(self, index):
         raise NotImplementedError
 
     @default
-    def insert(self, idx, val):
+    def insert(self, index, value):
         raise NotImplementedError
 
 
@@ -93,17 +62,21 @@ class ListStorage(Behavior):
         return len(self.storage)
 
     @override
-    def __getitem__(self, idx):
-        return self.storage[idx]
+    def __getitem__(self, index):
+        return self.storage[index]
 
     @override
-    def __setitem__(self, idx, val):
-        self.storage[idx] = val
+    def __setitem__(self, index, value):
+        self.storage[index] = value
 
     @override
-    def __delitem__(self, idx):
-        del self.storage[idx]
+    def __delitem__(self, index):
+        del self.storage[index]
 
     @override
-    def insert(self, idx, val):
-        self.storage.insert(idx, val)
+    def insert(self, index, value):
+        self.storage.insert(index, value)
+
+
+class SequenceNode(Nodification, MutableSequence):
+    pass

@@ -30,8 +30,8 @@ class TestSequence(NodeTestCase):
             def __len__(self):
                 return len(self.data)
 
-            def __getitem__(self, idx):
-                return self.data[idx]
+            def __getitem__(self, index):
+                return self.data[index]
 
         seq = TestSequence([1, 2, 3])
 
@@ -89,17 +89,17 @@ class TestSequence(NodeTestCase):
             def __len__(self):
                 return len(self.data)
 
-            def __getitem__(self, idx):
-                return self.data[idx]
+            def __getitem__(self, index):
+                return self.data[index]
 
-            def __setitem__(self, idx, val):
-                self.data[idx] = val
+            def __setitem__(self, index, value):
+                self.data[index] = value
 
-            def __delitem__(self, idx):
-                del self.data[idx]
+            def __delitem__(self, index):
+                del self.data[index]
 
-            def insert(self, idx, val):
-                self.data.insert(idx, val)
+            def insert(self, index, value):
+                self.data.insert(index, value)
 
         mseq = TestMutableSequence([1, 2, 3])
 
@@ -128,8 +128,8 @@ class TestSequence(NodeTestCase):
         self.assertEqual(mseq.data, [1, 2, 3, 4, 5, 6, 7])
 
         # pop
-        val = mseq.pop()
-        self.assertEqual(val, 7)
+        value = mseq.pop()
+        self.assertEqual(value, 7)
         self.assertEqual(mseq.data, [1, 2, 3, 4, 5, 6])
 
         # remove

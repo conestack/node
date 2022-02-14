@@ -26,8 +26,7 @@ class DefaultInit(Behavior):
         self.__parent__ = parent
 
 
-@implementer(INodify)
-class Nodify(FullMapping):
+class Nodification(Behavior):
     __name__ = default(None)
     __parent__ = default(None)
 
@@ -64,12 +63,6 @@ class Nodify(FullMapping):
         return root
 
     @override
-    def detach(self, key):
-        node = self[key]
-        del self[key]
-        return node
-
-    @override
     def acquire(self, interface):
         node = self.parent
         while node:
@@ -83,18 +76,25 @@ class Nodify(FullMapping):
                 return node
             node = node.parent
 
-    @override
-    def filtereditervalues(self, interface):
-        for val in self.itervalues():
-            if interface.providedBy(val):
-                yield val
+    @default
+    def __nonzero__(self):
+        return True
+
+    __bool__ = default(__nonzero__)
 
     @override
-    def filteredvalues(self, interface):
-        return [val for val in self.filtereditervalues(interface)]
+    def __repr__(self):
+        class_name = self.__class__.__name__
+        name = self.name.encode('ascii', 'replace') \
+            if IS_PY2 and isinstance(self.name, unicode) \
+            else str(self.name)
+        return '<{} object \'{}\' at {}>'.format(
+            class_name,
+            name,
+            hex(id(self))[:-1]
+        )
 
-    # B/C 2010-12-23
-    filtereditems = override(filtereditervalues)
+    __str__ = override(__repr__)
 
     @override
     @property
@@ -110,6 +110,29 @@ class Nodify(FullMapping):
             if IS_PY2 and isinstance(self.name, unicode) \
             else str(self.name)
         return str(class_name) + ': ' + name[name.find(':') + 1:]
+
+
+@implementer(INodify)
+class MappingNode(Nodification, FullMapping):
+
+    @override
+    def detach(self, key):
+        node = self[key]
+        del self[key]
+        return node
+
+    @override
+    def filtereditervalues(self, interface):
+        for val in self.itervalues():
+            if interface.providedBy(val):
+                yield val
+
+    @override
+    def filteredvalues(self, interface):
+        return [val for val in self.filtereditervalues(interface)]
+
+    # B/C 2010-12-23
+    filtereditems = override(filtereditervalues)
 
     @override
     def treerepr(self, indent=0, prefix=' '):
@@ -138,22 +161,6 @@ class Nodify(FullMapping):
     def printtree(self):
         print(self.treerepr())                               # pragma: no cover
 
-    @default
-    def __nonzero__(self):
-        return True
 
-    __bool__ = default(__nonzero__)
-
-    @override
-    def __repr__(self):
-        class_name = self.__class__.__name__
-        name = self.name.encode('ascii', 'replace') \
-            if IS_PY2 and isinstance(self.name, unicode) \
-            else str(self.name)
-        return '<{} object \'{}\' at {}>'.format(
-            class_name,
-            name,
-            hex(id(self))[:-1]
-        )
-
-    __str__ = override(__repr__)
+# B/C 2022-02-14
+Nodify = MappingNode

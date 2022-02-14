@@ -174,7 +174,7 @@ class IDefaultInit(Interface):
         """
 
 
-class INodify(INode):
+class IMappingNode(INode):
     """Plumbing behavior to Fill in gaps for full INode API.
 
     Plumbing hooks:
@@ -182,6 +182,10 @@ class INodify(INode):
     copy
         set ``__name__`` and ``__parent__`` attributes on new copy.
     """
+
+
+# B/C 2022-02-14
+INodify = IMappingNode
 
 
 class IAdopt(Interface):
