@@ -100,8 +100,8 @@ class SequenceNode(Node, MutableSequence):
 
     @plumb
     def __getitem__(next_, self, index):
-        if type(index) is slice:
-            raise NotImplementedError('No slice support yet')
+        if type(index) is not slice:
+            index = int(index)
         return next_(self, index)
 
     @plumb
@@ -113,15 +113,23 @@ class SequenceNode(Node, MutableSequence):
 
     @plumb
     def __delitem__(next_, self, index):
-        if type(index) is slice:
-            raise NotImplementedError('No slice support yet')
-        return next_(self, index)
+        if type(index) is not slice:
+            index = int(index)
+        next_(self, index)
+        self._update_indices()
 
     @plumb
     def insert(next_, self, index, value):
         with adopt_node(str(index), self, value):
             next_(self, int(index), value)
+        self._update_indices()
 
     @plumb
     def detach(next_, self, index):
         return next_(self, int(index))
+        self._update_indices()
+
+    @default
+    def _update_indices(self):
+        for index, value in enumerate(self):
+            value.__name__ = str(index)

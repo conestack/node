@@ -207,14 +207,59 @@ class TestSequence(NodeTestCase):
         self.assertEqual(node.acquire(INoInterface), None)
 
         # detach
-        child = BaseNode()
-        node.insert(0, child)
-        self.assertTrue(child in node)
+        child_0 = BaseNode()
+        node.insert('0', child_0)
+        child_1 = BaseNode()
+        node.insert('1', child_1)
+        self.assertTrue(child_0 in node)
         node.detach('0')
-        self.assertFalse(child in node)
+        self.assertFalse(child_0 in node)
+        self.assertEqual(child_1.name, '0')
+        del node[:]
+
+        # __index__
+        with self.assertRaises(IndexError):
+            node.__index__()
+        child_0 = SequenceNode()
+        node.insert(0, child_0)
+        self.assertEqual(child_0.__index__(), 0)
+
+        # __getitem__
+        child_1 = BaseNode()
+        node.insert(1, child_1)
+        child_2 = BaseNode()
+        node.insert(2, child_2)
+        self.assertEqual(node[0], child_0)
+        self.assertEqual(node['0'], child_0)
+        self.assertEqual(node[:2], [child_0, child_1])
+        self.assertEqual(node[1:], [child_1, child_2])
+
+        # __setitem__
+        with self.assertRaises(NotImplementedError):
+            node[:1] = [child_0]
+        node[2] = BaseNode()
+        node['2'] = BaseNode()
+        self.assertFalse(node[2] is child_2)
+        child_2 = node[2]
+        self.assertEqual(child_2.name, '2')
+        self.assertEqual(child_2.parent, node)
+
+        # __delitem__
+        del node[1]
+        self.assertEqual(node[:], [child_0, child_2])
+        self.assertEqual([_.name for _ in node], ['0', '1'])
+
+        # insert
+        child_1 = BaseNode()
+        node.insert(1, child_1)
+        self.assertEqual(node[:], [child_0, child_1, child_2])
+        self.assertEqual([_.name for _ in node], ['0', '1', '2'])
 
         # printtree
         self.checkOutput("""
         <class 'node.base.BaseNode'>: None
           <class 'node.tests.test_sequence.SequenceNode'>: seq
+            <class 'node.tests.test_sequence.SequenceNode'>: 0
+            <class 'node.base.BaseNode'>: 1
+            <class 'node.base.BaseNode'>: 2
         """, root.treerepr())
