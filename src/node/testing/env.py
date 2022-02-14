@@ -2,8 +2,8 @@
 from node.behaviors import Adopt
 from node.behaviors import AsAttrAccess
 from node.behaviors import DefaultInit
+from node.behaviors import MappingNode
 from node.behaviors import NodeChildValidate
-from node.behaviors import Nodify
 from node.behaviors import OdictStorage
 from node.interfaces import INode
 from plumber import plumbing
@@ -25,7 +25,7 @@ class NoNode(object):
     DefaultInit,
     Adopt,
     AsAttrAccess,
-    Nodify,
+    MappingNode,
     OdictStorage)
 class MyNode(object):
     pass

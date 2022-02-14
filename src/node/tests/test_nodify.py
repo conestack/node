@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from node.behaviors import Adopt
 from node.behaviors import DefaultInit
-from node.behaviors import Nodify
+from node.behaviors import MappingNode
 from node.behaviors import OdictStorage
 from node.interfaces import INode
 from node.testing import FullMappingTester
@@ -18,7 +18,7 @@ from zope.interface import Interface
 @plumbing(
     Adopt,
     DefaultInit,
-    Nodify,
+    MappingNode,
     OdictStorage)
 class Node(object):
     pass

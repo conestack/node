@@ -1,8 +1,8 @@
 from node.behaviors import Attributes
 from node.behaviors import DefaultInit
+from node.behaviors import MappingNode
 from node.behaviors import NodeChildValidate
 from node.behaviors import Nodespaces
-from node.behaviors import Nodify
 from node.behaviors import OdictStorage
 from node.behaviors.attributes import NodeAttributes
 from node.interfaces import INodeAttributes
@@ -19,7 +19,7 @@ class TestAttributes(NodeTestCase):
             Nodespaces,
             Attributes,
             DefaultInit,
-            Nodify,
+            MappingNode,
             OdictStorage)
         class AttributedNode(object):
             pass

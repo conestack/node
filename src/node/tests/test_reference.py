@@ -1,6 +1,6 @@
 from node.behaviors import Adopt
 from node.behaviors import DefaultInit
-from node.behaviors import Nodify
+from node.behaviors import MappingNode
 from node.behaviors import OdictStorage
 from node.behaviors import Reference
 from node.behaviors.reference import NodeIndex
@@ -18,7 +18,7 @@ import uuid
     Adopt,
     Reference,
     DefaultInit,
-    Nodify,
+    MappingNode,
     OdictStorage)
 class ReferenceNode(object):
     pass

@@ -4,8 +4,8 @@ from node.behaviors import ChildFactory
 from node.behaviors import DefaultInit
 from node.behaviors import FixedChildren
 from node.behaviors import GetattrChildren
+from node.behaviors import MappingNode
 from node.behaviors import NodeChildValidate
-from node.behaviors import Nodify
 from node.behaviors import OdictStorage
 from node.behaviors import UnicodeAware
 from node.behaviors import UUIDAware
@@ -76,7 +76,7 @@ class TestCommon(NodeTestCase):
         self.assertTrue(node.__parent__ is None)
 
     def test_UnicodeAware(self):
-        @plumbing(Nodify, UnicodeAware, OdictStorage)
+        @plumbing(MappingNode, UnicodeAware, OdictStorage)
         class UnicodeNode(object):
             pass
 
@@ -102,7 +102,7 @@ class TestCommon(NodeTestCase):
         class BarChild(object):
             pass
 
-        @plumbing(Nodify, ChildFactory, OdictStorage)
+        @plumbing(MappingNode, ChildFactory, OdictStorage)
         class ChildFactoryNode(object):
             factories = {
                 'foo': FooChild,
@@ -122,7 +122,7 @@ class TestCommon(NodeTestCase):
         class BarChild(object):
             pass
 
-        @plumbing(Nodify, FixedChildren)
+        @plumbing(MappingNode, FixedChildren)
         class FixedChildrenNode(object):
             fixed_children_factories = (
                 ('foo', FooChild),
@@ -151,7 +151,7 @@ class TestCommon(NodeTestCase):
         @plumbing(
             Adopt,
             DefaultInit,
-            Nodify,
+            MappingNode,
             OdictStorage,
             UUIDAware)
         class UUIDNode(object):
@@ -209,7 +209,7 @@ class TestCommon(NodeTestCase):
         self.assertTrue(s1_uid == detached['s1'].uuid)
 
     def test_NodeChildValidate(self):
-        @plumbing(NodeChildValidate, DefaultInit, Nodify, OdictStorage)
+        @plumbing(NodeChildValidate, DefaultInit, MappingNode, OdictStorage)
         class NodeChildValidateNode(object):
             pass
 

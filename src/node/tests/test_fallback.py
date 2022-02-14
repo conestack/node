@@ -2,9 +2,9 @@ from node.behaviors import Adopt
 from node.behaviors import Attributes
 from node.behaviors import DefaultInit
 from node.behaviors import Fallback
+from node.behaviors import MappingNode
 from node.behaviors import NodeChildValidate
 from node.behaviors import Nodespaces
-from node.behaviors import Nodify
 from node.behaviors import OdictStorage
 from node.tests import NodeTestCase
 from plumber import plumbing
@@ -19,7 +19,7 @@ from plumber import plumbing
     Fallback,
     Adopt,
     DefaultInit,
-    Nodify,
+    MappingNode,
     OdictStorage)
 class FallbackNodeAttributes(object):
     """Attributes Node for testing
@@ -32,7 +32,7 @@ class FallbackNodeAttributes(object):
     Adopt,
     Attributes,
     DefaultInit,
-    Nodify,
+    MappingNode,
     OdictStorage)
 class FallbackNode(object):
     """Normal Node for testing

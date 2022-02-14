@@ -4,9 +4,9 @@ from node.behaviors import AsAttrAccess
 from node.behaviors import Attributes
 from node.behaviors import DefaultInit
 from node.behaviors import DictStorage
+from node.behaviors import MappingNode
 from node.behaviors import NodeChildValidate
 from node.behaviors import Nodespaces
-from node.behaviors import Nodify
 from node.behaviors import OdictStorage
 from node.behaviors import Order
 from node.behaviors import Reference
@@ -15,7 +15,7 @@ from plumber import plumbing
 
 @plumbing(
     Adopt,
-    Nodify)
+    MappingNode)
 class AbstractNode(object):
     pass
 
@@ -25,7 +25,7 @@ class AbstractNode(object):
     Adopt,
     AsAttrAccess,
     DefaultInit,
-    Nodify,
+    MappingNode,
     DictStorage)
 class BaseNode(object):
     """Base node, not ordered.
@@ -41,7 +41,7 @@ class BaseNode(object):
     Adopt,
     AsAttrAccess,
     DefaultInit,
-    Nodify,
+    MappingNode,
     OdictStorage)
 class OrderedNode(object):
     """Ordered node.
@@ -61,7 +61,7 @@ class OrderedNode(object):
     Order,
     AsAttrAccess,
     DefaultInit,
-    Nodify,
+    MappingNode,
     OdictStorage)
 class Node(object):
     """A node with original functionality from zodict.node.Node.
@@ -79,7 +79,7 @@ class Node(object):
     Order,
     AsAttrAccess,
     DefaultInit,
-    Nodify,
+    MappingNode,
     OdictStorage)
 class AttributedNode(object):
     """A node with original functionality from zodict.node.AttributedNode.

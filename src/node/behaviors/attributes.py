@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from node.behaviors.common import Adopt
 from node.behaviors.common import NodeChildValidate
-from node.behaviors.nodify import Nodify
+from node.behaviors.nodify import MappingNode
 from node.behaviors.storage import OdictStorage
 from node.compat import IS_PY2
 from node.interfaces import IAttributes
@@ -17,7 +17,7 @@ from zope.interface import implementer
 @plumbing(
     NodeChildValidate,
     Adopt,
-    Nodify,
+    MappingNode,
     OdictStorage)
 @implementer(INodeAttributes)
 class NodeAttributes(object):

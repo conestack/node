@@ -14,9 +14,7 @@ logger = logging.getLogger('node')
 
 
 class Unset(object):
-    """Used to identify unset values in contrast to None.
-
-    use for example by node.behaviors.nodify.Nodify.
+    """Identify unset values in contrast to None.
     """
 
     def __nonzero__(self):

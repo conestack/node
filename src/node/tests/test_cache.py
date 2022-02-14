@@ -4,7 +4,7 @@ from node.behaviors import Cache
 from node.behaviors import ChildFactory
 from node.behaviors import DefaultInit
 from node.behaviors import Invalidate
-from node.behaviors import Nodify
+from node.behaviors import MappingNode
 from node.behaviors import OdictStorage
 from node.behaviors import VolatileStorageInvalidate
 from node.interfaces import ICache
@@ -25,7 +25,7 @@ class TestCache(NodeTestCase):
             Adopt,
             Invalidate,
             DefaultInit,
-            Nodify,
+            MappingNode,
             OdictStorage)
         class Node(object):
             pass
@@ -75,7 +75,7 @@ class TestCache(NodeTestCase):
             Adopt,
             VolatileStorageInvalidate,
             DefaultInit,
-            Nodify,
+            MappingNode,
             OdictStorage)
         class Node(object):
             pass
@@ -123,7 +123,7 @@ class TestCache(NodeTestCase):
             Adopt,
             VolatileStorageInvalidate,
             DefaultInit,
-            Nodify,
+            MappingNode,
             ChildFactory,
             OdictStorage)
         class Node(object):
@@ -163,7 +163,7 @@ class TestCache(NodeTestCase):
             Cache,
             Invalidate,
             DefaultInit,
-            Nodify,
+            MappingNode,
             OdictStorage)
         class Node(object):
             pass

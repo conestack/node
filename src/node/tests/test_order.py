@@ -1,6 +1,6 @@
 from node.behaviors import Adopt
 from node.behaviors import DefaultInit
-from node.behaviors import Nodify
+from node.behaviors import MappingNode
 from node.behaviors import OdictStorage
 from node.behaviors import Order
 from node.behaviors import Reference
@@ -16,7 +16,7 @@ from plumber import plumbing
     Adopt,
     Order,
     DefaultInit,
-    Nodify,
+    MappingNode,
     OdictStorage)
 class OrderableNode(object):
     pass
@@ -27,7 +27,7 @@ class OrderableNode(object):
     Order,
     Reference,
     DefaultInit,
-    Nodify,
+    MappingNode,
     OdictStorage)
 class OrderReferenceNode(object):
     pass
