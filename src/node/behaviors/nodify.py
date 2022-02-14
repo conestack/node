@@ -7,6 +7,7 @@ from node.interfaces import IMappingNode
 from node.interfaces import INode
 from node.interfaces import IOrdered
 from node.interfaces import ISchemaProperties
+from node.interfaces import ISequenceNode
 from node.utils import LocationIterator
 from node.utils import safe_decode
 from plumber import Behavior
@@ -57,9 +58,10 @@ class Node(Behavior):
         return root
 
     @override
-    def detach(self, key):
-        node = self[key]
-        del self[key]
+    def detach(self, name):
+        # XXX: maybe reset __name__ and __parent__ of detached node?
+        node = self[name]
+        del self[name]
         return node
 
     @override
@@ -114,22 +116,25 @@ class Node(Behavior):
     @override
     def treerepr(self, indent=0, prefix=' '):
         res = '{}{}\n'.format(indent * prefix, self.noderepr)
-        items = list()
+        children = list()
         if ISchemaProperties.providedBy(self):
-            items += sorted([
+            children += sorted([
                 (name, getattr(self, name))
                 for name in self.__schema_members__
             ], key=lambda x: x[0])
-        items += self.items() \
-            if IOrdered.providedBy(self) \
-            else sorted(self.items(), key=lambda x: safe_decode(x[0]))
-        for key, value in items:
+        if IMappingNode.providedBy(self):
+            children += self.items() \
+                if IOrdered.providedBy(self) \
+                else sorted(self.items(), key=lambda x: safe_decode(x[0]))
+        elif ISequenceNode.providedBy(self):
+            children += [(value.__name__, value) for value in self]
+        for name, value in children:
             if INode.providedBy(value):
                 res += value.treerepr(indent=indent + 2, prefix=prefix)
             else:
                 res += '{}{}: {}\n'.format(
                     (indent + 2) * prefix,
-                    key,
+                    name,
                     repr(value)
                 )
         return res

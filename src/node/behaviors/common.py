@@ -26,7 +26,7 @@ import warnings
 @contextmanager
 def adopt_node(name, parent, value, exceptions=(Exception,)):
     """Context manager for setting name and parent on node. If exception
-    occurs, name and parent gets reverted to original values
+    occurs, name and parent gets reverted to original values.
     """
     # Only care about adoption if we have a node.
     if not INode.providedBy(value):

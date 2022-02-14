@@ -1,9 +1,12 @@
+from node.base import BaseNode
 from node.behaviors import ListStorage
 from node.behaviors import MutableSequence
 from node.behaviors import Sequence
-from node.behaviors import SequenceNode
+from node.behaviors import SequenceNode as SequenceNodeBehavior
+from node.interfaces import IMappingNode
 from node.tests import NodeTestCase
 from plumber import plumbing
+from zope.interface import Interface
 
 
 class TestSequence(NodeTestCase):
@@ -176,6 +179,42 @@ class TestSequence(NodeTestCase):
             del lseq[0]
 
     def test_SequenceNode(self):
-        @plumbing(SequenceNode, ListStorage)
-        class TestSequenceNode(object):
+        @plumbing(SequenceNodeBehavior, ListStorage)
+        class SequenceNode(object):
             pass
+
+        root = BaseNode()
+        node = root['seq'] = SequenceNode()
+
+        # __name__
+        self.assertEqual(node.name, 'seq')
+
+        # __parent__
+        self.assertEqual(node.parent, root)
+
+        # path
+        self.assertEqual(node.path, [None, 'seq'])
+
+        # root
+        self.assertEqual(node.root, root)
+
+        # acquire
+        class INoInterface(Interface):
+            pass
+
+        self.assertEqual(node.acquire(BaseNode), root)
+        self.assertEqual(node.acquire(IMappingNode), root)
+        self.assertEqual(node.acquire(INoInterface), None)
+
+        # detach
+        child = BaseNode()
+        node.insert(0, child)
+        self.assertTrue(child in node)
+        node.detach('0')
+        self.assertFalse(child in node)
+
+        # printtree
+        self.checkOutput("""
+        <class 'node.base.BaseNode'>: None
+          <class 'node.tests.test_sequence.SequenceNode'>: seq
+        """, root.treerepr())

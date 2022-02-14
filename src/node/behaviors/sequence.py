@@ -121,3 +121,7 @@ class SequenceNode(Node, MutableSequence):
     def insert(next_, self, index, value):
         with adopt_node(str(index), self, value):
             next_(self, int(index), value)
+
+    @plumb
+    def detach(next_, self, index):
+        return next_(self, int(index))

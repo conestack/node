@@ -66,6 +66,7 @@ class IAttributeAccess(Interface):
 
     Dome dict API functions are wrapped.
     """
+
     def __getattr__(name):
         """Call __getitem__ on context.
         """
@@ -90,6 +91,7 @@ class IAttributeAccess(Interface):
 class IAliaser(Interface):
     """Generic Aliasing Interface.
     """
+
     def alias(key):
         """Return alias for key.
         """
@@ -141,7 +143,7 @@ class INode(ILocation):
         'Root node. Normally wither the node with no more parent or a node '
         'implementing ``node.interfaces.IRoot``')
 
-    def detach(key):
+    def detach(name):
         """Detach child Node.
         """
 
@@ -205,6 +207,9 @@ class ISequenceNode(INode, IMutableSequence):
         XXX
 
     insert
+        XXX
+
+    detach
         XXX
     """
 
@@ -283,6 +288,7 @@ class IAlias(Interface):
 class IAsAttrAccess(Interface):
     """Plumbing behavior to get node as IAttributeAccess implementation.
     """
+
     def as_attribute_access():
         """Return this node as IAttributeAccess implementing object.
         """
@@ -327,6 +333,7 @@ class IGetattrChildren(Interface):
     """Plumbing behavior for child access via ``__getattr__``, given the
     attribute name is unused.
     """
+
     def __getattr__(name):
         """Map ``__getitem__``.
         """
@@ -407,6 +414,7 @@ class IAttributesLifecycle(Interface):
 class IInvalidate(Interface):
     """Plumbing behavior for node invalidation.
     """
+
     def invalidate(key=None):
         """Invalidate child with key or all children of this node.
 
