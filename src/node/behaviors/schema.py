@@ -187,7 +187,7 @@ class SchemaProperty(object):
             try:
                 with _property_access(name):
                     return field.deserialize(obj[name])
-            except KeyError as e:
+            except KeyError:
                 return field.default
 
     def __set__(self, obj, value):

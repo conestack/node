@@ -6,6 +6,7 @@ except ImportError:
     from _abccoll import MutableSequence as ABCMutableSequence
     from _abccoll import Sequence as ABCSequence
 from node.behaviors import Node
+from node.behaviors.common import adopt_node
 from node.interfaces import ISequenceNode
 from node.interfaces import ISequenceStorage
 from node.utils import instance_property
@@ -107,9 +108,8 @@ class SequenceNode(Node, MutableSequence):
     def __setitem__(next_, self, index, value):
         if type(index) is slice:
             raise NotImplementedError('No slice support yet')
-        value.__name__ = str(index)
-        value.__parent__ = self
-        next_(self, int(index), value)
+        with adopt_node(str(index), self, value):
+            next_(self, int(index), value)
 
     @plumb
     def __delitem__(next_, self, index):
@@ -119,6 +119,5 @@ class SequenceNode(Node, MutableSequence):
 
     @plumb
     def insert(next_, self, index, value):
-        value.__name__ = str(index)
-        value.__parent__ = self
-        next_(self, int(index), value)
+        with adopt_node(str(index), self, value):
+            next_(self, int(index), value)
