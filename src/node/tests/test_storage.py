@@ -1,6 +1,6 @@
 from node.behaviors import DictStorage
+from node.behaviors import MappingStorage
 from node.behaviors import OdictStorage
-from node.behaviors import Storage
 from node.tests import NodeTestCase
 from odict import odict
 from plumber import plumbing
@@ -10,7 +10,7 @@ from plumber import plumbing
 # Mock objects
 ###############################################################################
 
-@plumbing(Storage)
+@plumbing(MappingStorage)
 class AbstractStorageObject(object):
     pass
 
