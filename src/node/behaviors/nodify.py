@@ -3,8 +3,8 @@ from __future__ import print_function
 from node.behaviors.mapping import FullMapping
 from node.compat import IS_PY2
 from node.interfaces import IDefaultInit
+from node.interfaces import IMappingNode
 from node.interfaces import INode
-from node.interfaces import INodify
 from node.interfaces import IOrdered
 from node.interfaces import ISchemaProperties
 from node.utils import LocationIterator
@@ -26,16 +26,10 @@ class DefaultInit(Behavior):
         self.__parent__ = parent
 
 
+@implementer(INode)
 class Nodification(Behavior):
     __name__ = default(None)
     __parent__ = default(None)
-
-    @plumb
-    def copy(_next, self):
-        new = _next(self)
-        new.__name__ = self.__name__
-        new.__parent__ = self.__parent__
-        return new
 
     @override
     @property
@@ -61,6 +55,12 @@ class Nodification(Behavior):
         for parent in LocationIterator(self):
             root = parent
         return root
+
+    @override
+    def detach(self, key):
+        node = self[key]
+        del self[key]
+        return node
 
     @override
     def acquire(self, interface):
@@ -111,29 +111,6 @@ class Nodification(Behavior):
             else str(self.name)
         return str(class_name) + ': ' + name[name.find(':') + 1:]
 
-
-@implementer(INodify)
-class MappingNode(Nodification, FullMapping):
-
-    @override
-    def detach(self, key):
-        node = self[key]
-        del self[key]
-        return node
-
-    @override
-    def filtereditervalues(self, interface):
-        for val in self.itervalues():
-            if interface.providedBy(val):
-                yield val
-
-    @override
-    def filteredvalues(self, interface):
-        return [val for val in self.filtereditervalues(interface)]
-
-    # B/C 2010-12-23
-    filtereditems = override(filtereditervalues)
-
     @override
     def treerepr(self, indent=0, prefix=' '):
         res = '{}{}\n'.format(indent * prefix, self.noderepr)
@@ -160,6 +137,30 @@ class MappingNode(Nodification, FullMapping):
     @override
     def printtree(self):
         print(self.treerepr())                               # pragma: no cover
+
+
+@implementer(IMappingNode)
+class MappingNode(Nodification, FullMapping):
+
+    @plumb
+    def copy(_next, self):
+        new = _next(self)
+        new.__name__ = self.__name__
+        new.__parent__ = self.__parent__
+        return new
+
+    @override
+    def filtereditervalues(self, interface):
+        for val in self.itervalues():
+            if interface.providedBy(val):
+                yield val
+
+    @override
+    def filteredvalues(self, interface):
+        return [val for val in self.filtereditervalues(interface)]
+
+    # B/C 2010-12-23
+    filtereditems = override(filtereditervalues)
 
 
 # B/C 2022-02-14

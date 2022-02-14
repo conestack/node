@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from zope.interface import Attribute
 from zope.interface import Interface
+from zope.interface.common.collections import IMutableSequence
 from zope.interface.common.mapping import IFullMapping
 from zope.lifecycleevent import IObjectAddedEvent
 from zope.lifecycleevent import IObjectCreatedEvent
@@ -130,7 +131,7 @@ class ICallable(Interface):
 # node
 ###############################################################################
 
-class INode(ILocation, IFullMapping):
+class INode(ILocation):
     """Basic node interface.
     """
     name = Attribute('Read only property mapping ``__name__``.')
@@ -149,14 +150,6 @@ class INode(ILocation, IFullMapping):
         providing interface or None if no parent matches.
         """
 
-    def filtereditervalues(interface):
-        """Yield filtered child nodes by interface.
-        """
-
-    def filteredvalues(interface):
-        """Return filtered child nodes by interface.
-        """
-
     def printtree():
         """Debugging helper.
         """
@@ -169,13 +162,14 @@ class INode(ILocation, IFullMapping):
 class IDefaultInit(Interface):
     """Plumbing behavior providing default ``__init__`` function on node.
     """
+
     def __init__(name=None, parent=None):
         """Set ``self.__name__`` and ``self.__parent__`` at init time.
         """
 
 
-class IMappingNode(INode):
-    """Plumbing behavior to Fill in gaps for full INode API.
+class IMappingNode(INode, IFullMapping):
+    """Plumbing behavior to Fill in gaps for full mapping node API.
 
     Plumbing hooks:
 
@@ -183,9 +177,41 @@ class IMappingNode(INode):
         set ``__name__`` and ``__parent__`` attributes on new copy.
     """
 
+    def filtereditervalues(interface):
+        """Yield filtered child nodes by interface.
+        """
+
+    def filteredvalues(interface):
+        """Return filtered child nodes by interface.
+        """
+
 
 # B/C 2022-02-14
 INodify = IMappingNode
+
+
+class ISequenceNode(INode, IMutableSequence):
+    """Plumbing behavior to Fill in gaps for full sequence node API.
+
+    Plumbing hooks:
+
+    __getitem__
+       XXX
+
+    __setitem__
+        XXX
+
+    __delitem__
+        XXX
+
+    insert
+        XXX
+    """
+
+    def __index__():
+        """The index of this node if contained in another sequence. If node not
+        contained in a sequence node, an ``IndexError`` is raised.
+        """
 
 
 class IAdopt(Interface):
@@ -519,15 +545,15 @@ class IReference(IUUID):
         """
 
 
-class IStorage(Interface):
-    """Plumbing behavior providing storage related endpoints.
+class IMappingStorage(Interface):
+    """Plumbing behavior providing mapping storage related endpoints.
 
     Minimum Storage requirement is described below. An implementation of this
     interface could provide other storage related methods as appropriate.
     """
 
     def __getitem__(key):
-        """Return Item from Storage.
+        """Return item from Storage.
         """
 
     def __setitem__(key, val):
@@ -540,6 +566,38 @@ class IStorage(Interface):
 
     def __iter__():
         """Iter throught storage keys.
+        """
+
+
+# B/C 2022-02-14
+IStorage = IMappingStorage
+
+
+class ISequenceStorage(Interface):
+    """Plumbing behavior providing sequence storage related endpoints.
+
+    Minimum Storage requirement is described below. An implementation of this
+    interface could provide other storage related methods as appropriate.
+    """
+
+    def __len__():
+        """Return length of storage
+        """
+
+    def __getitem__(index):
+        """Return item from Storage.
+        """
+
+    def __setitem__(index, value):
+        """Set item to storage.
+        """
+
+    def __delitem__(index):
+        """Delete Item from storage.
+        """
+
+    def insert(index, value):
+        """Insert item to storage.
         """
 
 

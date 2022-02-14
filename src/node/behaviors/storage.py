@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from node.interfaces import IOrdered
-from node.interfaces import IStorage
+from node.interfaces import IMappingStorage
 from node.utils import instance_property
 from odict import odict
 from plumber import Behavior
@@ -9,13 +9,13 @@ from plumber import override
 from zope.interface import implementer
 
 
-@implementer(IStorage)
-class Storage(Behavior):
+@implementer(IMappingStorage)
+class MappingStorage(Behavior):
 
     @default
     @property
     def storage(self):
-        msg = 'Abstract storage does not implement ``storage``'
+        msg = 'Abstract ``MappingStorage`` does not implement ``storage``'
         raise NotImplementedError(msg)
 
     @override
@@ -35,7 +35,11 @@ class Storage(Behavior):
         return self.storage.__iter__()
 
 
-class DictStorage(Storage):
+# B/C 2022-02-14
+Storage = MappingStorage
+
+
+class DictStorage(MappingStorage):
 
     @default
     @instance_property
@@ -44,7 +48,7 @@ class DictStorage(Storage):
 
 
 @implementer(IOrdered)
-class OdictStorage(Storage):
+class OdictStorage(MappingStorage):
 
     @default
     @instance_property

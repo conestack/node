@@ -1,6 +1,7 @@
-from node.behaviors.sequence import ListStorage
-from node.behaviors.sequence import MutableSequence
-from node.behaviors.sequence import Sequence
+from node.behaviors import ListStorage
+from node.behaviors import MutableSequence
+from node.behaviors import Sequence
+from node.behaviors import SequenceNode
 from node.tests import NodeTestCase
 from plumber import plumbing
 
@@ -173,3 +174,8 @@ class TestSequence(NodeTestCase):
         self.assertEqual(lseq.storage, [])
         with self.assertRaises(IndexError):
             del lseq[0]
+
+    def test_SequenceNode(self):
+        @plumbing(SequenceNode, ListStorage)
+        class TestSequenceNode(object):
+            pass

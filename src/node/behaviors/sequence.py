@@ -6,12 +6,19 @@ except ImportError:
     from _abccoll import MutableSequence as ABCMutableSequence
     from _abccoll import Sequence as ABCSequence
 from node.behaviors import Nodification
+from node.interfaces import ISequenceNode
+from node.interfaces import ISequenceStorage
 from node.utils import instance_property
 from plumber import Behavior
 from plumber import default
 from plumber import override
+from plumber import plumb
+from zope.interface import implementer
+from zope.interface.common.collections import IMutableSequence
+from zope.interface.common.collections import ISequence
 
 
+@implementer(ISequence)
 class Sequence(Behavior):
     __contains__ = default(ABCSequence.__contains__)
     __iter__ = default(ABCSequence.__iter__)
@@ -28,6 +35,7 @@ class Sequence(Behavior):
         raise NotImplementedError
 
 
+@implementer(IMutableSequence)
 class MutableSequence(Sequence):
     __iadd__ = default(ABCMutableSequence.__iadd__)
     append = default(ABCMutableSequence.append)
@@ -50,6 +58,7 @@ class MutableSequence(Sequence):
         raise NotImplementedError
 
 
+@implementer(ISequenceStorage)
 class ListStorage(Behavior):
 
     @default
@@ -78,5 +87,38 @@ class ListStorage(Behavior):
         self.storage.insert(index, value)
 
 
+@implementer(ISequenceNode)
 class SequenceNode(Nodification, MutableSequence):
-    pass
+
+    @override
+    def __index__(self):
+        try:
+            return int(self.__name__)
+        except (TypeError, ValueError):
+            raise IndexError('Node not member of a sequence node')
+
+    @plumb
+    def __getitem__(next_, self, index):
+        if type(index) is slice:
+            raise NotImplementedError('No slice support yet')
+        return next_(self, index)
+
+    @plumb
+    def __setitem__(next_, self, index, value):
+        if type(index) is slice:
+            raise NotImplementedError('No slice support yet')
+        value.__name__ = str(index)
+        value.__parent__ = self
+        next_(self, int(index), value)
+
+    @plumb
+    def __delitem__(next_, self, index):
+        if type(index) is slice:
+            raise NotImplementedError('No slice support yet')
+        return next_(self, index)
+
+    @plumb
+    def insert(next_, self, index, value):
+        value.__name__ = str(index)
+        value.__parent__ = self
+        next_(self, int(index), value)

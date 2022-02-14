@@ -37,7 +37,7 @@ class TestStorage(NodeTestCase):
         def access_storage_fails():
             obj.storage
         err = self.expectError(NotImplementedError, access_storage_fails)
-        expected = 'Abstract storage does not implement ``storage``'
+        expected = 'Abstract ``MappingStorage`` does not implement ``storage``'
         self.assertEqual(str(err), expected)
 
     def test_dict_storage(self):
