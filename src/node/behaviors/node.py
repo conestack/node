@@ -57,7 +57,7 @@ class Node(Behavior):
 
     @override
     def detach(self, name):
-        # XXX: maybe reset __name__ and __parent__ of detached node?
+        # XXX: maybe reset __parent__ of detached node?
         node = self[name]
         del self[name]
         return node
