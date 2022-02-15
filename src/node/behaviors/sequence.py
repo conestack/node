@@ -10,8 +10,6 @@ from node.behaviors import Node
 from node.behaviors.common import adopt_node
 from node.compat import IS_PY2
 from node.interfaces import ISequenceNode
-from node.interfaces import ISequenceStorage
-from node.utils import instance_property
 from plumber import Behavior
 from plumber import default
 from plumber import override
@@ -89,35 +87,6 @@ class MutableSequence(Sequence):
                 self.pop()
         except IndexError:
             pass
-
-
-@implementer(ISequenceStorage)
-class ListStorage(Behavior):
-
-    @default
-    @instance_property
-    def storage(self):
-        return list()
-
-    @override
-    def __len__(self):
-        return len(self.storage)
-
-    @override
-    def __getitem__(self, index):
-        return self.storage[index]
-
-    @override
-    def __setitem__(self, index, value):
-        self.storage[index] = value
-
-    @override
-    def __delitem__(self, index):
-        del self.storage[index]
-
-    @override
-    def insert(self, index, value):
-        self.storage.insert(index, value)
 
 
 @implementer(ISequenceNode)

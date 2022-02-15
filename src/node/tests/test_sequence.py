@@ -148,36 +148,6 @@ class TestSequence(NodeTestCase):
         mseq.clear()
         self.assertEqual(mseq.data, [])
 
-    def test_ListStorage(self):
-        @plumbing(MutableSequence, ListStorage)
-        class ListSequence(object):
-            pass
-
-        lseq = ListSequence()
-        self.assertEqual(lseq.storage, [])
-
-        # insert
-        lseq.insert(0, 0)
-        self.assertEqual(lseq.storage, [0])
-
-        # __setitem__
-        lseq[0] = 1
-        self.assertEqual(lseq.storage, [1])
-
-        # __len__
-        self.assertEqual(len(lseq), 1)
-
-        # __getitem__
-        self.assertEqual(lseq[0], 1)
-        with self.assertRaises(IndexError):
-            lseq[1]
-
-        # __delitem__
-        del lseq[0]
-        self.assertEqual(lseq.storage, [])
-        with self.assertRaises(IndexError):
-            del lseq[0]
-
     def test_SequenceNode(self):
         @plumbing(SequenceNodeBehavior, ListStorage)
         class SequenceNode(object):

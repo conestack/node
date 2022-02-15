@@ -43,11 +43,11 @@ from .schema import Schema  # noqa
 from .schema import SchemaAsAttributes  # noqa
 from .schema import SchemaAttributes  # noqa
 from .schema import SchemaProperties  # noqa
-from .sequence import ListStorage  # noqa
 from .sequence import MutableSequence  # noqa
 from .sequence import Sequence  # noqa
 from .sequence import SequenceNode  # noqa
 from .storage import DictStorage  # noqa
+from .storage import ListStorage  # noqa
 from .storage import MappingStorage  # noqa
 from .storage import OdictStorage  # noqa
 from .storage import Storage  # noqa
