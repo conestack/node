@@ -1,41 +1,57 @@
-node
+Node
 ====
 
-This package is the successor of `zodict <http://pypi.python.org/pypi/zodict>`_.
+.. image:: https://img.shields.io/pypi/v/node.svg
+    :target: https://pypi.python.org/pypi/node
+    :alt: Latest PyPI version
+
+.. image:: https://img.shields.io/pypi/dm/node.svg
+    :target: https://pypi.python.org/pypi/node
+    :alt: Number of PyPI downloads
+
+.. image:: https://travis-ci.org/bluedynamics/node.svg?branch=master
+    :target: https://travis-ci.org/bluedynamics/node
 
 
 Overview
 --------
 
-Data structures could be described as trees. Some are by nature ``treeish``,
-like XML documents, LDAP directories or filesystem directory trees, while others
-can be treated that way.
+Node is a library for building data models.
 
-Furthermore, python has elegant ways for customizing all sorts of datamodel related
-APIs. The `dictionary container type
-<http://docs.python.org/reference/datamodel.html#emulating-container-types>`_
-fits almost completely the purpose of representing a node of a tree. The same
-API is also described in ``zope.interface.common.mapping.IFullMapping``.
-Additionaly a node must provide hierarchy information. In this case the
-contract of ``zope.location.interfaces.ILocation`` is used.
+These data models are described as trees and utilize Python's
+`mapping and sequence API's <http://docs.python.org/reference/datamodel.html>`_
+for accessing node members, and the contract of `zope.location.interfaces.ILocation
+<https://zopelocation.readthedocs.io/en/latest/api.html#zope.location.interfaces.ILocation>`_
+for hierarchy information.
 
-Having data structures as such trees has some advantages:
+One purpose of this package is to provide a unified API to different backend
+storages. Concrete storage related implementations are for example:
 
-- Unified data access API to different data models and/or sources
+- `node.ext.directory <https://pypi.org/project/node.ext.directory>`_
+- `node.ext.ldap <https://pypi.org/project/node.ext.ldap>`_
+- `node.ext.yaml <https://pypi.org/project/node.ext.yaml>`_
+- `node.ext.zodb <https://pypi.org/project/node.ext.zodb>`_
 
-- Trees are traversable in both directions
+Another usecase is providing interfaces for specific application domains, e.g.
+for user and group management. `node.ext.ugm <https://pypi.org/project/node.ext.ugm>`_
+defines the interfaces for user and group management and implements a file based
+default implementation. There also exists implementations of the same interfaces in
+`node.ext.ldap <https://pypi.org/project/node.ext.ldap>`_ and
+`cone.sql <https://pypi.org/project/cone.sql>`_, for accessing users and groups
+in a LDAP respective SQL databases.
 
-- Once in memory, node trees are fast to deal with
+This package is also used to build in-memory models of all sorts. E.g.
+`yafowil <https://pypi.org/project/yafowil>`_ is a HTML form processing and
+rendering library and uses node trees for declarative description of the form
+model. Another one to mention is `cone.app <https://pypi.org/project/cone.app>`_,
+a `pyramid <https://pypi.org/project/pyramid>`_ based development environment
+for web applications, which uses node trees to describe the application model.
 
-- Software working on node trees may not need to know about internal data
-  structures, as long as the node tree implementation provides the correct
-  interface contracts
 
+Basic Usage
+-----------
 
-Usage
------
-
-``node`` ships with some "ready-to-import-and-use" nodes.
+``node`` ships with some `ready-to-import-and-use` nodes.
 
 An unordered node. This can be used as base for trees where order of items
 doesn't matter:
@@ -70,13 +86,13 @@ A full API description of the node interface can be found at
 ``node.interfaces.INode``.
 
 
-A more fine granular control of node functionality
---------------------------------------------------
+Fine granular control of node functionality
+-------------------------------------------
 
 ``node`` utilizes the `plumber <http://pypi.python.org/pypi/plumber>`_ package.
 
-Thus, different behaviors of nodes are provided by ``plumbing behaviors``. Read
-the documentation of ``plumber`` for details about the plumbing system:
+Different behaviors of nodes are provided by `plumbing behaviors`. Read the
+documentation of ``plumber`` for details about the plumbing system:
 
 .. code-block:: pycon
 
@@ -88,7 +104,7 @@ the documentation of ``plumber`` for details about the plumbing system:
     ...     NodeChildValidate,
     ...     Adopt,
     ...     DefaultInit,
-    ...     Nodify,
+    ...     MappingNode,
     ...     OdictStorage,
     ... )
 
@@ -99,7 +115,7 @@ the documentation of ``plumber`` for details about the plumbing system:
     ...     NodeChildValidate,
     ...     Adopt,
     ...     DefaultInit,
-    ...     Nodify,
+    ...     MappingNode,
     ...     OdictStorage)
     ... class CustomNode(object):
     ...     pass
@@ -121,9 +137,9 @@ the documentation of ``plumber`` for details about the plumbing system:
     'nodespaces', 'parent', 'path', 'pop', 'popitem', 'printtree',
     'root', 'setdefault', 'storage', 'update', 'values']
 
-As the ``dir`` call shows, the ``CustomNode`` class was plumbed using given behaviors,
-so defining a complete ``INode`` implementation with some additional
-behaviours and is now easily done:
+As the ``dir`` call shows, the ``CustomNode`` class was plumbed using given
+behaviors, now representing a complete node implementation with some
+additional behaviours.
 
 .. code-block:: pycon
 
@@ -138,113 +154,127 @@ behaviours and is now easily done:
     True
 
 
-Behaviors
----------
+Plumbing Behaviors
+------------------
 
-The ``node`` package provides several plumbing behaviors:
+General behaviors
+~~~~~~~~~~~~~~~~~
 
 **node.behaviors.DefaultInit**
-    Plumbing part providing default ``__init__`` function on node.
+    Provide default ``__init__`` function on object.
     See ``node.interfaces.IDefaultInit``.
 
-**node.behaviors.Nodify**
-    Plumbing part to Fill in gaps for full INode API.
-    See ``node.interfaces.INodify``.
-
-**node.behaviors.Adopt**
-    Plumbing part that provides adoption of children.
-    See ``node.interfaces.IAdopt``.
-
-**node.behaviors.NodeChildValidate**
-    Plumbing part for child node validation.
-    See ``node.interfaces.INodeChildValidate``.
-
-**node.behaviors.UnicodeAware**
-    Plumbing part to ensure unicode for keys and string values.
-    See ``node.interfaces.IUnicodeAware``.
-
-**node.behaviors.Alias**
-    Plumbing part that provides aliasing of child keys.
-    See ``node.interfaces.IAlias``.
-
-**node.behaviors.AsAttrAccess**
-    Plumbing part to get node as IAttributeAccess implementation.
-    See ``node.interfaces.IAsAttrAccess``.
-
-**node.behaviors.ChildFactory**
-    Plumbing part providing child factories which are invoked at
-    ``__getitem__`` if object by key is not present at plumbing endpoint yet.
-    See ``node.interfaces.IChildFactory``.
-
-**node.behaviors.FixedChildren**
-    Plumbing part that initializes a fixed dictionary as children.
-    See ``node.interfaces.IFixedChildren``.
-
-**node.behaviors.GetattrChildren**
-    Plumbing part for child access via ``__getattr__``, given the attribute
-    name is unused.
-    See ``node.interfaces.IGetattrChildren``.
-
-**node.behaviors.Nodespaces**
-    Plumbing part for providing nodespaces on node.
-    See ``node.interfaces.INodespaces``.
-
-**node.behaviors.Attributes**
-    Plumbing part to provide attributes on node.
-    Requires ``node.behaviors.Nodespaces`` part.
-    See ``node.interfaces.IAttributes``.
-
-**node.behaviors.Lifecycle**
-    Plumbing part taking care of lifecycle events.
-    See ``node.interfaces.ILifecycle``.
-
-**node.behaviors.AttributesLifecycle**
-    Plumbing part for handling ifecycle events at attributes manipulation.
-    See ``node.interfaces.IAttributesLifecycle``.
-
-**node.behaviors.Invalidate**
-    Plumbing part for node invalidation.
-    See ``node.interfaces.Invalidate``.
-
-**node.behaviors.VolatileStorageInvalidate**
-    Plumbing part for invalidating nodes using a volatile storage.
-    See ``node.interfaces.Invalidate``.
-
-**node.behaviors.Cache**
-    Plumbing part for caching.
-    See ``node.interfaces.ICache``.
-
-**node.behaviors.Order**
-    Plumbing part for ordering support.
-    See ``node.interfaces.IOrder``.
-
-**node.behaviors.UUIDAware**
-    Plumbing part providing a uuid on nodes.
-    See ``node.interfaces.IUUIDAware``.
-
-**node.behaviors.Reference**
-    Plumbing part holding an index of all nodes contained in the tree.
-    See ``node.interfaces.IReference``.
-
-**node.behaviors.Storage**
-    Provide abstract storage access.
-    See ``node.interfaces.IStorage``.
-
-**node.behaviors.DictStorage**
-    Provide dictionary storage.
-    See ``node.interfaces.IStorage``.
-
-**node.behaviors.OdictStorage**
-    Provide ordered dictionary storage.
-    See ``node.interfaces.IStorage``.
-
-**node.behaviors.Fallback**
-    Provide a way to fall back to values by subpath stored on another node.
-    See ``node.interfaces.IFallback``.
+**node.behaviors.Node**
+    Fill in gaps for full INode API. See ``node.interfaces.INode``. Normally
+    not applied directly. Use ``node.behaviors.MappingNode`` and
+    ``node.behaviors.SequenceNode`` instead.
 
 **node.behaviors.Events**
     Provide an event registration and dispatching mechanism.
     See ``node.interfaces.IEvents``.
+
+**node.behaviors.BoundContext**
+    Mechanism for scoping objects to interfaces and classes.
+    See ``node.interfaces.IBoundContext``.
+
+
+Mapping related behaviors
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**node.behaviors.MappingNode**
+    Turn an object into a mapping node. Extends ``node.behaviors.Node``.
+    See ``node.interfaces.IMappingNode``.
+
+**node.behaviors.Adopt**
+    Plumbing behavior that provides adoption of children.
+    See ``node.interfaces.IAdopt``.
+
+**node.behaviors.NodeChildValidate**
+    Plumbing behavior for child node validation.
+    See ``node.interfaces.INodeChildValidate``.
+
+**node.behaviors.UnicodeAware**
+    Plumbing behavior to ensure unicode for keys and string values.
+    See ``node.interfaces.IUnicodeAware``.
+
+**node.behaviors.Alias**
+    Plumbing behavior that provides aliasing of child keys.
+    See ``node.interfaces.IAlias``.
+
+**node.behaviors.AsAttrAccess**
+    Plumbing behavior to get node as IAttributeAccess implementation.
+    See ``node.interfaces.IAsAttrAccess``.
+
+**node.behaviors.ChildFactory**
+    Plumbing behavior providing child factories which are invoked at
+    ``__getitem__`` if object by key is not present at plumbing endpoint yet.
+    See ``node.interfaces.IChildFactory``.
+
+**node.behaviors.FixedChildren**
+    Plumbing behavior that initializes a fixed dictionary as children.
+    See ``node.interfaces.IFixedChildren``.
+
+**node.behaviors.GetattrChildren**
+    Plumbing behavior for child access via ``__getattr__``, given the attribute
+    name is unused.
+    See ``node.interfaces.IGetattrChildren``.
+
+**node.behaviors.Nodespaces**
+    Plumbing behavior for providing nodespaces on node.
+    See ``node.interfaces.INodespaces``.
+
+**node.behaviors.Attributes**
+    Plumbing behavior to provide attributes on node.
+    Requires ``node.behaviors.Nodespaces`` behavior.
+    See ``node.interfaces.IAttributes``.
+
+**node.behaviors.Lifecycle**
+    Plumbing behavior taking care of lifecycle events.
+    See ``node.interfaces.ILifecycle``.
+
+**node.behaviors.AttributesLifecycle**
+    Plumbing behavior for handling lifecycle events on attribute manipulation.
+    See ``node.interfaces.IAttributesLifecycle``.
+
+**node.behaviors.Invalidate**
+    Plumbing behavior for node invalidation.
+    See ``node.interfaces.Invalidate``.
+
+**node.behaviors.VolatileStorageInvalidate**
+    Plumbing behavior for invalidating nodes using a volatile storage.
+    See ``node.interfaces.Invalidate``.
+
+**node.behaviors.Cache**
+    Plumbing behavior for caching.
+    See ``node.interfaces.ICache``.
+
+**node.behaviors.Order**
+    Plumbing behavior for ordering support.
+    See ``node.interfaces.IOrder``.
+
+**node.behaviors.UUIDAware**
+    Plumbing behavior providing a uuid on nodes.
+    See ``node.interfaces.IUUIDAware``.
+
+**node.behaviors.Reference**
+    Plumbing behavior holding an index of all nodes contained in the tree.
+    See ``node.interfaces.IReference``.
+
+**node.behaviors.MappingStorage**
+    Provide abstract mapping storage access.
+    See ``node.interfaces.IMappingStorage``.
+
+**node.behaviors.DictStorage**
+    Provide dictionary storage. Extends ``node.behaviors.MappingStorage``.
+    See ``node.interfaces.IMappingStorage``.
+
+**node.behaviors.OdictStorage**
+    Provide ordered dictionary storage. Extends
+    ``node.behaviors.MappingStorage``. See ``node.interfaces.IMappingStorage``.
+
+**node.behaviors.Fallback**
+    Provide a way to fall back to values by subpath stored on another node.
+    See ``node.interfaces.IFallback``.
 
 **node.behaviors.Schema**
     Provide schema validation and value serialization on node values.
@@ -259,9 +289,16 @@ The ``node`` package provides several plumbing behaviors:
     Provide schema fields as class properties.
     See ``node.interfaces.ISchemaProperties``.
 
-**node.behaviors.BoundContext**
-    Plumbing behavior for scoping objects to interfaces and classes.
-    See ``node.interfaces.IBoundContext``.
+
+Sequence related behaviors
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**node.behaviors.ListStorage**
+    Provide list storage. See ``node.interfaces.ISequenceStorage``.
+
+**node.behaviors.SequenceNode**
+    Turn an object into a sequence node. Extends ``node.behaviors.Node``.
+    See ``node.interfaces.IMappingNode``.
 
 
 JSON Serialization
@@ -280,20 +317,6 @@ Nodes can be serialized to and deserialized from JSON:
 
 For details on serialization API please read file in
 ``docs/archive/serializer.rst``.
-
-
-Migration
----------
-
-A node which behaves like ``zodict.Node`` is contained in ``node.base.Node``.
-This node is supposed to be used for migration from zodict.
-
-It's also useful to take a look at the behaviors the original node is build
-from.
-
-Probably an implementation does not need all the behaviors at once. In this case
-define the node plumbing directly on a node class instead of inheriting from
-``node.base.Node``.
 
 
 TestCoverage
@@ -367,7 +390,6 @@ Python Versions
 ---------------
 
 - Python 2.7, 3.3+, pypy
-
 - May work with other versions (untested)
 
 

@@ -2,8 +2,8 @@
 Changes
 =======
 
-0.9.29 (unreleased)
--------------------
+1.0 (unreleased)
+----------------
 
 - Add key and value type validation to schema fields where appropriate.
   [rnix]
