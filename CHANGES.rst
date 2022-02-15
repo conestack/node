@@ -5,6 +5,10 @@ Changes
 1.0 (unreleased)
 ----------------
 
+- ``node.behaviors.Attributes`` now also works if
+  ``node.behaviors.Nodespaces`` is not applied.
+  [rnix]
+
 - Introduce ``node.behaviors.Node`` which implements only
   ``node.interfaces.INode`` contract. It is used as base for
   ``node.behaviors.MappingNode`` and ``node.behaviors.SequcneNode``.

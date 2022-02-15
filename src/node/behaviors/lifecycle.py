@@ -37,8 +37,11 @@ class Lifecycle(Behavior):
         _next(self, key, val)
         if self._notify_suppress:
             return
-        objectEventNotify(self.events['added'](val, newParent=self,
-                                               newName=key))
+        objectEventNotify(self.events['added'](
+            val,
+            newParent=self,
+            newName=key
+        ))
 
     @plumb
     def __delitem__(_next, self, key):
@@ -46,16 +49,22 @@ class Lifecycle(Behavior):
         _next(self, key)
         if self._notify_suppress:
             return
-        objectEventNotify(self.events['removed'](delnode, oldParent=self,
-                                                 oldName=key))
+        objectEventNotify(self.events['removed'](
+            delnode,
+            oldParent=self,
+            oldName=key
+        ))
 
     @plumb
     def detach(_next, self, key):
         self._notify_suppress = True
         node = _next(self, key)
         self._notify_suppress = False
-        objectEventNotify(self.events['detached'](node, oldParent=self,
-                                                  oldName=key))
+        objectEventNotify(self.events['detached'](
+            node,
+            oldParent=self,
+            oldName=key
+        ))
         return node
 
 

@@ -169,6 +169,12 @@ General behaviors
     not applied directly. Use ``node.behaviors.MappingNode`` and
     ``node.behaviors.SequenceNode`` instead.
 
+**node.behaviors.Attributes**
+    Provide attributes on node. See ``node.interfaces.IAttributes``. If
+    ``node.behaviors.Nodespaces`` is applied on node, the attributes instance
+    gets stored internally in ``__attrs__`` nodespace, otherwise its set on
+    ``__attrs__`` attribute.
+
 **node.behaviors.Events**
     Provide an event registration and dispatching mechanism.
     See ``node.interfaces.IEvents``.
@@ -222,11 +228,6 @@ Mapping related behaviors
 **node.behaviors.Nodespaces**
     Plumbing behavior for providing nodespaces on node.
     See ``node.interfaces.INodespaces``.
-
-**node.behaviors.Attributes**
-    Plumbing behavior to provide attributes on node.
-    Requires ``node.behaviors.Nodespaces`` behavior.
-    See ``node.interfaces.IAttributes``.
 
 **node.behaviors.Lifecycle**
     Plumbing behavior taking care of lifecycle events.

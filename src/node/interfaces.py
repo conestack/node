@@ -352,7 +352,7 @@ class IAttributes(Interface):
     attrs = Attribute('``INodeAttributes`` implementation.')
     attrs_factory = Attribute('``INodeAttributes`` implementation class.')
     attribute_access_for_attrs = Attribute(
-        'Return ``attrs`` wrapped with ``node.utils.AttributeAccess``'
+        'Return ``attrs`` wrapped by ``node.utils.AttributeAccess``'
     )
 
 
@@ -380,7 +380,7 @@ class ILifecycle(Interface):
 
 
 class IAttributesLifecycle(Interface):
-    """Plumbing behavior for handling ifecycle events at attributes
+    """Plumbing behavior for handling lifecycle events on attribute
     manipulation.
 
     Plumbing hooks:

@@ -7,6 +7,7 @@ from node.behaviors.storage import OdictStorage
 from node.compat import IS_PY2
 from node.interfaces import IAttributes
 from node.interfaces import INodeAttributes
+from node.interfaces import INodespaces
 from node.utils import AttributeAccess
 from plumber import Behavior
 from plumber import default
@@ -49,11 +50,22 @@ class Attributes(Behavior):
     @finalize
     @property
     def attrs(self):
-        try:
-            attrs = self.nodespaces['__attrs__']
-        except KeyError:
-            attrs = self.nodespaces['__attrs__'] = \
-                self.attributes_factory(name='__attrs__', parent=self)
+        if INodespaces.providedBy(self):
+            try:
+                attrs = self.nodespaces['__attrs__']
+            except KeyError:
+                attrs = self.nodespaces['__attrs__'] = self.attributes_factory(
+                    name='__attrs__',
+                    parent=self
+                )
+        else:
+            try:
+                attrs = self.__attrs__
+            except AttributeError:
+                attrs = self.__attrs__ = self.attributes_factory(
+                    name='__attrs__',
+                    parent=self
+                )
         if self.attribute_access_for_attrs:
             return AttributeAccess(attrs)
         return attrs
