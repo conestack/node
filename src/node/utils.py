@@ -14,8 +14,7 @@ logger = logging.getLogger('node')
 
 
 class Unset(object):
-    """Identify unset values in contrast to None.
-    """
+    """Identify unset values in contrast to None."""
 
     def __nonzero__(self):
         return False
@@ -47,8 +46,7 @@ def LocationIterator(obj):
 
 @implementer(IEnumerableMapping)
 class ReverseMapping(object):
-    """Reversed IEnumerableMapping.
-    """
+    """Reversed IEnumerableMapping."""
 
     def __init__(self, context):
         """Object behaves as adapter for dict like object.
@@ -204,16 +202,14 @@ decode = strcodec.decode
 
 
 def safe_encode(value, encoding=CHARACTER_ENCODING):
-    """Encode value to bytes with encoding if value not already bytes.
-    """
+    """Encode value to bytes with encoding if value not already bytes."""
     if isinstance(value, UNICODE_TYPE):
         value = value.encode(encoding)
     return value
 
 
 def safe_decode(value, encoding=CHARACTER_ENCODING):
-    """Decode value to string with encoding if value not already string.
-    """
+    """Decode value to string with encoding if value not already string."""
     if not isinstance(value, UNICODE_TYPE):
         value = value.decode(encoding)
     return value
@@ -239,8 +235,7 @@ def instance_property(func):
 
 
 def node_by_path(root, path):
-    """Return node by path from root
-    """
+    """Return node by path from root."""
     if isinstance(path, STR_TYPE):
         path = path.strip('/')
         path = path.split('/') if path else []
@@ -253,8 +248,7 @@ def node_by_path(root, path):
 
 
 def debug(func):
-    """Decorator for logging debug messages.
-    """
+    """Decorator for logging debug messages."""
     def wrapped(*args, **kws):
         logger.debug(u'{}: args={}, kws={}'.format(
             func_name(func),

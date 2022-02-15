@@ -64,10 +64,7 @@ class OrderedNode(object):
     MappingNode,
     OdictStorage)
 class Node(object):
-    """A node with original functionality from zodict.node.Node.
-
-    XXX: reduce by attributes
-    """
+    """A node with original functionality from zodict.node.Node."""
 
 
 @plumbing(
@@ -82,5 +79,4 @@ class Node(object):
     MappingNode,
     OdictStorage)
 class AttributedNode(object):
-    """A node with original functionality from zodict.node.AttributedNode.
-    """
+    """A node with original functionality from zodict.node.AttributedNode."""

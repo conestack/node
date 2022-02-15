@@ -51,5 +51,4 @@ class NodeDetachedEvent(ObjectRemovedEvent):
 
 @plumbing(Events)
 class EventDispatcher(object):
-    """Object providing event dispatching.
-    """
+    """Object providing event dispatching."""

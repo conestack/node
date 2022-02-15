@@ -23,8 +23,7 @@ class TreeLock(object):
 
 
 def locktree(fn):
-    """Decorator for locking of a whole method.
-    """
+    """Decorator for locking of a whole method."""
     def _locktree_decorator(self, *args, **kwargs):
         lock = TreeLock(self)
         lock.acquire()
