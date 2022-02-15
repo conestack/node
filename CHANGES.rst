@@ -5,6 +5,31 @@ Changes
 1.0 (unreleased)
 ----------------
 
+- Introduce ``node.behaviors.Node`` which implements only
+  ``node.interfaces.INode`` contract. It is used as base for
+  ``node.behaviors.MappingNode`` and ``node.behaviors.SequcneNode``.
+  [rnix]
+
+- Do not inherit ``node.interfaces.INode`` from
+  ``zope.interfaces.common.mapping.IFullMapping`` any more. Data model specific
+  interfaces are added now via ``node.interfaces.IMappingNode`` and
+  ``node.interfaces.ISequenceNode``.
+  [rnix]
+
+- Introduce sequence nodes. Sequence nodes are implemented via
+  ``node.behaviors.SequcneNode`` and ``node.behaviors.ListStorage``.
+  [rnix]
+
+- Rename ``node.interfaces.INodify`` to ``node.interfaces.IMappingNode`` and
+  ``node.behaviors.Nodify`` to ``node.behaviors.MappingNode``.
+  B/C is kept.
+  [rnix]
+
+- Rename ``node.interfaces.IStorage`` to ``node.interfaces.IMappingStorage``
+  and ``node.behaviors.Storage`` to ``node.behaviors.Storage``.
+  B/C is kept.
+  [rnix]
+
 - Add key and value type validation to schema fields where appropriate.
   [rnix]
 
