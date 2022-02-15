@@ -1,5 +1,6 @@
 from node.base import AbstractNode
 from node.base import BaseNode
+from node.base import ListNode
 from node.base import OrderedNode
 from node.testing import FullMappingTester
 from node.testing.base import create_tree
@@ -499,3 +500,14 @@ class TestBase(NodeTestCase):
         copied_node = copy.deepcopy(node)
         self.assertFalse(node is copied_node)
         self.assertFalse(node['child'] is copied_node['child'])
+
+    def test_ListNode(self):
+        node = ListNode(name='listnode')
+        node.insert(0, BaseNode())
+        node.insert(1, BaseNode())
+
+        self.checkOutput("""
+        <class 'node.base.ListNode'>: listnode
+        __<class 'node.base.BaseNode'>: 0
+        __<class 'node.base.BaseNode'>: 1
+        """, node.treerepr(prefix='_'))

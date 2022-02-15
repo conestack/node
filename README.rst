@@ -16,148 +16,187 @@ Node
 Overview
 --------
 
-Node is a base library to create nested data models and structures.
+Node is a library to create nested data models and structures.
 
-These data models are described as trees of nodes with attributes. 
+These data models are described as trees of nodes, optionally with attributes
+and schema definitions.
 
-They utilize 
+They utilize:
 
-- for accessing node members Python's `mapping and sequence API's <http://docs.python.org/reference/datamodel.html>`_, 
-- for hierarchy information the contract of `zope.location.interfaces.ILocation <https://zopelocation.readthedocs.io/en/latest/api.html#zope.location.interfaces.ILocation>`_.
+- Python's `mapping and sequence API's <http://docs.python.org/reference/datamodel.html>`_
+  for accessing node members.
+- The contract of `zope.location.interfaces.ILocation <https://zopelocation.readthedocs.io/en/latest/api.html#zope.location.interfaces.ILocation>`_ for hierarchy information.
 
-One purpose of this package is to provide a unified API to different backend storages. 
-
-Specific storage related implementations are for example:
+One purpose of this package is to provide a unified API to different backend
+storages. Specific storage related implementations are for example:
 
 - `node.ext.directory <https://pypi.org/project/node.ext.directory>`_
 - `node.ext.ldap <https://pypi.org/project/node.ext.ldap>`_
 - `node.ext.yaml <https://pypi.org/project/node.ext.yaml>`_
 - `node.ext.zodb <https://pypi.org/project/node.ext.zodb>`_
 
-Another usecase is providing interfaces for specific application domains. 
+Another usecase is providing interfaces for specific application domains.
 
-E.g. for user and group management, `node.ext.ugm <https://pypi.org/project/node.ext.ugm>`_ defines the interfaces. 
-Additional it implements a file based default implementation. 
-Then there are specific implementations of those interfaces in `node.ext.ldap <https://pypi.org/project/node.ext.ldap>`_ and `cone.sql <https://pypi.org/project/cone.sql>`_, to access users and groups in LDAP and SQL databases.
+E.g. for user and group management,
+`node.ext.ugm <https://pypi.org/project/node.ext.ugm>`_ defines the interfaces.
+Additional it implements a file based default implementation. Then there are
+specific implementations of those interfaces in
+`node.ext.ldap <https://pypi.org/project/node.ext.ldap>`_ and
+`cone.sql <https://pypi.org/project/cone.sql>`_, to access users and groups in
+LDAP and SQL databases.
 
-This package is used to build in-memory models of all sorts. 
+This package is also used to build in-memory models of all sorts.
 
-E.g.  `yafowil <https://pypi.org/project/yafowil>`_ is a HTML form processing and rendering library. 
-It uses node trees for declarative description of the form model. 
+E.g.  `yafowil <https://pypi.org/project/yafowil>`_ is a HTML form processing
+and rendering library. It uses node trees for declarative description of the
+form model.
 
-Another one to mention is `cone.app <https://pypi.org/project/cone.app>`_, a `Pyramid <https://pypi.org/project/pyramid>`_ based development environment for web applications, which uses node trees to describe the application model.
+Another one to mention is `cone.app <https://pypi.org/project/cone.app>`_,
+a `Pyramid <https://pypi.org/project/pyramid>`_ based development environment
+for web applications, which uses node trees to describe the application model.
 
 
 Basic Usage
 -----------
 
-``node`` ships with some `ready-to-import-and-use` nodes.
+There are two basic node types. Mapping nodes and sequence nodes. This
+package provides some basic nodes to start from.
+
+
+Mapping Nodes
+~~~~~~~~~~~~~
+
+Mapping nodes implement ``node.interfaces.IMappingNode``. A mapping in python
+is a container object that supports arbitrary key lookups and implements the
+methods specified in the ``MutableMapping`` of pythons abstract base classes
+respective ``zope.interface.common.mapping.IFullMapping``.
 
 An unordered node. This can be used as base for trees where order of items
 doesn't matter:
 
-.. code-block:: pycon
+.. code-block:: python
 
-    >>> from node.base import BaseNode
-    >>> root = BaseNode(name='root')
-    >>> root['child'] = BaseNode()
-    >>> root.printtree()
-    <class 'node.base.BaseNode'>: root
-      <class 'node.base.BaseNode'>: child
+    from node.base import BaseNode
+
+    root = BaseNode(name='root')
+    root['child'] = BaseNode()
 
 An ordered node. The order of items is preserved:
 
+.. code-block:: python
+
+    from node.base import OrderedNode
+
+    root = OrderedNode(name='orderedroot')
+    root['foo'] = OrderedNode()
+    root['bar'] = OrderedNode()
+
+With ``printtree`` we can do a quick inspection of our node tree:
+
 .. code-block:: pycon
 
-    >>> from node.base import OrderedNode
-    >>> root = OrderedNode(name='orderedroot')
-    >>> root['foo'] = OrderedNode()
-    >>> root['bar'] = OrderedNode()
     >>> root.printtree()
     <class 'node.base.OrderedNode'>: orderedroot
       <class 'node.base.OrderedNode'>: foo
       <class 'node.base.OrderedNode'>: bar
 
-    >>> root.items()
-    [('foo', <OrderedNode object 'foo' at ...>),
-    ('bar', <OrderedNode object 'bar' at ...>)]
 
-A full API description of the node interface can be found at
-``node.interfaces.INode``.
+Sequence Nodes
+~~~~~~~~~~~~~~
+
+Sequence nodes implement ``node.interfaces.ISequenceNode``. In the context
+of this library, a sequence is an implementation of the methods
+specified in the ``MutableSequence`` of pythons abstract base classes respective
+``zope.interface.common.collections.IMutableSequence``.
+
+Using a list node:
+
+.. code-block:: python
+
+    from node.base import BaseNode
+    from node.base import ListNode
+
+    root = ListNode(name='listroot')
+    root.insert(0, BaseNode())
+    root.insert(1, BaseNode())
+
+Check tree structire with ``printtree``:
+
+.. code-block:: pycon
+
+    >>> root.printtree()
+    <class 'node.base.ListNode'>: listnode
+      <class 'node.base.BaseNode'>: 0
+      <class 'node.base.BaseNode'>: 1
+
+.. note::
+
+    Sequence nodes are introduced as of node 1.0 and are not as feature rich
+    as mapping nodes (yet). If you find inconsistencies or missing features,
+    please file an issue or create a pull request at github. Any help is
+    appreciated.
 
 
-Fine granular control of node functionality
--------------------------------------------
+Behaviors
+~~~~~~~~~
 
 ``node`` utilizes the `plumber <http://pypi.python.org/pypi/plumber>`_ package.
 
-Different behaviors of nodes are provided by `plumbing behaviors`. Read the
-documentation of ``plumber`` for details about the plumbing system:
+The different functionalities of nodes are provided as plumbing behaviors:
+
+.. code-block:: python
+
+    from node.behaviors import DefaultInit
+    from node.behaviors import MappingNode
+    from node.behaviors import OdictStorage
+    from plumber import plumbing
+
+    @plumbing(
+        DefaultInit,
+        MappingNode,
+        OdictStorage)
+    class CustomNode(object):
+        pass
+
+When inspecting the ``CustomNode`` class, we can see it was plumbed using given
+behaviors, now representing a complete node implementation:
 
 .. code-block:: pycon
-
-    >>> from plumber import plumbing
-    >>> from node.behaviors import (
-    ...     Nodespaces,
-    ...     Attributes,
-    ...     Lifecycle,
-    ...     NodeChildValidate,
-    ...     Adopt,
-    ...     DefaultInit,
-    ...     MappingNode,
-    ...     OdictStorage,
-    ... )
-
-    >>> @plumbing(
-    ...     Nodespaces,
-    ...     Attributes,
-    ...     Lifecycle,
-    ...     NodeChildValidate,
-    ...     Adopt,
-    ...     DefaultInit,
-    ...     MappingNode,
-    ...     OdictStorage)
-    ... class CustomNode(object):
-    ...     pass
 
     >>> dir(CustomNode)
-    ['__class__', '__contains__', '__delattr__', '__delitem__',
-    '__dict__', '__doc__', '__format__', '__getattribute__',
-    '__getitem__', '__hash__', '__implemented__', '__init__',
-    '__iter__', '__len__', '__module__', '__name__',
-    '__new__', '__nonzero__', '__parent__', '__plumbing__',
-    '__plumbing_stacks__', '__provides__', '__reduce__',
-    '__reduce_ex__', '__repr__', '__setattr__', '__setitem__',
-    '__sizeof__', '__str__', '__subclasshook__', '__weakref__',
-    '_nodespaces', '_notify_suppress', 'acquire', 'allow_non_node_childs',
-    'attribute_access_for_attrs', 'attributes', 'attributes_factory',
-    'attrs', 'clear', 'copy', 'deepcopy', 'detach', 'events', 'filtereditems',
-    'filtereditervalues', 'filteredvalues', 'get', 'has_key', 'items',
-    'iteritems', 'iterkeys', 'itervalues', 'keys', 'name', 'noderepr',
-    'nodespaces', 'parent', 'path', 'pop', 'popitem', 'printtree',
-    'root', 'setdefault', 'storage', 'update', 'values']
+    ['__bool__', '__class__', '__contains__', '__delattr__', '__delitem__',
+    '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__',
+    '__getattribute__', '__getitem__', '__gt__', '__hash__', '__implemented__',
+    '__init__', '__init_subclass__', '__iter__', '__le__', '__len__', '__lt__',
+    '__module__', '__name__', '__ne__', '__new__', '__nonzero__', '__parent__',
+    '__plumbing__', '__plumbing_stacks__', '__provides__', '__reduce__',
+    '__reduce_ex__', '__repr__', '__setattr__', '__setitem__', '__sizeof__',
+    '__str__', '__subclasshook__', '__weakref__', 'acquire', 'clear', 'copy',
+    'deepcopy', 'detach', 'filtereditems', 'filtereditervalues', 'filteredvalues',
+    'get', 'has_key', 'items', 'iteritems', 'iterkeys', 'itervalues', 'keys',
+    'name', 'noderepr', 'parent', 'path', 'pop', 'popitem', 'printtree', 'root',
+    'setdefault', 'storage', 'treerepr', 'update', 'values']
 
-As the ``dir`` call shows, the ``CustomNode`` class was plumbed using given
-behaviors, now representing a complete node implementation with some
-additional behaviours.
+Please read the documentation of ``plumber`` for detailed information about the
+plumbing system.
 
-.. code-block:: pycon
 
-    >>> node = CustomNode()
-    >>> node['child'] = CustomNode()
-    >>> node.printtree()
-    <class 'CustomNode'>: None
-      <class 'CustomNode'>: child
+Attributes
+~~~~~~~~~~
 
-    >>> from node.interfaces import INode
-    >>> INode.providedBy(node)
-    True
+XXX
+
+
+Schema
+~~~~~~
+
+XXX
 
 
 Plumbing Behaviors
 ------------------
 
-General behaviors
+General Behaviors
 ~~~~~~~~~~~~~~~~~
 
 **node.behaviors.DefaultInit**
@@ -184,8 +223,8 @@ General behaviors
     See ``node.interfaces.IBoundContext``.
 
 
-Mapping related behaviors
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Mapping Behaviors
+~~~~~~~~~~~~~~~~~
 
 **node.behaviors.MappingNode**
     Turn an object into a mapping node. Extends ``node.behaviors.Node``.
@@ -291,8 +330,8 @@ Mapping related behaviors
     See ``node.interfaces.ISchemaProperties``.
 
 
-Sequence related behaviors
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Sequence Behaviors
+~~~~~~~~~~~~~~~~~~
 
 **node.behaviors.ListStorage**
     Provide list storage. See ``node.interfaces.ISequenceStorage``.
