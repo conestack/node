@@ -32,10 +32,10 @@ from .mapping import Mapping  # noqa
 from .mapping import ReadMapping  # noqa
 from .mapping import WriteMapping  # noqa
 from .nodespace import Nodespaces  # noqa
-from .nodify import DefaultInit  # noqa
-from .nodify import MappingNode  # noqa
-from .nodify import Node  # noqa
-from .nodify import Nodify  # noqa
+from .node import DefaultInit  # noqa
+from .node import MappingNode  # noqa
+from .node import Node  # noqa
+from .node import Nodify  # noqa
 from .order import Order  # noqa
 from .reference import NodeIndex  # noqa
 from .reference import Reference  # noqa

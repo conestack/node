@@ -54,6 +54,11 @@ Changes
 
 **Breaking changes**:
 
+- Rename ``node.behaviors.nodify`` module to ``node.behaviors.node``. It's not
+  intended to import behaviors from modules contained in ``node.behaviors``
+  package directly but from ``node.behaviors``. You need to adopt your imports.
+  [rnix]
+
 - ``node.behaviors.schema.Schema`` no longer considers wildcard fields.
   [rnix]
 

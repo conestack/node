@@ -86,7 +86,7 @@ def test_suite():
     from node.tests import test_locking
     from node.tests import test_mapping
     from node.tests import test_nodespace
-    from node.tests import test_nodify
+    from node.tests import test_node
     from node.tests import test_order
     from node.tests import test_reference
     from node.tests import test_schema
@@ -119,7 +119,7 @@ def test_suite():
     suite.addTest(unittest.findTestCases(test_mapping))
     suite.addTest(unittest.findTestCases(test_sequence))
     suite.addTest(unittest.findTestCases(test_nodespace))
-    suite.addTest(unittest.findTestCases(test_nodify))
+    suite.addTest(unittest.findTestCases(test_node))
     suite.addTest(unittest.findTestCases(test_order))
     suite.addTest(unittest.findTestCases(test_reference))
     suite.addTest(unittest.findTestCases(test_storage))

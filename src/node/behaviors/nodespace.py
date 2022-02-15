@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from node.compat import STR_TYPE
 from node.interfaces import INodespaces
 from odict import odict
@@ -31,8 +32,8 @@ class Nodespaces(Behavior):
         # isinstance check is required because odict tries to get item possibly
         # with ``_nil`` key, which is actually an object
         if isinstance(key, STR_TYPE) \
-          and key.startswith('__') \
-          and key.endswith('__'):
+                and key.startswith('__') \
+                and key.endswith('__'):
             # a reserved child key mapped to the nodespace behind
             # nodespaces[key], nodespaces is an odict
             return self.nodespaces[key]

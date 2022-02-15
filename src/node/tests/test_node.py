@@ -52,8 +52,8 @@ class TestNodify(NodeTestCase):
         self.assertEqual(child.name, 'child')
         self.assertEqual(child.parent, root)
         self.assertEqual(root.treerepr(), (
-            '<class \'node.tests.test_nodify.MappingNode\'>: root\n'
-            '  <class \'node.tests.test_nodify.MappingNode\'>: child\n'
+            '<class \'node.tests.test_node.MappingNode\'>: root\n'
+            '  <class \'node.tests.test_node.MappingNode\'>: child\n'
         ))
         self.assertTrue(bool(root))
 
@@ -86,17 +86,17 @@ class TestNodify(NodeTestCase):
         child = root['child'] = MappingNode()
         subchild = child['subchild'] = MappingNode()
         self.assertEqual(root.treerepr(), (
-            '<class \'node.tests.test_nodify.RootMappingNode\'>: root\n'
-            '  <class \'node.tests.test_nodify.MappingNode\'>: child\n'
-            '    <class \'node.tests.test_nodify.MappingNode\'>: subchild\n'
+            '<class \'node.tests.test_node.RootMappingNode\'>: root\n'
+            '  <class \'node.tests.test_node.MappingNode\'>: child\n'
+            '    <class \'node.tests.test_node.MappingNode\'>: subchild\n'
         ))
 
         root[u'\xf6'] = MappingNode()
         self.checkOutput("""\
-        <class 'node.tests.test_nodify.RootMappingNode'>: root
-        __<class 'node.tests.test_nodify.MappingNode'>: child
-        ____<class 'node.tests.test_nodify.MappingNode'>: subchild
-        __<class 'node.tests.test_nodify.MappingNode'>: ...
+        <class 'node.tests.test_node.RootMappingNode'>: root
+        __<class 'node.tests.test_node.MappingNode'>: child
+        ____<class 'node.tests.test_node.MappingNode'>: subchild
+        __<class 'node.tests.test_node.MappingNode'>: ...
         """, root.treerepr(prefix='_'))
 
         self.checkOutput("""\

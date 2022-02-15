@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from contextlib import contextmanager
 from node.interfaces import IAdopt
 from node.interfaces import IAsAttrAccess

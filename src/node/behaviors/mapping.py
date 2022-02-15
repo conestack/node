@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from node.compat import ITER_FUNC
 from node.compat import iteritems
 from node.utils import UNSET

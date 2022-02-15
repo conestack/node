@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from node.events import NodeAddedEvent
 from node.events import NodeCreatedEvent
 from node.events import NodeDetachedEvent

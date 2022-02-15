@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from node.behaviors.common import Adopt
 from node.behaviors.common import NodeChildValidate
-from node.behaviors.nodify import MappingNode
+from node.behaviors.node import MappingNode
 from node.behaviors.storage import OdictStorage
 from node.compat import IS_PY2
 from node.interfaces import IAttributes

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
+from __future__ import absolute_import
 from node.behaviors.mapping import FullMapping
 from node.compat import IS_PY2
 from node.interfaces import IDefaultInit
