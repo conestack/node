@@ -16,36 +16,36 @@ Node
 Overview
 --------
 
-Node is a library for building data models.
+Node is a base library to create nested data models and structures.
 
-These data models are described as trees and utilize Python's
-`mapping and sequence API's <http://docs.python.org/reference/datamodel.html>`_
-for accessing node members, and the contract of `zope.location.interfaces.ILocation
-<https://zopelocation.readthedocs.io/en/latest/api.html#zope.location.interfaces.ILocation>`_
-for hierarchy information.
+These data models are described as trees of nodes with attributes. 
 
-One purpose of this package is to provide a unified API to different backend
-storages. Concrete storage related implementations are for example:
+They utilize 
+
+- for accessing node members Python's `mapping and sequence API's <http://docs.python.org/reference/datamodel.html>`_, 
+- for hierarchy information the contract of `zope.location.interfaces.ILocation <https://zopelocation.readthedocs.io/en/latest/api.html#zope.location.interfaces.ILocation>`_.
+
+One purpose of this package is to provide a unified API to different backend storages. 
+
+Specific storage related implementations are for example:
 
 - `node.ext.directory <https://pypi.org/project/node.ext.directory>`_
 - `node.ext.ldap <https://pypi.org/project/node.ext.ldap>`_
 - `node.ext.yaml <https://pypi.org/project/node.ext.yaml>`_
 - `node.ext.zodb <https://pypi.org/project/node.ext.zodb>`_
 
-Another usecase is providing interfaces for specific application domains, e.g.
-for user and group management. `node.ext.ugm <https://pypi.org/project/node.ext.ugm>`_
-defines the interfaces for user and group management and implements a file based
-default implementation. There also exists implementations of the same interfaces in
-`node.ext.ldap <https://pypi.org/project/node.ext.ldap>`_ and
-`cone.sql <https://pypi.org/project/cone.sql>`_, for accessing users and groups
-in a LDAP respective SQL databases.
+Another usecase is providing interfaces for specific application domains. 
 
-This package is also used to build in-memory models of all sorts. E.g.
-`yafowil <https://pypi.org/project/yafowil>`_ is a HTML form processing and
-rendering library and uses node trees for declarative description of the form
-model. Another one to mention is `cone.app <https://pypi.org/project/cone.app>`_,
-a `pyramid <https://pypi.org/project/pyramid>`_ based development environment
-for web applications, which uses node trees to describe the application model.
+E.g. for user and group management, `node.ext.ugm <https://pypi.org/project/node.ext.ugm>`_ defines the interfaces. 
+Additional it implements a file based default implementation. 
+Then there are specific implementations of those interfaces in `node.ext.ldap <https://pypi.org/project/node.ext.ldap>`_ and `cone.sql <https://pypi.org/project/cone.sql>`_, to access users and groups in LDAP and SQL databases.
+
+This package is used to build in-memory models of all sorts. 
+
+E.g.  `yafowil <https://pypi.org/project/yafowil>`_ is a HTML form processing and rendering library. 
+It uses node trees for declarative description of the form model. 
+
+Another one to mention is `cone.app <https://pypi.org/project/cone.app>`_, a `Pyramid <https://pypi.org/project/pyramid>`_ based development environment for web applications, which uses node trees to describe the application model.
 
 
 Basic Usage
