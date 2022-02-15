@@ -74,8 +74,7 @@ class Cache(Behavior):
     @default
     @instance_property
     def cache(self):
-        """Default cache is a dict on self.
-        """
+        """Default cache is a dict on self."""
         return dict()
 
     @plumb

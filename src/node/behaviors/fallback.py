@@ -36,8 +36,7 @@ def _to_root(node, path, visited):
 
 
 def _to_leaf(node, path, visited):
-    """Traverse children, searching for fallback key.
-    """
+    """Traverse children, searching for fallback key."""
     current = node
     for name in path[len(current.path):]:
         new_current = current.get(name, _marker)

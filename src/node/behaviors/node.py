@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-from node.behaviors.mapping import FullMapping
 from node.compat import IS_PY2
 from node.interfaces import IDefaultInit
 from node.interfaces import IMappingNode
@@ -13,7 +12,6 @@ from node.utils import safe_decode
 from plumber import Behavior
 from plumber import default
 from plumber import override
-from plumber import plumb
 from zope.interface import implementer
 from zope.interface.interfaces import IInterface
 
@@ -142,31 +140,3 @@ class Node(Behavior):
     @override
     def printtree(self):
         print(self.treerepr())                               # pragma: no cover
-
-
-@implementer(IMappingNode)
-class MappingNode(Node, FullMapping):
-
-    @plumb
-    def copy(_next, self):
-        new = _next(self)
-        new.__name__ = self.__name__
-        new.__parent__ = self.__parent__
-        return new
-
-    @override
-    def filtereditervalues(self, interface):
-        for val in self.itervalues():
-            if interface.providedBy(val):
-                yield val
-
-    @override
-    def filteredvalues(self, interface):
-        return [val for val in self.filtereditervalues(interface)]
-
-    # B/C 2010-12-23
-    filtereditems = override(filtereditervalues)
-
-
-# B/C 2022-02-14
-Nodify = MappingNode

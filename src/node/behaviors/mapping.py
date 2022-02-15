@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
+from node.behaviors.node import Node
 from node.compat import ITER_FUNC
 from node.compat import iteritems
+from node.interfaces import IMappingNode
 from node.utils import UNSET
 from plumber import Behavior
 from plumber import default
+from plumber import override
+from plumber import plumb
 from zope.interface import implementer
 from zope.interface.common.mapping import IClonableMapping
 from zope.interface.common.mapping import IEnumerableMapping
@@ -21,8 +25,7 @@ import copy
 
 @implementer(IItemMapping)
 class ItemMapping(Behavior):
-    """Simplest readable mapping object.
-    """
+    """Simplest readable mapping object."""
 
     @default
     def __getitem__(self, key):
@@ -31,13 +34,11 @@ class ItemMapping(Behavior):
 
 @implementer(IReadMapping)
 class ReadMapping(ItemMapping):
-    """Basic mapping interface.
-    """
+    """Basic mapping interface."""
 
     @default
     def get(self, key, default=None):
-        """Uses ``__getitem__``.
-        """
+        """Uses ``__getitem__``."""
         try:
             return self[key]
         except KeyError:
@@ -62,8 +63,7 @@ class ReadMapping(ItemMapping):
 
 @implementer(IWriteMapping)
 class WriteMapping(Behavior):
-    """Mapping methods for changing data.
-    """
+    """Mapping methods for changing data."""
 
     @default
     def __delitem__(self, key):
@@ -76,13 +76,11 @@ class WriteMapping(Behavior):
 
 @implementer(IEnumerableMapping)
 class EnumerableMapping(ReadMapping):
-    """Mapping objects whose items can be enumerated.
-    """
+    """Mapping objects whose items can be enumerated."""
 
     @default
     def keys(self):
-        """Uses ``__iter__``.
-        """
+        """Uses ``__iter__``."""
         return [x for x in self]
 
     @default
@@ -107,15 +105,13 @@ class EnumerableMapping(ReadMapping):
 
     @default
     def __len__(self):
-        """Uses ``keys``.
-        """
+        """Uses ``keys``."""
         return len(self.keys())
 
 
 @implementer(IMapping)
 class Mapping(WriteMapping, EnumerableMapping):
-    """Simple mapping interface.
-    """
+    """Simple mapping interface."""
 
 
 @implementer(IIterableMapping)
@@ -123,8 +119,7 @@ class IterableMapping(EnumerableMapping):
 
     @default
     def iterkeys(self):
-        """Uses ``__iter__``.
-        """
+        """Uses ``__iter__``."""
         return self.__iter__()
 
     @default
@@ -164,8 +159,7 @@ class ExtendedReadMapping(IterableMapping):
 
     @default
     def has_key(self, key):
-        """Uses ``__iter__``.
-        """
+        """Uses ``__iter__``."""
         return key in self
 
 
@@ -174,8 +168,7 @@ class ExtendedWriteMapping(WriteMapping):
 
     @default
     def clear(self):
-        """Works only if together with EnumerableMapping.
-        """
+        """Works only if together with EnumerableMapping."""
         for key in self.keys():
             del self[key]
 
@@ -195,8 +188,7 @@ class ExtendedWriteMapping(WriteMapping):
 
     @default
     def setdefault(self, key, default=None):
-        """Works only if together with ReadMapping.
-        """
+        """Works only if together with ReadMapping."""
         try:
             return self[key]
         except KeyError:
@@ -205,8 +197,7 @@ class ExtendedWriteMapping(WriteMapping):
 
     @default
     def pop(self, key, default=UNSET):
-        """Works only if together with ReadMapping.
-        """
+        """Works only if together with ReadMapping."""
         try:
             val = self[key]
             del self[key]
@@ -218,8 +209,7 @@ class ExtendedWriteMapping(WriteMapping):
 
     @default
     def popitem(self):
-        """Works only if together with IterableMapping.
-        """
+        """Works only if together with IterableMapping."""
         for key in reversed(self.keys()):
             val = self[key]
             del self[key]
@@ -240,3 +230,31 @@ class FullMapping(ExtendedReadMapping,
         - ``__iter__``
         - ``__setitem__``
     """
+
+
+@implementer(IMappingNode)
+class MappingNode(Node, FullMapping):
+
+    @plumb
+    def copy(_next, self):
+        new = _next(self)
+        new.__name__ = self.__name__
+        new.__parent__ = self.__parent__
+        return new
+
+    @override
+    def filtereditervalues(self, interface):
+        for val in self.itervalues():
+            if interface.providedBy(val):
+                yield val
+
+    @override
+    def filteredvalues(self, interface):
+        return [val for val in self.filtereditervalues(interface)]
+
+    # B/C 2010-12-23
+    filtereditems = override(filtereditervalues)
+
+
+# B/C 2022-02-14
+Nodify = MappingNode

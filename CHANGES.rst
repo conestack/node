@@ -21,7 +21,9 @@ Changes
   [rnix]
 
 - Rename ``node.interfaces.INodify`` to ``node.interfaces.IMappingNode`` and
-  ``node.behaviors.Nodify`` to ``node.behaviors.MappingNode``.
+  ``node.behaviors.Nodify`` to ``node.behaviors.MappingNode``. ``MappingNode``
+  implementation moved from ``node.behaviors.nodify`` to
+  ``node.behaviors.mapping``.
   B/C is kept.
   [rnix]
 
@@ -56,7 +58,13 @@ Changes
 
 - Rename ``node.behaviors.nodify`` module to ``node.behaviors.node``. It's not
   intended to import behaviors from modules contained in ``node.behaviors``
-  package directly but from ``node.behaviors``. You need to adopt your imports.
+  package directly but from ``node.behaviors``. Please adopt your imports.
+  [rnix]
+
+- While import ``Nodify`` behavior from ``node.behaviors`` still work for B/C
+  reasons, importing from ``node.behaviors.nodify`` not works any more.
+  The behavior has been moved to ``node.behaviors.mapping`` and renamed to
+  ``MappingNode``. Please adopt your imports.
   [rnix]
 
 - ``node.behaviors.schema.Schema`` no longer considers wildcard fields.

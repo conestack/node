@@ -54,8 +54,7 @@ class PrefixAliaser(object):
         return (self.prefix or '') + key
 
     def unalias(self, prefixed_key):
-        """Returns the real key for a prefixed_key.
-        """
+        """Returns the real key for a prefixed_key."""
         prefix = self.prefix or ''
         if not prefixed_key.startswith(prefix):
             raise KeyError(u"key '{}' does not match prefix '{}'".format(
@@ -79,8 +78,7 @@ class SuffixAliaser(object):
         return key + (self.suffix or '')
 
     def unalias(self, suffixed_key):
-        """returns the real key for a suffixed_key
-        """
+        """returns the real key for a suffixed_key."""
         suffix = self.suffix or ''
         if not suffixed_key.endswith(suffix):
             raise KeyError(u"key '{}' does not match suffix '{}'".format(
@@ -114,8 +112,7 @@ class AliaserChain(object):
 
 
 class PrefixSuffixAliaser(AliaserChain):
-    """Prefixes and suffixes.
-    """
+    """Prefixes and suffixes."""
 
     def __init__(self, prefix=None, suffix=None):
         self.chain = (PrefixAliaser(prefix), SuffixAliaser(suffix))

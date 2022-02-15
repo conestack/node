@@ -83,8 +83,7 @@ class suppress_events(object):
 
 
 class UnknownEvent(ValueError):
-    """Thrown on attempt to register a subscriber to an unknown event.
-    """
+    """Thrown on attempt to register a subscriber to an unknown event."""
 
 
 _attribute_subscribers = threading.local()
@@ -169,15 +168,13 @@ class EventAttribute(object):
         self.subscribers = list()
 
     def __get__(self, obj, type_=None):
-        """Return attribute value.
-        """
+        """Return attribute value."""
         if obj is None:
             return self.default
         return getattr(obj, self.storage).get(self.name, self.default)
 
     def __set__(self, obj, value):
-        """Set attribute value. Triggers event if value changed.
-        """
+        """Set attribute value. Triggers event if value changed."""
         storage = getattr(obj, self.storage)
         old_value = storage.get(self.name, self.default)
         storage[self.name] = value
@@ -186,14 +183,12 @@ class EventAttribute(object):
                 obj.dispatch(self.name, value)
 
     def __delete__(self, obj):
-        """Delete attribute value.
-        """
+        """Delete attribute value."""
         del getattr(obj, self.storage)[self.name]
         obj.dispatch(self.name, UNSET)
 
     def subscriber(self, func):
-        """Event attribute subscriber decorator.
-        """
+        """Event attribute subscriber decorator."""
         self.subscribers.append(func)
         return func
 
