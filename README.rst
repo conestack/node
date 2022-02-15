@@ -120,7 +120,7 @@ Using a list node:
     root.insert(0, BaseNode())
     root.insert(1, BaseNode())
 
-Check tree structire with ``printtree``:
+Check tree structure with ``printtree``:
 
 .. code-block:: pycon
 
