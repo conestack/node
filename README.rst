@@ -231,7 +231,8 @@ Mapping Behaviors
     See ``node.interfaces.IMappingNode``.
 
 **node.behaviors.MappingAdopt**
-    Plumbing behavior that provides adoption of children.
+    Plumbing behavior that provides ``__name__`` and ``__parent__`` attribute
+    adoption on child nodes of mapping.
     See ``node.interfaces.IMappingAdopt``.
 
 **node.behaviors.NodeChildValidate**
@@ -336,6 +337,11 @@ Sequence Behaviors
 **node.behaviors.SequenceNode**
     Turn an object into a sequence node. Extends ``node.behaviors.Node``.
     See ``node.interfaces.IMappingNode``.
+
+**node.behaviors.SequenceAdopt**
+    Plumbing behavior that provides ``__name__`` and ``__parent__`` attribute
+    adoption on child nodes of sequence.
+    See ``node.interfaces.ISequenceAdopt``.
 
 **node.behaviors.SequenceStorage**
     Provide abstract sequence storage access.

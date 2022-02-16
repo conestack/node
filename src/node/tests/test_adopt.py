@@ -1,5 +1,11 @@
+from node.behaviors import DictStorage
+from node.behaviors import FullMapping
+from node.behaviors import ListStorage
 from node.behaviors import MappingAdopt
+from node.behaviors import MutableSequence
+from node.behaviors import SequenceAdopt
 from node.interfaces import IMappingAdopt
+from node.interfaces import ISequenceAdopt
 from node.testing.env import MockupNode
 from node.testing.env import NoNode
 from node.tests import NodeTestCase
@@ -9,9 +15,8 @@ from plumber import plumbing
 class TestAdopt(NodeTestCase):
 
     def test_MappingAdopt(self):
-        # A dictionary is used as end point
-        @plumbing(MappingAdopt)
-        class AdoptingDict(dict):
+        @plumbing(MappingAdopt, FullMapping, DictStorage)
+        class AdoptingDict(object):
             pass
 
         ad = AdoptingDict()
@@ -34,7 +39,7 @@ class TestAdopt(NodeTestCase):
         # If something goes wrong, the adoption does not happen.
         # All exceptions are caught.
         class FakeDict(object):
-            def __setitem__(self, key, val):
+            def __setitem__(self, key, value):
                 raise KeyError(key)
 
             def setdefault(self, key, default=None):
@@ -49,6 +54,59 @@ class TestAdopt(NodeTestCase):
 
         with self.assertRaises(KeyError):
             fail['foo'] = node
+
+        self.assertEqual(node.__name__, None)
+        self.assertEqual(node.__parent__, None)
+
+    def test_SequenceAdopt(self):
+        @plumbing(SequenceAdopt, MutableSequence, ListStorage)
+        class AdoptingList(object):
+            pass
+
+        al = AdoptingList()
+        self.assertTrue(ISequenceAdopt.providedBy(al))
+
+        # The mockup node is adopted
+        node = MockupNode()
+        al.insert(0, node)
+        self.assertTrue(al[0] is node)
+        self.assertEqual(node.__name__, '0')
+        self.assertTrue(node.__parent__ is al)
+
+        al[0] = node = MockupNode()
+        self.assertTrue(al[0] is node)
+        self.assertEqual(node.__name__, '0')
+        self.assertTrue(node.__parent__ is al)
+
+        # The non-node object is not adopted
+        nonode = NoNode()
+        al[0] = nonode
+        self.assertTrue(al[0] is nonode)
+        self.assertFalse(hasattr(nonode, '__name__'))
+        self.assertFalse(hasattr(nonode, '__parent__'))
+
+        # Slicing is not supported
+        with self.assertRaises(NotImplementedError):
+            al[:] = [1, 2, 3]
+
+        # If something goes wrong, the adoption does not happen.
+        # All exceptions are caught.
+        class FakeList(object):
+            def __setitem__(self, index, value):
+                pass
+
+            def insert(self, index, value):
+                raise Exception()
+
+        @plumbing(SequenceAdopt)
+        class FailingAL(FakeList):
+            pass
+
+        fail = FailingAL()
+        node = MockupNode()
+
+        with self.assertRaises(Exception):
+            fail.insert(0, node)
 
         self.assertEqual(node.__name__, None)
         self.assertEqual(node.__parent__, None)

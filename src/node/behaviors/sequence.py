@@ -7,7 +7,6 @@ except ImportError:  # pragma: no cover
     from collections import MutableSequence as ABCMutableSequence
     from collections import Sequence as ABCSequence
 from node.behaviors import Node
-from node.behaviors.adopt import adopt_node
 from node.compat import IS_PY2
 from node.interfaces import ISequenceNode
 from plumber import Behavior
@@ -107,10 +106,9 @@ class SequenceNode(Node, MutableSequence):
 
     @plumb
     def __setitem__(next_, self, index, value):
-        if type(index) is slice:
-            raise NotImplementedError('No slice support yet')
-        with adopt_node(str(index), self, value):
-            next_(self, int(index), value)
+        if type(index) is not slice:
+            index = int(index)
+        next_(self, index, value)
 
     @plumb
     def __delitem__(next_, self, index):
@@ -121,8 +119,7 @@ class SequenceNode(Node, MutableSequence):
 
     @plumb
     def insert(next_, self, index, value):
-        with adopt_node(str(index), self, value):
-            next_(self, int(index), value)
+        next_(self, int(index), value)
         self._update_indices()
 
     @plumb

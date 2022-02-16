@@ -204,15 +204,17 @@ class ISequenceNode(INode, IMutableSequence):
 
 
 class IMappingAdopt(Interface):
-    """Plumbing behavior that provides adoption of children.
+    """Plumbing behavior that provides ``__name__`` and ``__parent__``
+    attribute adoption on child nodes of mapping.
 
     Plumbing hooks:
 
     * ``__setitem__``
-        Takes care of ``__name__`` and ``__parent__`` attributes of child node.
+        Sets ``__name__`` and ``__parent__`` attributes of child node.
+        Revert change if error occurs in pipeline.
 
     * ``setdefault``
-        Re-route ``__getitem__`` and ``__setitem__``, skipping ``_next``.
+        Re-route ``__getitem__`` and ``__setitem__``, skipping ``next_``.
     """
 
 
@@ -221,6 +223,22 @@ deprecated(
     '``IAdopt`` has been renamed to ``IMappingAdopt``. Please fix your import',
     IAdopt='node.interfaces:IMappingAdopt',
 )
+
+
+class ISequenceAdopt(Interface):
+    """Plumbing behavior that provides ``__name__`` and ``__parent__``
+    attribute adoption on child nodes of sequence.
+
+    Plumbing hooks:
+
+    * ``__setitem__``
+        Sets ``__name__`` and ``__parent__`` attributes of child node.
+        Revert change if error occurs in pipeline.
+
+    * ``insert``
+        Sets ``__name__`` and ``__parent__`` attributes of child node.
+        Revert change if error occurs in pipeline.
+    """
 
 
 class INodeChildValidate(Interface):

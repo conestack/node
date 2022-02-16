@@ -5,6 +5,10 @@ Changes
 1.0 (unreleased)
 ----------------
 
+- Introduce ``node.interfaces.ISequenceAdopt`` and
+  ``node.behaviors.SequenceAdopt``.
+  [rnix]
+
 - ``MappingAdopt`` now catches all exceptions instead of only
   ``AttributeError``, ``KeyError`` and ``ValueError``.
   [rnix]

@@ -205,31 +205,25 @@ class TestSequence(NodeTestCase):
         self.assertEqual(node[1:], [child_1, child_2])
 
         # __setitem__
-        with self.assertRaises(NotImplementedError):
-            node[:1] = [child_0]
         node[2] = BaseNode()
         node['2'] = BaseNode()
         self.assertFalse(node[2] is child_2)
-        child_2 = node[2]
-        self.assertEqual(child_2.name, '2')
-        self.assertEqual(child_2.parent, node)
 
         # __delitem__
+        child_2 = node['2']
         del node[1]
         self.assertEqual(node[:], [child_0, child_2])
-        self.assertEqual([_.name for _ in node], ['0', '1'])
 
         # insert
         child_1 = BaseNode()
         node.insert(1, child_1)
         self.assertEqual(node[:], [child_0, child_1, child_2])
-        self.assertEqual([_.name for _ in node], ['0', '1', '2'])
 
         # printtree
         self.checkOutput("""
         <class 'node.base.BaseNode'>: None
-          <class 'node.tests.test_sequence.SequenceNode'>: seq
-            <class 'node.tests.test_sequence.SequenceNode'>: 0
-            <class 'node.base.BaseNode'>: 1
-            <class 'node.base.BaseNode'>: 2
-        """, root.treerepr())
+        __<class 'node.tests.test_sequence.SequenceNode'>: seq
+        ____<class 'node.tests.test_sequence.SequenceNode'>: 0
+        ____<class 'node.base.BaseNode'>: 1
+        ____<class 'node.base.BaseNode'>: 2
+        """, root.treerepr(prefix='_'))

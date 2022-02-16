@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from .adopt import MappingAdopt  # noqa
+from .adopt import SequenceAdopt  # noqa
 from .alias import Alias  # noqa
 from .attributes import Attributes  # noqa
 from .attributes import NodeAttributes  # noqa
