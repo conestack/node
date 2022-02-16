@@ -333,6 +333,10 @@ Mapping Behaviors
 Sequence Behaviors
 ~~~~~~~~~~~~~~~~~~
 
+**node.behaviors.SequenceStorage**
+    Provide abstract sequence storage access.
+    See ``node.interfaces.ISequenceStorage``.
+
 **node.behaviors.ListStorage**
     Provide list storage. See ``node.interfaces.ISequenceStorage``.
 
