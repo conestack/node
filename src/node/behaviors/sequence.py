@@ -7,7 +7,7 @@ except ImportError:  # pragma: no cover
     from collections import MutableSequence as ABCMutableSequence
     from collections import Sequence as ABCSequence
 from node.behaviors import Node
-from node.behaviors.common import adopt_node
+from node.behaviors.adopt import adopt_node
 from node.compat import IS_PY2
 from node.interfaces import ISequenceNode
 from plumber import Behavior

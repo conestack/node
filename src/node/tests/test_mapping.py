@@ -1,4 +1,4 @@
-from node.behaviors import Adopt
+from node.behaviors import MappingAdopt
 from node.behaviors import DefaultInit
 from node.behaviors import DictStorage
 from node.behaviors import FullMapping
@@ -29,7 +29,7 @@ class SuccessFullMapping(object):
 
 
 @plumbing(
-    Adopt,
+    MappingAdopt,
     DefaultInit,
     MappingNodeBehavior,
     OdictStorage)

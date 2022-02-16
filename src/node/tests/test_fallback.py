@@ -1,4 +1,4 @@
-from node.behaviors import Adopt
+from node.behaviors import MappingAdopt
 from node.behaviors import Attributes
 from node.behaviors import DefaultInit
 from node.behaviors import Fallback
@@ -17,7 +17,7 @@ from plumber import plumbing
 @plumbing(
     Nodespaces,
     Fallback,
-    Adopt,
+    MappingAdopt,
     DefaultInit,
     MappingNode,
     OdictStorage)
@@ -29,7 +29,7 @@ class FallbackNodeAttributes(object):
 @plumbing(
     NodeChildValidate,
     Nodespaces,
-    Adopt,
+    MappingAdopt,
     Attributes,
     DefaultInit,
     MappingNode,

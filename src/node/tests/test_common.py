@@ -1,5 +1,5 @@
 from node.base import BaseNode
-from node.behaviors import Adopt
+from node.behaviors import MappingAdopt
 from node.behaviors import ChildFactory
 from node.behaviors import DefaultInit
 from node.behaviors import FixedChildren
@@ -9,71 +9,12 @@ from node.behaviors import NodeChildValidate
 from node.behaviors import OdictStorage
 from node.behaviors import UnicodeAware
 from node.behaviors import UUIDAware
-from node.testing.env import MockupNode
-from node.testing.env import NoNode
 from node.tests import NodeTestCase
 from plumber import plumbing
 import uuid
 
 
 class TestCommon(NodeTestCase):
-
-    def test_Adopt(self):
-        # A dictionary is used as end point
-        @plumbing(Adopt)
-        class AdoptingDict(dict):
-            pass
-
-        ad = AdoptingDict()
-
-        # The mockup node is adopted
-        node = MockupNode()
-        ad['foo'] = node
-        self.assertTrue(ad['foo'] is node)
-        self.assertEqual(node.__name__, 'foo')
-        self.assertTrue(node.__parent__ is ad)
-
-        # The non-node object is not adopted
-        nonode = NoNode()
-        ad['bar'] = nonode
-        self.assertTrue(ad['bar'] is nonode)
-        self.assertFalse(hasattr(nonode, '__name__'))
-        self.assertFalse(hasattr(nonode, '__parent__'))
-
-        # If something goes wrong, the adoption does not happen.
-        # See ``plumbing.Adopt`` for exceptions that are handled.
-
-        # XXX: In case this should be configurable, it would be nice if a
-        # plumbing element could be instatiated which is currently not
-        # possible. It would be possible by defining the plumbing __init__
-        # method with a different name. Maybe it is also possible to have
-        # two __init__ one decorated one not, if the plumbing decorator could
-        # influence that all plumbing functions are stored under a different
-        # name. If the decorator cannot do that a Plumbing metaclass will
-        # work for sure, however, it is questionable whether it justifies a
-        # metaclass instead of just naming the plumbing init
-        # e.g. plumbing__init__
-
-        class FakeDict(object):
-            def __setitem__(self, key, val):
-                raise KeyError(key)
-
-            def setdefault(self, key, default=None):
-                pass                                         # pragma: no cover
-
-        @plumbing(Adopt)
-        class FailingAD(FakeDict):
-            pass
-
-        fail = FailingAD()
-        node = MockupNode()
-
-        def __setitem_fails():
-            fail['foo'] = node
-        err = self.expectError(KeyError, __setitem_fails)
-        self.assertEqual(str(err), "'foo'")
-        self.assertTrue(node.__name__ is None)
-        self.assertTrue(node.__parent__ is None)
 
     def test_UnicodeAware(self):
         @plumbing(MappingNode, UnicodeAware, OdictStorage)
@@ -149,7 +90,7 @@ class TestCommon(NodeTestCase):
         # Create a uid aware node. ``copy`` is not supported on UUIDAware node
         # trees, ``deepcopy`` must be used
         @plumbing(
-            Adopt,
+            MappingAdopt,
             DefaultInit,
             MappingNode,
             OdictStorage,

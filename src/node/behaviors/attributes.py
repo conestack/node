@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-from node.behaviors.common import Adopt
+from node.behaviors.adopt import MappingAdopt
 from node.behaviors.common import NodeChildValidate
 from node.behaviors.mapping import MappingNode
 from node.behaviors.storage import OdictStorage
@@ -18,7 +18,7 @@ from zope.interface import implementer
 
 @plumbing(
     NodeChildValidate,
-    Adopt,
+    MappingAdopt,
     MappingNode,
     OdictStorage)
 @implementer(INodeAttributes)

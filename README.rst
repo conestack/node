@@ -230,9 +230,9 @@ Mapping Behaviors
     Turn an object into a mapping node. Extends ``node.behaviors.Node``.
     See ``node.interfaces.IMappingNode``.
 
-**node.behaviors.Adopt**
+**node.behaviors.MappingAdopt**
     Plumbing behavior that provides adoption of children.
-    See ``node.interfaces.IAdopt``.
+    See ``node.interfaces.IMappingAdopt``.
 
 **node.behaviors.NodeChildValidate**
     Plumbing behavior for child node validation.
@@ -333,16 +333,16 @@ Mapping Behaviors
 Sequence Behaviors
 ~~~~~~~~~~~~~~~~~~
 
+**node.behaviors.SequenceNode**
+    Turn an object into a sequence node. Extends ``node.behaviors.Node``.
+    See ``node.interfaces.IMappingNode``.
+
 **node.behaviors.SequenceStorage**
     Provide abstract sequence storage access.
     See ``node.interfaces.ISequenceStorage``.
 
 **node.behaviors.ListStorage**
     Provide list storage. See ``node.interfaces.ISequenceStorage``.
-
-**node.behaviors.SequenceNode**
-    Turn an object into a sequence node. Extends ``node.behaviors.Node``.
-    See ``node.interfaces.IMappingNode``.
 
 
 JSON Serialization

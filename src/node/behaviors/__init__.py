@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
+from .adopt import Adopt  # noqa
+from .adopt import MappingAdopt  # noqa
 from .alias import Alias  # noqa
 from .attributes import Attributes  # noqa
 from .attributes import NodeAttributes  # noqa
 from .cache import Cache  # noqa
 from .cache import Invalidate  # noqa
 from .cache import VolatileStorageInvalidate  # noqa
-from .common import Adopt  # noqa
 from .common import AsAttrAccess  # noqa
 from .common import ChildFactory  # noqa
 from .common import FixedChildren  # noqa

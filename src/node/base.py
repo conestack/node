@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from node.behaviors import Adopt
+from node.behaviors import MappingAdopt
 from node.behaviors import AsAttrAccess
 from node.behaviors import Attributes
 from node.behaviors import DefaultInit
@@ -16,7 +16,7 @@ from plumber import plumbing
 
 
 @plumbing(
-    Adopt,
+    MappingAdopt,
     MappingNode)
 class AbstractNode(object):
     pass
@@ -24,7 +24,7 @@ class AbstractNode(object):
 
 @plumbing(
     NodeChildValidate,
-    Adopt,
+    MappingAdopt,
     AsAttrAccess,
     DefaultInit,
     MappingNode,
@@ -38,7 +38,7 @@ class BaseNode(object):
 
 @plumbing(
     NodeChildValidate,
-    Adopt,
+    MappingAdopt,
     AsAttrAccess,
     DefaultInit,
     MappingNode,
@@ -69,7 +69,7 @@ class ListNode(object):
 @plumbing(
     NodeChildValidate,
     Nodespaces,
-    Adopt,
+    MappingAdopt,
     Attributes,
     Reference,
     Order,
@@ -84,7 +84,7 @@ class Node(object):
 @plumbing(
     NodeChildValidate,
     Nodespaces,
-    Adopt,
+    MappingAdopt,
     Attributes,
     Reference,
     Order,

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from node.behaviors import Adopt
+from node.behaviors import MappingAdopt
 from node.behaviors import AsAttrAccess
 from node.behaviors import DefaultInit
 from node.behaviors import MappingNode
@@ -23,7 +23,7 @@ class NoNode(object):
 @plumbing(
     NodeChildValidate,
     DefaultInit,
-    Adopt,
+    MappingAdopt,
     AsAttrAccess,
     MappingNode,
     OdictStorage)

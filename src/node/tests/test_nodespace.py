@@ -1,4 +1,4 @@
-from node.behaviors import Adopt
+from node.behaviors import MappingAdopt
 from node.behaviors import DefaultInit
 from node.behaviors import MappingNode
 from node.behaviors import Nodespaces
@@ -13,7 +13,7 @@ from plumber import plumbing
 ###############################################################################
 
 @plumbing(
-    Adopt,
+    MappingAdopt,
     Nodespaces,
     MappingNode,
     OdictStorage)
@@ -22,7 +22,7 @@ class NodespacesNode(odict):
 
 
 @plumbing(
-    Adopt,
+    MappingAdopt,
     MappingNode,
     DefaultInit,
     OdictStorage)

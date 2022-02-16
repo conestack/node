@@ -74,6 +74,7 @@ class NodeTestCase(unittest.TestCase):
 
 
 def test_suite():
+    from node.tests import test_adopt
     from node.tests import test_alias
     from node.tests import test_attributes
     from node.tests import test_base
@@ -109,6 +110,7 @@ def test_suite():
     suite.addTest(unittest.findTestCases(test_events))
     suite.addTest(unittest.findTestCases(test_schema))
 
+    suite.addTest(unittest.findTestCases(test_adopt))
     suite.addTest(unittest.findTestCases(test_alias))
     suite.addTest(unittest.findTestCases(test_attributes))
     suite.addTest(unittest.findTestCases(test_cache))

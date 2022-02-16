@@ -5,6 +5,16 @@ Changes
 1.0 (unreleased)
 ----------------
 
+- ``MappingAdopt`` now catches all exceptions instead of only
+  ``AttributeError``, ``KeyError`` and ``ValueError``.
+  [rnix]
+
+- Rename ``node.interfaces.IAdopt`` to ``node.interfaces.IMappingAdopt`` and
+  ``node.behaviors.Adopt`` to ``node.behaviors.MappingAdopt``. ``MappingAdopt``
+  implementation moved from ``node.behaviors.common`` to
+  ``node.behaviors.adopt``. B/C is kept.
+  [rnix]
+
 - ``node.behaviors.Attributes`` now also works if
   ``node.behaviors.Nodespaces`` is not applied.
   [rnix]
@@ -27,13 +37,11 @@ Changes
 - Rename ``node.interfaces.INodify`` to ``node.interfaces.IMappingNode`` and
   ``node.behaviors.Nodify`` to ``node.behaviors.MappingNode``. ``MappingNode``
   implementation moved from ``node.behaviors.nodify`` to
-  ``node.behaviors.mapping``.
-  B/C is kept.
+  ``node.behaviors.mapping``. B/C is kept.
   [rnix]
 
 - Rename ``node.interfaces.IStorage`` to ``node.interfaces.IMappingStorage``
-  and ``node.behaviors.Storage`` to ``node.behaviors.Storage``.
-  B/C is kept.
+  and ``node.behaviors.Storage`` to ``node.behaviors.Storage``. B/C is kept.
   [rnix]
 
 - Add key and value type validation to schema fields where appropriate.
@@ -65,10 +73,9 @@ Changes
   package directly but from ``node.behaviors``. Please adopt your imports.
   [rnix]
 
-- While import ``Nodify`` behavior from ``node.behaviors`` still work for B/C
-  reasons, importing from ``node.behaviors.nodify`` not works any more.
-  The behavior has been moved to ``node.behaviors.mapping`` and renamed to
-  ``MappingNode``. Please adopt your imports.
+- While import ``Nodify`` and ``Adopt`` behaviors from ``node.behaviors`` still
+  work for B/C reasons, importing them from ``node.behaviors.nodify`` respective
+  ``node.behaviors.common`` not works any more. Please fix your imports.
   [rnix]
 
 - ``node.behaviors.schema.Schema`` no longer considers wildcard fields.

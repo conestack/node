@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-from contextlib import contextmanager
-from node.interfaces import IAdopt
 from node.interfaces import IAsAttrAccess
 from node.interfaces import IChildFactory
 from node.interfaces import IFixedChildren
@@ -22,49 +20,6 @@ from zope.interface import implementer
 import inspect
 import uuid
 import warnings
-
-
-@contextmanager
-def adopt_node(name, parent, value, exceptions=(Exception,)):
-    """Context manager for setting name and parent on node. If exception
-    occurs, name and parent gets reverted to original values.
-    """
-    # Only care about adoption if we have a node.
-    if not INode.providedBy(value):
-        yield
-        return
-    # Save old __parent__ and __name__ to restore if something goes wrong.
-    old_name = value.__name__
-    old_parent = value.__parent__
-    value.__name__ = name
-    value.__parent__ = parent
-    try:
-        yield
-    except exceptions:
-        value.__name__ = old_name
-        value.__parent__ = old_parent
-        raise
-
-
-@implementer(IAdopt)
-class Adopt(Behavior):
-
-    @plumb
-    def __setitem__(_next, self, key, val):
-        # XXX: In what other cases do we want to revert adoption?
-        #      -> probably all exceptions.
-        exceptions = (AttributeError, KeyError, ValueError)
-        with adopt_node(key, self, val, exceptions=exceptions):
-            _next(self, key, val)
-
-    @plumb
-    def setdefault(_next, self, key, default=None):
-        # We reroute through __getitem__ and __setitem__, skipping _next
-        try:
-            return self[key]
-        except KeyError:
-            self[key] = default
-            return default
 
 
 @implementer(IAsAttrAccess)
@@ -104,7 +59,7 @@ class FixedChildren(Behavior):
     could retrieve configuration from their parent.
 
     XXX: This implementation is similar to what's implemented in
-         cone.app.model.FactoryNode. harmonize.
+         cone.app.model.FactoryNode. consolidate.
     """
     fixed_children_factories = default(None)
 

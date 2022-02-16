@@ -1,4 +1,4 @@
-from node.behaviors import Adopt
+from node.behaviors import MappingAdopt
 from node.behaviors import DefaultInit
 from node.behaviors import MappingNode
 from node.behaviors import OdictStorage
@@ -15,7 +15,7 @@ import uuid
 ###############################################################################
 
 @plumbing(
-    Adopt,
+    MappingAdopt,
     Reference,
     DefaultInit,
     MappingNode,

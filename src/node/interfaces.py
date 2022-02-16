@@ -198,7 +198,7 @@ class ISequenceNode(INode, IMutableSequence):
         """
 
 
-class IAdopt(Interface):
+class IMappingAdopt(Interface):
     """Plumbing behavior that provides adoption of children.
 
     Plumbing hooks:
@@ -209,6 +209,10 @@ class IAdopt(Interface):
     * ``setdefault``
         Re-route ``__getitem__`` and ``__setitem__``, skipping ``_next``.
     """
+
+
+# B/C 2022-02-16
+IAdopt = IMappingAdopt
 
 
 class INodeChildValidate(Interface):

@@ -1,5 +1,5 @@
 from node.base import BaseNode
-from node.behaviors import Adopt
+from node.behaviors import MappingAdopt
 from node.behaviors import Cache
 from node.behaviors import ChildFactory
 from node.behaviors import DefaultInit
@@ -22,7 +22,7 @@ class TestCache(NodeTestCase):
 
         # Build invalidating node
         @plumbing(
-            Adopt,
+            MappingAdopt,
             Invalidate,
             DefaultInit,
             MappingNode,
@@ -72,7 +72,7 @@ class TestCache(NodeTestCase):
         # or ``OdictStorage``, some can use ``VolatileStorageInvalidate`` for
         # invalidation
         @plumbing(
-            Adopt,
+            MappingAdopt,
             VolatileStorageInvalidate,
             DefaultInit,
             MappingNode,
@@ -120,7 +120,7 @@ class TestCache(NodeTestCase):
     def test_with_ChildFactory(self):
         # Check for ChildFactory Node
         @plumbing(
-            Adopt,
+            MappingAdopt,
             VolatileStorageInvalidate,
             DefaultInit,
             MappingNode,
@@ -159,7 +159,7 @@ class TestCache(NodeTestCase):
     def test_Cache(self):
         # Build a node with active invalidation and cache functionality
         @plumbing(
-            Adopt,
+            MappingAdopt,
             Cache,
             Invalidate,
             DefaultInit,
