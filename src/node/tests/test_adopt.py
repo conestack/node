@@ -93,7 +93,7 @@ class TestAdopt(NodeTestCase):
         # All exceptions are caught.
         class FakeList(object):
             def __setitem__(self, index, value):
-                pass
+                pass  # pragma: no cover
 
             def insert(self, index, value):
                 raise Exception()

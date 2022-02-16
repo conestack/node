@@ -11,6 +11,7 @@ from node.behaviors import Nodespaces
 from node.behaviors import OdictStorage
 from node.behaviors import Order
 from node.behaviors import Reference
+from node.behaviors import SequenceAdopt
 from node.behaviors import SequenceNode
 from plumber import plumbing
 
@@ -51,6 +52,7 @@ class OrderedNode(object):
 
 
 @plumbing(
+    SequenceAdopt,
     DefaultInit,
     SequenceNode,
     ListStorage)
