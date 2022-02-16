@@ -1,9 +1,10 @@
-from node.behaviors import MappingAdopt
 from node.behaviors import DefaultInit
 from node.behaviors import DictStorage
 from node.behaviors import FullMapping
+from node.behaviors import MappingAdopt
 from node.behaviors import MappingNode as MappingNodeBehavior
 from node.behaviors import OdictStorage
+from node.interfaces import IMappingNode
 from node.interfaces import INode
 from node.testing import FullMappingTester
 from node.tests import NodeTestCase
@@ -162,6 +163,8 @@ class TestMapping(NodeTestCase):
 
     def test_MappingNode(self):
         root = MappingNode(name='root')
+        self.assertTrue(IMappingNode.providedBy(root))
+
         root['child'] = MappingNode()
         self.assertEqual(root.name, 'root')
         self.assertEqual(root.parent, None)
@@ -226,3 +229,10 @@ class TestMapping(NodeTestCase):
         self.assertEqual(subchild.acquire(INodeInterface), child)
         self.assertEqual(subchild.acquire(INode), child)
         self.assertEqual(subchild.acquire(INoInterface), None)
+
+    def test_BC_imports(self):
+        from node.behaviors import Nodify
+        self.assertTrue(Nodify is MappingNodeBehavior)
+
+        from node.interfaces import INodify
+        self.assertTrue(INodify is IMappingNode)

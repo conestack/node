@@ -30,7 +30,6 @@ from .mapping import ItemMapping  # noqa
 from .mapping import IterableMapping  # noqa
 from .mapping import Mapping  # noqa
 from .mapping import MappingNode  # noqa
-from .mapping import Nodify  # noqa
 from .mapping import ReadMapping  # noqa
 from .mapping import WriteMapping  # noqa
 from .node import DefaultInit  # noqa
@@ -59,8 +58,13 @@ deprecated(
     '``Adopt`` has been renamed to ``MappingAdopt``. Please fix your import',
     Adopt='node.behaviors.adopt:MappingAdopt',
 )
-# B/C 2022-02-14 -> node.behaviors.MappingStorage
+# B/C 2022-02-14 -> node.behaviors.Storage
 deprecated(
     '``Storage`` has been renamed to ``MappingStorage``. Please fix your import',
     Storage='node.behaviors.storage:MappingStorage',
+)
+# B/C 2022-02-14 -> node.behaviors.Nodify
+deprecated(
+    '``Nodify`` has been renamed to ``MappingNode``. Please fix your import',
+    Nodify='node.behaviors.mapping:MappingNode',
 )

@@ -168,8 +168,11 @@ class IMappingNode(INode, IFullMapping):
         """Return filtered child nodes by interface."""
 
 
-# B/C 2022-02-14
-INodify = IMappingNode
+# B/C 2022-02-14 -> node.interfaces.INodify
+deprecated(
+    '``INodify`` has been renamed to ``IMappingNode``. Please fix your import',
+    INodify='node.interfaces:IMappingNode',
+)
 
 
 class ISequenceNode(INode, IMutableSequence):

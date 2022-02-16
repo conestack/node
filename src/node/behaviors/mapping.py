@@ -254,7 +254,3 @@ class MappingNode(Node, FullMapping):
 
     # B/C 2010-12-23
     filtereditems = override(filtereditervalues)
-
-
-# B/C 2022-02-14
-Nodify = MappingNode
