@@ -47,12 +47,13 @@ setup(
     include_package_data=True,
     zip_safe=True,
     install_requires=[
-        'setuptools',
         'odict>=1.8.0',
         'plumber>=1.5',
-        'zope.lifecycleevent',
-        'zope.deprecation',
+        'setuptools',
         'zope.component',
+        'zope.deferredimport',
+        'zope.deprecation',
+        'zope.lifecycleevent'
     ],
     test_suite='node.tests.test_suite'
 )

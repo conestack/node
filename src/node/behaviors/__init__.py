@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from .adopt import Adopt  # noqa
 from .adopt import MappingAdopt  # noqa
 from .alias import Alias  # noqa
 from .attributes import Attributes  # noqa
@@ -53,3 +52,11 @@ from .storage import MappingStorage  # noqa
 from .storage import OdictStorage  # noqa
 from .storage import SequenceStorage  # noqa
 from .storage import Storage  # noqa
+from zope.deferredimport import deprecated
+
+
+# B/C 2022-02-16`-> node.behaviors.Adopt
+deprecated(
+    '``Adopt`` has been renamed to ``MappingAdopt``. Please fix your import',
+    Adopt='node.behaviors.adopt:MappingAdopt',
+)

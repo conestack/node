@@ -50,3 +50,7 @@ class TestAdopt(NodeTestCase):
 
         self.assertEqual(node.__name__, None)
         self.assertEqual(node.__parent__, None)
+
+        # B/C import test
+        from node.behaviors import Adopt
+        self.assertTrue(Adopt is MappingAdopt)

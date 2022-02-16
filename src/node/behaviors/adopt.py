@@ -45,7 +45,3 @@ class MappingAdopt(Behavior):
         except KeyError:
             self[key] = default
             return default
-
-
-# B/C 2022-02-16
-Adopt = MappingAdopt
