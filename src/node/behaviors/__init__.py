@@ -50,4 +50,5 @@ from .storage import DictStorage  # noqa
 from .storage import ListStorage  # noqa
 from .storage import MappingStorage  # noqa
 from .storage import OdictStorage  # noqa
+from .storage import SequenceStorage  # noqa
 from .storage import Storage  # noqa

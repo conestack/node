@@ -59,12 +59,13 @@ class OdictStorage(MappingStorage):
 
 
 @implementer(ISequenceStorage)
-class ListStorage(Behavior):
+class SequenceStorage(Behavior):
 
     @default
-    @instance_property
+    @property
     def storage(self):
-        return list()
+        msg = 'Abstract ``SequenceStorage`` does not implement ``storage``'
+        raise NotImplementedError(msg)
 
     @override
     def __len__(self):
@@ -85,3 +86,11 @@ class ListStorage(Behavior):
     @override
     def insert(self, index, value):
         self.storage.insert(index, value)
+
+
+class ListStorage(SequenceStorage):
+
+    @default
+    @instance_property
+    def storage(self):
+        return list()

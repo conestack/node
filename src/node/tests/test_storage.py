@@ -2,6 +2,7 @@ from node.behaviors import DictStorage
 from node.behaviors import ListStorage
 from node.behaviors import MappingStorage
 from node.behaviors import OdictStorage
+from node.behaviors import SequenceStorage
 from node.tests import NodeTestCase
 from odict import odict
 from plumber import plumbing
@@ -12,7 +13,7 @@ from plumber import plumbing
 ###############################################################################
 
 @plumbing(MappingStorage)
-class AbstractStorageObject(object):
+class MappingStorageObject(object):
     pass
 
 
@@ -23,6 +24,11 @@ class DictStorageObject(object):
 
 @plumbing(OdictStorage)
 class OdictStorageObject(object):
+    pass
+
+
+@plumbing(SequenceStorage)
+class SequenceStorageObject(object):
     pass
 
 
@@ -38,7 +44,7 @@ class ListStorageObject(object):
 class TestStorage(NodeTestCase):
 
     def test_MappingStorage(self):
-        obj = AbstractStorageObject()
+        obj = MappingStorageObject()
 
         def access_storage_fails():
             obj.storage
@@ -69,6 +75,15 @@ class TestStorage(NodeTestCase):
 
         del obj['foo']
         self.assertEqual(obj.storage, odict())
+
+    def test_SequenceStorage(self):
+        obj = SequenceStorageObject()
+
+        def access_storage_fails():
+            obj.storage
+        err = self.expectError(NotImplementedError, access_storage_fails)
+        expected = 'Abstract ``SequenceStorage`` does not implement ``storage``'
+        self.assertEqual(str(err), expected)
 
     def test_ListStorage(self):
         lseq = ListStorageObject()
