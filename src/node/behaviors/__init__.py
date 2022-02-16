@@ -51,12 +51,16 @@ from .storage import ListStorage  # noqa
 from .storage import MappingStorage  # noqa
 from .storage import OdictStorage  # noqa
 from .storage import SequenceStorage  # noqa
-from .storage import Storage  # noqa
 from zope.deferredimport import deprecated
 
 
-# B/C 2022-02-16`-> node.behaviors.Adopt
+# B/C 2022-02-16 -> node.behaviors.Adopt
 deprecated(
     '``Adopt`` has been renamed to ``MappingAdopt``. Please fix your import',
     Adopt='node.behaviors.adopt:MappingAdopt',
+)
+# B/C 2022-02-14 -> node.behaviors.MappingStorage
+deprecated(
+    '``Storage`` has been renamed to ``MappingStorage``. Please fix your import',
+    Storage='node.behaviors.storage:MappingStorage',
 )

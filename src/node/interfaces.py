@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from zope.deferredimport import deprecated
 from zope.interface import Attribute
 from zope.interface import Interface
 from zope.interface.common.collections import IMutableSequence
@@ -7,6 +8,7 @@ from zope.lifecycleevent import IObjectAddedEvent
 from zope.lifecycleevent import IObjectCreatedEvent
 from zope.lifecycleevent import IObjectModifiedEvent
 from zope.lifecycleevent import IObjectRemovedEvent
+
 
 try:
     from zope.location.interfaces import ILocation
@@ -211,8 +213,11 @@ class IMappingAdopt(Interface):
     """
 
 
-# B/C 2022-02-16
-IAdopt = IMappingAdopt
+# B/C 2022-02-16 -> node.interfaces.IAdopt
+deprecated(
+    '``IAdopt`` has been renamed to ``IMappingAdopt``. Please fix your import',
+    IAdopt='node.interfaces:IMappingAdopt',
+)
 
 
 class INodeChildValidate(Interface):
@@ -559,8 +564,11 @@ class IMappingStorage(Interface):
         """Iter throught storage keys."""
 
 
-# B/C 2022-02-14
-IStorage = IMappingStorage
+# B/C 2022-02-14 -> node.interfaces.IStorage
+deprecated(
+    '``IStorage`` has been renamed to ``IMappingStorage``. Please fix your import',
+    IStorage='node.interfaces:IMappingStorage',
+)
 
 
 class ISequenceStorage(Interface):

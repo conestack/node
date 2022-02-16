@@ -3,6 +3,7 @@ from node.behaviors import ListStorage
 from node.behaviors import MappingStorage
 from node.behaviors import OdictStorage
 from node.behaviors import SequenceStorage
+from node.interfaces import IMappingStorage
 from node.tests import NodeTestCase
 from odict import odict
 from plumber import plumbing
@@ -45,6 +46,7 @@ class TestStorage(NodeTestCase):
 
     def test_MappingStorage(self):
         obj = MappingStorageObject()
+        self.assertTrue(IMappingStorage.providedBy(obj))
 
         def access_storage_fails():
             obj.storage
@@ -110,3 +112,10 @@ class TestStorage(NodeTestCase):
         self.assertEqual(lseq.storage, [])
         with self.assertRaises(IndexError):
             del lseq[0]
+
+    def test_BC_imports(self):
+        from node.behaviors import Storage
+        self.assertTrue(Storage is MappingStorage)
+
+        from node.interfaces import IStorage
+        self.assertTrue(IStorage is IMappingStorage)

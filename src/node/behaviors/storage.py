@@ -37,10 +37,6 @@ class MappingStorage(Behavior):
         return self.storage.__iter__()
 
 
-# B/C 2022-02-14
-Storage = MappingStorage
-
-
 class DictStorage(MappingStorage):
 
     @default

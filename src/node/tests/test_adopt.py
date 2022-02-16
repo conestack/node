@@ -1,4 +1,5 @@
 from node.behaviors import MappingAdopt
+from node.interfaces import IMappingAdopt
 from node.testing.env import MockupNode
 from node.testing.env import NoNode
 from node.tests import NodeTestCase
@@ -14,6 +15,7 @@ class TestAdopt(NodeTestCase):
             pass
 
         ad = AdoptingDict()
+        self.assertTrue(IMappingAdopt.providedBy(ad))
 
         # The mockup node is adopted
         node = MockupNode()
@@ -51,6 +53,9 @@ class TestAdopt(NodeTestCase):
         self.assertEqual(node.__name__, None)
         self.assertEqual(node.__parent__, None)
 
-        # B/C import test
+    def test_BC_imports(self):
         from node.behaviors import Adopt
         self.assertTrue(Adopt is MappingAdopt)
+
+        from node.interfaces import IAdopt
+        self.assertTrue(IAdopt is IMappingAdopt)
