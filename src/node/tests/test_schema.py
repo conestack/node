@@ -207,6 +207,7 @@ class TestSchemaFields(unittest.TestCase):
         class TestSerializer(schema.FieldSerializer):
             def dump(self, value):
                 return self.name, self.parent
+
             def load(self, value):
                 return self.name, self.parent
 

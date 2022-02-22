@@ -23,9 +23,12 @@ and schema definitions.
 
 They utilize:
 
-- Python's `mapping and sequence API's <http://docs.python.org/reference/datamodel.html>`_
+- Python's
+  `mapping and sequence API's <http://docs.python.org/reference/datamodel.html>`_
   for accessing node members.
-- The contract of `zope.location.interfaces.ILocation <https://zopelocation.readthedocs.io/en/latest/api.html#zope.location.interfaces.ILocation>`_ for hierarchy information.
+- The contract of
+  `zope.location.interfaces.ILocation <https://zopelocation.readthedocs.io/en/latest/api.html#zope.location.interfaces.ILocation>`_
+  for hierarchy information.
 
 One purpose of this package is to provide a unified API to different backend
 storages. Specific storage related implementations are for example:
@@ -133,8 +136,7 @@ Check tree structure with ``printtree``:
 
     Sequence nodes are introduced as of node 1.0 and are not as feature rich
     as mapping nodes (yet). If you find inconsistencies or missing features,
-    please file an issue or create a pull request at github. Any help is
-    appreciated.
+    please file an issue or create a pull request at github.
 
 
 Behaviors
@@ -155,7 +157,7 @@ The different functionalities of nodes are provided as plumbing behaviors:
         DefaultInit,
         MappingNode,
         OdictStorage)
-    class CustomNode(object):
+    class CustomNode:
         pass
 
 When inspecting the ``CustomNode`` class, we can see it was plumbed using given
@@ -184,13 +186,180 @@ plumbing system.
 Attributes
 ~~~~~~~~~~
 
-XXX
+While it is not strictly necessary, it's a good idea to separate the
+hierarchical structure of a model from the node related attributes to avoid
+naming conflicts. Attributes are provided via ``node.behaviors.Attributes``
+plumbing behavior:
+
+.. code-block:: python
+
+    from node.behaviors import Attributes
+    from node.behaviors import DefaultInit
+    from node.behaviors import DictStorage
+    from node.behaviors import MappingNode
+    from plumber import plumbing
+
+    @plumbing(
+        Attributes,
+        DefaultInit,
+        MappingNode,
+        DictStorage)
+    class NodeWithAttributes:
+        pass
+
+The node now provides an ``attrs`` attribute. Node attributes are itself just
+a node:
+
+.. code-block:: pycon
+
+    >>> node = NodeWithAttributes()
+    >>> attrs = node.attrs
+    >>> attrs
+    <NodeAttributes object 'None' at ...>
+
+    >>> attrs['foo'] = 'foo'
+
+If it's desired to access attribute members via python attribute access,
+``attribute_access_for_attrs`` must be set on node:
+
+.. code-block:: pycon
+
+    >>> node.attribute_access_for_attrs = True
+    >>> attrs = node.attrs
+    >>> attrs.foo = 'bar'
+    >>> attrs.foo
+    'bar'
+
+A custom attributes implementation can be set by defining
+``attributes_factory`` on the node:
+
+.. code-block:: python
+
+    from node.behaviors import NodeAttributes
+
+    class CustomAttributes(NodeAttributes):
+        pass
+
+    class CustomAttributesNode(NodeWithAttributes):
+        attributes_factory = CustomAttributes
+
+This factory is then used to instantiate the attributes:
+
+.. code-block:: pycon
+
+    >>> node = CustomAttributesNode()
+    >>> node.attrs
+    <CustomAttributes object 'None' at ...>
 
 
 Schema
 ~~~~~~
 
-XXX
+To describe the data types of node members, this package provides a mechanism
+for defining schemata.
+
+This can happen in different ways. One is to define the schema for node members
+directly. This is useful for nodes representing a leaf in the hierarchy or for
+node attribute nodes:
+
+.. code-block:: python
+
+    from node import schema
+    from node.base import BaseNode
+    from node.behaviors import DefaultInit
+    from node.behaviors import DictStorage
+    from node.behaviors import MappingNode
+    from node.behaviors import Schema
+    from plumber import plumbing
+
+    @plumbing(
+        DefaultInit,
+        MappingNode,
+        DictStorage,
+        Schema)
+    class SchemaNode:
+        schema = {
+            'int': schema.Int(),
+            'float': schema.Float(default=1.),
+            'str': schema.Str(),
+            'bool': schema.Bool(default=False),
+            'node': schema.Node(BaseNode)
+        }
+
+Children defined in the schema provide a default value. If not explicitely
+defined, the default value is always ``node.utils.UNSET``:
+
+.. code-block:: pycon
+
+    >>> node = SchemaNode()
+    >>> node['int']
+    <UNSET>
+
+    >>> node['float']
+    1.0
+
+    >>> node['bool']
+    False
+
+Children defined in the schema are validated against the defined type when
+setting it's value:
+
+.. code-block:: pycon
+
+    >>> node = SchemaNode()
+    >>> node['int'] = 'A'
+    Traceback (most recent call last):
+      ...
+    ValueError: A is no <class 'int'> type
+
+For accessing members defined in the schema as node attributes,
+``SchemaAsAttributes`` plumbing behavior can be used:
+
+.. code-block:: python
+
+    from node.behaviors import SchemaAsAttributes
+
+    @plumbing(SchemaAsAttributes)
+    class SchemaAsAttributesNode(BaseNode):
+        schema = {
+            'int': schema.Int(default=1),
+        }
+
+Node ``attrs`` now provides access to the schema members:
+
+.. code-block:: pycon
+
+    >>> node = SchemaAsAttributesNode()
+    >>> node.attrs['int']
+    1
+
+Schema members can also be defined as class attributes. This is syntactically
+the most elegant way, but comes with the tradeoff of possible naming conflicts:
+
+.. code-block:: python
+
+    from node.behaviors import SchemaProperties
+
+    @plumbing(
+        DefaultInit,
+        MappingNode,
+        DictStorage,
+        SchemaProperties)
+    class SchemaPropertiesNode:
+        text = schema.Str(default='Text')
+
+Here we access ``text`` as class attribute:
+
+.. code-block:: pycon
+
+    >>> node = SchemaPropertiesNode()
+    >>> node.text
+    'Text'
+
+    >>> node.text = 1
+    Traceback (most recent call last):
+      ...
+    ValueError: 1 is no <class 'str'> type
 
 
 Plumbing Behaviors
