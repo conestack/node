@@ -387,7 +387,7 @@ class TestOrder(NodeTestCase):
             "  <class 'node.tests.test_order.OrderReferenceNode'>: e\n"
         ))
 
-        tree2['d'].allow_non_node_children = True
+        tree2['d'].child_constraints = None
         tree2['d']['a'] = object()
         self.checkOutput("""\
         <class 'node.tests.test_order.OrderReferenceNode'>: x

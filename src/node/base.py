@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
-from node.behaviors import MappingAdopt
 from node.behaviors import AsAttrAccess
 from node.behaviors import Attributes
 from node.behaviors import DefaultInit
 from node.behaviors import DictStorage
 from node.behaviors import ListStorage
+from node.behaviors import MappingAdopt
+from node.behaviors import MappingConstraints
 from node.behaviors import MappingNode
-from node.behaviors import NodeChildValidate
 from node.behaviors import Nodespaces
 from node.behaviors import OdictStorage
 from node.behaviors import Order
 from node.behaviors import Reference
 from node.behaviors import SequenceAdopt
+from node.behaviors import SequenceConstraints
 from node.behaviors import SequenceNode
 from plumber import plumbing
 
@@ -24,7 +25,7 @@ class AbstractNode(object):
 
 
 @plumbing(
-    NodeChildValidate,
+    MappingConstraints,
     MappingAdopt,
     AsAttrAccess,
     DefaultInit,
@@ -38,7 +39,7 @@ class BaseNode(object):
 
 
 @plumbing(
-    NodeChildValidate,
+    MappingConstraints,
     MappingAdopt,
     AsAttrAccess,
     DefaultInit,
@@ -52,6 +53,7 @@ class OrderedNode(object):
 
 
 @plumbing(
+    SequenceConstraints,
     SequenceAdopt,
     DefaultInit,
     SequenceNode,
@@ -69,7 +71,7 @@ class ListNode(object):
 ###############################################################################
 
 @plumbing(
-    NodeChildValidate,
+    MappingConstraints,
     Nodespaces,
     MappingAdopt,
     Attributes,
@@ -84,7 +86,7 @@ class Node(object):
 
 
 @plumbing(
-    NodeChildValidate,
+    MappingConstraints,
     Nodespaces,
     MappingAdopt,
     Attributes,

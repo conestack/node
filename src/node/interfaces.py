@@ -241,19 +241,48 @@ class ISequenceAdopt(Interface):
     """
 
 
-class INodeChildValidate(Interface):
-    """Plumbing behavior for child node validation.
+class IConstraints(Interface):
+    """Base interface for defining node constraints.
+    """
+
+    child_constraints = Attribute(
+        'Sequence of types or interfaces of allowed node children '
+        'or None if no constraints'
+    )
+
+
+class IMappingConstraints(IConstraints):
+    """Plumbing behavior for constraints on mapping nodes.
 
     Plumbing hooks:
 
     * ``__setitem__``
-        If ``allow_non_node_children`` is False, check if given child is instance
-        of node, otherwise raise ``ValuError``.
+        Check if given value is instance of type or implements interface
+        defined in ``child_constraints``. Raise ``ValuError`` on mismatch.
     """
 
-    allow_non_node_children = Attribute(
-        'Flag wether this node may contain non node based children.'
-    )
+
+# B/C 2022-02-22 -> node.interfaces.INodeChildValidate
+deprecated(
+    '``INodeChildValidate`` has been renamed to ``IMappingConstraints``. '
+    'Please fix your import',
+    INodeChildValidate='node.interfaces:IMappingConstraints',
+)
+
+
+class ISequenceConstraints(IConstraints):
+    """Plumbing behavior for constraints on mapping nodes.
+
+    Plumbing hooks:
+
+    * ``__setitem__``
+        Check if given value is instance of type or implements interface
+        defined in ``child_constraints``. Raise ``ValuError`` on mismatch.
+
+    * ``insert``
+        Check if given value is instance of type or implements interface
+        defined in ``child_constraints``. Raise ``ValuError`` on mismatch.
+    """
 
 
 class IUnicodeAware(Interface):
@@ -337,15 +366,6 @@ class IFixedChildren(Interface):
 
     def __setitem__(key, val):
         """Deny setting item, read-only."""
-
-
-class IGetattrChildren(Interface):
-    """Plumbing behavior for child access via ``__getattr__``, given the
-    attribute name is unused.
-    """
-
-    def __getattr__(name):
-        """Map ``__getitem__``."""
 
 
 class INodespaces(Interface):

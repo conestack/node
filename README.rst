@@ -235,9 +235,9 @@ Mapping Behaviors
     adoption on child nodes of mapping.
     See ``node.interfaces.IMappingAdopt``.
 
-**node.behaviors.NodeChildValidate**
-    Plumbing behavior for child node validation.
-    See ``node.interfaces.INodeChildValidate``.
+**node.behaviors.MappingConstraints**
+    Plumbing behavior for constraints on mapping nodes.
+    See ``node.interfaces.IMappingConstraints``.
 
 **node.behaviors.UnicodeAware**
     Plumbing behavior to ensure unicode for keys and string values.
@@ -259,11 +259,6 @@ Mapping Behaviors
 **node.behaviors.FixedChildren**
     Plumbing behavior that initializes a fixed dictionary as children.
     See ``node.interfaces.IFixedChildren``.
-
-**node.behaviors.GetattrChildren**
-    Plumbing behavior for child access via ``__getattr__``, given the attribute
-    name is unused.
-    See ``node.interfaces.IGetattrChildren``.
 
 **node.behaviors.Nodespaces**
     Plumbing behavior for providing nodespaces on node.
@@ -342,6 +337,10 @@ Sequence Behaviors
     Plumbing behavior that provides ``__name__`` and ``__parent__`` attribute
     adoption on child nodes of sequence.
     See ``node.interfaces.ISequenceAdopt``.
+
+**node.behaviors.SequenceConstraints**
+    Plumbing behavior for constraints on sequence nodes.
+    See ``node.interfaces.ISequenceConstraints``.
 
 **node.behaviors.SequenceStorage**
     Provide abstract sequence storage access.

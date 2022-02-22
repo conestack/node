@@ -5,6 +5,17 @@ Changes
 1.0 (unreleased)
 ----------------
 
+- Introduce ``node.interfaces.ISequenceConstraints`` and
+  ``node.behaviors.SequenceConstraints``.
+  [rnix]
+
+- Rename ``node.interfaces.INodeChildValidate`` to
+  ``node.interfaces.IMappingConstraints`` and
+  ``node.behaviors.NodeChildValidate`` to ``node.behaviors.MappingConstraints``.
+  ``MappingConstraints`` implementation moved from ``node.behaviors.common`` to
+  ``node.behaviors.constraints``. B/C is kept.
+  [rnix]
+
 - Introduce ``node.interfaces.ISequenceAdopt`` and
   ``node.behaviors.SequenceAdopt``.
   [rnix]
@@ -72,13 +83,18 @@ Changes
 
 **Breaking changes**:
 
+- Remove ``node.behaviors.GetattrChildren``. Use ``node.utils.AttributeAccess``
+  instead if you want to access node children via ``__getattr__``.
+  [rnix]
+
 - Rename ``node.behaviors.nodify`` module to ``node.behaviors.node``. It's not
   intended to import behaviors from modules contained in ``node.behaviors``
   package directly but from ``node.behaviors``. Please adopt your imports.
   [rnix]
 
-- While import ``Nodify`` and ``Adopt`` behaviors from ``node.behaviors`` still
-  work for B/C reasons, importing them from ``node.behaviors.nodify`` respective
+- While import ``Nodify``, ``NodeChildValidate`` and ``Adopt`` behaviors from
+  ``node.behaviors`` still work for B/C reasons, importing them from
+  ``node.behaviors.nodify``, ``node.behaviors.common`` respective
   ``node.behaviors.common`` not works any more. Please fix your imports.
   [rnix]
 

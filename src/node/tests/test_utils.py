@@ -88,7 +88,7 @@ class TestUtils(NodeTestCase):
         self.assertEqual(encode(b'\xc3\xa4'), b'\xc3\xa4')
 
         node = BaseNode()
-        node.allow_non_node_children = True
+        node.child_constraints = None
         node['foo'] = u'\xe4'
         self.assertEqual(encode(node), {b'foo': b'\xc3\xa4'})
 
@@ -99,7 +99,7 @@ class TestUtils(NodeTestCase):
         self.assertEqual(decode(b'fo\xe4'), b'fo\xe4')
 
         node = BaseNode()
-        node.allow_non_node_children = True
+        node.child_constraints = None
         node[b'foo'] = b'\xc3\xa4'
         self.assertEqual(decode(node), {u'foo': u'\xe4'})
 
@@ -148,6 +148,7 @@ class TestUtils(NodeTestCase):
 
     def test_node_by_path(self):
         root = BaseNode(name='root')
+
         child = root['child'] = BaseNode()
         sub = child['sub'] = BaseNode()
 

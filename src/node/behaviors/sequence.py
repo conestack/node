@@ -8,6 +8,7 @@ except ImportError:  # pragma: no cover
     from collections import Sequence as ABCSequence
 from node.behaviors import Node
 from node.compat import IS_PY2
+from node.interfaces import INode
 from node.interfaces import ISequenceNode
 from plumber import Behavior
 from plumber import default
@@ -131,4 +132,5 @@ class SequenceNode(Node, MutableSequence):
     @default
     def _update_indices(self):
         for index, value in enumerate(self):
-            value.__name__ = str(index)
+            if INode.providedBy(value):
+                value.__name__ = str(index)

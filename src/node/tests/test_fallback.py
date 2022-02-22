@@ -3,7 +3,7 @@ from node.behaviors import Attributes
 from node.behaviors import DefaultInit
 from node.behaviors import Fallback
 from node.behaviors import MappingNode
-from node.behaviors import NodeChildValidate
+from node.behaviors import MappingConstraints
 from node.behaviors import Nodespaces
 from node.behaviors import OdictStorage
 from node.tests import NodeTestCase
@@ -27,7 +27,7 @@ class FallbackNodeAttributes(object):
 
 
 @plumbing(
-    NodeChildValidate,
+    MappingConstraints,
     Nodespaces,
     MappingAdopt,
     Attributes,

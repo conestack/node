@@ -541,7 +541,7 @@ class TestBehaviorsSchema(NodeTestCase):
     def test_Schema(self):
         @plumbing(Schema)
         class SchemaNode(BaseNode):
-            allow_non_node_children = True
+            child_constraints = None
             schema = {
                 'int': schema.Int(),
                 'float': schema.Float(default=1.),
@@ -685,7 +685,7 @@ class TestBehaviorsSchema(NodeTestCase):
     def test_SchemaProperties(self):
         @plumbing(SchemaProperties)
         class SchemaPropertiesNode(BaseNode):
-            allow_non_node_children = True
+            child_constraints = None
             str_field = schema.Str()
             int_field = schema.Int(default=1)
             float_field = schema.Float(default=1.)

@@ -122,6 +122,6 @@ class TestReference(NodeTestCase):
         ))
 
         node['child'] = ReferenceNode()
-        node['child'].allow_non_node_children = True
+        node['child'].child_constraints = None
         node['child']['foo'] = 1
         del node['child']

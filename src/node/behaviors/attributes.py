@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 from node.behaviors.adopt import MappingAdopt
-from node.behaviors.common import NodeChildValidate
+from node.behaviors.constraints import MappingConstraints
 from node.behaviors.mapping import MappingNode
 from node.behaviors.storage import OdictStorage
 from node.compat import IS_PY2
@@ -17,13 +17,13 @@ from zope.interface import implementer
 
 
 @plumbing(
-    NodeChildValidate,
+    MappingConstraints,
     MappingAdopt,
     MappingNode,
     OdictStorage)
 @implementer(INodeAttributes)
 class NodeAttributes(object):
-    allow_non_node_children = True
+    child_constraints = None
 
     def __init__(self, name=None, parent=None):
         self.__name__ = name

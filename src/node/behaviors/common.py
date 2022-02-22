@@ -3,9 +3,6 @@ from __future__ import absolute_import
 from node.interfaces import IAsAttrAccess
 from node.interfaces import IChildFactory
 from node.interfaces import IFixedChildren
-from node.interfaces import IGetattrChildren
-from node.interfaces import INode
-from node.interfaces import INodeChildValidate
 from node.interfaces import IUnicodeAware
 from node.interfaces import IUUIDAware
 from node.utils import AttributeAccess
@@ -17,9 +14,7 @@ from plumber import finalize
 from plumber import override
 from plumber import plumb
 from zope.interface import implementer
-import inspect
 import uuid
-import warnings
 
 
 @implementer(IAsAttrAccess)
@@ -41,9 +36,9 @@ class ChildFactory(Behavior):
     iterkeys = override(__iter__)
 
     @plumb
-    def __getitem__(_next, self, key):
+    def __getitem__(next_, self, key):
         try:
-            child = _next(self, key)
+            child = next_(self, key)
         except KeyError:
             child = self.factories[key]()
             self[key] = child
@@ -64,8 +59,8 @@ class FixedChildren(Behavior):
     fixed_children_factories = default(None)
 
     @plumb
-    def __init__(_next, self, *args, **kw):
-        _next(self, *args, **kw)
+    def __init__(next_, self, *args, **kw):
+        next_(self, *args, **kw)
         self._children = odict()
         for key, factory in self.fixed_children_factories:
             child = factory()
@@ -90,67 +85,30 @@ class FixedChildren(Behavior):
         raise NotImplementedError('read-only')
 
 
-@implementer(IGetattrChildren)
-class GetattrChildren(Behavior):
-    """Access children via ``__getattr__``, given the attribute name is unused.
-
-    XXX: Similar behavior as ``AsAttrAccess``. consolidate.
-    """
-
-    @finalize
-    def __getattr__(self, name):
-        """For new-style classes __getattr__ is called, if the
-        attribute could not be found via MRO
-        """
-        return self[name]
-
-
-@implementer(INodeChildValidate)
-class NodeChildValidate(Behavior):
-    allow_non_node_children = default(False)
-
-    @plumb
-    def __setitem__(_next, self, key, val):
-        try:
-            allow_non_node_children = self.allow_non_node_childs
-            warnings.warn(
-                '``allow_non_node_childs`` is deprecated, '
-                'use ``allow_non_node_children`` instead'
-            )
-        # KeyError happens if GetattrChildren is plumbed.
-        except (AttributeError, KeyError):
-            allow_non_node_children = self.allow_non_node_children
-        if not allow_non_node_children and inspect.isclass(val):
-            raise ValueError('It isn\'t allowed to use classes as values.')
-        if not allow_non_node_children and not INode.providedBy(val):
-            raise ValueError('Non-node children are not allowed.')
-        _next(self, key, val)
-
-
 @implementer(IUnicodeAware)
 class UnicodeAware(Behavior):
     # XXX: It feels here it would be nice to be able to get an instance of a
     # plumbing to configure the codec.
 
     @plumb
-    def __delitem__(_next, self, key):
+    def __delitem__(next_, self, key):
         if isinstance(key, str):
             key = decode(key)
-        _next(self, key)
+        next_(self, key)
 
     @plumb
-    def __getitem__(_next, self, key):
+    def __getitem__(next_, self, key):
         if isinstance(key, str):
             key = decode(key)
-        return _next(self, key)
+        return next_(self, key)
 
     @plumb
-    def __setitem__(_next, self, key, val):
+    def __setitem__(next_, self, key, val):
         if isinstance(key, str):
             key = decode(key)
         if isinstance(val, str):
             val = decode(val)
-        return _next(self, key, val)
+        return next_(self, key, val)
 
 
 @implementer(IUUIDAware)
@@ -159,18 +117,18 @@ class UUIDAware(Behavior):
     overwrite_recursiv_on_copy = default(True)
 
     @plumb
-    def __init__(_next, self, *args, **kw):
-        _next(self, *args, **kw)
+    def __init__(next_, self, *args, **kw):
+        next_(self, *args, **kw)
         self.uuid = self.uuid_factory()
 
     @plumb
-    def copy(_next, self):
+    def copy(next_, self):
         msg = 'Shallow copy useless on UUID aware node trees, use deepcopy.'
         raise RuntimeError(msg)
 
     @plumb
-    def deepcopy(_next, self):
-        copied = _next(self)
+    def deepcopy(next_, self):
+        copied = next_(self)
         self.set_uuid_for(copied, True, self.overwrite_recursiv_on_copy)
         return copied
 

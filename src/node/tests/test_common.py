@@ -1,11 +1,8 @@
-from node.base import BaseNode
-from node.behaviors import MappingAdopt
 from node.behaviors import ChildFactory
 from node.behaviors import DefaultInit
 from node.behaviors import FixedChildren
-from node.behaviors import GetattrChildren
+from node.behaviors import MappingAdopt
 from node.behaviors import MappingNode
-from node.behaviors import NodeChildValidate
 from node.behaviors import OdictStorage
 from node.behaviors import UnicodeAware
 from node.behaviors import UUIDAware
@@ -148,60 +145,3 @@ class TestCommon(NodeTestCase):
 
         self.assertTrue(c1_uid == detached.uuid)
         self.assertTrue(s1_uid == detached['s1'].uuid)
-
-    def test_NodeChildValidate(self):
-        @plumbing(NodeChildValidate, DefaultInit, MappingNode, OdictStorage)
-        class NodeChildValidateNode(object):
-            pass
-
-        node = NodeChildValidateNode()
-        self.assertFalse(node.allow_non_node_children)
-
-        def __setitem__fails():
-            node['child'] = 1
-        err = self.expectError(ValueError, __setitem__fails)
-        self.assertEqual(str(err), 'Non-node children are not allowed.')
-
-        class SomeClass(object):
-            pass
-
-        def __setitem__fails2():
-            node['aclasshere'] = SomeClass
-        err = self.expectError(ValueError, __setitem__fails2)
-        expected = "It isn't allowed to use classes as values."
-        self.assertEqual(str(err), expected)
-
-        node.allow_non_node_children = True
-        node['child'] = 1
-        self.assertEqual(node['child'], 1)
-
-        class LegacyNodeChildValidateNode(NodeChildValidateNode):
-            allow_non_node_childs = True
-
-        node = LegacyNodeChildValidateNode()
-        node['child'] = 1
-
-    def test_GetattrChildren(self):
-        # XXX: this test breaks coverage recording!!!:
-        class GetattrBase(BaseNode):
-            allow_non_node_children = True
-            baseattr = 1
-
-        @plumbing(GetattrChildren)
-        class GetattrNode(GetattrBase):
-            ourattr = 2
-
-        node = GetattrNode()
-        node['foo'] = 10
-        node['baseattr'] = 20
-        node['ourattr'] = 30
-
-        self.assertEqual(node['foo'], 10)
-        self.assertEqual(node['baseattr'], 20)
-        self.assertEqual(node['ourattr'], 30)
-
-        # Only children not shadowed by real attributes can be accessed via
-        # getattr
-        self.assertEqual(node.foo, 10)
-        self.assertEqual(node.baseattr, 1)
-        self.assertEqual(node.ourattr, 2)
