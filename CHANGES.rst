@@ -83,6 +83,9 @@ Changes
 
 **Breaking changes**:
 
+- Remove deprecated B/C import location ``node.parts``.
+  [rnix]
+
 - Remove ``node.behaviors.GetattrChildren``. Use ``node.utils.AttributeAccess``
   instead if you want to access node children via ``__getattr__``.
   [rnix]
