@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from node.behaviors.node import DefaultInit
 from node.behaviors.node import Node
 from node.interfaces import INode

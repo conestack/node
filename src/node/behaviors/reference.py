@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from __future__ import absolute_import
 from node.interfaces import INode
 from node.interfaces import IReference
@@ -32,13 +31,13 @@ class Reference(Behavior):
     _uuid = default(None)
 
     @plumb
-    def __init__(_next, self, *args, **kw):
+    def __init__(next_, self, *args, **kw):
         self._index = dict()
         self.uuid = uuid.uuid4()
-        _next(self, *args, **kw)
+        next_(self, *args, **kw)
 
     @plumb
-    def __setitem__(_next, self, key, val):
+    def __setitem__(next_, self, key, val):
         if INode.providedBy(val):
             try:
                 next(val.iterkeys())
@@ -49,20 +48,20 @@ class Reference(Behavior):
                 pass
             self._index.update(val._index)
             val._index = self._index
-        _next(self, key, val)
+        next_(self, key, val)
 
     @plumb
-    def __delitem__(_next, self, key):
+    def __delitem__(next_, self, key):
         # fail immediately if key does not exist
         todel = self[key]
         if hasattr(todel, '_to_delete'):
             for iuuid in todel._to_delete():
                 del self._index[iuuid]
-        _next(self, key)
+        next_(self, key)
 
     @plumb
-    def detach(_next, self, key):
-        node = _next(self, key)
+    def detach(next_, self, key):
+        node = next_(self, key)
         node._index = {int(node.uuid): node}
         node._index_nodes()
         return node

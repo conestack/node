@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from __future__ import absolute_import
 try:  # pragma: no cover
     from collections.abc import MutableSequence as ABCMutableSequence

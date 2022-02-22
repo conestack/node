@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from __future__ import absolute_import
 from node.behaviors.node import Node
 from node.compat import ITER_FUNC
@@ -236,8 +235,8 @@ class FullMapping(ExtendedReadMapping,
 class MappingNode(Node, FullMapping):
 
     @plumb
-    def copy(_next, self):
-        new = _next(self)
+    def copy(next_, self):
+        new = next_(self)
         new.__name__ = self.__name__
         new.__parent__ = self.__parent__
         return new

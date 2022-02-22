@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from node.behaviors import AsAttrAccess
 from node.behaviors import Attributes
 from node.behaviors import DefaultInit

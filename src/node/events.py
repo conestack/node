@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from node.behaviors import EventAttribute  # noqa
 from node.behaviors import Events
 from node.behaviors import suppress_events  # noqa

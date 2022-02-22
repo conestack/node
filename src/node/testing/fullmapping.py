@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from node.testing.base import BaseTester
 
 

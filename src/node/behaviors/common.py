@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from __future__ import absolute_import
 from node.interfaces import IAsAttrAccess
 from node.interfaces import IChildFactory

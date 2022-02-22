@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from __future__ import absolute_import
 from node.compat import STR_TYPE
 from node.interfaces import INodespaces
@@ -27,7 +26,7 @@ class Nodespaces(Behavior):
         return self._nodespaces
 
     @plumb
-    def __getitem__(_next, self, key):
+    def __getitem__(next_, self, key):
         # blend in our nodespaces as children, with name __<name>__
         # isinstance check is required because odict tries to get item possibly
         # with ``_nil`` key, which is actually an object
@@ -37,10 +36,10 @@ class Nodespaces(Behavior):
             # a reserved child key mapped to the nodespace behind
             # nodespaces[key], nodespaces is an odict
             return self.nodespaces[key]
-        return _next(self, key)
+        return next_(self, key)
 
     @plumb
-    def __setitem__(_next, self, key, val):
+    def __setitem__(next_, self, key, val):
         # blend in our nodespaces as children, with name __<name>__
         if key.startswith('__') and key.endswith('__'):
             # a reserved child key mapped to the nodespace behind
@@ -50,14 +49,14 @@ class Nodespaces(Behavior):
             self.nodespaces[key] = val
             # index checks below must not happen for other nodespace.
             return
-        _next(self, key, val)
+        next_(self, key, val)
 
     @plumb
-    def __delitem__(_next, self, key):
+    def __delitem__(next_, self, key):
         # blend in our nodespaces as children, with name __<name>__
         if key.startswith('__') and key.endswith('__'):
             # a reserved child key mapped to the nodespace behind
             # nodespaces[key], nodespaces is an odict
             del self.nodespaces[key]
             return
-        _next(self, key)
+        next_(self, key)

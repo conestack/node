@@ -1,5 +1,5 @@
-from node.behaviors import MappingAdopt
 from node.behaviors import DefaultInit
+from node.behaviors import MappingAdopt
 from node.behaviors import MappingNode
 from node.behaviors import OdictStorage
 from node.behaviors import Reference

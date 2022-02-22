@@ -5,4 +5,3 @@ exclude *.cfg
 exclude bootstrap.sh
 global-exclude *.pyc
 include *.sh
-

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from inspect import isclass
 from inspect import isfunction
 from inspect import ismethod

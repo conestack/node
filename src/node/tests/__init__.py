@@ -87,8 +87,8 @@ def test_suite():
     from node.tests import test_lifecycle
     from node.tests import test_locking
     from node.tests import test_mapping
-    from node.tests import test_nodespace
     from node.tests import test_node
+    from node.tests import test_nodespace
     from node.tests import test_order
     from node.tests import test_reference
     from node.tests import test_schema
@@ -101,15 +101,15 @@ def test_suite():
 
     suite = unittest.TestSuite()
 
-    suite.addTest(unittest.findTestCases(test_tests))
     suite.addTest(unittest.findTestCases(test_testing))
+    suite.addTest(unittest.findTestCases(test_tests))
 
     suite.addTest(unittest.findTestCases(test_base))
-    suite.addTest(unittest.findTestCases(test_utils))
-    suite.addTest(unittest.findTestCases(test_locking))
-    suite.addTest(unittest.findTestCases(test_serializer))
     suite.addTest(unittest.findTestCases(test_events))
+    suite.addTest(unittest.findTestCases(test_locking))
     suite.addTest(unittest.findTestCases(test_schema))
+    suite.addTest(unittest.findTestCases(test_serializer))
+    suite.addTest(unittest.findTestCases(test_utils))
 
     suite.addTest(unittest.findTestCases(test_adopt))
     suite.addTest(unittest.findTestCases(test_alias))
@@ -121,11 +121,11 @@ def test_suite():
     suite.addTest(unittest.findTestCases(test_fallback))
     suite.addTest(unittest.findTestCases(test_lifecycle))
     suite.addTest(unittest.findTestCases(test_mapping))
-    suite.addTest(unittest.findTestCases(test_sequence))
-    suite.addTest(unittest.findTestCases(test_nodespace))
     suite.addTest(unittest.findTestCases(test_node))
+    suite.addTest(unittest.findTestCases(test_nodespace))
     suite.addTest(unittest.findTestCases(test_order))
     suite.addTest(unittest.findTestCases(test_reference))
+    suite.addTest(unittest.findTestCases(test_sequence))
     suite.addTest(unittest.findTestCases(test_storage))
 
     return suite

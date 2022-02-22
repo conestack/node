@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from __future__ import absolute_import
 from node.interfaces import IFallback
 from plumber import Behavior
@@ -51,13 +50,13 @@ class Fallback(Behavior):
     fallback_key = default(_marker)
 
     @plumb
-    def __getitem__(_next, self, key):
+    def __getitem__(next_, self, key):
         """If key not found, look for fallback_key on parent(s) with the same
         subpath, take it's children and look there, fall back to unvisited
         parents until no fallback left.
         """
         try:
-            value = _next(self, key)
+            value = next_(self, key)
         except KeyError:
             with fallback_processing() as count:
                 if count > 0:

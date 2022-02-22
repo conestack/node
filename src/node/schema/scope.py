@@ -1,5 +1,6 @@
 from contextlib import contextmanager
 
+
 @contextmanager
 def scope_context(context, name, parent):
     """Context manager for setting scope on context.

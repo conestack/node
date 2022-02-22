@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
-from node.behaviors import MappingAdopt
 from node.behaviors import AsAttrAccess
 from node.behaviors import DefaultInit
-from node.behaviors import MappingNode
+from node.behaviors import MappingAdopt
 from node.behaviors import MappingConstraints
+from node.behaviors import MappingNode
 from node.behaviors import OdictStorage
 from node.interfaces import INode
 from plumber import plumbing

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from node.compat import func_name
 from node.compat import iteritems
 from node.compat import STR_TYPE
