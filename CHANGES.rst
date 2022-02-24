@@ -5,6 +5,9 @@ Changes
 1.0 (unreleased)
 ----------------
 
+- Implement ``__copy__`` and ``__deepcopy__`` on ``node.utils.UNSET``.
+  [rnix]
+
 - Introduce ``node.interfaces.ISequenceConstraints`` and
   ``node.behaviors.SequenceConstraints``.
   [rnix]

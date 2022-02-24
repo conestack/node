@@ -14,6 +14,7 @@ from node.utils import safe_encode
 from node.utils import StrCodec
 from node.utils import UNSET
 from odict import odict
+import copy
 import logging
 
 
@@ -24,6 +25,8 @@ class TestUtils(NodeTestCase):
         self.assertEqual(str(UNSET), '')
         self.assertFalse(bool(UNSET))
         self.assertEqual(len(UNSET), 0)
+        self.assertTrue(copy.copy(UNSET) is UNSET)
+        self.assertTrue(copy.deepcopy(UNSET) is UNSET)
 
     def test_ReverseMapping(self):
         context = odict([
