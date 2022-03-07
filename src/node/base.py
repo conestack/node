@@ -1,86 +1,99 @@
-# -*- coding: utf-8 -*-
-from node.behaviors import Adopt
 from node.behaviors import AsAttrAccess
 from node.behaviors import Attributes
 from node.behaviors import DefaultInit
 from node.behaviors import DictStorage
-from node.behaviors import NodeChildValidate
+from node.behaviors import ListStorage
+from node.behaviors import MappingAdopt
+from node.behaviors import MappingConstraints
+from node.behaviors import MappingNode
 from node.behaviors import Nodespaces
-from node.behaviors import Nodify
 from node.behaviors import OdictStorage
 from node.behaviors import Order
 from node.behaviors import Reference
+from node.behaviors import SequenceAdopt
+from node.behaviors import SequenceConstraints
+from node.behaviors import SequenceNode
 from plumber import plumbing
 
 
 @plumbing(
-    Adopt,
-    Nodify)
+    MappingAdopt,
+    MappingNode)
 class AbstractNode(object):
     pass
 
 
 @plumbing(
-    NodeChildValidate,
-    Adopt,
+    MappingConstraints,
+    MappingAdopt,
     AsAttrAccess,
     DefaultInit,
-    Nodify,
+    MappingNode,
     DictStorage)
 class BaseNode(object):
     """Base node, not ordered.
 
-    Uses ``dict`` as ``IFullMapping`` implementation.
-
-    Derive this for unordered trees.
+    Uses ``dict`` as mapping implementation.
     """
 
 
 @plumbing(
-    NodeChildValidate,
-    Adopt,
+    MappingConstraints,
+    MappingAdopt,
     AsAttrAccess,
     DefaultInit,
-    Nodify,
+    MappingNode,
     OdictStorage)
 class OrderedNode(object):
     """Ordered node.
 
-    Uses ``odict`` as ``IFullMapping`` implementation.
-
-    Derive this for ordered trees.
+    Uses ``odict`` as mapping implementation.
     """
 
 
 @plumbing(
-    NodeChildValidate,
+    SequenceConstraints,
+    SequenceAdopt,
+    DefaultInit,
+    SequenceNode,
+    ListStorage)
+class ListNode(object):
+    """Sequence node.
+
+    Uses ``list`` as sequence implementation.
+    """
+
+
+###############################################################################
+# B/C from zodict.
+# XXX: will be removed soon
+###############################################################################
+
+@plumbing(
+    MappingConstraints,
     Nodespaces,
-    Adopt,
+    MappingAdopt,
     Attributes,
     Reference,
     Order,
     AsAttrAccess,
     DefaultInit,
-    Nodify,
+    MappingNode,
     OdictStorage)
 class Node(object):
-    """A node with original functionality from zodict.node.Node.
-
-    XXX: reduce by attributes
-    """
+    """A node with original functionality from zodict.node.Node."""
 
 
 @plumbing(
-    NodeChildValidate,
+    MappingConstraints,
     Nodespaces,
-    Adopt,
+    MappingAdopt,
     Attributes,
     Reference,
     Order,
     AsAttrAccess,
     DefaultInit,
-    Nodify,
+    MappingNode,
     OdictStorage)
 class AttributedNode(object):
-    """A node with original functionality from zodict.node.AttributedNode.
-    """
+    """A node with original functionality from zodict.node.AttributedNode."""

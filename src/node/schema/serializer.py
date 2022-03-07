@@ -1,4 +1,3 @@
-from node import compat
 from node.schema.scope import ScopeContext
 from odict import odict
 try:  # pragma: no cover

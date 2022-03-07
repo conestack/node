@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from inspect import isclass
 from inspect import isfunction
 from inspect import ismethod
@@ -84,8 +83,7 @@ def deserialize(json_data, root=None, settings=None):
 ###############################################################################
 
 class _serializer_registry(object):
-    """Serializer registry decorator base class.
-    """
+    """Serializer registry decorator base class."""
     # must be set on subclass
     registry = None
 
@@ -98,14 +96,12 @@ class _serializer_registry(object):
 
 
 class serializer(_serializer_registry):
-    """Serializer registry decorator.
-    """
+    """Serializer registry decorator."""
     registry = odict()
 
 
 class deserializer(_serializer_registry):
-    """Deserializer registry decorator.
-    """
+    """Deserializer registry decorator."""
     registry = odict()
 
 
@@ -125,8 +121,7 @@ class NodeEncoder(json.JSONEncoder):
         super(NodeEncoder, self).__init__(**kw)
 
     def dotted_name(self, ob):
-        """Return dotted name of object.
-        """
+        """Return dotted name of object."""
         if isclass(ob) or isfunction(ob):
             return '.'.join(
                 [ob.__module__, ob.__name__ if IS_PY2 else ob.__qualname__]
@@ -182,8 +177,7 @@ class NodeDecoder(object):
         self.settings = settings
 
     def resolve(self, name):
-        """Resolve dotted name to object.
-        """
+        """Resolve dotted name to object."""
         components = name.split('.')
         ob = __import__(components[0])
         for comp in components[1:]:

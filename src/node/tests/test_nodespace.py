@@ -1,7 +1,7 @@
-from node.behaviors import Adopt
 from node.behaviors import DefaultInit
+from node.behaviors import MappingAdopt
+from node.behaviors import MappingNode
 from node.behaviors import Nodespaces
-from node.behaviors import Nodify
 from node.behaviors import OdictStorage
 from node.tests import NodeTestCase
 from odict import odict
@@ -13,17 +13,17 @@ from plumber import plumbing
 ###############################################################################
 
 @plumbing(
-    Adopt,
+    MappingAdopt,
     Nodespaces,
-    Nodify,
+    MappingNode,
     OdictStorage)
 class NodespacesNode(odict):
     pass
 
 
 @plumbing(
-    Adopt,
-    Nodify,
+    MappingAdopt,
+    MappingNode,
     DefaultInit,
     OdictStorage)
 class SomeNode(object):

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from node.interfaces import IAlias
 from node.interfaces import IAliaser
 from node.utils import ReverseMapping
@@ -53,8 +53,7 @@ class PrefixAliaser(object):
         return (self.prefix or '') + key
 
     def unalias(self, prefixed_key):
-        """Returns the real key for a prefixed_key.
-        """
+        """Returns the real key for a prefixed_key."""
         prefix = self.prefix or ''
         if not prefixed_key.startswith(prefix):
             raise KeyError(u"key '{}' does not match prefix '{}'".format(
@@ -78,8 +77,7 @@ class SuffixAliaser(object):
         return key + (self.suffix or '')
 
     def unalias(self, suffixed_key):
-        """returns the real key for a suffixed_key
-        """
+        """returns the real key for a suffixed_key."""
         suffix = self.suffix or ''
         if not suffixed_key.endswith(suffix):
             raise KeyError(u"key '{}' does not match suffix '{}'".format(
@@ -113,8 +111,7 @@ class AliaserChain(object):
 
 
 class PrefixSuffixAliaser(AliaserChain):
-    """Prefixes and suffixes.
-    """
+    """Prefixes and suffixes."""
 
     def __init__(self, prefix=None, suffix=None):
         self.chain = (PrefixAliaser(prefix), SuffixAliaser(suffix))
@@ -125,41 +122,41 @@ class Alias(Behavior):
     aliaser = default(None)
 
     @plumb
-    def __getitem__(_next, self, key):
+    def __getitem__(next_, self, key):
         if self.aliaser:
             unaliased_key = self.aliaser.unalias(key)
         else:
             unaliased_key = key
         try:
-            return _next(self, unaliased_key)
+            return next_(self, unaliased_key)
         except KeyError:
             raise KeyError(key)
 
     @plumb
-    def __setitem__(_next, self, key, val):
+    def __setitem__(next_, self, key, val):
         if self.aliaser:
             unaliased_key = self.aliaser.unalias(key)
         else:
             unaliased_key = key
         try:
-            _next(self, unaliased_key, val)
+            next_(self, unaliased_key, val)
         except KeyError:
             raise KeyError(key)
 
     @plumb
-    def __delitem__(_next, self, key):
+    def __delitem__(next_, self, key):
         if self.aliaser:
             unaliased_key = self.aliaser.unalias(key)
         else:
             unaliased_key = key
         try:
-            _next(self, unaliased_key)
+            next_(self, unaliased_key)
         except KeyError:
             raise KeyError(key)
 
     @plumb
-    def __iter__(_next, self):
-        for key in _next(self):
+    def __iter__(next_, self):
+        for key in next_(self):
             try:
                 if self.aliaser:
                     yield self.aliaser.alias(key)

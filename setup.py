@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from setuptools import find_packages
 from setuptools import setup
 import os
@@ -9,7 +8,7 @@ def read_file(name):
         return f.read()
 
 
-version = '0.9.29.dev0'
+version = '1.0.dev0'
 shortdesc = "Building data structures as node trees"
 longdesc = '\n\n'.join([read_file(name) for name in [
     'README.rst',
@@ -34,6 +33,7 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
     keywords='node tree fullmapping dict',
     author='Node Contributors',
@@ -46,12 +46,13 @@ setup(
     include_package_data=True,
     zip_safe=True,
     install_requires=[
-        'setuptools',
         'odict>=1.8.0',
         'plumber>=1.5',
-        'zope.lifecycleevent',
-        'zope.deprecation',
+        'setuptools',
         'zope.component',
+        'zope.deferredimport',
+        'zope.deprecation',
+        'zope.lifecycleevent'
     ],
     test_suite='node.tests.test_suite'
 )

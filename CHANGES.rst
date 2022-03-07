@@ -2,8 +2,65 @@
 Changes
 =======
 
-0.9.29 (unreleased)
--------------------
+1.0 (unreleased)
+----------------
+
+- Implement ``__copy__`` and ``__deepcopy__`` on ``node.utils.UNSET``.
+  [rnix]
+
+- Introduce ``node.interfaces.ISequenceConstraints`` and
+  ``node.behaviors.SequenceConstraints``.
+  [rnix]
+
+- Rename ``node.interfaces.INodeChildValidate`` to
+  ``node.interfaces.IMappingConstraints`` and
+  ``node.behaviors.NodeChildValidate`` to ``node.behaviors.MappingConstraints``.
+  ``MappingConstraints`` implementation moved from ``node.behaviors.common`` to
+  ``node.behaviors.constraints``. B/C is kept.
+  [rnix]
+
+- Introduce ``node.interfaces.ISequenceAdopt`` and
+  ``node.behaviors.SequenceAdopt``.
+  [rnix]
+
+- ``MappingAdopt`` now catches all exceptions instead of only
+  ``AttributeError``, ``KeyError`` and ``ValueError``.
+  [rnix]
+
+- Rename ``node.interfaces.IAdopt`` to ``node.interfaces.IMappingAdopt`` and
+  ``node.behaviors.Adopt`` to ``node.behaviors.MappingAdopt``. ``MappingAdopt``
+  implementation moved from ``node.behaviors.common`` to
+  ``node.behaviors.adopt``. B/C is kept.
+  [rnix]
+
+- ``node.behaviors.Attributes`` now also works if
+  ``node.behaviors.Nodespaces`` is not applied.
+  [rnix]
+
+- Introduce ``node.behaviors.Node`` which implements only
+  ``node.interfaces.INode`` contract. It is used as base for
+  ``node.behaviors.MappingNode`` and ``node.behaviors.SequcneNode``.
+  [rnix]
+
+- Do not inherit ``node.interfaces.INode`` from
+  ``zope.interfaces.common.mapping.IFullMapping`` any more. Data model specific
+  interfaces are added now via ``node.interfaces.IMappingNode`` and
+  ``node.interfaces.ISequenceNode``.
+  [rnix]
+
+- Introduce sequence nodes. Sequence nodes are implemented via
+  ``node.behaviors.SequcneNode`` and ``node.behaviors.ListStorage``.
+  [rnix]
+
+- Rename ``node.interfaces.INodify`` to ``node.interfaces.IMappingNode`` and
+  ``node.behaviors.Nodify`` to ``node.behaviors.MappingNode``. ``MappingNode``
+  implementation moved from ``node.behaviors.nodify`` to
+  ``node.behaviors.mapping``. B/C is kept.
+  [rnix]
+
+- Rename ``node.interfaces.IStorage`` to ``node.interfaces.IMappingStorage``
+  and ``node.behaviors.Storage`` to ``node.behaviors.Storage``. B/C is kept.
+  [rnix]
 
 - Add key and value type validation to schema fields where appropriate.
   [rnix]
@@ -28,6 +85,24 @@ Changes
   [rnix]
 
 **Breaking changes**:
+
+- Remove deprecated B/C import location ``node.parts``.
+  [rnix]
+
+- Remove ``node.behaviors.GetattrChildren``. Use ``node.utils.AttributeAccess``
+  instead if you want to access node children via ``__getattr__``.
+  [rnix]
+
+- Rename ``node.behaviors.nodify`` module to ``node.behaviors.node``. It's not
+  intended to import behaviors from modules contained in ``node.behaviors``
+  package directly but from ``node.behaviors``. Please adopt your imports.
+  [rnix]
+
+- While import ``Nodify``, ``NodeChildValidate`` and ``Adopt`` behaviors from
+  ``node.behaviors`` still work for B/C reasons, importing them from
+  ``node.behaviors.nodify``, ``node.behaviors.common`` respective
+  ``node.behaviors.common`` not works any more. Please fix your imports.
+  [rnix]
 
 - ``node.behaviors.schema.Schema`` no longer considers wildcard fields.
   [rnix]

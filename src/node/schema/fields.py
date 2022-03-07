@@ -1,6 +1,6 @@
 from node import compat
-from node.schema.scope import ScopeContext
 from node.schema.scope import scope_context
+from node.schema.scope import ScopeContext
 from node.schema.serializer import NodeSerializer
 from node.utils import UNSET
 from odict import odict

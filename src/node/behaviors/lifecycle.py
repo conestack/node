@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from node.events import NodeAddedEvent
 from node.events import NodeCreatedEvent
 from node.events import NodeDetachedEvent
@@ -27,34 +27,43 @@ class Lifecycle(Behavior):
     _notify_suppress = default(False)
 
     @plumb
-    def __init__(_next, self, *args, **kw):
-        _next(self, *args, **kw)
+    def __init__(next_, self, *args, **kw):
+        next_(self, *args, **kw)
         objectEventNotify(self.events['created'](self))
 
     @plumb
-    def __setitem__(_next, self, key, val):
-        _next(self, key, val)
+    def __setitem__(next_, self, key, val):
+        next_(self, key, val)
         if self._notify_suppress:
             return
-        objectEventNotify(self.events['added'](val, newParent=self,
-                                               newName=key))
+        objectEventNotify(self.events['added'](
+            val,
+            newParent=self,
+            newName=key
+        ))
 
     @plumb
-    def __delitem__(_next, self, key):
+    def __delitem__(next_, self, key):
         delnode = self[key]
-        _next(self, key)
+        next_(self, key)
         if self._notify_suppress:
             return
-        objectEventNotify(self.events['removed'](delnode, oldParent=self,
-                                                 oldName=key))
+        objectEventNotify(self.events['removed'](
+            delnode,
+            oldParent=self,
+            oldName=key
+        ))
 
     @plumb
-    def detach(_next, self, key):
+    def detach(next_, self, key):
         self._notify_suppress = True
-        node = _next(self, key)
+        node = next_(self, key)
         self._notify_suppress = False
-        objectEventNotify(self.events['detached'](node, oldParent=self,
-                                                  oldName=key))
+        objectEventNotify(self.events['detached'](
+            node,
+            oldParent=self,
+            oldName=key
+        ))
         return node
 
 
@@ -62,15 +71,15 @@ class Lifecycle(Behavior):
 class AttributesLifecycle(Behavior):
 
     @plumb
-    def __setitem__(_next, self, key, val):
-        _next(self, key, val)
+    def __setitem__(next_, self, key, val):
+        next_(self, key, val)
         if self.__parent__._notify_suppress:
             return
         objectEventNotify(self.__parent__.events['modified'](self.__parent__))
 
     @plumb
-    def __delitem__(_next, self, key):
-        _next(self, key)
+    def __delitem__(next_, self, key):
+        next_(self, key)
         if self.__parent__._notify_suppress:
             return
         objectEventNotify(self.__parent__.events['modified'](self.__parent__))

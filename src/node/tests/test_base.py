@@ -1,6 +1,8 @@
 from node.base import AbstractNode
 from node.base import BaseNode
+from node.base import ListNode
 from node.base import OrderedNode
+from node.interfaces import INode
 from node.testing import FullMappingTester
 from node.testing.base import create_tree
 from node.testing.env import MyNode
@@ -218,8 +220,8 @@ class TestBase(NodeTestCase):
 
     def test_INode(self):
         # XXX: make tester object for INode contract
-        # XXX: decide wether ``aliases`` or ``aliaser`` (still dunno) should be
-        #      kept in base interface.
+        # XXX: decide wether ``aliases`` or ``aliaser`` should be kept in base
+        #      interface.
 
         # printtree
         mynode = create_tree(MyNode)
@@ -293,66 +295,30 @@ class TestBase(NodeTestCase):
             orderednode['child_1']['subchild_1'].root is orderednode
         )
 
-        # allow_non_node_children
-        self.assertFalse(mynode.allow_non_node_children)
+        # child_constraints
+        self.assertEqual(mynode.child_constraints, (INode,))
 
-        def non_node_children_not_allowed():
+        with self.assertRaises(ValueError) as arc:
             mynode['foo'] = object()
-        err = self.expectError(ValueError, non_node_children_not_allowed)
-        self.assertEqual(str(err), 'Non-node children are not allowed.')
+        self.assertEqual(
+            str(arc.exception),
+            'Given value does not implement node.interfaces.INode'
+        )
 
-        def no_classes_as_values_allowed():
-            mynode['foo'] = object
-        err = self.expectError(ValueError, no_classes_as_values_allowed)
-        expected = 'It isn\'t allowed to use classes as values.'
-        self.assertEqual(str(err), expected)
+        mynode.child_constraints = (int,)
+        with self.assertRaises(ValueError) as arc:
+            mynode['foo'] = ''
+        self.assertEqual(
+            str(arc.exception),
+            'Given value is no instance of int'
+        )
 
-        mynode.allow_non_node_children = True
+        mynode.child_constraints = None
         obj = mynode['foo'] = object()
         self.assertEqual(mynode['foo'], obj)
 
         del mynode['foo']
-        mynode.allow_non_node_children = False
-
-        self.assertFalse(basenode.allow_non_node_children)
-
-        def non_node_children_not_allowed2():
-            basenode['foo'] = object()
-        err = self.expectError(ValueError, non_node_children_not_allowed2)
-        self.assertEqual(str(err), 'Non-node children are not allowed.')
-
-        def no_classes_as_values_allowed2():
-            basenode['foo'] = object
-        err = self.expectError(ValueError, no_classes_as_values_allowed2)
-        expected = 'It isn\'t allowed to use classes as values.'
-        self.assertEqual(str(err), expected)
-
-        basenode.allow_non_node_children = True
-        obj = basenode['foo'] = object()
-        self.assertEqual(basenode['foo'], obj)
-
-        del basenode['foo']
-        basenode.allow_non_node_children = False
-
-        self.assertFalse(orderednode.allow_non_node_children)
-
-        def non_node_children_not_allowed3():
-            orderednode['foo'] = object()
-        err = self.expectError(ValueError, non_node_children_not_allowed3)
-        self.assertEqual(str(err), 'Non-node children are not allowed.')
-
-        def no_classes_as_values_allowed3():
-            orderednode['foo'] = object
-        err = self.expectError(ValueError, no_classes_as_values_allowed3)
-        expected = 'It isn\'t allowed to use classes as values.'
-        self.assertEqual(str(err), expected)
-
-        orderednode.allow_non_node_children = True
-        obj = orderednode['foo'] = object()
-        self.assertEqual(orderednode['foo'], obj)
-
-        del orderednode['foo']
-        orderednode.allow_non_node_children = False
+        mynode.child_constraints = (INode,)
 
         # filteredvalues and filtereditervalues
         class IFilter(Interface):
@@ -404,11 +370,12 @@ class TestBase(NodeTestCase):
         myattrs.child_3 = MyNode()
         self.assertEqual(mynode['child_3'], myattrs.child_3)
 
-        def no_classes_as_values_allowed4():
+        with self.assertRaises(ValueError) as arc:
             myattrs.child_4 = object
-        err = self.expectError(ValueError, no_classes_as_values_allowed4)
-        expected = 'It isn\'t allowed to use classes as values.'
-        self.assertEqual(str(err), expected)
+        self.assertEqual(
+            str(arc.exception),
+            'Given value does not implement node.interfaces.INode'
+        )
 
         baseattrs = basenode.as_attribute_access()
         self.assertEqual(baseattrs.__class__, AttributeAccess)
@@ -416,23 +383,11 @@ class TestBase(NodeTestCase):
         baseattrs.child_3 = BaseNode()
         self.assertEqual(basenode['child_3'], baseattrs.child_3)
 
-        def no_classes_as_values_allowed5():
-            baseattrs.child_4 = object
-        err = self.expectError(ValueError, no_classes_as_values_allowed5)
-        expected = 'It isn\'t allowed to use classes as values.'
-        self.assertEqual(str(err), expected)
-
         orderedattrs = orderednode.as_attribute_access()
         self.assertEqual(orderedattrs.__class__, AttributeAccess)
         self.assertEqual(orderedattrs.child_1, orderednode['child_1'])
         orderedattrs.child_3 = OrderedNode()
         self.assertEqual(orderednode['child_3'], orderedattrs.child_3)
-
-        def no_classes_as_values_allowed6():
-            orderedattrs.child_4 = object
-        err = self.expectError(ValueError, no_classes_as_values_allowed6)
-        expected = 'It isn\'t allowed to use classes as values.'
-        self.assertEqual(str(err), expected)
 
     def test_copy(self):
         node = BaseNode()
@@ -499,3 +454,14 @@ class TestBase(NodeTestCase):
         copied_node = copy.deepcopy(node)
         self.assertFalse(node is copied_node)
         self.assertFalse(node['child'] is copied_node['child'])
+
+    def test_ListNode(self):
+        node = ListNode(name='listnode')
+        node.insert(0, BaseNode())
+        node.insert(1, BaseNode())
+
+        self.checkOutput("""
+        <class 'node.base.ListNode'>: listnode
+        __<class 'node.base.BaseNode'>: 0
+        __<class 'node.base.BaseNode'>: 1
+        """, node.treerepr(prefix='_'))

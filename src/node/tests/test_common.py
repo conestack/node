@@ -1,16 +1,11 @@
-from node.base import BaseNode
-from node.behaviors import Adopt
 from node.behaviors import ChildFactory
 from node.behaviors import DefaultInit
 from node.behaviors import FixedChildren
-from node.behaviors import GetattrChildren
-from node.behaviors import NodeChildValidate
-from node.behaviors import Nodify
+from node.behaviors import MappingAdopt
+from node.behaviors import MappingNode
 from node.behaviors import OdictStorage
 from node.behaviors import UnicodeAware
 from node.behaviors import UUIDAware
-from node.testing.env import MockupNode
-from node.testing.env import NoNode
 from node.tests import NodeTestCase
 from plumber import plumbing
 import uuid
@@ -18,65 +13,8 @@ import uuid
 
 class TestCommon(NodeTestCase):
 
-    def test_Adopt(self):
-        # A dictionary is used as end point
-        @plumbing(Adopt)
-        class AdoptingDict(dict):
-            pass
-
-        ad = AdoptingDict()
-
-        # The mockup node is adopted
-        node = MockupNode()
-        ad['foo'] = node
-        self.assertTrue(ad['foo'] is node)
-        self.assertEqual(node.__name__, 'foo')
-        self.assertTrue(node.__parent__ is ad)
-
-        # The non-node object is not adopted
-        nonode = NoNode()
-        ad['bar'] = nonode
-        self.assertTrue(ad['bar'] is nonode)
-        self.assertFalse(hasattr(nonode, '__name__'))
-        self.assertFalse(hasattr(nonode, '__parent__'))
-
-        # If something goes wrong, the adoption does not happen.
-        # See ``plumbing.Adopt`` for exceptions that are handled.
-
-        # XXX: In case this should be configurable, it would be nice if a
-        # plumbing element could be instatiated which is currently not
-        # possible. It would be possible by defining the plumbing __init__
-        # method with a different name. Maybe it is also possible to have
-        # two __init__ one decorated one not, if the plumbing decorator could
-        # influence that all plumbing functions are stored under a different
-        # name. If the decorator cannot do that a Plumbing metaclass will
-        # work for sure, however, it is questionable whether it justifies a
-        # metaclass instead of just naming the plumbing init
-        # e.g. plumbing__init__
-
-        class FakeDict(object):
-            def __setitem__(self, key, val):
-                raise KeyError(key)
-
-            def setdefault(self, key, default=None):
-                pass                                         # pragma: no cover
-
-        @plumbing(Adopt)
-        class FailingAD(FakeDict):
-            pass
-
-        fail = FailingAD()
-        node = MockupNode()
-
-        def __setitem_fails():
-            fail['foo'] = node
-        err = self.expectError(KeyError, __setitem_fails)
-        self.assertEqual(str(err), "'foo'")
-        self.assertTrue(node.__name__ is None)
-        self.assertTrue(node.__parent__ is None)
-
     def test_UnicodeAware(self):
-        @plumbing(Nodify, UnicodeAware, OdictStorage)
+        @plumbing(MappingNode, UnicodeAware, OdictStorage)
         class UnicodeNode(object):
             pass
 
@@ -102,7 +40,7 @@ class TestCommon(NodeTestCase):
         class BarChild(object):
             pass
 
-        @plumbing(Nodify, ChildFactory, OdictStorage)
+        @plumbing(MappingNode, ChildFactory, OdictStorage)
         class ChildFactoryNode(object):
             factories = {
                 'foo': FooChild,
@@ -122,7 +60,7 @@ class TestCommon(NodeTestCase):
         class BarChild(object):
             pass
 
-        @plumbing(Nodify, FixedChildren)
+        @plumbing(MappingNode, FixedChildren)
         class FixedChildrenNode(object):
             fixed_children_factories = (
                 ('foo', FooChild),
@@ -149,9 +87,9 @@ class TestCommon(NodeTestCase):
         # Create a uid aware node. ``copy`` is not supported on UUIDAware node
         # trees, ``deepcopy`` must be used
         @plumbing(
-            Adopt,
+            MappingAdopt,
             DefaultInit,
-            Nodify,
+            MappingNode,
             OdictStorage,
             UUIDAware)
         class UUIDNode(object):
@@ -207,60 +145,3 @@ class TestCommon(NodeTestCase):
 
         self.assertTrue(c1_uid == detached.uuid)
         self.assertTrue(s1_uid == detached['s1'].uuid)
-
-    def test_NodeChildValidate(self):
-        @plumbing(NodeChildValidate, DefaultInit, Nodify, OdictStorage)
-        class NodeChildValidateNode(object):
-            pass
-
-        node = NodeChildValidateNode()
-        self.assertFalse(node.allow_non_node_children)
-
-        def __setitem__fails():
-            node['child'] = 1
-        err = self.expectError(ValueError, __setitem__fails)
-        self.assertEqual(str(err), 'Non-node children are not allowed.')
-
-        class SomeClass(object):
-            pass
-
-        def __setitem__fails2():
-            node['aclasshere'] = SomeClass
-        err = self.expectError(ValueError, __setitem__fails2)
-        expected = "It isn't allowed to use classes as values."
-        self.assertEqual(str(err), expected)
-
-        node.allow_non_node_children = True
-        node['child'] = 1
-        self.assertEqual(node['child'], 1)
-
-        class LegacyNodeChildValidateNode(NodeChildValidateNode):
-            allow_non_node_childs = True
-
-        node = LegacyNodeChildValidateNode()
-        node['child'] = 1
-
-    def test_GetattrChildren(self):
-        # XXX: this test breaks coverage recording!!!:
-        class GetattrBase(BaseNode):
-            allow_non_node_children = True
-            baseattr = 1
-
-        @plumbing(GetattrChildren)
-        class GetattrNode(GetattrBase):
-            ourattr = 2
-
-        node = GetattrNode()
-        node['foo'] = 10
-        node['baseattr'] = 20
-        node['ourattr'] = 30
-
-        self.assertEqual(node['foo'], 10)
-        self.assertEqual(node['baseattr'], 20)
-        self.assertEqual(node['ourattr'], 30)
-
-        # Only children not shadowed by real attributes can be accessed via
-        # getattr
-        self.assertEqual(node.foo, 10)
-        self.assertEqual(node.baseattr, 1)
-        self.assertEqual(node.ourattr, 2)

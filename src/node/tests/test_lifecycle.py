@@ -3,9 +3,9 @@ from node.behaviors import AttributesLifecycle
 from node.behaviors import DefaultInit
 from node.behaviors import DictStorage
 from node.behaviors import Lifecycle
+from node.behaviors import MappingNode
 from node.behaviors import NodeAttributes
 from node.behaviors import Nodespaces
-from node.behaviors import Nodify
 from node.events import NodeAddedEvent
 from node.events import NodeCreatedEvent
 from node.events import NodeDetachedEvent
@@ -38,7 +38,7 @@ class Handler(object):
 
 @plumbing(
     DefaultInit,
-    Nodify,
+    MappingNode,
     DictStorage)
 class NoLifecycleNode(object):
     pass
@@ -54,7 +54,7 @@ class LifecycleNodeAttributes(NodeAttributes):
     Attributes,
     Lifecycle,
     DefaultInit,
-    Nodify,
+    MappingNode,
     DictStorage)
 class LifecycleNode(object):
     attributes_factory = LifecycleNodeAttributes

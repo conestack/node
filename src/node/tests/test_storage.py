@@ -1,6 +1,9 @@
 from node.behaviors import DictStorage
+from node.behaviors import ListStorage
+from node.behaviors import MappingStorage
 from node.behaviors import OdictStorage
-from node.behaviors import Storage
+from node.behaviors import SequenceStorage
+from node.interfaces import IMappingStorage
 from node.tests import NodeTestCase
 from odict import odict
 from plumber import plumbing
@@ -10,8 +13,8 @@ from plumber import plumbing
 # Mock objects
 ###############################################################################
 
-@plumbing(Storage)
-class AbstractStorageObject(object):
+@plumbing(MappingStorage)
+class MappingStorageObject(object):
     pass
 
 
@@ -25,22 +28,33 @@ class OdictStorageObject(object):
     pass
 
 
+@plumbing(SequenceStorage)
+class SequenceStorageObject(object):
+    pass
+
+
+@plumbing(ListStorage)
+class ListStorageObject(object):
+    pass
+
+
 ###############################################################################
 # Tests
 ###############################################################################
 
 class TestStorage(NodeTestCase):
 
-    def test_abstract_storage(self):
-        obj = AbstractStorageObject()
+    def test_MappingStorage(self):
+        obj = MappingStorageObject()
+        self.assertTrue(IMappingStorage.providedBy(obj))
 
         def access_storage_fails():
             obj.storage
         err = self.expectError(NotImplementedError, access_storage_fails)
-        expected = 'Abstract storage does not implement ``storage``'
+        expected = 'Abstract ``MappingStorage`` does not implement ``storage``'
         self.assertEqual(str(err), expected)
 
-    def test_dict_storage(self):
+    def test_DictStorage(self):
         obj = DictStorageObject()
         self.assertEqual(obj.storage, {})
 
@@ -52,7 +66,7 @@ class TestStorage(NodeTestCase):
         del obj['foo']
         self.assertEqual(obj.storage, {})
 
-    def test_odict_storage(self):
+    def test_OdictStorage(self):
         obj = OdictStorageObject()
         self.assertEqual(obj.storage, odict())
 
@@ -63,3 +77,45 @@ class TestStorage(NodeTestCase):
 
         del obj['foo']
         self.assertEqual(obj.storage, odict())
+
+    def test_SequenceStorage(self):
+        obj = SequenceStorageObject()
+
+        def access_storage_fails():
+            obj.storage
+        err = self.expectError(NotImplementedError, access_storage_fails)
+        expected = 'Abstract ``SequenceStorage`` does not implement ``storage``'
+        self.assertEqual(str(err), expected)
+
+    def test_ListStorage(self):
+        lseq = ListStorageObject()
+        self.assertEqual(lseq.storage, [])
+
+        # insert
+        lseq.insert(0, 0)
+        self.assertEqual(lseq.storage, [0])
+
+        # __setitem__
+        lseq[0] = 1
+        self.assertEqual(lseq.storage, [1])
+
+        # __len__
+        self.assertEqual(len(lseq), 1)
+
+        # __getitem__
+        self.assertEqual(lseq[0], 1)
+        with self.assertRaises(IndexError):
+            lseq[1]
+
+        # __delitem__
+        del lseq[0]
+        self.assertEqual(lseq.storage, [])
+        with self.assertRaises(IndexError):
+            del lseq[0]
+
+    def test_BC_imports(self):
+        from node.behaviors import Storage
+        self.assertTrue(Storage is MappingStorage)
+
+        from node.interfaces import IStorage
+        self.assertTrue(IStorage is IMappingStorage)

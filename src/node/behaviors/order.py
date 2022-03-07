@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from node.interfaces import IOrder
 from plumber import Behavior
 from plumber import override

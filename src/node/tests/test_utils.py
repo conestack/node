@@ -14,6 +14,7 @@ from node.utils import safe_encode
 from node.utils import StrCodec
 from node.utils import UNSET
 from odict import odict
+import copy
 import logging
 
 
@@ -24,6 +25,8 @@ class TestUtils(NodeTestCase):
         self.assertEqual(str(UNSET), '')
         self.assertFalse(bool(UNSET))
         self.assertEqual(len(UNSET), 0)
+        self.assertTrue(copy.copy(UNSET) is UNSET)
+        self.assertTrue(copy.deepcopy(UNSET) is UNSET)
 
     def test_ReverseMapping(self):
         context = odict([
@@ -88,7 +91,7 @@ class TestUtils(NodeTestCase):
         self.assertEqual(encode(b'\xc3\xa4'), b'\xc3\xa4')
 
         node = BaseNode()
-        node.allow_non_node_children = True
+        node.child_constraints = None
         node['foo'] = u'\xe4'
         self.assertEqual(encode(node), {b'foo': b'\xc3\xa4'})
 
@@ -99,7 +102,7 @@ class TestUtils(NodeTestCase):
         self.assertEqual(decode(b'fo\xe4'), b'fo\xe4')
 
         node = BaseNode()
-        node.allow_non_node_children = True
+        node.child_constraints = None
         node[b'foo'] = b'\xc3\xa4'
         self.assertEqual(decode(node), {u'foo': u'\xe4'})
 
@@ -148,6 +151,7 @@ class TestUtils(NodeTestCase):
 
     def test_node_by_path(self):
         root = BaseNode(name='root')
+
         child = root['child'] = BaseNode()
         sub = child['sub'] = BaseNode()
 

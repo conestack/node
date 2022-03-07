@@ -74,22 +74,25 @@ class NodeTestCase(unittest.TestCase):
 
 
 def test_suite():
+    from node.tests import test_adopt
     from node.tests import test_alias
     from node.tests import test_attributes
     from node.tests import test_base
     from node.tests import test_cache
     from node.tests import test_common
+    from node.tests import test_constraints
     from node.tests import test_context
     from node.tests import test_events
     from node.tests import test_fallback
     from node.tests import test_lifecycle
     from node.tests import test_locking
     from node.tests import test_mapping
+    from node.tests import test_node
     from node.tests import test_nodespace
-    from node.tests import test_nodify
     from node.tests import test_order
     from node.tests import test_reference
     from node.tests import test_schema
+    from node.tests import test_sequence
     from node.tests import test_serializer
     from node.tests import test_storage
     from node.tests import test_testing
@@ -98,28 +101,31 @@ def test_suite():
 
     suite = unittest.TestSuite()
 
-    suite.addTest(unittest.findTestCases(test_tests))
     suite.addTest(unittest.findTestCases(test_testing))
+    suite.addTest(unittest.findTestCases(test_tests))
 
     suite.addTest(unittest.findTestCases(test_base))
-    suite.addTest(unittest.findTestCases(test_utils))
-    suite.addTest(unittest.findTestCases(test_locking))
-    suite.addTest(unittest.findTestCases(test_serializer))
     suite.addTest(unittest.findTestCases(test_events))
+    suite.addTest(unittest.findTestCases(test_locking))
     suite.addTest(unittest.findTestCases(test_schema))
+    suite.addTest(unittest.findTestCases(test_serializer))
+    suite.addTest(unittest.findTestCases(test_utils))
 
+    suite.addTest(unittest.findTestCases(test_adopt))
     suite.addTest(unittest.findTestCases(test_alias))
     suite.addTest(unittest.findTestCases(test_attributes))
     suite.addTest(unittest.findTestCases(test_cache))
     suite.addTest(unittest.findTestCases(test_common))
+    suite.addTest(unittest.findTestCases(test_constraints))
     suite.addTest(unittest.findTestCases(test_context))
     suite.addTest(unittest.findTestCases(test_fallback))
     suite.addTest(unittest.findTestCases(test_lifecycle))
     suite.addTest(unittest.findTestCases(test_mapping))
+    suite.addTest(unittest.findTestCases(test_node))
     suite.addTest(unittest.findTestCases(test_nodespace))
-    suite.addTest(unittest.findTestCases(test_nodify))
     suite.addTest(unittest.findTestCases(test_order))
     suite.addTest(unittest.findTestCases(test_reference))
+    suite.addTest(unittest.findTestCases(test_sequence))
     suite.addTest(unittest.findTestCases(test_storage))
 
     return suite

@@ -1,5 +1,6 @@
+from __future__ import absolute_import
 from contextlib import contextmanager
-from node.behaviors import Nodify
+from node.behaviors import MappingNode
 from node.interfaces import IAttributes
 from node.interfaces import INodeAttributes
 from node.interfaces import ISchema
@@ -31,7 +32,7 @@ class Schema(Behavior):
         with scope_context(field, name, self):
             try:
                 return field.deserialize(next_(self, name))
-            except KeyError as e:
+            except KeyError:
                 return field.default
 
     @plumb
@@ -48,7 +49,7 @@ class Schema(Behavior):
             next_(self, name, field.serialize(value))
 
 
-@plumbing(Nodify, Schema)
+@plumbing(MappingNode, Schema)
 @implementer(INodeAttributes)
 class SchemaAttributes(object):
 
@@ -187,7 +188,7 @@ class SchemaProperty(object):
             try:
                 with _property_access(name):
                     return field.deserialize(obj[name])
-            except KeyError as e:
+            except KeyError:
                 return field.default
 
     def __set__(self, obj, value):

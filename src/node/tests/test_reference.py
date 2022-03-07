@@ -1,6 +1,6 @@
-from node.behaviors import Adopt
 from node.behaviors import DefaultInit
-from node.behaviors import Nodify
+from node.behaviors import MappingAdopt
+from node.behaviors import MappingNode
 from node.behaviors import OdictStorage
 from node.behaviors import Reference
 from node.behaviors.reference import NodeIndex
@@ -15,10 +15,10 @@ import uuid
 ###############################################################################
 
 @plumbing(
-    Adopt,
+    MappingAdopt,
     Reference,
     DefaultInit,
-    Nodify,
+    MappingNode,
     OdictStorage)
 class ReferenceNode(object):
     pass
@@ -122,6 +122,6 @@ class TestReference(NodeTestCase):
         ))
 
         node['child'] = ReferenceNode()
-        node['child'].allow_non_node_children = True
+        node['child'].child_constraints = None
         node['child']['foo'] = 1
         del node['child']

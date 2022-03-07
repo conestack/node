@@ -1,6 +1,6 @@
-from node.behaviors import Adopt
 from node.behaviors import DefaultInit
-from node.behaviors import Nodify
+from node.behaviors import MappingAdopt
+from node.behaviors import MappingNode
 from node.behaviors import OdictStorage
 from node.behaviors import Order
 from node.behaviors import Reference
@@ -13,21 +13,21 @@ from plumber import plumbing
 ###############################################################################
 
 @plumbing(
-    Adopt,
+    MappingAdopt,
     Order,
     DefaultInit,
-    Nodify,
+    MappingNode,
     OdictStorage)
 class OrderableNode(object):
     pass
 
 
 @plumbing(
-    Adopt,
+    MappingAdopt,
     Order,
     Reference,
     DefaultInit,
-    Nodify,
+    MappingNode,
     OdictStorage)
 class OrderReferenceNode(object):
     pass
@@ -387,7 +387,7 @@ class TestOrder(NodeTestCase):
             "  <class 'node.tests.test_order.OrderReferenceNode'>: e\n"
         ))
 
-        tree2['d'].allow_non_node_children = True
+        tree2['d'].child_constraints = None
         tree2['d']['a'] = object()
         self.checkOutput("""\
         <class 'node.tests.test_order.OrderReferenceNode'>: x
