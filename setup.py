@@ -8,7 +8,7 @@ def read_file(name):
         return f.read()
 
 
-version = '1.0'
+version = '1.1.dev0'
 shortdesc = "Building data structures as node trees"
 longdesc = '\n\n'.join([read_file(name) for name in [
     'README.rst',
