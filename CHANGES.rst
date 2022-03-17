@@ -2,7 +2,7 @@
 Changes
 =======
 
-1.0 (unreleased)
+1.0 (2022-03-17)
 ----------------
 
 - Implement ``__copy__`` and ``__deepcopy__`` on ``node.utils.UNSET``.
