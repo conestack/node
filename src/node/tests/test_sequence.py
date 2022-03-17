@@ -62,7 +62,7 @@ class TestSequence(NodeTestCase):
         self.assertEqual(seq.count(4), 0)
 
         # index
-        self.assertEquals(seq.index(2), 1)
+        self.assertEqual(seq.index(2), 1)
         with self.assertRaises(ValueError):
             seq.index(4)
 

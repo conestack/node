@@ -1,10 +1,10 @@
 #!/bin/sh
 if [ -x "$(which python)" ]; then
-    ./py2/bin/python -m unittest node.tests.test_suite
+    ./py2/bin/python -m node.tests.__init__
 fi
 if [ -x "$(which python3)" ]; then
-    ./py3/bin/python -m unittest node.tests.test_suite
+    ./py3/bin/python -m node.tests.__init__
 fi
 if [ -x "$(which pypy)" ]; then
-    ./pypy/bin/python -m unittest node.tests.test_suite
+    ./pypy/bin/python -m node.tests.__init__
 fi

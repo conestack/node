@@ -1,0 +1,51 @@
+name: Test node
+
+on:
+  push:
+
+jobs:
+  test:
+    name: Test ${{ matrix.python }} - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+
+        python:
+          - "2.7"
+          - "3.7"
+          - "3.8"
+          - "3.9"
+          - "3.10"
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install
+        run: |
+          pip install wheel
+          pip install coverage
+          pip install -e .
+
+      - name: Run tests
+        run: |
+          python --version
+          python -m node.tests.__init__
+
+      - name: Run coverage
+        run: |
+          coverage run \
+            --source=src/node \
+            --omit=src/node/testing/profiling.py \
+            -m node.tests.__init__
+          coverage report -m --fail-under=100

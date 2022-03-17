@@ -7,40 +7,19 @@ if [ -x "$(which python)" ]; then
 
     ./py2/bin/pip install wheel
     ./py2/bin/pip install coverage
-    ./py2/bin/pip install zope.interface
-    ./py2/bin/pip install zope.lifecycleevent
-    ./py2/bin/pip install zope.component
-    ./py2/bin/pip install zope.deprecation
-    ./py2/bin/pip install zope.deferredimport
-    ./py2/bin/pip install https://github.com/conestack/odict/archive/master.zip
-    ./py2/bin/pip install https://github.com/conestack/plumber/archive/master.zip
-    ./py2/bin/python setup.py develop
+    ./py2/bin/pip install -e .
 fi
 if [ -x "$(which python3)" ]; then
     virtualenv --clear --no-site-packages -p python3 py3
 
     ./py3/bin/pip install wheel
     ./py3/bin/pip install coverage
-    ./py3/bin/pip install zope.interface
-    ./py3/bin/pip install zope.lifecycleevent
-    ./py3/bin/pip install zope.component
-    ./py3/bin/pip install zope.deprecation
-    ./py3/bin/pip install zope.deferredimport
-    ./py3/bin/pip install https://github.com/conestack/odict/archive/master.zip
-    ./py3/bin/pip install https://github.com/conestack/plumber/archive/master.zip
-    ./py3/bin/python setup.py develop
+    ./py3/bin/pip install -e .
 fi
 if [ -x "$(which pypy)" ]; then
     virtualenv --clear --no-site-packages -p pypy pypy
 
     ./pypy/bin/pip install wheel
     ./pypy/bin/pip install coverage
-    ./pypy/bin/pip install zope.interface
-    ./pypy/bin/pip install zope.lifecycleevent
-    ./pypy/bin/pip install zope.component
-    ./pypy/bin/pip install zope.deprecation
-    ./pypy/bin/pip install zope.deferredimport
-    ./pypy/bin/pip install https://github.com/conestack/odict/archive/master.zip
-    ./pypy/bin/pip install https://github.com/conestack/plumber/archive/master.zip
-    ./pypy/bin/python setup.py develop
+    ./pypy/bin/pip install -e .
 fi

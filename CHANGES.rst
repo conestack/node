@@ -86,11 +86,8 @@ Changes
 
 **Breaking changes**:
 
-- Remove deprecated B/C import location ``node.parts``.
-  [rnix]
-
-- Remove ``node.behaviors.GetattrChildren``. Use ``node.utils.AttributeAccess``
-  instead if you want to access node children via ``__getattr__``.
+- Remove ``node.behaviors.GetattrChildren``. See ``node.utils.AttributeAccess``
+  instead if you need to access node children via ``__getattr__``.
   [rnix]
 
 - Rename ``node.behaviors.nodify`` module to ``node.behaviors.node``. It's not
@@ -102,6 +99,9 @@ Changes
   ``node.behaviors`` still work for B/C reasons, importing them from
   ``node.behaviors.nodify``, ``node.behaviors.common`` respective
   ``node.behaviors.common`` not works any more. Please fix your imports.
+  [rnix]
+
+- Remove deprecated B/C import location ``node.parts``.
   [rnix]
 
 - ``node.behaviors.schema.Schema`` no longer considers wildcard fields.
