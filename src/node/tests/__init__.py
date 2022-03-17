@@ -132,5 +132,8 @@ def test_suite():
 
 
 if __name__ == '__main__':
+    import sys
+
     runner = unittest.TextTestRunner(failfast=True)
-    runner.run(test_suite())
+    result = runner.run(test_suite())
+    sys.exit(not result.wasSuccessful())
