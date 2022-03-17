@@ -377,7 +377,7 @@ class TestFullmapping(NodeTestCase):
         fmtester = FullMappingTester(FailingMockMappingSetItem)
         err = self.expectError(TypeError, fmtester.test___setitem__)
         exp = '__init__() got an unexpected keyword argument \'name\''
-        self.assertEqual(str(err), exp)
+        self.assertTrue(str(err).find(exp) > -1)
 
         fmtester = FullMappingTester(MockNodeSetItem)
         fmtester.test___setitem__()
