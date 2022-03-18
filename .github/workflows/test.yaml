@@ -45,4 +45,4 @@ jobs:
       - name: Run coverage
         run: |
           coverage run --source=src/node --omit=src/node/testing/profiling.py -m node.tests.__init__
-          coverage report -m --fail-under=100
+          coverage report --fail-under=100
