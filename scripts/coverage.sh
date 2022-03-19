@@ -1,7 +1,19 @@
-#!/bin/sh
-./$1/bin/coverage run \
-    --source=src/node \
-    --omit=src/node/testing/profiling.py \
-    -m node.tests.__init__
-./$1/bin/coverage report
-./$1/bin/coverage html
+#!/bin/bash
+
+function run_coverage {
+    local target=$1
+
+    if [ -e "$target" ]; then
+        ./$target/bin/coverage run \
+            --source=src/node \
+            --omit=src/node/testing/profiling.py \
+            -m node.tests.__init__
+        ./$target/bin/coverage report
+    else
+        echo "Target $target not found."
+    fi
+}
+
+run_coverage py2
+run_coverage py3
+run_coverage pypy3

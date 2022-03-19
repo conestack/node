@@ -2,24 +2,19 @@
 
 ./scripts/clean.sh
 
-if [ -x "$(which python)" ]; then
-    virtualenv --clear --no-site-packages -p python py2
+function install {
+    local interpreter=$1
+    local target=$2
 
-    ./py2/bin/pip install wheel
-    ./py2/bin/pip install coverage
-    ./py2/bin/pip install -e .
-fi
-if [ -x "$(which python3)" ]; then
-    virtualenv --clear --no-site-packages -p python3 py3
+    if [ -x "$(which $interpreter)" ]; then
+        virtualenv --clear -p $interpreter $target
+        ./$target/bin/pip install wheel coverage
+        ./$target/bin/pip install -e .
+    else
+        echo "Interpreter $interpreter not found. Skip install."
+    fi
+}
 
-    ./py3/bin/pip install wheel
-    ./py3/bin/pip install coverage
-    ./py3/bin/pip install -e .
-fi
-if [ -x "$(which pypy)" ]; then
-    virtualenv --clear --no-site-packages -p pypy pypy
-
-    ./pypy/bin/pip install wheel
-    ./pypy/bin/pip install coverage
-    ./pypy/bin/pip install -e .
-fi
+install python2 py2
+install python3 py3
+install pypy3 pypy3

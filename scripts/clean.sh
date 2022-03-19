@@ -5,7 +5,7 @@
 set -e
 
 to_remove=(
-    .coverage dist htmlcov py2 py3 pypy
+    .coverage dist htmlcov py2 py3 pypy3
 )
 
 for item in "${to_remove[@]}"; do

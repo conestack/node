@@ -388,7 +388,7 @@ class TestFullmapping(NodeTestCase):
         exp = '\'MockMapping\' object has no attribute \'__getitem__\'' \
             if (IS_PY2 and not IS_PYPY) else \
             '\'MockMapping\' object is not subscriptable'
-        self.assertEqual(str(err), exp)
+        self.assertTrue(str(err).startswith(exp))
 
         fmtester = FullMappingTester(MockMappingGetItem)
         fmtester.context['foo'] = MockMappingGetItem()
