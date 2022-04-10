@@ -248,8 +248,8 @@ class NodeSerializer(FieldSerializer):
     def load(self, value):
         """Load value from parent.
 
-        :param value: The object pickle to deserialize.
-        :return: Object loaded from pickle.
+        :param value: Value to deserialize node instance from.
+        :return: The node instance.
         """
         if isinstance(value, self.type_):
             return value
