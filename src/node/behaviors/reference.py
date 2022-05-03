@@ -1,10 +1,12 @@
 from __future__ import absolute_import
+from node.interfaces import IMappingNode
 from node.interfaces import INode
 from node.interfaces import IReference
 from plumber import Behavior
 from plumber import default
 from plumber import override
 from plumber import plumb
+from plumber import plumbifexists
 from zope.interface import implementer
 from zope.interface.common.mapping import IReadMapping
 import uuid
@@ -36,7 +38,7 @@ class Reference(Behavior):
         self.uuid = uuid.uuid4()
         next_(self, *args, **kw)
 
-    @plumb
+    @plumbifexists
     def __setitem__(next_, self, key, val):
         if INode.providedBy(val):
             try:
@@ -44,13 +46,13 @@ class Reference(Behavior):
                 keys = set(self._index.keys())
                 if keys.intersection(val._index.keys()):
                     raise ValueError('Node with uuid already exists')
-            except StopIteration:
+            except (AttributeError, StopIteration):
                 pass
             self._index.update(val._index)
             val._index = self._index
         next_(self, key, val)
 
-    @plumb
+    @plumbifexists
     def __delitem__(next_, self, key):
         # fail immediately if key does not exist
         todel = self[key]
@@ -95,13 +97,14 @@ class Reference(Behavior):
     @default
     def _to_delete(self):
         todel = [int(self.uuid)]
-        for childkey in self:
-            try:
-                todel += self[childkey]._to_delete()
-            except AttributeError:
-                # Non-Node values or non referencing children are not told
-                # about deletion.
-                continue
+        if IMappingNode.providedBy(self):
+            for childkey in self:
+                try:
+                    todel += self[childkey]._to_delete()
+                except AttributeError:
+                    # Non-Node values or non referencing children are not told
+                    # about deletion.
+                    continue
         return todel
 
     @default
