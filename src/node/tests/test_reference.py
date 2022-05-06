@@ -1,8 +1,12 @@
 from node.behaviors import DefaultInit
+from node.behaviors import ListStorage
 from node.behaviors import MappingAdopt
 from node.behaviors import MappingNode
+from node.behaviors import Node
 from node.behaviors import OdictStorage
 from node.behaviors import Reference
+from node.behaviors import SequenceAdopt
+from node.behaviors import SequenceNode
 from node.behaviors.reference import NodeIndex
 from node.tests import NodeTestCase
 from plumber import plumbing
@@ -14,13 +18,32 @@ import uuid
 # Mock objects
 ###############################################################################
 
+
+@plumbing(
+    Reference,
+    DefaultInit,
+    Node)
+class ReferenceNode(object):
+    pass
+
+
 @plumbing(
     MappingAdopt,
     Reference,
     DefaultInit,
     MappingNode,
     OdictStorage)
-class ReferenceNode(object):
+class ReferenceMappingNode(object):
+    pass
+
+
+@plumbing(
+    SequenceAdopt,
+    Reference,
+    DefaultInit,
+    SequenceNode,
+    ListStorage)
+class ReferenceSequenceNode(object):
     pass
 
 
@@ -32,7 +55,7 @@ class TestReference(NodeTestCase):
 
     def test_node_index(self):
         # Tree node index
-        node = ReferenceNode()
+        node = ReferenceMappingNode()
         self.assertTrue(isinstance(node.index, NodeIndex))
         self.assertTrue(IReadMapping.providedBy(node.index))
         self.assertEqual(node.index[node.uuid], node)
@@ -42,24 +65,24 @@ class TestReference(NodeTestCase):
 
     def test_containment(self):
         # Add some children and check node containment stuff
-        node = ReferenceNode(name='root')
+        node = ReferenceMappingNode(name='root')
 
-        node['child'] = ReferenceNode()
+        node['child'] = ReferenceMappingNode()
         self.assertEqual(node['child'].path, ['root', 'child'])
         self.assertTrue(node.index._index is node['child'].index._index)
         self.assertEqual(len(node.index._index), 2)
 
-        node['child']['sub'] = ReferenceNode()
+        node['child']['sub'] = ReferenceMappingNode()
         self.assertEqual(len(node.index._index), 3)
 
-        node['child']['sub2'] = ReferenceNode()
+        node['child']['sub2'] = ReferenceMappingNode()
         self.assertEqual(len(node.index._index), 4)
 
         self.assertEqual(node.treerepr(), (
-            "<class 'node.tests.test_reference.ReferenceNode'>: root\n"
-            "  <class 'node.tests.test_reference.ReferenceNode'>: child\n"
-            "    <class 'node.tests.test_reference.ReferenceNode'>: sub\n"
-            "    <class 'node.tests.test_reference.ReferenceNode'>: sub2\n"
+            "<class 'node.tests.test_reference.ReferenceMappingNode'>: root\n"
+            "  <class 'node.tests.test_reference.ReferenceMappingNode'>: child\n"
+            "    <class 'node.tests.test_reference.ReferenceMappingNode'>: sub\n"
+            "    <class 'node.tests.test_reference.ReferenceMappingNode'>: sub2\n"
         ))
 
         # Adding in indexed Node with same uuid or the same node twice fails
@@ -72,10 +95,10 @@ class TestReference(NodeTestCase):
 
     def test_uuid(self):
         # Check UUID stuff
-        node = ReferenceNode(name='root')
-        node['child'] = ReferenceNode()
-        node['child']['sub'] = ReferenceNode()
-        node['child']['sub2'] = ReferenceNode()
+        node = ReferenceMappingNode(name='root')
+        node['child'] = ReferenceMappingNode()
+        node['child']['sub'] = ReferenceMappingNode()
+        node['child']['sub2'] = ReferenceMappingNode()
 
         uid = node['child']['sub'].uuid
         self.assertTrue(isinstance(uid, uuid.UUID))
@@ -118,10 +141,10 @@ class TestReference(NodeTestCase):
         self.assertFalse(delindexes[1] in uuids)
         self.assertFalse(delindexes[2] in uuids)
         self.assertEqual(node.treerepr(), (
-            "<class 'node.tests.test_reference.ReferenceNode'>: root\n"
+            "<class 'node.tests.test_reference.ReferenceMappingNode'>: root\n"
         ))
 
-        node['child'] = ReferenceNode()
+        node['child'] = ReferenceMappingNode()
         node['child'].child_constraints = None
         node['child']['foo'] = 1
         del node['child']
