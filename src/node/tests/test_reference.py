@@ -18,7 +18,6 @@ import uuid
 # Mock objects
 ###############################################################################
 
-
 @plumbing(
     Reference,
     DefaultInit,
@@ -38,12 +37,30 @@ class ReferenceMappingNode(object):
 
 
 @plumbing(
+    MappingAdopt,
+    DefaultInit,
+    MappingNode,
+    OdictStorage)
+class NoReferenceMappingNode(object):
+    pass
+
+
+@plumbing(
     SequenceAdopt,
     Reference,
     DefaultInit,
     SequenceNode,
     ListStorage)
 class ReferenceSequenceNode(object):
+    pass
+
+
+@plumbing(
+    SequenceAdopt,
+    DefaultInit,
+    SequenceNode,
+    ListStorage)
+class NoReferenceSequenceNode(object):
     pass
 
 

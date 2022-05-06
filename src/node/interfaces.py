@@ -560,13 +560,51 @@ class IUUIDAware(IUUID):
         """
 
 
-class IReference(IUUID):
-    """Plumbing behavior holding an index of all nodes contained in the tree.
+class IReferenceNode(IUUID):
+    """Plumbing behavior holding an index of nodes contained in the tree.
 
     Plumbing hooks:
 
     * ``__init__``
         Create and set uuid.
+
+    * ``detach``
+        Reduce own index and initialize index of detached child.
+    """
+
+    index = Attribute('The tree node index')
+
+    def node(uuid):
+        """Return node by uuid located anywhere in this nodetree."""
+
+
+class IReferenceMappingNode(IReferenceNode):
+    """Plumbing behavior to provide ``IReferenceNode`` on mapping nodes.
+
+    Plumbing hooks:
+
+    * ``__setitem__``
+        Set child in index.
+
+    * ``__delitem__``
+        Delete child from index.
+    """
+
+
+# B/C 2022-05-06 -> node.interfaces.IReference
+deprecated(
+    (
+        '``IReference`` has been renamed to ``IReferenceMappingNode``. '
+        'Please fix your import'
+    ),
+    IReference='node.interfaces:IMappingReference',
+)
+
+
+class IReferenceSequenceNode(IReferenceNode):
+    """Plumbing behavior to provide ``IReferenceNode`` on sequence nodes.
+
+    Plumbing hooks:
 
     * ``__setitem__``
         Set child in index.
@@ -574,14 +612,12 @@ class IReference(IUUID):
     * ``__delitem__``
         Delete child from index.
 
-    * ``detach``
-        Reduce index of detached child.
+    * ``insert``
+        Set child in index.
+
+    * ``clear``
+        Delete all children from index.
     """
-
-    index = Attribute('The tree node index')
-
-    def node(uuid):
-        """Return node by uuid located anywhere in this nodetree."""
 
 
 class IMappingStorage(Interface):

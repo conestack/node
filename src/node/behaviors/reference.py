@@ -1,7 +1,10 @@
 from __future__ import absolute_import
 from node.interfaces import IMappingNode
+from node.interfaces import ISequenceNode
 from node.interfaces import INode
-from node.interfaces import IReference
+from node.interfaces import IReferenceNode
+from node.interfaces import IReferenceMappingNode
+from node.interfaces import IReferenceSequenceNode
 from plumber import Behavior
 from plumber import default
 from plumber import override
@@ -28,8 +31,8 @@ class NodeIndex(object):
         return int(key) in self._index
 
 
-@implementer(IReference)
-class Reference(Behavior):
+@implementer(IReferenceNode)
+class ReferenceNode(Behavior):
     _uuid = default(None)
 
     @plumb
@@ -38,36 +41,6 @@ class Reference(Behavior):
         self.uuid = uuid.uuid4()
         next_(self, *args, **kw)
 
-    @plumbifexists
-    def __setitem__(next_, self, key, val):
-        if INode.providedBy(val):
-            try:
-                next(val.iterkeys())
-                keys = set(self._index.keys())
-                if keys.intersection(val._index.keys()):
-                    raise ValueError('Node with uuid already exists')
-            except (AttributeError, StopIteration):
-                pass
-            self._index.update(val._index)
-            val._index = self._index
-        next_(self, key, val)
-
-    @plumbifexists
-    def __delitem__(next_, self, key):
-        # fail immediately if key does not exist
-        todel = self[key]
-        if hasattr(todel, '_to_delete'):
-            for iuuid in todel._to_delete():
-                del self._index[iuuid]
-        next_(self, key)
-
-    @plumb
-    def detach(next_, self, key):
-        node = next_(self, key)
-        node._index = {int(node.uuid): node}
-        node._index_nodes()
-        return node
-
     @property
     def uuid(self):
         return self._uuid
@@ -75,14 +48,17 @@ class Reference(Behavior):
     @override
     @uuid.setter
     def uuid(self, uuid):
-        iuuid = uuid is not None and int(uuid) or None
-        if iuuid in self._index \
-                and self._index[iuuid] is not self:
+        index = self._index
+        iuuid = None if uuid is None else int(uuid)
+        if (
+            iuuid in index \
+            and index[iuuid] is not self
+        ):
             raise ValueError('Given uuid was already used for another Node')
-        siuuid = self._uuid is not None and int(self._uuid) or None
-        if siuuid in self._index:
-            del self._index[siuuid]
-        self._index[iuuid] = self
+        siuuid = None if self._uuid is None else int(self._uuid)
+        if siuuid in index:
+            del index[siuuid]
+        index[iuuid] = self
         self._uuid = uuid
 
     @override
@@ -94,27 +70,82 @@ class Reference(Behavior):
     def node(self, uuid):
         return self._index.get(int(uuid))
 
-    @default
-    def _to_delete(self):
-        todel = [int(self.uuid)]
-        if IMappingNode.providedBy(self):
-            for childkey in self:
-                try:
-                    todel += self[childkey]._to_delete()
-                except AttributeError:
-                    # Non-Node values or non referencing children are not told
-                    # about deletion.
-                    continue
-        return todel
+    @plumbifexists
+    def __setitem__(next_, self, name, value):
+        # works on mapping and sequence nodes
+        if IReferenceNode.providedBy(value):
+            index = self._index
+            colliding = set(index).intersection(value._index)
+            if colliding:
+                raise ValueError((
+                    'Node index collision. Index already contains uuid(s) {}'
+                ).format(', '.join(colliding)))
+            index.update(value._index)
+            value._index = index
+        next_(self, name, value)
+
+    @plumbifexists
+    def __delitem__(next_, self, name):
+        # works on mapping and sequence nodes
+        # fail immediately if name does not exist
+        value = self[name]
+        if IReferenceNode.providedBy(value):
+            index = self._index
+            for iuuid in value._recursiv_reference_keys:
+                del index[iuuid]
+        next_(self, name)
+
+    @plumb
+    def detach(next_, self, key):
+        node = next_(self, key)
+        iuuid = int(node.uuid)
+        node._index = {iuuid: node}
+        node._init_reference_index()
+        index = self._index
+        for iuuid in node._recursiv_reference_keys:
+            del index[iuuid]
+        return node
 
     @default
-    def _index_nodes(self):
-        for node in self.values():
-            try:
-                uuid = int(node.uuid)
-            except AttributeError:
-                # non-Node values are a dead end, no magic for them
-                continue
-            self._index[uuid] = node
+    @property
+    def _referencable_child_nodes(self):
+        children = []
+        if IMappingNode.providedBy(self):
+            children = self.values()
+        elif ISequenceNode.providedBy(self):
+            children = self
+        for child in children:
+            if IReferenceNode.providedBy(child):
+                yield child
+
+    @default
+    @property
+    def _recursiv_reference_keys(self):
+        keys = [int(self.uuid)]
+        for node in self._referencable_child_nodes:
+            keys += node._recursiv_reference_keys
+        return keys
+
+    @default
+    def _init_reference_index(self):
+        for node in self._referencable_child_nodes:
+            self._index[int(node.uuid)] = node
             node._index = self._index
-            node._index_nodes()
+            node._init_reference_index()
+
+
+@implementer(IReferenceMappingNode)
+class ReferenceMappingNode(ReferenceNode):
+    pass
+
+
+@implementer(IReferenceSequenceNode)
+class ReferenceSequenceNode(ReferenceNode):
+
+    @plumb
+    def insert(next_, self, index, value):
+        next_(self, int(index), value)
+
+    @plumb
+    def clear(next_, self):
+        next_(self)
