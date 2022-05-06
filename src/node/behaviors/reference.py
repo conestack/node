@@ -1,10 +1,9 @@
 from __future__ import absolute_import
 from node.interfaces import IMappingNode
+from node.interfaces import IMappingReference
+from node.interfaces import INodeReference
 from node.interfaces import ISequenceNode
-from node.interfaces import INode
-from node.interfaces import IReferenceNode
-from node.interfaces import IReferenceMappingNode
-from node.interfaces import IReferenceSequenceNode
+from node.interfaces import ISequenceReference
 from plumber import Behavior
 from plumber import default
 from plumber import override
@@ -31,8 +30,8 @@ class NodeIndex(object):
         return int(key) in self._index
 
 
-@implementer(IReferenceNode)
-class ReferenceNode(Behavior):
+@implementer(INodeReference)
+class NodeReference(Behavior):
     _uuid = default(None)
 
     @plumb
@@ -104,7 +103,7 @@ class ReferenceNode(Behavior):
         elif ISequenceNode.providedBy(self):
             children = self
         for child in children:
-            if IReferenceNode.providedBy(child):
+            if INodeReference.providedBy(child):
                 yield child
 
     @default
@@ -124,7 +123,7 @@ class ReferenceNode(Behavior):
 
     @default
     def _update_reference_index(self, value):
-        if IReferenceNode.providedBy(value):
+        if INodeReference.providedBy(value):
             index = self._index
             colliding = set(index).intersection(value._index)
             if colliding:
@@ -134,19 +133,19 @@ class ReferenceNode(Behavior):
 
     @default
     def _reduce_reference_index(self, value):
-        if IReferenceNode.providedBy(value):
+        if INodeReference.providedBy(value):
             index = self._index
             for iuuid in value._recursiv_reference_keys:
                 del index[iuuid]
 
 
-@implementer(IReferenceMappingNode)
-class ReferenceMappingNode(ReferenceNode):
+@implementer(IMappingReference)
+class MappingReference(NodeReference):
     pass
 
 
-@implementer(IReferenceSequenceNode)
-class ReferenceSequenceNode(ReferenceNode):
+@implementer(ISequenceReference)
+class SequenceReference(NodeReference):
 
     @plumb
     def insert(next_, self, index, value):

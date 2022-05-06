@@ -560,7 +560,7 @@ class IUUIDAware(IUUID):
         """
 
 
-class IReferenceNode(IUUID):
+class INodeReference(IUUID):
     """Plumbing behavior holding an index of nodes contained in the tree.
 
     Plumbing hooks:
@@ -578,8 +578,8 @@ class IReferenceNode(IUUID):
         """Return node by uuid located anywhere in this tree."""
 
 
-class IReferenceMappingNode(IReferenceNode):
-    """Plumbing behavior to provide ``IReferenceNode`` on mapping nodes.
+class IMappingReference(INodeReference):
+    """Plumbing behavior to provide ``INodeReference`` on mapping nodes.
 
     Plumbing hooks:
 
@@ -594,15 +594,15 @@ class IReferenceMappingNode(IReferenceNode):
 # B/C 2022-05-06 -> node.interfaces.IReference
 deprecated(
     (
-        '``IReference`` has been renamed to ``IReferenceMappingNode``. '
+        '``IReference`` has been renamed to ``IMappingReference``. '
         'Please fix your import'
     ),
-    IReference='node.interfaces:IReferenceMappingNode',
+    IReference='node.interfaces:IMappingReference',
 )
 
 
-class IReferenceSequenceNode(IReferenceNode):
-    """Plumbing behavior to provide ``IReferenceNode`` on sequence nodes.
+class ISequenceReference(INodeReference):
+    """Plumbing behavior to provide ``INodeReference`` on sequence nodes.
 
     Plumbing hooks:
 

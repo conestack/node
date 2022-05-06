@@ -36,10 +36,10 @@ from .node import DefaultInit  # noqa
 from .node import Node  # noqa
 from .nodespace import Nodespaces  # noqa
 from .order import Order  # noqa
+from .reference import MappingReference  # noqa
 from .reference import NodeIndex  # noqa
-from .reference import ReferenceMappingNode  # noqa
-from .reference import ReferenceNode  # noqa
-from .reference import ReferenceSequenceNode  # noqa
+from .reference import NodeReference  # noqa
+from .reference import SequenceReference  # noqa
 from .schema import Schema  # noqa
 from .schema import SchemaAsAttributes  # noqa
 from .schema import SchemaAttributes  # noqa
@@ -74,10 +74,10 @@ deprecated(
 # B/C 2022-05-06 -> node.behaviors.Reference
 deprecated(
     (
-        '``Reference`` has been renamed to ``ReferenceMappingNode``. '
+        '``Reference`` has been renamed to ``MappingReference``. '
         'Please fix your import'
     ),
-    Reference='node.behaviors.reference:ReferenceMappingNode',
+    Reference='node.behaviors.reference:MappingReference',
 )
 # B/C 2022-02-14 -> node.behaviors.Storage
 deprecated(
