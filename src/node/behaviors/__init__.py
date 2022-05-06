@@ -37,7 +37,9 @@ from .node import Node  # noqa
 from .nodespace import Nodespaces  # noqa
 from .order import Order  # noqa
 from .reference import NodeIndex  # noqa
-from .reference import Reference  # noqa
+from .reference import ReferenceMappingNode  # noqa
+from .reference import ReferenceNode  # noqa
+from .reference import ReferenceSequenceNode  # noqa
 from .schema import Schema  # noqa
 from .schema import SchemaAsAttributes  # noqa
 from .schema import SchemaAttributes  # noqa
@@ -68,6 +70,14 @@ deprecated(
 deprecated(
     '``Nodify`` has been renamed to ``MappingNode``. Please fix your import',
     Nodify='node.behaviors.mapping:MappingNode',
+)
+# B/C 2022-05-06 -> node.behaviors.Reference
+deprecated(
+    (
+        '``Reference`` has been renamed to ``ReferenceMappingNode``. '
+        'Please fix your import'
+    ),
+    Reference='node.behaviors.reference:ReferenceMappingNode',
 )
 # B/C 2022-02-14 -> node.behaviors.Storage
 deprecated(

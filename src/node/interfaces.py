@@ -575,7 +575,7 @@ class IReferenceNode(IUUID):
     index = Attribute('The tree node index')
 
     def node(uuid):
-        """Return node by uuid located anywhere in this nodetree."""
+        """Return node by uuid located anywhere in this tree."""
 
 
 class IReferenceMappingNode(IReferenceNode):
@@ -597,7 +597,7 @@ deprecated(
         '``IReference`` has been renamed to ``IReferenceMappingNode``. '
         'Please fix your import'
     ),
-    IReference='node.interfaces:IMappingReference',
+    IReference='node.interfaces:IReferenceMappingNode',
 )
 
 

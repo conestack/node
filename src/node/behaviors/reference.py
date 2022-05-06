@@ -73,15 +73,7 @@ class ReferenceNode(Behavior):
     @plumbifexists
     def __setitem__(next_, self, name, value):
         # works on mapping and sequence nodes
-        if IReferenceNode.providedBy(value):
-            index = self._index
-            colliding = set(index).intersection(value._index)
-            if colliding:
-                raise ValueError((
-                    'Node index collision. Index already contains uuid(s) {}'
-                ).format(', '.join(colliding)))
-            index.update(value._index)
-            value._index = index
+        self._update_reference_index(value)
         next_(self, name, value)
 
     @plumbifexists
@@ -89,10 +81,7 @@ class ReferenceNode(Behavior):
         # works on mapping and sequence nodes
         # fail immediately if name does not exist
         value = self[name]
-        if IReferenceNode.providedBy(value):
-            index = self._index
-            for iuuid in value._recursiv_reference_keys:
-                del index[iuuid]
+        self._reduce_reference_index(value)
         next_(self, name)
 
     @plumb
@@ -101,9 +90,9 @@ class ReferenceNode(Behavior):
         iuuid = int(node.uuid)
         node._index = {iuuid: node}
         node._init_reference_index()
-        index = self._index
-        for iuuid in node._recursiv_reference_keys:
-            del index[iuuid]
+        # index = self._index
+        # for iuuid in node._recursiv_reference_keys:
+        #     del index[iuuid]
         return node
 
     @default
@@ -133,6 +122,23 @@ class ReferenceNode(Behavior):
             node._index = self._index
             node._init_reference_index()
 
+    @default
+    def _update_reference_index(self, value):
+        if IReferenceNode.providedBy(value):
+            index = self._index
+            colliding = set(index).intersection(value._index)
+            if colliding:
+                raise ValueError('Node with uuid already exists')
+            index.update(value._index)
+            value._index = index
+
+    @default
+    def _reduce_reference_index(self, value):
+        if IReferenceNode.providedBy(value):
+            index = self._index
+            for iuuid in value._recursiv_reference_keys:
+                del index[iuuid]
+
 
 @implementer(IReferenceMappingNode)
 class ReferenceMappingNode(ReferenceNode):
@@ -144,8 +150,11 @@ class ReferenceSequenceNode(ReferenceNode):
 
     @plumb
     def insert(next_, self, index, value):
-        next_(self, int(index), value)
+        self._update_reference_index(value)
+        next_(self, index, value)
 
     @plumb
     def clear(next_, self):
+        for value in self:
+            self._reduce_reference_index(value)
         next_(self)

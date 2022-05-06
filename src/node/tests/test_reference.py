@@ -4,7 +4,10 @@ from node.behaviors import MappingAdopt
 from node.behaviors import MappingNode
 from node.behaviors import Node
 from node.behaviors import OdictStorage
-from node.behaviors import Reference
+from node.behaviors import NodeIndex
+from node.behaviors import ReferenceMappingNode
+from node.behaviors import ReferenceNode
+from node.behaviors import ReferenceSequenceNode
 from node.behaviors import SequenceAdopt
 from node.behaviors import SequenceNode
 from node.behaviors.reference import NodeIndex
@@ -19,7 +22,7 @@ import uuid
 ###############################################################################
 
 @plumbing(
-    Reference,
+    ReferenceNode,
     DefaultInit,
     Node)
 class ReferenceNode(object):
@@ -27,8 +30,15 @@ class ReferenceNode(object):
 
 
 @plumbing(
+    DefaultInit,
+    Node)
+class NoReferenceNode(object):
+    pass
+
+
+@plumbing(
     MappingAdopt,
-    Reference,
+    ReferenceMappingNode,
     DefaultInit,
     MappingNode,
     OdictStorage)
@@ -47,7 +57,7 @@ class NoReferenceMappingNode(object):
 
 @plumbing(
     SequenceAdopt,
-    Reference,
+    ReferenceSequenceNode,
     DefaultInit,
     SequenceNode,
     ListStorage)
