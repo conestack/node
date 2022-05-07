@@ -147,6 +147,25 @@ class TestReference(NodeTestCase):
         self.assertEqual(len(ref._index), 1)
         self.assertEqual(len(node._index), 2)
 
+    def test_clear(self):
+        mapping = ReferenceMappingNode()
+        mapping['ref'] = ReferenceNode()
+        mapping['mapping'] = ReferenceMappingNode()
+        mapping['sequence'] = ReferenceSequenceNode()
+        self.assertEqual(len(mapping._index), 4)
+
+        mapping.clear()
+        self.assertEqual(len(mapping._index), 1)
+
+        sequence = ReferenceSequenceNode()
+        sequence.append(ReferenceNode())
+        sequence.append(ReferenceMappingNode())
+        sequence.append(ReferenceSequenceNode())
+        self.assertEqual(len(sequence._index), 4)
+
+        sequence.clear()
+        self.assertEqual(len(sequence._index), 1)
+
     def test_uuid(self):
         # Check UUID stuff
         node = ReferenceMappingNode(name='root')

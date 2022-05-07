@@ -97,13 +97,6 @@ class NodeReference(Behavior):
         self._reduce_reference_index(value)
         next_(self, name)
 
-    @plumbifexists
-    def clear(next_, self):
-        # works on mapping and sequence nodes
-        for value in self._referencable_child_nodes:
-            self._reduce_reference_index(value)
-        next_(self)
-
     @plumb
     def detach(next_, self, key):
         node = next_(self, key)
