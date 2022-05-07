@@ -70,8 +70,3 @@ class Order(Behavior):
     def _validateinsertion(self, node):
         if node.name is None:
             raise ValueError('Given node has no __name__ set.')
-        # case if Reference behavior is mixed in
-        # XXX: move out of here
-        if hasattr(self, 'node'):
-            if self.node(node.uuid) is not None:
-                raise KeyError('Given node already contained in tree.')

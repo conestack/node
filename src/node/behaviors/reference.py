@@ -97,6 +97,13 @@ class NodeReference(Behavior):
         self._reduce_reference_index(value)
         next_(self, name)
 
+    @plumbifexists
+    def clear(next_, self):
+        # works on mapping and sequence nodes
+        for value in self._referencable_child_nodes:
+            self._reduce_reference_index(value)
+        next_(self)
+
     @plumb
     def detach(next_, self, key):
         node = next_(self, key)
@@ -156,6 +163,13 @@ class NodeReference(Behavior):
             for iuuid in value._recursiv_reference_keys:
                 del index[iuuid]
 
+    @plumbifexists
+    def _validateinsertion(next_, self, node):
+        # case Order behavior applied
+        next_(self, node)
+        if self.node(node.uuid) is not None:
+            raise KeyError('Given node already contained in tree.')
+
 
 @implementer(IMappingReference)
 class MappingReference(NodeReference):
@@ -169,9 +183,3 @@ class SequenceReference(NodeReference):
     def insert(next_, self, index, value):
         self._update_reference_index(value)
         next_(self, index, value)
-
-    @plumb
-    def clear(next_, self):
-        for value in self:
-            self._reduce_reference_index(value)
-        next_(self)
