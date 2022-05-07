@@ -36,6 +36,7 @@ from .node import DefaultInit  # noqa
 from .node import Node  # noqa
 from .nodespace import Nodespaces  # noqa
 from .order import Order  # noqa
+from .reference import IndexViolationError  # noqa
 from .reference import MappingReference  # noqa
 from .reference import NodeIndex  # noqa
 from .reference import NodeReference  # noqa

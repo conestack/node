@@ -1,4 +1,5 @@
 from node.behaviors import DefaultInit
+from node.behaviors import IndexViolationError
 from node.behaviors import ListStorage
 from node.behaviors import MappingAdopt
 from node.behaviors import MappingNode
@@ -10,7 +11,6 @@ from node.behaviors import OdictStorage
 from node.behaviors import SequenceAdopt
 from node.behaviors import SequenceNode
 from node.behaviors import SequenceReference
-from node.behaviors.reference import NodeIndex
 from node.tests import NodeTestCase
 from plumber import plumbing
 from zope.interface.common.mapping import IReadMapping
@@ -22,17 +22,17 @@ import uuid
 ###############################################################################
 
 @plumbing(
-    NodeReference,
     DefaultInit,
     Node)
-class ReferenceNode(object):
+class NoReferenceNode(object):
     pass
 
 
 @plumbing(
+    NodeReference,
     DefaultInit,
     Node)
-class NoReferenceNode(object):
+class ReferenceNode(object):
     pass
 
 
@@ -47,30 +47,12 @@ class ReferenceMappingNode(object):
 
 
 @plumbing(
-    MappingAdopt,
-    DefaultInit,
-    MappingNode,
-    OdictStorage)
-class NoReferenceMappingNode(object):
-    pass
-
-
-@plumbing(
     SequenceAdopt,
     SequenceReference,
     DefaultInit,
     SequenceNode,
     ListStorage)
 class ReferenceSequenceNode(object):
-    pass
-
-
-@plumbing(
-    SequenceAdopt,
-    DefaultInit,
-    SequenceNode,
-    ListStorage)
-class NoReferenceSequenceNode(object):
     pass
 
 
@@ -90,35 +72,80 @@ class TestReference(NodeTestCase):
         self.assertTrue(node.uuid in node.index)
         self.assertEqual(len(node.index._index), 1)
 
-    def test_containment(self):
-        # Add some children and check node containment stuff
+    def test_adding(self):
         node = ReferenceMappingNode(name='root')
 
-        node['child'] = ReferenceMappingNode()
-        self.assertEqual(node['child'].path, ['root', 'child'])
-        self.assertTrue(node.index._index is node['child'].index._index)
-        self.assertEqual(len(node.index._index), 2)
+        mapping = ReferenceMappingNode()
+        mapping = ReferenceMappingNode()
+        mapping['ref'] = ReferenceNode()
+        mapping['noref'] = NoReferenceNode()
+        node['mapping'] = mapping
 
-        node['child']['sub'] = ReferenceMappingNode()
-        self.assertEqual(len(node.index._index), 3)
+        sequence = ReferenceSequenceNode()
+        sequence.append(ReferenceNode())
+        sequence.insert(0, ReferenceNode())
+        sequence.insert(0, NoReferenceNode())
+        node['sequence'] = sequence
 
-        node['child']['sub2'] = ReferenceMappingNode()
-        self.assertEqual(len(node.index._index), 4)
+        self.assertEqual(len(node.index._index), 6)
 
-        self.assertEqual(node.treerepr(), (
-            "<class 'node.tests.test_reference.ReferenceMappingNode'>: root\n"
-            "  <class 'node.tests.test_reference.ReferenceMappingNode'>: child\n"
-            "    <class 'node.tests.test_reference.ReferenceMappingNode'>: sub\n"
-            "    <class 'node.tests.test_reference.ReferenceMappingNode'>: sub2\n"
-        ))
+        self.assertTrue(node._index is mapping._index)
+        self.assertTrue(node._index is mapping['ref']._index)
+        self.assertTrue(node._index is sequence._index)
+        self.assertTrue(node._index is sequence[1]._index)
 
-        # Adding in indexed Node with same uuid or the same node twice fails
-        child = node['child']
+        self.assertTrue(node.node(mapping.uuid) is mapping)
+        self.assertTrue(node.node(mapping['ref'].uuid) is mapping['ref'])
 
-        def __setitem__fails():
-            node['child2'] = child
-        err = self.expectError(ValueError, __setitem__fails)
-        self.assertEqual(str(err), 'Node with uuid already exists')
+        self.assertTrue(node.node(sequence.uuid) is sequence)
+        self.assertTrue(node.node(sequence['1'].uuid) is sequence['1'])
+
+        self.assertFalse(mapping['noref'] in node._index.values())
+        self.assertFalse(sequence['0'] in node._index.values())
+
+    def test_overwrite(self):
+        node = ReferenceMappingNode(name='root')
+        node['mapping'] = ReferenceMappingNode()
+        node['mapping']['ref'] = ReferenceNode()
+        node['sequence'] = ReferenceSequenceNode()
+        node['sequence'].append(ReferenceNode())
+
+        self.assertEqual(len(node._index), 5)
+
+        invalid = ReferenceNode()
+        invalid.uuid = node.uuid
+
+        with self.assertRaises(IndexViolationError):
+            node['mapping']['invalid'] = invalid
+        with self.assertRaises(IndexViolationError):
+            node['mapping'] = node['mapping']
+        with self.assertRaises(IndexViolationError):
+            node['mapping'] = node['sequence']
+        with self.assertRaises(IndexViolationError):
+            node['sequence'].append(invalid)
+        with self.assertRaises(IndexViolationError):
+            node['sequence'].insert(0, invalid)
+        with self.assertRaises(IndexViolationError):
+            node['sequence']['0'] = node['mapping']['ref']
+
+        self.assertEqual(len(node._index), 5)
+
+    def test_detach(self):
+        node = ReferenceMappingNode(name='root')
+        node['mapping'] = ReferenceMappingNode()
+        node['mapping']['ref'] = ReferenceNode()
+        node['sequence'] = ReferenceSequenceNode()
+        node['sequence'].insert(0, ReferenceNode())
+
+        self.assertEqual(len(node._index), 5)
+
+        mapping = node.detach('mapping')
+        self.assertEqual(len(mapping._index), 2)
+        self.assertEqual(len(node._index), 3)
+
+        ref = node['sequence'].detach(0)
+        self.assertEqual(len(ref._index), 1)
+        self.assertEqual(len(node._index), 2)
 
     def test_uuid(self):
         # Check UUID stuff
@@ -131,11 +158,12 @@ class TestReference(NodeTestCase):
         self.assertTrue(isinstance(uid, uuid.UUID))
         self.assertEqual(node.node(uid).path, ['root', 'child', 'sub'])
 
-        def set_uuid_fails():
+        with self.assertRaises(IndexViolationError) as arc:
             node.uuid = uid
-        err = self.expectError(ValueError, set_uuid_fails)
-        expected = 'Given uuid was already used for another Node'
-        self.assertEqual(str(err), expected)
+        self.assertEqual(
+            arc.exception.message,
+            'Given uuid was already used for another Node'
+        )
 
         new_uid = uuid.uuid4()
         node.uuid = new_uid

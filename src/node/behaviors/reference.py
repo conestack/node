@@ -30,6 +30,20 @@ class NodeIndex(object):
         return int(key) in self._index
 
 
+class IndexViolationError(ValueError):
+
+    def __init__(self, message, colliding):
+        super(IndexViolationError, self).__init__(message)
+        self.message = message
+        self.colliding = [uuid.UUID(int=iuuid) for iuuid in colliding]
+
+    def __repr__(self):
+        return 'Index Violation: {}\n  * {}'.format(
+            self.message,
+            '\n  * '.join([str(uuid_) for uuid_ in self.colliding])
+        )
+
+
 @implementer(INodeReference)
 class NodeReference(Behavior):
     _uuid = default(None)
@@ -49,11 +63,11 @@ class NodeReference(Behavior):
     def uuid(self, uuid):
         index = self._index
         iuuid = None if uuid is None else int(uuid)
-        if (
-            iuuid in index \
-            and index[iuuid] is not self
-        ):
-            raise ValueError('Given uuid was already used for another Node')
+        if iuuid in index and index[iuuid] is not self:
+            raise IndexViolationError(
+                'Given uuid was already used for another Node',
+                [iuuid]
+            )
         siuuid = None if self._uuid is None else int(self._uuid)
         if siuuid in index:
             del index[siuuid]
@@ -89,9 +103,6 @@ class NodeReference(Behavior):
         iuuid = int(node.uuid)
         node._index = {iuuid: node}
         node._init_reference_index()
-        # index = self._index
-        # for iuuid in node._recursiv_reference_keys:
-        #     del index[iuuid]
         return node
 
     @default
@@ -127,9 +138,16 @@ class NodeReference(Behavior):
             index = self._index
             colliding = set(index).intersection(value._index)
             if colliding:
-                raise ValueError('Node with uuid already exists')
+                raise IndexViolationError(
+                    'Node with uuid(s) already exist in tree',
+                    colliding
+                )
             index.update(value._index)
-            value._index = index
+            def _set_index(node):
+                node._index = index
+                for child in node._referencable_child_nodes:
+                    _set_index(child)
+            _set_index(value)
 
     @default
     def _reduce_reference_index(self, value):
