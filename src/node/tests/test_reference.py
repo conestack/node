@@ -115,8 +115,13 @@ class TestReference(NodeTestCase):
         invalid = ReferenceNode()
         invalid.uuid = node.uuid
 
-        with self.assertRaises(IndexViolationError):
+        with self.assertRaises(IndexViolationError) as arc:
             node['mapping']['invalid'] = invalid
+        self.checkOutput("""
+        Index Violation: Node with uuid(s) already exist in tree
+          * ...
+        """, repr(arc.exception))
+
         with self.assertRaises(IndexViolationError):
             node['mapping'] = node['mapping']
         with self.assertRaises(IndexViolationError):
@@ -167,15 +172,19 @@ class TestReference(NodeTestCase):
         self.assertEqual(len(sequence._index), 1)
 
     def test_uuid(self):
-        # Check UUID stuff
         node = ReferenceMappingNode(name='root')
-        node['child'] = ReferenceMappingNode()
-        node['child']['sub'] = ReferenceMappingNode()
-        node['child']['sub2'] = ReferenceMappingNode()
+        node['mapping'] = ReferenceMappingNode()
+        node['mapping']['ref'] = ReferenceNode()
+        node['sequence'] = ReferenceSequenceNode()
+        node['sequence'].insert(0, ReferenceNode())
 
-        uid = node['child']['sub'].uuid
+        uid = node['mapping']['ref'].uuid
         self.assertTrue(isinstance(uid, uuid.UUID))
-        self.assertEqual(node.node(uid).path, ['root', 'child', 'sub'])
+        self.assertEqual(node.node(uid).path, ['root', 'mapping', 'ref'])
+
+        uid = node['sequence'][0].uuid
+        self.assertTrue(isinstance(uid, uuid.UUID))
+        self.assertEqual(node.node(uid).path, ['root', 'sequence', '0'])
 
         with self.assertRaises(IndexViolationError) as arc:
             node.uuid = uid
@@ -186,39 +195,40 @@ class TestReference(NodeTestCase):
 
         new_uid = uuid.uuid4()
         node.uuid = new_uid
-        self.assertEqual(node['child'].node(new_uid).path, ['root'])
-        self.assertEqual(len(node._index.keys()), 4)
+        self.assertEqual(node['sequence'].node(new_uid).path, ['root'])
+        self.assertEqual(len(node._index.keys()), 5)
 
-        # Store the uuids of the nodes which are expected to be deleted from
-        # index if child is deleted
+    def test_delete(self):
+        node = ReferenceMappingNode(name='root')
+        node['mapping'] = ReferenceMappingNode()
+        node['mapping']['ref'] = ReferenceNode()
+        node['sequence'] = ReferenceSequenceNode()
+        node['sequence'].insert(0, ReferenceNode())
+
         delindexes = [
-            int(node['child'].uuid),
-            int(node['child']['sub'].uuid),
-            int(node['child']['sub2'].uuid),
+            int(node['mapping'].uuid),
+            int(node['mapping']['ref'].uuid),
+            int(node['sequence'].uuid),
+            int(node['sequence']['0'].uuid)
         ]
 
-        # Read the uuid index and check containment in index
-        iuuids = node._index.keys()
-        self.assertEqual(len(iuuids), 4)
-        self.assertTrue(delindexes[0] in iuuids)
-        self.assertTrue(delindexes[1] in iuuids)
-        self.assertTrue(delindexes[2] in iuuids)
+        index = node._index
+        self.assertEqual(len(index), 5)
+        self.assertTrue(delindexes[0] in index)
+        self.assertTrue(delindexes[1] in index)
+        self.assertTrue(delindexes[2] in index)
+        self.assertTrue(delindexes[3] in index)
 
-        # Delete child. All checked uuids above must be deleted from index
-        del node['child']
+        del node['mapping']
+        del node['sequence']
         self.assertEqual(list(node.keys()), [])
 
-        uuids = node._index.keys()
-        self.assertEqual(len(uuids), 1)
+        self.assertEqual(len(node._index), 1)
         self.assertTrue(node.index[node.uuid] is node)
-        self.assertFalse(delindexes[0] in uuids)
-        self.assertFalse(delindexes[1] in uuids)
-        self.assertFalse(delindexes[2] in uuids)
-        self.assertEqual(node.treerepr(), (
-            "<class 'node.tests.test_reference.ReferenceMappingNode'>: root\n"
-        ))
 
-        node['child'] = ReferenceMappingNode()
-        node['child'].child_constraints = None
-        node['child']['foo'] = 1
-        del node['child']
+        node.child_constraints = None
+        node['foo'] = 1
+        self.assertEqual(len(node._index), 1)
+
+        del node['foo']
+        self.assertEqual(len(node._index), 1)
