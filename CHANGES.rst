@@ -5,7 +5,29 @@ Changes
 1.1 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Introduce ``IndexViolationError`` which inherits from ``ValueError`` and
+  raise it in reference related behaviors instead of ``ValueError`` where
+  appropriate.
+  [rnix]
+
+- Introduce ``node.interfaces.INodeReference`` and
+  ``node.behaviors.NodeReference``.
+  [rnix]
+
+- Introduce ``node.interfaces.ISequenceReference`` and
+  ``node.behaviors.SequenceReference``.
+  [rnix]
+
+- Rename ``node.interfaces.IReference`` to ``node.interfaces.IMappingReference``
+  and ``node.behaviors.Reference`` to ``node.behaviors.MappingReference``.
+  B/C is kept.
+  [rnix]
+
+**Breaking changes**:
+
+- Importing B/C ``Reference`` behavior from ``node.behaviors.reference``
+  directly not works any more.
+  [rnix]
 
 
 1.0 (2022-03-17)

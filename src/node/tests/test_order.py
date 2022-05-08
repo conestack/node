@@ -1,9 +1,9 @@
 from node.behaviors import DefaultInit
 from node.behaviors import MappingAdopt
 from node.behaviors import MappingNode
+from node.behaviors import MappingReference
 from node.behaviors import OdictStorage
 from node.behaviors import Order
-from node.behaviors import Reference
 from node.tests import NodeTestCase
 from plumber import plumbing
 
@@ -25,7 +25,7 @@ class OrderableNode(object):
 @plumbing(
     MappingAdopt,
     Order,
-    Reference,
+    MappingReference,
     DefaultInit,
     MappingNode,
     OdictStorage)
@@ -282,13 +282,14 @@ class TestOrder(NodeTestCase):
         node['child2'] = OrderReferenceNode()
         node['child5'] = OrderReferenceNode()
 
-        err = self.expectError(
-            KeyError,
-            node.insertbefore,
-            node['child2'],
-            node['child1']
+        self.assertEqual(len(node._index.keys()), 6)
+
+        with self.assertRaises(KeyError) as arc:
+            node.insertbefore(node['child2'], node['child1'])
+        self.assertEqual(
+            str(arc.exception),
+            "'Given node already contained in tree.'"
         )
-        self.assertEqual(str(err), "'Given node already contained in tree.'")
 
         self.assertEqual(len(node._index.keys()), 6)
         detached = node.detach('child4')
