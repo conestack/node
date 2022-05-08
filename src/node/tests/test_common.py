@@ -73,15 +73,13 @@ class TestCommon(NodeTestCase):
         self.assertTrue(isinstance(node['bar'], BarChild))
         self.assertTrue(node['foo'] is node['foo'])
 
-        def __delitem__fails():
+        with self.assertRaises(NotImplementedError) as arc:
             del node['foo']
-        err = self.expectError(NotImplementedError, __delitem__fails)
-        self.assertEqual(str(err), 'read-only')
+        self.assertEqual(str(arc.exception), 'read-only')
 
-        def __setitem__fails():
+        with self.assertRaises(NotImplementedError) as arc:
             node['foo'] = 'foo'
-        err = self.expectError(NotImplementedError, __setitem__fails)
-        self.assertEqual(str(err), 'read-only')
+        self.assertEqual(str(arc.exception), 'read-only')
 
     def test_UUIDAware(self):
         # Create a uid aware node. ``copy`` is not supported on UUIDAware node
@@ -100,9 +98,10 @@ class TestCommon(NodeTestCase):
         self.assertTrue(isinstance(root.uuid, uuid.UUID))
 
         # Shallow ``copy`` is prohibited for UUID aware nodes
-        err = self.expectError(RuntimeError, root.copy)
+        with self.assertRaises(RuntimeError) as arc:
+            root.copy()
         exp = 'Shallow copy useless on UUID aware node trees, use deepcopy.'
-        self.assertEqual(str(err), exp)
+        self.assertEqual(str(arc.exception), exp)
 
         # On ``deepcopy``, a new uid gets set:
         root_cp = root.deepcopy()

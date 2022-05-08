@@ -42,8 +42,9 @@ class TestUtils(NodeTestCase):
         self.assertTrue('a' in mapping)
         self.assertFalse('foo' in mapping)
         self.assertEqual(mapping['a'], 'foo')
-        err = self.expectError(KeyError, lambda: mapping['foo'])
-        self.assertEqual(str(err), '\'foo\'')
+        with self.assertRaises(KeyError) as arc:
+            mapping['foo']
+        self.assertEqual(str(arc.exception), '\'foo\'')
         self.assertEqual(mapping.get('b'), 'bar')
         self.assertEqual(mapping.get('foo', 'DEFAULT'), 'DEFAULT')
 
@@ -54,8 +55,9 @@ class TestUtils(NodeTestCase):
         ])
         attraccess = AttributeAccess(context)
         self.assertEqual(attraccess.foo, 'a')
-        err = self.expectError(AttributeError, lambda: attraccess.a)
-        self.assertEqual(str(err), 'a')
+        with self.assertRaises(AttributeError) as arc:
+            attraccess.a
+        self.assertEqual(str(arc.exception), 'a')
         attraccess.foo = 'foo'
         self.assertEqual(attraccess.foo, 'foo')
         self.assertEqual(attraccess['foo'], 'foo')
@@ -108,13 +110,13 @@ class TestUtils(NodeTestCase):
 
     def test_StrCodec(self):
         codec = StrCodec(soft=False)
+        with self.assertRaises(UnicodeDecodeError) as arc:
+            codec.decode(b'fo\xe4')
         expected = (
             'codec can\'t decode byte 0xe4 in position 2: '
             'unexpected end of data'
         )
-        err = self.expectError(UnicodeDecodeError,
-                               lambda: codec.decode(b'fo\xe4'))
-        self.assertTrue(str(err).find(expected) > -1)
+        self.assertTrue(str(arc.exception).find(expected) > -1)
 
     def test_safe_encode(self):
         self.assertEqual(safe_encode(u'äöü'), b'\xc3\xa4\xc3\xb6\xc3\xbc')
@@ -135,10 +137,12 @@ class TestUtils(NodeTestCase):
                 return 'value'
 
         obj = InstancePropertyTest()
-        expected = '\'InstancePropertyTest\' object has no attribute ' \
-                   '\'_property\''
-        err = self.expectError(AttributeError, lambda: obj._property)
-        self.assertEqual(str(err), expected)
+        with self.assertRaises(AttributeError) as arc:
+            obj._property
+        expected = (
+            '\'InstancePropertyTest\' object has no attribute \'_property\''
+        )
+        self.assertEqual(str(arc.exception), expected)
 
         self.assertEqual(obj.property, 'value')
         self.assertEqual(computed, ['Computed'])

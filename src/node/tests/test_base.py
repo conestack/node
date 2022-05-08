@@ -26,42 +26,24 @@ class TestBase(NodeTestCase):
 
         # Storage related operations of ``AbstractNode`` raises
         # ``NotImplementedError``:
-
-        def __getitem__fails():
+        with self.assertRaises(NotImplementedError):
             abstract['foo']
-        self.expectError(NotImplementedError, __getitem__fails)
-
-        def __delitem__fails():
+        with self.assertRaises(NotImplementedError):
             del abstract['foo']
-        self.expectError(NotImplementedError, __delitem__fails)
-
-        def __setitem__fails():
+        with self.assertRaises(NotImplementedError):
             abstract['foo'] = 'bar'
-        self.expectError(NotImplementedError, __setitem__fails)
-
-        def __iter__fails():
+        with self.assertRaises(NotImplementedError):
             [key for key in abstract]
-        self.expectError(NotImplementedError, __iter__fails)
-
-        def clear_fails():
+        with self.assertRaises(NotImplementedError):
             abstract.clear()
-        self.expectError(NotImplementedError, clear_fails)
-
-        def update_fails():
+        with self.assertRaises(NotImplementedError):
             abstract.update((('foo', 'bar'),))
-        self.expectError(NotImplementedError, update_fails)
-
-        def setdefaut_fails():
+        with self.assertRaises(NotImplementedError):
             abstract.setdefault('foo', 'bar')
-        self.expectError(NotImplementedError, setdefaut_fails)
-
-        def pop_fails():
+        with self.assertRaises(NotImplementedError):
             abstract.pop('foo')
-        self.expectError(NotImplementedError, pop_fails)
-
-        def popitem_fails():
+        with self.assertRaises(NotImplementedError):
             abstract.popitem()
-        self.expectError(NotImplementedError, popitem_fails)
 
     def test_MyNode(self):
         # ``node.testing.env`` contains a base node implementation inheriting

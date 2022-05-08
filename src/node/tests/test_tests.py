@@ -80,8 +80,9 @@ class TestNodeTestCase(NodeTestCase):
         got = 'Leading Hello Trailing'
         self.checkOutput(want, got)
         want = 'Hello'
-        err = self.expectError(Failure, self.checkOutput, want, got)
-        self.assertEqual(str(err).split('\n'), [
+        with self.assertRaises(Failure) as arc:
+            self.checkOutput(want, got)
+        self.assertEqual(str(arc.exception).split('\n'), [
             'Expected:',
             '    Hello',
             'Got:',

@@ -6,10 +6,10 @@ from node.behaviors import ListStorage
 from node.behaviors import MappingAdopt
 from node.behaviors import MappingConstraints
 from node.behaviors import MappingNode
+from node.behaviors import MappingReference
 from node.behaviors import Nodespaces
 from node.behaviors import OdictStorage
 from node.behaviors import Order
-from node.behaviors import MappingReference
 from node.behaviors import SequenceAdopt
 from node.behaviors import SequenceConstraints
 from node.behaviors import SequenceNode

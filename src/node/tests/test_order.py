@@ -56,38 +56,28 @@ class TestOrder(NodeTestCase):
         ))
 
         new = OrderableNode()
-        err = self.expectError(
-            ValueError,
-            node.insertbefore,
-            new,
-            node['child1']
-        )
-        self.assertEqual(str(err), 'Given node has no __name__ set.')
+        with self.assertRaises(ValueError) as arc:
+            node.insertbefore(new, node['child1'])
+        self.assertEqual(str(arc.exception), 'Given node has no __name__ set.')
 
-        err = self.expectError(
-            ValueError,
-            node.insertafter,
-            new,
-            node['child1']
-        )
-        self.assertEqual(str(err), 'Given node has no __name__ set.')
+        with self.assertRaises(ValueError) as arc:
+            node.insertafter(new, node['child1'])
+        self.assertEqual(str(arc.exception), 'Given node has no __name__ set.')
 
         new.__name__ = 'child3'
-        err = self.expectError(
-            ValueError,
-            node.insertbefore,
-            new,
-            OrderableNode('fromelsewhere')
+        with self.assertRaises(ValueError) as arc:
+            node.insertbefore(new, OrderableNode('fromelsewhere'))
+        self.assertEqual(
+            str(arc.exception),
+            'Given reference node not child of self.'
         )
-        self.assertEqual(str(err), 'Given reference node not child of self.')
 
-        err = self.expectError(
-            ValueError,
-            node.insertafter,
-            new,
-            OrderableNode('fromelsewhere')
+        with self.assertRaises(ValueError) as arc:
+            node.insertafter(new, OrderableNode('fromelsewhere'))
+        self.assertEqual(
+            str(arc.exception),
+            'Given reference node not child of self.'
         )
-        self.assertEqual(str(err), 'Given reference node not child of self.')
 
         node.insertbefore(new, node['child2'])
         self.assertEqual(node.treerepr(), (
@@ -374,13 +364,12 @@ class TestOrder(NodeTestCase):
         self.assertTrue(tree1._index is sub._index)
         self.assertEqual(len(tree1._index.keys()), 6)
 
-        err = self.expectError(
-            KeyError,
-            tree1.insertbefore,
-            sub,
-            tree1['a']
+        with self.assertRaises(KeyError) as arc:
+            tree1.insertbefore(sub, tree1['a'])
+        self.assertEqual(
+            str(arc.exception),
+            "'Given node already contained in tree.'"
         )
-        self.assertEqual(str(err), "'Given node already contained in tree.'")
 
         self.assertEqual(tree2.treerepr(), (
             "<class 'node.tests.test_order.OrderReferenceNode'>: x\n"

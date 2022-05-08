@@ -58,15 +58,13 @@ class TestNodespace(NodeTestCase):
         self.assertEqual(node.nodespaces['__children__'], node)
         self.assertEqual(node.nodespaces['__foo__'], foo)
 
-        def __getitem__fails():
+        with self.assertRaises(KeyError) as arc:
             node['__inexistent__']
-        err = self.expectError(KeyError, __getitem__fails)
-        self.assertEqual(str(err), '\'__inexistent__\'')
+        self.assertEqual(str(arc.exception), '\'__inexistent__\'')
 
-        def __getitem__fails2():
+        with self.assertRaises(KeyError) as arc:
             node['inexistent']
-        err = self.expectError(KeyError, __getitem__fails2)
-        self.assertEqual(str(err), '\'inexistent\'')
+        self.assertEqual(str(arc.exception), '\'inexistent\'')
 
         del node['child']
         self.assertEqual(node.keys(), [])
