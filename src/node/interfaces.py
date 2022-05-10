@@ -499,30 +499,52 @@ class IOrder(Interface):
     def swap(node_a, node_b):
         """Swap 2 nodes."""
 
-    def insertfirst(newnode):
-        """Insert newnode as first node."""
-
-    def insertlast(newnode):
-        """Insert newnode as last node."""
-
     def insertbefore(newnode, refnode):
         """Insert newnode before refnode.
 
         ``__name__`` on newnode must be set.
-
-        This function only supports adding of new nodes before the given
-        refnode. If you want to move nodes you have to detach them from the
-        tree first.
         """
 
     def insertafter(newnode, refnode):
         """Insert newnode after refnode.
 
         ``__name__`` on newnode must be set.
+        """
 
-        This function only supports adding of new nodes after the given
-        refnode. If you want to move nodes you have to detach them from the
-        tree first.
+    def insertfirst(newnode):
+        """Insert newnode as first node.
+
+        ``__name__`` on newnode must be set.
+        """
+
+    def insertlast(newnode):
+        """Insert newnode as last node.
+
+        ``__name__`` on newnode must be set.
+        """
+
+    def movebefore(movenode, refnode):
+        """Move movenode before refnode.
+
+        Both nodes must be children of self.
+        """
+
+    def moveafter(movenode, refnode):
+        """Move movenode after refnode.
+
+        Both nodes must be children of self.
+        """
+
+    def movefirst(movenode):
+        """Move movenode as first node.
+
+        Both nodes must be children of self.
+        """
+
+    def movelast(movenode):
+        """Move movenode as last node.
+
+        Both nodes must be children of self.
         """
 
 
