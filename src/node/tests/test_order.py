@@ -278,7 +278,7 @@ class TestOrder(NodeTestCase):
             node.insertbefore(node['child2'], node['child1'])
         self.assertEqual(
             str(arc.exception),
-            "'Given node already contained in tree.'"
+            "'Tree already contains node with name child2'"
         )
 
         self.assertEqual(len(node._index.keys()), 6)
@@ -368,7 +368,7 @@ class TestOrder(NodeTestCase):
             tree1.insertbefore(sub, tree1['a'])
         self.assertEqual(
             str(arc.exception),
-            "'Given node already contained in tree.'"
+            "'Tree already contains node with name x'"
         )
 
         self.assertEqual(tree2.treerepr(), (

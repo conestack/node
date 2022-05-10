@@ -32,41 +32,42 @@ class Order(Behavior):
 
     @override
     def insertfirst(self, newnode):
-        keys = self.keys()
-        if not keys:
-            self[newnode.name] = newnode
-            return
-        refnode = self[keys[0]]
-        self.insertbefore(newnode, refnode)
+        self._validateinsertion(newnode)
+        self[newnode.name] = newnode
+        self.storage.movefirst(newnode.name)
 
     @override
     def insertlast(self, newnode):
-        keys = self.keys()
-        if not keys:
-            self[newnode.name] = newnode
-            return
-        refnode = self[keys[-1]]
-        self.insertafter(newnode, refnode)
+        self._validateinsertion(newnode)
+        self[newnode.name] = newnode
+        self.storage.movelast(newnode.name)
 
     @override
     def insertbefore(self, newnode, refnode):
         self._validateinsertion(newnode)
         try:
-            self.storage.insertbefore(refnode.name, newnode.name, newnode)
+            self.storage[refnode.name]
+            self[newnode.name] = newnode
+            self.storage.movebefore(refnode.name, newnode.name)
         except KeyError:
             raise ValueError('Given reference node not child of self.')
-        self[newnode.name] = newnode
 
     @override
     def insertafter(self, newnode, refnode):
         self._validateinsertion(newnode)
         try:
-            self.storage.insertafter(refnode.name, newnode.name, newnode)
+            self.storage[refnode.name]
+            self[newnode.name] = newnode
+            self.storage.moveafter(refnode.name, newnode.name)
         except KeyError:
             raise ValueError('Given reference node not child of self.')
-        self[newnode.name] = newnode
 
     @override
     def _validateinsertion(self, node):
-        if node.name is None:
+        name = node.name
+        if name is None:
             raise ValueError('Given node has no __name__ set.')
+        if name in self.storage:
+            raise KeyError(
+                'Tree already contains node with name {}'.format(name)
+            )
