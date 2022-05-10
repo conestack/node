@@ -392,6 +392,10 @@ General Behaviors
     Mechanism for scoping objects to interfaces and classes.
     See ``node.interfaces.IBoundContext``.
 
+**node.behaviors.NodeReference**
+    Plumbing behavior holding an index of nodes contained in the tree.
+    See ``node.interfaces.INodeReference``.
+
 
 Mapping Behaviors
 ~~~~~~~~~~~~~~~~~
@@ -462,9 +466,9 @@ Mapping Behaviors
     Plumbing behavior providing a uuid on nodes.
     See ``node.interfaces.IUUIDAware``.
 
-**node.behaviors.Reference**
-    Plumbing behavior holding an index of all nodes contained in the tree.
-    See ``node.interfaces.IReference``.
+**node.behaviors.MappingReference**
+    Plumbing behavior to provide ``node.interfaces.INodeReference`` on mapping
+    nodes. See ``node.interfaces.IMappingReference``.
 
 **node.behaviors.MappingStorage**
     Provide abstract mapping storage access.
@@ -518,6 +522,10 @@ Sequence Behaviors
 
 **node.behaviors.ListStorage**
     Provide list storage. See ``node.interfaces.ISequenceStorage``.
+
+**node.behaviors.SequenceReference**
+    Plumbing behavior to provide ``node.interfaces.INodeReference`` on sequence
+    nodes. See ``node.interfaces.ISequenceReference``.
 
 
 JSON Serialization

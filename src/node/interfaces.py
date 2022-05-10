@@ -614,9 +614,6 @@ class ISequenceReference(INodeReference):
 
     * ``insert``
         Set child in index.
-
-    * ``clear``
-        Delete all children from index.
     """
 
 
