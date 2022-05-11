@@ -56,9 +56,11 @@ class Node(Behavior):
 
     @override
     def detach(self, name):
-        # XXX: maybe reset __parent__ of detached node?
+        # XXX: this function works on sequence and mapping nodes only.
+        #      think about a proper place.
         node = self[name]
         del self[name]
+        node.__parent__ = None
         return node
 
     @override

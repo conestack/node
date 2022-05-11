@@ -230,6 +230,18 @@ class TestMapping(NodeTestCase):
         self.assertEqual(subchild.acquire(INode), child)
         self.assertEqual(subchild.acquire(INoInterface), None)
 
+        # detach
+        self.assertEqual(child.name, 'child')
+        self.assertEqual(child.parent, root)
+        child = root.detach('child')
+        self.assertEqual(child.name, 'child')
+        self.assertEqual(child.parent, None)
+        self.assertFalse('child' in root)
+        self.checkOutput("""\
+        <class 'node.tests.test_mapping.MappingNode'>: child
+        __<class 'node.tests.test_mapping.MappingNode'>: subchild
+        """, child.treerepr(prefix='_'))
+
     def test_BC_imports(self):
         from node.behaviors import Nodify
         self.assertTrue(Nodify is MappingNodeBehavior)

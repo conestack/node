@@ -184,6 +184,7 @@ class TestSequence(NodeTestCase):
         self.assertTrue(child_0 in node)
         node.detach('0')
         self.assertFalse(child_0 in node)
+        self.assertEqual(child_0.parent, None)
         self.assertEqual(child_1.name, '0')
         del node[:]
 

@@ -35,6 +35,7 @@ jobs:
         run: |
           pip install wheel
           pip install coverage
+          pip install https://github.com/conestack/odict/archive/master.zip
           pip install -e .
 
       - name: Run tests

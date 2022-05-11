@@ -43,126 +43,43 @@ class TestOrder(NodeTestCase):
     # Order without References
     ###########################################################################
 
-    def test_insertion(self):
-        # Node insertion. ``insertbefore`` and ``insertafter``
+    def test_first_key(self):
         node = OrderableNode('root')
-        node['child1'] = OrderableNode()
-        node['child2'] = OrderableNode()
+        with self.assertRaises(KeyError):
+            node.first_key
+        node['0'] = OrderableNode()
+        self.assertEqual(node.first_key, '0')
+        node['1'] = OrderableNode()
+        self.assertEqual(node.first_key, '0')
 
-        self.assertEqual(node.treerepr(), (
-            "<class 'node.tests.test_order.OrderableNode'>: root\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: child1\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: child2\n"
-        ))
+    def test_last_key(self):
+        node = OrderableNode('root')
+        with self.assertRaises(KeyError):
+            node.last_key
+        node['0'] = OrderableNode()
+        self.assertEqual(node.last_key, '0')
+        node['1'] = OrderableNode()
+        self.assertEqual(node.last_key, '1')
 
-        new = OrderableNode()
-        with self.assertRaises(ValueError) as arc:
-            node.insertbefore(new, node['child1'])
-        self.assertEqual(str(arc.exception), 'Given node has no __name__ set.')
+    def test_next_key(self):
+        node = OrderableNode('root')
+        with self.assertRaises(KeyError):
+            node.next_key('x')
+        node['x'] = OrderableNode()
+        with self.assertRaises(KeyError):
+            node.next_key('x')
+        node['y'] = OrderableNode()
+        self.assertEqual(node.next_key('x'), 'y')
 
-        with self.assertRaises(ValueError) as arc:
-            node.insertafter(new, node['child1'])
-        self.assertEqual(str(arc.exception), 'Given node has no __name__ set.')
-
-        new.__name__ = 'child3'
-        with self.assertRaises(ValueError) as arc:
-            node.insertbefore(new, OrderableNode('fromelsewhere'))
-        self.assertEqual(
-            str(arc.exception),
-            'Given reference node not child of self.'
-        )
-
-        with self.assertRaises(ValueError) as arc:
-            node.insertafter(new, OrderableNode('fromelsewhere'))
-        self.assertEqual(
-            str(arc.exception),
-            'Given reference node not child of self.'
-        )
-
-        node.insertbefore(new, node['child2'])
-        self.assertEqual(node.treerepr(), (
-            "<class 'node.tests.test_order.OrderableNode'>: root\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: child1\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: child3\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: child2\n"
-        ))
-
-        new = OrderableNode(name='child4')
-        node.insertafter(new, node['child3'])
-        self.assertEqual(node.treerepr(), (
-            "<class 'node.tests.test_order.OrderableNode'>: root\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: child1\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: child3\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: child4\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: child2\n"
-        ))
-
-        new = OrderableNode(name='child5')
-        node.insertafter(new, node['child2'])
-        self.assertEqual(node.treerepr(), (
-            "<class 'node.tests.test_order.OrderableNode'>: root\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: child1\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: child3\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: child4\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: child2\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: child5\n"
-        ))
-
-        # Move a node. Therefor we first need to detach the node we want to
-        # move from tree. Then insert the detached node elsewhere. In general,
-        # you can insert the detached node or subtree to a complete different
-        # tree
-        detached = node.detach('child4')
-        node.insertbefore(detached, node['child1'])
-        self.assertEqual(node.treerepr(), (
-            "<class 'node.tests.test_order.OrderableNode'>: root\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: child4\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: child1\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: child3\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: child2\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: child5\n"
-        ))
-
-        # Test ``insertfirst`` and ``insertlast``
-        new = OrderableNode(name='first')
-        node.insertfirst(new)
-        self.assertEqual(node.treerepr(), (
-            "<class 'node.tests.test_order.OrderableNode'>: root\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: first\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: child4\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: child1\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: child3\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: child2\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: child5\n"
-        ))
-
-        new = OrderableNode(name='last')
-        node.insertlast(new)
-        self.assertEqual(node.treerepr(), (
-            "<class 'node.tests.test_order.OrderableNode'>: root\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: first\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: child4\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: child1\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: child3\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: child2\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: child5\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: last\n"
-        ))
-
-        node.clear()
-        new = OrderableNode(name='new')
-        node.insertfirst(new)
-        self.assertEqual(node.treerepr(), (
-            "<class 'node.tests.test_order.OrderableNode'>: root\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: new\n"
-        ))
-
-        node.clear()
-        node.insertlast(new)
-        self.assertEqual(node.treerepr(), (
-            "<class 'node.tests.test_order.OrderableNode'>: root\n"
-            "  <class 'node.tests.test_order.OrderableNode'>: new\n"
-        ))
+    def test_prev_key(self):
+        node = OrderableNode()
+        with self.assertRaises(KeyError):
+            node.prev_key('x')
+        node['x'] = OrderableNode()
+        with self.assertRaises(KeyError):
+            node.prev_key('x')
+        node['y'] = OrderableNode()
+        self.assertEqual(node.prev_key('y'), 'x')
 
     def test_swap(self):
         # Test ``swap``
@@ -222,43 +139,175 @@ class TestOrder(NodeTestCase):
         node.swap(node['1'], node['3'])
         self.assertEqual(list(node.keys()), ['0', '1', '2', '3', '4'])
 
-    def test_first_key(self):
+    def test_insertbefore(self):
         node = OrderableNode('root')
-        with self.assertRaises(KeyError):
-            node.first_key
-        node['0'] = OrderableNode()
-        self.assertEqual(node.first_key, '0')
-        node['1'] = OrderableNode()
-        self.assertEqual(node.first_key, '0')
+        node['child1'] = OrderableNode()
 
-    def test_last_key(self):
+        node.insertbefore(OrderableNode(name='child2'), node['child1'])
+        self.assertEqual(node.treerepr(), (
+            "<class 'node.tests.test_order.OrderableNode'>: root\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child2\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child1\n"
+        ))
+
+        node.insertbefore(OrderableNode(name='child3'), 'child1')
+        self.assertEqual(node.treerepr(), (
+            "<class 'node.tests.test_order.OrderableNode'>: root\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child2\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child3\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child1\n"
+        ))
+
+    def test_insertafter(self):
         node = OrderableNode('root')
-        with self.assertRaises(KeyError):
-            node.last_key
-        node['0'] = OrderableNode()
-        self.assertEqual(node.last_key, '0')
-        node['1'] = OrderableNode()
-        self.assertEqual(node.last_key, '1')
+        node['child1'] = OrderableNode()
 
-    def test_next_key(self):
+        node.insertafter(OrderableNode(name='child2'), node['child1'])
+        self.assertEqual(node.treerepr(), (
+            "<class 'node.tests.test_order.OrderableNode'>: root\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child1\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child2\n"
+        ))
+
+        node.insertafter(OrderableNode(name='child3'), 'child1')
+        self.assertEqual(node.treerepr(), (
+            "<class 'node.tests.test_order.OrderableNode'>: root\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child1\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child3\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child2\n"
+        ))
+
+    def test_insertfirst(self):
         node = OrderableNode('root')
-        with self.assertRaises(KeyError):
-            node.next_key('x')
-        node['x'] = OrderableNode()
-        with self.assertRaises(KeyError):
-            node.next_key('x')
-        node['y'] = OrderableNode()
-        self.assertEqual(node.next_key('x'), 'y')
+        node['child1'] = OrderableNode()
 
-    def test_prev_key(self):
-        node = OrderableNode()
-        with self.assertRaises(KeyError):
-            node.prev_key('x')
-        node['x'] = OrderableNode()
-        with self.assertRaises(KeyError):
-            node.prev_key('x')
-        node['y'] = OrderableNode()
-        self.assertEqual(node.prev_key('y'), 'x')
+        node.insertfirst(OrderableNode(name='child2'))
+        self.assertEqual(node.treerepr(), (
+            "<class 'node.tests.test_order.OrderableNode'>: root\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child2\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child1\n"
+        ))
+
+    def test_insertlast(self):
+        node = OrderableNode('root')
+        node['child1'] = OrderableNode()
+
+        node.insertlast(OrderableNode(name='child2'))
+        self.assertEqual(node.treerepr(), (
+            "<class 'node.tests.test_order.OrderableNode'>: root\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child1\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child2\n"
+        ))
+
+    def test_movebefore(self):
+        node = OrderableNode('root')
+        node['child1'] = OrderableNode()
+        node['child2'] = OrderableNode()
+
+        node.movebefore(node['child2'], node['child1'])
+        self.assertEqual(node.treerepr(), (
+            "<class 'node.tests.test_order.OrderableNode'>: root\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child2\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child1\n"
+        ))
+
+        node.movebefore('child1', 'child2')
+        self.assertEqual(node.treerepr(), (
+            "<class 'node.tests.test_order.OrderableNode'>: root\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child1\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child2\n"
+        ))
+
+    def test_moveafter(self):
+        node = OrderableNode('root')
+        node['child1'] = OrderableNode()
+        node['child2'] = OrderableNode()
+
+        node.moveafter(node['child1'], node['child2'])
+        self.assertEqual(node.treerepr(), (
+            "<class 'node.tests.test_order.OrderableNode'>: root\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child2\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child1\n"
+        ))
+
+        node.moveafter('child2', 'child1')
+        self.assertEqual(node.treerepr(), (
+            "<class 'node.tests.test_order.OrderableNode'>: root\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child1\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child2\n"
+        ))
+
+    def test_movefirst(self):
+        node = OrderableNode('root')
+        node['child1'] = OrderableNode()
+        node['child2'] = OrderableNode()
+
+        node.movefirst(node['child2'])
+        self.assertEqual(node.treerepr(), (
+            "<class 'node.tests.test_order.OrderableNode'>: root\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child2\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child1\n"
+        ))
+
+        node.movefirst('child1')
+        self.assertEqual(node.treerepr(), (
+            "<class 'node.tests.test_order.OrderableNode'>: root\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child1\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child2\n"
+        ))
+
+    def test_movelast(self):
+        node = OrderableNode('root')
+        node['child1'] = OrderableNode()
+        node['child2'] = OrderableNode()
+
+        node.movelast(node['child1'])
+        self.assertEqual(node.treerepr(), (
+            "<class 'node.tests.test_order.OrderableNode'>: root\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child2\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child1\n"
+        ))
+
+        node.movelast('child2')
+        self.assertEqual(node.treerepr(), (
+            "<class 'node.tests.test_order.OrderableNode'>: root\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child1\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child2\n"
+        ))
+
+    def test_validateinsertion(self):
+        node = OrderableNode('root')
+        node['child1'] = OrderableNode()
+
+        new = OrderableNode()
+        with self.assertRaises(ValueError) as arc:
+            node.insertafter(new, node['child1'])
+        self.assertEqual(str(arc.exception), 'Given node has no __name__ set.')
+
+        new.__name__ = 'child1'
+        with self.assertRaises(KeyError) as arc:
+            node.insertafter(new, node['child1'])
+        self.assertEqual(
+            str(arc.exception),
+            "'Tree already contains node with name child1'"
+        )
+
+    def test_detach_and_add(self):
+        # Old way of moving a node. We first need to detach the node we want to
+        # move from tree. Then insert the detached node elsewhere. In general,
+        # you can insert the detached node or subtree to a complete different
+        # tree
+        node = OrderableNode('root')
+        node['child1'] = OrderableNode()
+        node['child2'] = OrderableNode()
+
+        detached = node.detach('child1')
+        node.insertafter(detached, node['child2'])
+        self.assertEqual(node.treerepr(), (
+            "<class 'node.tests.test_order.OrderableNode'>: root\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child2\n"
+            "  <class 'node.tests.test_order.OrderableNode'>: child1\n"
+        ))
 
     ###########################################################################
     # Order with References

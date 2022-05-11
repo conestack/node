@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+from node.interfaces import INode
 from node.interfaces import IOrder
 from plumber import Behavior
 from plumber import override
@@ -28,39 +29,69 @@ class Order(Behavior):
 
     @override
     def swap(self, node_a, node_b):
-        self.storage.swap(node_a.name, node_b.name)
-
-    @override
-    def insertfirst(self, newnode):
-        self._validateinsertion(newnode)
-        self[newnode.name] = newnode
-        self.storage.movefirst(newnode.name)
-
-    @override
-    def insertlast(self, newnode):
-        self._validateinsertion(newnode)
-        self[newnode.name] = newnode
-        self.storage.movelast(newnode.name)
+        name_a = node_a.name if INode.providedBy(node_a) else node_a
+        name_b = node_b.name if INode.providedBy(node_b) else node_b
+        self.storage.swap(name_a, name_b)
 
     @override
     def insertbefore(self, newnode, refnode):
         self._validateinsertion(newnode)
+        newnode_name = newnode.name
+        refnode_name = refnode.name if INode.providedBy(refnode) else refnode
         try:
-            self.storage[refnode.name]
-            self[newnode.name] = newnode
-            self.storage.movebefore(refnode.name, newnode.name)
+            self.storage[refnode_name]
+            self[newnode_name] = newnode
+            self.storage.movebefore(refnode_name, newnode_name)
         except KeyError:
             raise ValueError('Given reference node not child of self.')
 
     @override
     def insertafter(self, newnode, refnode):
         self._validateinsertion(newnode)
+        newnode_name = newnode.name
+        refnode_name = refnode.name if INode.providedBy(refnode) else refnode
         try:
-            self.storage[refnode.name]
-            self[newnode.name] = newnode
-            self.storage.moveafter(refnode.name, newnode.name)
+            self.storage[refnode_name]
+            self[newnode_name] = newnode
+            self.storage.moveafter(refnode_name, newnode_name)
         except KeyError:
             raise ValueError('Given reference node not child of self.')
+
+    @override
+    def insertfirst(self, newnode):
+        self._validateinsertion(newnode)
+        newnode_name = newnode.name
+        self[newnode_name] = newnode
+        self.storage.movefirst(newnode_name)
+
+    @override
+    def insertlast(self, newnode):
+        self._validateinsertion(newnode)
+        newnode_name = newnode.name
+        self[newnode_name] = newnode
+        self.storage.movelast(newnode_name)
+
+    @override
+    def movebefore(self, movenode, refnode):
+        movenode_name = movenode.name if INode.providedBy(movenode) else movenode
+        refnode_name = refnode.name if INode.providedBy(refnode) else refnode
+        self.storage.movebefore(refnode_name, movenode_name)
+
+    @override
+    def moveafter(self, movenode, refnode):
+        movenode_name = movenode.name if INode.providedBy(movenode) else movenode
+        refnode_name = refnode.name if INode.providedBy(refnode) else refnode
+        self.storage.moveafter(refnode_name, movenode_name)
+
+    @override
+    def movefirst(self, movenode):
+        movenode_name = movenode.name if INode.providedBy(movenode) else movenode
+        self.storage.movefirst(movenode_name)
+
+    @override
+    def movelast(self, movenode):
+        movenode_name = movenode.name if INode.providedBy(movenode) else movenode
+        self.storage.movelast(movenode_name)
 
     @override
     def _validateinsertion(self, node):

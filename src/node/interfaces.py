@@ -129,7 +129,11 @@ class INode(ILocation):
     )
 
     def detach(name):
-        """Detach child Node."""
+        """Detach child Node.
+
+        XXX: this function works on sequence and mapping nodes only.
+             think about a proper place.
+        """
 
     def acquire(interface):
         """Traverse parents until interface provided. Return first parent
@@ -497,54 +501,78 @@ class IOrder(Interface):
         """
 
     def swap(node_a, node_b):
-        """Swap 2 nodes."""
+        """Swap 2 nodes. Both nodes must be children of self.
+
+        :param node_a: Either ``INode`` implementing object or node name
+            as string.
+        :param node_b: Either ``INode`` implementing object or node name
+            as string.
+        """
 
     def insertbefore(newnode, refnode):
-        """Insert newnode before refnode.
+        """Insert ``newnode`` before ``refnode``. ``__name__`` on ``newnode``
+        must be set. ``refnode`` must be children of self.
 
-        ``__name__`` on newnode must be set.
+        :param newnode: ``INode`` implementing object.
+        :param refnode: Either ``INode`` implementing object or node name
+            as string.
         """
 
     def insertafter(newnode, refnode):
-        """Insert newnode after refnode.
+        """Insert ``newnode`` after ``refnode``. ``__name__`` on ``newnode``
+        must be set. ``refnode`` must be children of self.
 
-        ``__name__`` on newnode must be set.
+        :param newnode: ``INode`` implementing object.
+        :param refnode: Either ``INode`` implementing object or node name
+            as string.
         """
 
     def insertfirst(newnode):
-        """Insert newnode as first node.
+        """Insert ``newnode`` as first node. ``__name__`` on ``newnode`` must
+        be set.
 
-        ``__name__`` on newnode must be set.
+        :param newnode: ``INode`` implementing object.
         """
 
     def insertlast(newnode):
-        """Insert newnode as last node.
+        """Insert ``newnode`` as last node. ``__name__`` on ``newnode`` must
+        be set.
 
-        ``__name__`` on newnode must be set.
+        :param newnode: ``INode`` implementing object.
         """
 
     def movebefore(movenode, refnode):
-        """Move movenode before refnode.
+        """Move ``movenode`` before ``refnode``. Both nodes must be children
+        of self.
 
-        Both nodes must be children of self.
+        :param movenode: Either ``INode`` implementing object or node name
+            as string.
+        :param refnode: Either ``INode`` implementing object or node name
+            as string.
         """
 
     def moveafter(movenode, refnode):
-        """Move movenode after refnode.
+        """Move ``movenode`` after ``refnode``. Both nodes must be children
+        of self.
 
-        Both nodes must be children of self.
+        :param movenode: Either ``INode`` implementing object or node name
+            as string.
+        :param refnode: Either ``INode`` implementing object or node name
+            as string.
         """
 
     def movefirst(movenode):
-        """Move movenode as first node.
+        """Move ``movenode`` as first node. Node must be children of self.
 
-        Both nodes must be children of self.
+        :param movenode: Either ``INode`` implementing object or node name
+            as string.
         """
 
     def movelast(movenode):
-        """Move movenode as last node.
+        """Move ``movenode`` as last node. Node must be children of self.
 
-        Both nodes must be children of self.
+        :param movenode: Either ``INode`` implementing object or node name
+            as string.
         """
 
 

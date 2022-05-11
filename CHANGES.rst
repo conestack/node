@@ -5,6 +5,24 @@ Changes
 1.1 (unreleased)
 ----------------
 
+- ``insertbefore``, ``insertafter`` and ``swap`` in ``node.behaviors.Order``
+  alternatively accept node names as arguments where possible.
+  [rnix]
+
+- ``insertbefore``, ``insertafter``, and ``insertfirst`` and ``insertlast`` in
+  ``node.behaviors.Order`` internally use ``movebefore``, ``moveafter``,
+  ``movefirst`` and ``movelast`` of ``odict`` to avoid modifying the data
+  structure before ``__setitem__`` gets called.
+  [rnix]
+
+- Extend ``node.interfaces.IOrder``  respective ``node.behaviors.Order``
+  by ``movebefore``, ``moveafter``, ``movefirst`` and ``movelast``.
+  [rnix]
+
+- Reset ``__parent__`` in ``node.behaviors.Node.detach``. No is no longer
+  contained in tree.
+  [rnix]
+
 - Introduce ``IndexViolationError`` which inherits from ``ValueError`` and
   raise it in reference related behaviors instead of ``ValueError`` where
   appropriate.
