@@ -39,6 +39,9 @@ class TestNode(NodeTestCase):
         parent = NodeObject(name='parent')
         node = NodeObject(name='node', parent=parent)
 
+        # interface
+        self.assertTrue(INode.providedBy(node))
+
         # __name__
         self.assertEqual(node.__name__, 'node')
         self.assertEqual(node.name, 'node')

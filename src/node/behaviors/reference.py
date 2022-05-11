@@ -158,7 +158,7 @@ class ContentishNodeReference(NodeReference):
 
     @default
     def _overwrite_reference_index(self, name, value):
-        existing = self[name]
+        existing = self.storage[name]
         self._reduce_reference_index(existing)
         try:
             self._update_reference_index(value)
@@ -176,7 +176,7 @@ class MappingReference(ContentishNodeReference):
     def __setitem__(next_, self, key, value):
         if INodeReference.providedBy(value) and value._index is self._index:
             raise IndexViolationError('Given node is already member of tree.')
-        if key in self:
+        if key in self.storage:
             self._overwrite_reference_index(key, value)
         else:
             self._update_reference_index(value)
@@ -190,7 +190,7 @@ class SequenceReference(ContentishNodeReference):
     def __setitem__(next_, self, index, value):
         if INodeReference.providedBy(value) and value._index is self._index:
             raise IndexViolationError('Given node is already member of tree.')
-        self._overwrite_reference_index(index, value)
+        self._overwrite_reference_index(int(index), value)
         next_(self, index, value)
 
     @plumb

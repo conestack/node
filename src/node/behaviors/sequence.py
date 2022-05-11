@@ -5,7 +5,7 @@ try:  # pragma: no cover
 except ImportError:  # pragma: no cover
     from collections import MutableSequence as ABCMutableSequence
     from collections import Sequence as ABCSequence
-from node.behaviors import Node
+from node.behaviors import ContentishNode
 from node.compat import IS_PY2
 from node.interfaces import INode
 from node.interfaces import ISequenceNode
@@ -89,7 +89,7 @@ class MutableSequence(Sequence):
 
 
 @implementer(ISequenceNode)
-class SequenceNode(Node, MutableSequence):
+class SequenceNode(ContentishNode, MutableSequence):
 
     @override
     def __index__(self):

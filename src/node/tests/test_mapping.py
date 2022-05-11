@@ -4,6 +4,7 @@ from node.behaviors import FullMapping
 from node.behaviors import MappingAdopt
 from node.behaviors import MappingNode as MappingNodeBehavior
 from node.behaviors import OdictStorage
+from node.interfaces import IContentishNode
 from node.interfaces import IMappingNode
 from node.interfaces import INode
 from node.testing import FullMappingTester
@@ -163,6 +164,8 @@ class TestMapping(NodeTestCase):
 
     def test_MappingNode(self):
         root = MappingNode(name='root')
+        self.assertTrue(INode.providedBy(root))
+        self.assertTrue(IContentishNode.providedBy(root))
         self.assertTrue(IMappingNode.providedBy(root))
 
         root['child'] = MappingNode()

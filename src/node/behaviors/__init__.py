@@ -32,6 +32,7 @@ from .mapping import Mapping  # noqa
 from .mapping import MappingNode  # noqa
 from .mapping import ReadMapping  # noqa
 from .mapping import WriteMapping  # noqa
+from .node import ContentishNode  # noqa
 from .node import DefaultInit  # noqa
 from .node import Node  # noqa
 from .nodespace import Nodespaces  # noqa

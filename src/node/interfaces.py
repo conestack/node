@@ -144,6 +144,14 @@ class INode(ILocation):
         """Debugging helper."""
 
 
+class IContentishNode(INode):
+    """A node which can contain children."""
+
+    def detach(name):
+        """Detach child Node.
+        """
+
+
 ###############################################################################
 # plumbing behaviors
 ###############################################################################
@@ -155,7 +163,7 @@ class IDefaultInit(Interface):
         """Set ``self.__name__`` and ``self.__parent__`` at init time."""
 
 
-class IMappingNode(INode, IFullMapping):
+class IMappingNode(IContentishNode, IFullMapping):
     """Plumbing behavior to Fill in gaps for full mapping node API.
 
     Plumbing hooks:
@@ -178,7 +186,7 @@ deprecated(
 )
 
 
-class ISequenceNode(INode, IMutableSequence):
+class ISequenceNode(IContentishNode, IMutableSequence):
     """Plumbing behavior to Fill in gaps for full sequence node API.
 
     Plumbing hooks:
@@ -617,9 +625,6 @@ class INodeReference(IUUID):
 
     * ``__init__``
         Create and set uuid.
-
-    * ``detach``
-        Reduce own index and initialize index of detached child.
     """
 
     index = Attribute('The tree node index')
@@ -638,6 +643,9 @@ class IMappingReference(INodeReference):
 
     * ``__delitem__``
         Delete child from index.
+
+    * ``detach``
+        Reduce own index and initialize index of detached child.
     """
 
 
@@ -664,6 +672,9 @@ class ISequenceReference(INodeReference):
 
     * ``insert``
         Set child in index.
+
+    * ``detach``
+        Reduce own index and initialize index of detached child.
     """
 
 

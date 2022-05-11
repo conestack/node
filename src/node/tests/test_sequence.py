@@ -3,7 +3,10 @@ from node.behaviors import ListStorage
 from node.behaviors import MutableSequence
 from node.behaviors import Sequence
 from node.behaviors import SequenceNode as SequenceNodeBehavior
+from node.interfaces import IContentishNode
 from node.interfaces import IMappingNode
+from node.interfaces import INode
+from node.interfaces import ISequenceNode
 from node.tests import NodeTestCase
 from plumber import plumbing
 from zope.interface import Interface
@@ -154,7 +157,11 @@ class TestSequence(NodeTestCase):
             pass
 
         root = BaseNode()
+
         node = root['seq'] = SequenceNode()
+        self.assertTrue(INode.providedBy(node))
+        self.assertTrue(IContentishNode.providedBy(node))
+        self.assertTrue(ISequenceNode.providedBy(node))
 
         # __name__
         self.assertEqual(node.name, 'seq')

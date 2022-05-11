@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 from node.compat import IS_PY2
+from node.interfaces import IContentishNode
 from node.interfaces import IDefaultInit
 from node.interfaces import IMappingNode
 from node.interfaces import INode
@@ -53,15 +54,6 @@ class Node(Behavior):
         for parent in LocationIterator(self):
             root = parent
         return root
-
-    @override
-    def detach(self, name):
-        # XXX: this function works on sequence and mapping nodes only.
-        #      think about a proper place.
-        node = self[name]
-        del self[name]
-        node.__parent__ = None
-        return node
 
     @override
     def acquire(self, interface):
@@ -141,3 +133,14 @@ class Node(Behavior):
     @override
     def printtree(self):
         print(self.treerepr())                               # pragma: no cover
+
+
+@implementer(IContentishNode)
+class ContentishNode(Node):
+
+    @override
+    def detach(self, name):
+        node = self[name]
+        del self[name]
+        node.__parent__ = None
+        return node

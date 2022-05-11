@@ -5,6 +5,10 @@ Changes
 1.1 (unreleased)
 ----------------
 
+- Introduce ``node.interfaces.IContentishNode`` and
+  ``node.behaviors.ContentishNode``. Use as base for mapping and sequence nodes.
+  [rnix]
+
 - ``insertbefore``, ``insertafter`` and ``swap`` in ``node.behaviors.Order``
   alternatively accept node names as arguments where possible.
   [rnix]
@@ -44,7 +48,7 @@ Changes
 **Breaking changes**:
 
 - Importing B/C ``Reference`` behavior from ``node.behaviors.reference``
-  directly not works any more.
+  directly not works any more. Please adopt your imports.
   [rnix]
 
 

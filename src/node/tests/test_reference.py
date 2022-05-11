@@ -395,8 +395,8 @@ class TestReference(NodeTestCase):
         self.assertTrue(int(new_sequence.uuid) in node._index)
         self.assertTrue(int(new_sequence[0].uuid) in node._index)
 
-        old_sequence_child = node['sequence'][0]
-        new_sequence_child = node['sequence'][0] = ReferenceNode()
+        old_sequence_child = node['sequence']['0']
+        new_sequence_child = node['sequence']['0'] = ReferenceNode()
         self.assertEqual(len(node._index), 5)
         self.assertFalse(int(old_sequence_child.uuid) in node._index)
         self.assertTrue(int(new_sequence_child.uuid) in node._index)
