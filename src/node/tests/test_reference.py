@@ -73,6 +73,16 @@ class TestReference(NodeTestCase):
         self.assertTrue(node._index is node.index._index)
         self.assertEqual(len(node._index), 1)
 
+    def test_IndexViolationError(self):
+        uid = uuid.UUID('c7022c39-aac3-42c8-b86e-6daddefa3425')
+        err = IndexViolationError('Message', [int(uid)])
+        self.assertEqual(err.message, 'Message')
+        self.assertEqual(err.colliding, [uid])
+        self.assertEqual(repr(err).split('\n'), [
+            'Index Violation: Message',
+            '  * c7022c39-aac3-42c8-b86e-6daddefa3425'
+        ])
+
     def test_uuid(self):
         node = ReferenceNode(name='root')
         node_uuid = node.uuid
@@ -384,6 +394,12 @@ class TestReference(NodeTestCase):
         self.assertFalse(int(sequence[0].uuid) in node._index)
         self.assertTrue(int(new_sequence.uuid) in node._index)
         self.assertTrue(int(new_sequence[0].uuid) in node._index)
+
+        old_sequence_child = node['sequence'][0]
+        new_sequence_child = node['sequence'][0] = ReferenceNode()
+        self.assertEqual(len(node._index), 5)
+        self.assertFalse(int(old_sequence_child.uuid) in node._index)
+        self.assertTrue(int(new_sequence_child.uuid) in node._index)
 
         invalid_mapping = ReferenceMappingNode()
         invalid_mapping['ref'] = ReferenceNode()

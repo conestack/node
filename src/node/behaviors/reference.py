@@ -190,10 +190,7 @@ class SequenceReference(ContentishNodeReference):
     def __setitem__(next_, self, index, value):
         if INodeReference.providedBy(value) and value._index is self._index:
             raise IndexViolationError('Given node is already member of tree.')
-        if int(index) < len(self):
-            self._overwrite_reference_index(index, value)
-        else:
-            self._update_reference_index(value)
+        self._overwrite_reference_index(index, value)
         next_(self, index, value)
 
     @plumb
