@@ -9,6 +9,7 @@ function install {
     if [ -x "$(which $interpreter)" ]; then
         virtualenv --clear -p $interpreter $target
         ./$target/bin/pip install wheel coverage
+        ./$target/bin/pip install https://github.com/conestack/odict/archive/master.zip
         ./$target/bin/pip install -e .
     else
         echo "Interpreter $interpreter not found. Skip install."

@@ -39,10 +39,6 @@ class OrderReferenceNode(object):
 
 class TestOrder(NodeTestCase):
 
-    ###########################################################################
-    # Order without References
-    ###########################################################################
-
     def test_first_key(self):
         node = OrderableNode('root')
         with self.assertRaises(KeyError):
@@ -158,6 +154,16 @@ class TestOrder(NodeTestCase):
             "  <class 'node.tests.test_order.OrderableNode'>: child1\n"
         ))
 
+        with self.assertRaises(ValueError) as arc:
+            node.insertbefore(
+                OrderableNode(name='new'),
+                OrderableNode(name='ref')
+            )
+        self.assertEqual(
+            str(arc.exception),
+            'Given reference node not child of self.'
+        )
+
     def test_insertafter(self):
         node = OrderableNode('root')
         node['child1'] = OrderableNode()
@@ -176,6 +182,16 @@ class TestOrder(NodeTestCase):
             "  <class 'node.tests.test_order.OrderableNode'>: child3\n"
             "  <class 'node.tests.test_order.OrderableNode'>: child2\n"
         ))
+
+        with self.assertRaises(ValueError) as arc:
+            node.insertafter(
+                OrderableNode(name='new'),
+                OrderableNode(name='ref')
+            )
+        self.assertEqual(
+            str(arc.exception),
+            'Given reference node not child of self.'
+        )
 
     def test_insertfirst(self):
         node = OrderableNode('root')
@@ -308,10 +324,6 @@ class TestOrder(NodeTestCase):
             "  <class 'node.tests.test_order.OrderableNode'>: child2\n"
             "  <class 'node.tests.test_order.OrderableNode'>: child1\n"
         ))
-
-    ###########################################################################
-    # Order with References
-    ###########################################################################
 
     def test_order_with_references(self):
         node = OrderReferenceNode(name='root')

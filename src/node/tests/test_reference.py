@@ -62,20 +62,175 @@ class ReferenceSequenceNode(object):
 
 class TestReference(NodeTestCase):
 
-    def test_node_index(self):
+    def test_index(self):
         # Tree node index
-        node = ReferenceMappingNode()
+        node = ReferenceNode()
         self.assertTrue(isinstance(node.index, NodeIndex))
         self.assertTrue(IReadMapping.providedBy(node.index))
         self.assertEqual(node.index[node.uuid], node)
         self.assertEqual(node.index.get(node.uuid), node)
         self.assertTrue(node.uuid in node.index)
-        self.assertEqual(len(node.index._index), 1)
+        self.assertTrue(node._index is node.index._index)
+        self.assertEqual(len(node._index), 1)
+
+    def test_uuid(self):
+        node = ReferenceNode(name='root')
+        node_uuid = node.uuid
+        self.assertIsInstance(node_uuid, uuid.UUID)
+        self.assertTrue(node.index[int(node_uuid)] is node)
+
+        node.uuid = uuid.uuid4()
+        self.assertFalse(int(node_uuid) in node.index)
+        self.assertTrue(int(node.uuid) in node.index)
+
+        conflicting_uuid = uuid.uuid4()
+        node._index[int(conflicting_uuid)] = ReferenceNode()
+        with self.assertRaises(IndexViolationError) as arc:
+            node.uuid = conflicting_uuid
+        self.assertEqual(
+            arc.exception.message,
+            'Given uuid was already used for another Node'
+        )
+        self.assertEqual(arc.exception.colliding, [conflicting_uuid])
+
+    def test_node(self):
+        node = ReferenceNode(name='root')
+        self.assertTrue(node.node(node.uuid) is node)
+        self.assertEqual(node.node(uuid.uuid4()), None)
+
+    def test__referencable_child_nodes(self):
+        mapping = ReferenceMappingNode()
+        mapping['ref'] = ReferenceNode()
+        mapping['noref'] = NoReferenceNode()
+        self.assertEqual(
+            [it for it in mapping._referencable_child_nodes],
+            [mapping['ref']]
+        )
+
+        sequence = ReferenceSequenceNode()
+        sequence.append(ReferenceNode())
+        sequence.append(NoReferenceNode())
+        self.assertEqual(
+            [it for it in sequence._referencable_child_nodes],
+            [sequence[0]]
+        )
+
+    def test__recursiv_reference_keys(self):
+        node = ReferenceMappingNode(name='root')
+
+        mapping = ReferenceMappingNode()
+        mapping['ref'] = ReferenceNode()
+        mapping['noref'] = NoReferenceNode()
+        node['mapping'] = mapping
+
+        sequence = ReferenceSequenceNode()
+        sequence.append(ReferenceNode())
+        sequence.append(NoReferenceNode())
+        node['sequence'] = sequence
+
+        self.assertEqual(node._recursiv_reference_keys, [
+            int(node.uuid),
+            int(mapping.uuid),
+            int(mapping['ref'].uuid),
+            int(sequence.uuid),
+            int(sequence[0].uuid),
+        ])
+
+    def test__init_reference_index(self):
+        node = ReferenceMappingNode(name='root')
+
+        mapping = ReferenceMappingNode()
+        mapping['ref'] = ReferenceNode()
+        mapping['noref'] = NoReferenceNode()
+        node['mapping'] = mapping
+
+        sequence = ReferenceSequenceNode()
+        sequence.append(ReferenceNode())
+        sequence.append(NoReferenceNode())
+        node['sequence'] = sequence
+
+        node._index = dict()
+        node._init_reference_index()
+        self.assertEqual(len(node._index), 5)
+        self.assertTrue(int(node.uuid) in node._index)
+        self.assertTrue(int(mapping.uuid) in node._index)
+        self.assertTrue(int(mapping['ref'].uuid) in node._index)
+        self.assertTrue(int(sequence.uuid) in node._index)
+        self.assertTrue(int(sequence[0].uuid) in node._index)
+
+    def test__update_reference_index(self):
+        node = ReferenceMappingNode(name='root')
+        node['mapping'] = ReferenceMappingNode()
+        node['mapping']['ref'] = ReferenceNode()
+        node['mapping']['noref'] = NoReferenceNode()
+        node['sequence'] = ReferenceSequenceNode()
+        node['sequence'].append(ReferenceNode())
+        node['sequence'].append(NoReferenceNode())
+        self.assertEqual(len(node._index), 5)
+
+        node._update_reference_index(NoReferenceNode())
+        self.assertEqual(len(node._index), 5)
+
+        new = ReferenceMappingNode()
+        new['ref'] = ReferenceNode()
+        new['noref'] = NoReferenceNode()
+
+        node._update_reference_index(new)
+        self.assertEqual(len(node._index), 7)
+
+        self.assertTrue(new._index is node._index)
+        self.assertTrue(new['ref']._index is node._index)
+
+        invalid = ReferenceMappingNode()
+        invalid.uuid = node.uuid
+        with self.assertRaises(IndexViolationError) as arc:
+            node._update_reference_index(invalid)
+        self.assertEqual(
+            arc.exception.message,
+            'Given node or members of it provide uuid(s) colliding with own index.'
+        )
+        self.assertEqual(arc.exception.colliding, [node.uuid])
+
+        valid = ReferenceMappingNode()
+        valid['invalid'] = ReferenceNode()
+        valid['invalid'].uuid = node.uuid
+        with self.assertRaises(IndexViolationError) as arc:
+            node._update_reference_index(valid)
+        self.assertEqual(arc.exception.colliding, [node.uuid])
+
+    def test__reduce_reference_index(self):
+        node = ReferenceMappingNode(name='root')
+
+        mapping = ReferenceMappingNode()
+        mapping['ref'] = ReferenceNode()
+        mapping['noref'] = NoReferenceNode()
+        node['mapping'] = mapping
+
+        sequence = ReferenceSequenceNode()
+        sequence.append(ReferenceNode())
+        sequence.append(NoReferenceNode())
+        node['sequence'] = sequence
+
+        self.assertEqual(len(node._index), 5)
+        self.assertTrue(int(node.uuid) in node._index)
+        self.assertTrue(int(mapping.uuid) in node._index)
+        self.assertTrue(int(mapping['ref'].uuid) in node._index)
+        self.assertTrue(int(sequence.uuid) in node._index)
+        self.assertTrue(int(sequence[0].uuid) in node._index)
+
+        node._reduce_reference_index(mapping)
+        self.assertEqual(len(node._index), 3)
+        self.assertTrue(int(node.uuid) in node._index)
+        self.assertTrue(int(sequence.uuid) in node._index)
+        self.assertTrue(int(sequence[0].uuid) in node._index)
+
+        node._reduce_reference_index(sequence)
+        self.assertEqual(len(node._index), 1)
+        self.assertTrue(int(node.uuid) in node._index)
 
     def test_adding(self):
         node = ReferenceMappingNode(name='root')
 
-        mapping = ReferenceMappingNode()
         mapping = ReferenceMappingNode()
         mapping['ref'] = ReferenceNode()
         mapping['noref'] = NoReferenceNode()
@@ -87,7 +242,7 @@ class TestReference(NodeTestCase):
         sequence.insert(0, NoReferenceNode())
         node['sequence'] = sequence
 
-        self.assertEqual(len(node.index._index), 6)
+        self.assertEqual(len(node._index), 6)
 
         self.assertTrue(node._index is mapping._index)
         self.assertTrue(node._index is mapping['ref']._index)
@@ -103,36 +258,189 @@ class TestReference(NodeTestCase):
         self.assertFalse(mapping['noref'] in node._index.values())
         self.assertFalse(sequence['0'] in node._index.values())
 
-    def test_overwrite(self):
-        node = ReferenceMappingNode(name='root')
-        node['mapping'] = ReferenceMappingNode()
-        node['mapping']['ref'] = ReferenceNode()
-        node['sequence'] = ReferenceSequenceNode()
-        node['sequence'].append(ReferenceNode())
+        with self.assertRaises(IndexViolationError) as arc:
+            mapping['invalid'] = mapping['ref']
+        self.assertEqual(
+            arc.exception.message,
+            'Given node is already member of tree.'
+        )
+        self.assertEqual(len(node._index), 6)
+        self.assertEqual(mapping.keys(), ['ref', 'noref'])
 
-        self.assertEqual(len(node._index), 5)
+        with self.assertRaises(IndexViolationError) as arc:
+            sequence[0] = sequence[1]
+        self.assertEqual(
+            arc.exception.message,
+            'Given node is already member of tree.'
+        )
+        self.assertEqual(len(node._index), 6)
+        self.assertEqual(len(sequence), 3)
+
+        with self.assertRaises(IndexViolationError) as arc:
+            sequence.append(sequence[1])
+        self.assertEqual(
+            arc.exception.message,
+            'Given node is already member of tree.'
+        )
+        self.assertEqual(len(node._index), 6)
+        self.assertEqual(len(sequence), 3)
+
+        with self.assertRaises(IndexViolationError) as arc:
+            sequence.insert(0, sequence[1])
+        self.assertEqual(
+            arc.exception.message,
+            'Given node is already member of tree.'
+        )
+        self.assertEqual(len(node._index), 6)
+        self.assertEqual(len(sequence), 3)
 
         invalid = ReferenceNode()
         invalid.uuid = node.uuid
+        with self.assertRaises(IndexViolationError) as arc:
+            mapping['invalid'] = invalid
+        self.assertEqual(
+            arc.exception.message,
+            'Given node or members of it provide uuid(s) colliding with own index.'
+        )
+        self.assertEqual(arc.exception.colliding, [node.uuid])
+        self.assertEqual(len(node._index), 6)
 
         with self.assertRaises(IndexViolationError) as arc:
-            node['mapping']['invalid'] = invalid
-        self.checkOutput("""
-        Index Violation: Node with uuid(s) already exist in tree
-          * ...
-        """, repr(arc.exception))
+            sequence[0] = invalid
+        self.assertEqual(
+            arc.exception.message,
+            'Given node or members of it provide uuid(s) colliding with own index.'
+        )
+        self.assertEqual(arc.exception.colliding, [node.uuid])
+        self.assertEqual(len(node._index), 6)
 
-        with self.assertRaises(IndexViolationError):
-            node['mapping'] = node['mapping']
-        with self.assertRaises(IndexViolationError):
-            node['mapping'] = node['sequence']
-        with self.assertRaises(IndexViolationError):
-            node['sequence'].append(invalid)
-        with self.assertRaises(IndexViolationError):
-            node['sequence'].insert(0, invalid)
-        with self.assertRaises(IndexViolationError):
-            node['sequence']['0'] = node['mapping']['ref']
+        with self.assertRaises(IndexViolationError) as arc:
+            sequence.insert(0, invalid)
+        self.assertEqual(
+            arc.exception.message,
+            'Given node or members of it provide uuid(s) colliding with own index.'
+        )
+        self.assertEqual(arc.exception.colliding, [node.uuid])
+        self.assertEqual(len(node._index), 6)
 
+        with self.assertRaises(IndexViolationError) as arc:
+            sequence.append(invalid)
+        self.assertEqual(
+            arc.exception.message,
+            'Given node or members of it provide uuid(s) colliding with own index.'
+        )
+        self.assertEqual(arc.exception.colliding, [node.uuid])
+        self.assertEqual(len(node._index), 6)
+
+    def test_overwrite(self):
+        node = ReferenceMappingNode(name='root')
+
+        mapping = ReferenceMappingNode()
+        mapping['ref'] = ReferenceNode()
+        mapping['noref'] = NoReferenceNode()
+        node['mapping'] = mapping
+
+        sequence = ReferenceSequenceNode()
+        sequence.append(ReferenceNode())
+        sequence.insert(1, NoReferenceNode())
+        node['sequence'] = sequence
+
+        self.assertEqual(len(node._index), 5)
+
+        with self.assertRaises(IndexViolationError) as arc:
+            mapping['ref'] = mapping['ref']
+        self.assertEqual(
+            arc.exception.message,
+            'Given node is already member of tree.'
+        )
+        self.assertEqual(len(node._index), 5)
+
+        with self.assertRaises(IndexViolationError) as arc:
+            sequence['0'] = sequence['0']
+        self.assertEqual(
+            arc.exception.message,
+            'Given node is already member of tree.'
+        )
+        self.assertEqual(len(node._index), 5)
+
+        new_mapping = ReferenceMappingNode()
+        new_mapping['ref'] = ReferenceNode()
+        new_mapping['noref'] = NoReferenceNode()
+        node['mapping'] = new_mapping
+
+        self.assertEqual(len(node._index), 5)
+        self.assertFalse(int(mapping.uuid) in node._index)
+        self.assertFalse(int(mapping['ref'].uuid) in node._index)
+        self.assertTrue(int(new_mapping.uuid) in node._index)
+        self.assertTrue(int(new_mapping['ref'].uuid) in node._index)
+
+        new_sequence = ReferenceSequenceNode()
+        new_sequence.append(ReferenceNode())
+        new_sequence.insert(1, NoReferenceNode())
+        node['sequence'] = new_sequence
+
+        self.assertEqual(len(node._index), 5)
+        self.assertFalse(int(sequence.uuid) in node._index)
+        self.assertFalse(int(sequence[0].uuid) in node._index)
+        self.assertTrue(int(new_sequence.uuid) in node._index)
+        self.assertTrue(int(new_sequence[0].uuid) in node._index)
+
+        invalid_mapping = ReferenceMappingNode()
+        invalid_mapping['ref'] = ReferenceNode()
+        invalid_mapping['ref'].uuid = node.uuid
+
+        with self.assertRaises(IndexViolationError) as arc:
+            node['mapping'] = invalid_mapping
+        self.assertEqual(
+            arc.exception.message,
+            'Given node or members of it provide uuid(s) colliding with own index.'
+        )
+
+        self.assertEqual(arc.exception.colliding, [node.uuid])
+        self.assertEqual(len(node._index), 5)
+
+        with self.assertRaises(IndexViolationError) as arc:
+            node['mapping']['noref'] = invalid_mapping
+        self.assertEqual(
+            arc.exception.message,
+            'Given node or members of it provide uuid(s) colliding with own index.'
+        )
+
+        self.assertEqual(arc.exception.colliding, [node.uuid])
+        self.assertEqual(len(node._index), 5)
+
+        invalid_sequence = ReferenceSequenceNode()
+        invalid_sequence.append(ReferenceNode())
+        invalid_sequence[0].uuid = node.uuid
+
+        with self.assertRaises(IndexViolationError) as arc:
+            node['sequence'] = invalid_sequence
+        self.assertEqual(
+            arc.exception.message,
+            'Given node or members of it provide uuid(s) colliding with own index.'
+        )
+        self.assertEqual(arc.exception.colliding, [node.uuid])
+        self.assertEqual(len(node._index), 5)
+
+        invalid_sequence_child = ReferenceNode()
+        invalid_sequence_child.uuid = node.uuid
+
+        with self.assertRaises(IndexViolationError) as arc:
+            node['sequence'][0] = invalid_sequence_child
+        self.assertEqual(
+            arc.exception.message,
+            'Given node or members of it provide uuid(s) colliding with own index.'
+        )
+        self.assertEqual(arc.exception.colliding, [node.uuid])
+        self.assertEqual(len(node._index), 5)
+
+        with self.assertRaises(IndexViolationError) as arc:
+            node['sequence'][1] = invalid_sequence_child
+        self.assertEqual(
+            arc.exception.message,
+            'Given node or members of it provide uuid(s) colliding with own index.'
+        )
+        self.assertEqual(arc.exception.colliding, [node.uuid])
         self.assertEqual(len(node._index), 5)
 
     def test_detach(self):
@@ -170,33 +478,6 @@ class TestReference(NodeTestCase):
 
         sequence.clear()
         self.assertEqual(len(sequence._index), 1)
-
-    def test_uuid(self):
-        node = ReferenceMappingNode(name='root')
-        node['mapping'] = ReferenceMappingNode()
-        node['mapping']['ref'] = ReferenceNode()
-        node['sequence'] = ReferenceSequenceNode()
-        node['sequence'].insert(0, ReferenceNode())
-
-        uid = node['mapping']['ref'].uuid
-        self.assertTrue(isinstance(uid, uuid.UUID))
-        self.assertEqual(node.node(uid).path, ['root', 'mapping', 'ref'])
-
-        uid = node['sequence'][0].uuid
-        self.assertTrue(isinstance(uid, uuid.UUID))
-        self.assertEqual(node.node(uid).path, ['root', 'sequence', '0'])
-
-        with self.assertRaises(IndexViolationError) as arc:
-            node.uuid = uid
-        self.assertEqual(
-            arc.exception.message,
-            'Given uuid was already used for another Node'
-        )
-
-        new_uid = uuid.uuid4()
-        node.uuid = new_uid
-        self.assertEqual(node['sequence'].node(new_uid).path, ['root'])
-        self.assertEqual(len(node._index.keys()), 5)
 
     def test_delete(self):
         node = ReferenceMappingNode(name='root')
