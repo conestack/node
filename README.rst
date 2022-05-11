@@ -374,9 +374,13 @@ General Behaviors
     See ``node.interfaces.IDefaultInit``.
 
 **node.behaviors.Node**
-    Fill in gaps for full INode API. See ``node.interfaces.INode``. Normally
-    not applied directly. Use ``node.behaviors.MappingNode`` and
-    ``node.behaviors.SequenceNode`` instead.
+    Fill in gaps for full INode API. See ``node.interfaces.INode``.
+
+**node.behaviors.ContentishNode**
+    """A node which can contain children. See
+    ``node.interfaces.IContentishNode``. Concrete implementations are
+    ``node.behaviors.MappingNode`` and ``node.behaviors.SequenceNode``.
+    """
 
 **node.behaviors.Attributes**
     Provide attributes on node. See ``node.interfaces.IAttributes``. If
