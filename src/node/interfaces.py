@@ -128,13 +128,6 @@ class INode(ILocation):
         'implementing ``node.interfaces.IRoot``'
     )
 
-    def detach(name):
-        """Detach child Node.
-
-        XXX: this function works on sequence and mapping nodes only.
-             think about a proper place.
-        """
-
     def acquire(interface):
         """Traverse parents until interface provided. Return first parent
         providing interface or None if no parent matches.
