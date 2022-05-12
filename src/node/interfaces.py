@@ -114,6 +114,37 @@ class ICallable(Interface):
 
 
 ###############################################################################
+# initialization
+###############################################################################
+
+class IDefaultInit(Interface):
+    """Plumbing behavior providing default ``__init__`` function on node.
+
+    This behavior is going to be deprecated in future versions.
+    """
+
+    def __init__(name=None, parent=None):
+        """Set ``self.__name__`` and ``self.__parent__`` at init time."""
+
+
+class INodeInit(Interface):
+    """Plumbing behavior for transparent setting of ``__name__`` and
+    ``__parent__`` at object initialization time.
+
+    This behavior is going to be a transitional behavior. The plan is to
+    deprecate ``IDefaultInit`` in favor of ``INodeInit``. After some migration
+    time the functionality of this behavior will move to ``INode`` while this
+    behavior will do no modification any more and gets deprecated for itself.
+
+    Plumbing hooks:
+
+    * ``__init__``
+        Pops ``name`` and ``parent`` from keyword arguments and sets them
+        as ``__name__`` respective ``__parent__``.
+    """
+
+
+###############################################################################
 # nodes
 ###############################################################################
 
@@ -199,13 +230,6 @@ class ISequenceNode(IContentishNode, IMutableSequence):
 ###############################################################################
 # plumbing behaviors
 ###############################################################################
-
-class IDefaultInit(Interface):
-    """Plumbing behavior providing default ``__init__`` function on node."""
-
-    def __init__(name=None, parent=None):
-        """Set ``self.__name__`` and ``self.__parent__`` at init time."""
-
 
 class IMappingAdopt(Interface):
     """Plumbing behavior that provides ``__name__`` and ``__parent__``

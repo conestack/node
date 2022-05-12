@@ -35,6 +35,7 @@ from .mapping import WriteMapping  # noqa
 from .node import ContentishNode  # noqa
 from .node import DefaultInit  # noqa
 from .node import Node  # noqa
+from .node import NodeInit  # noqa
 from .nodespace import Nodespaces  # noqa
 from .order import Order  # noqa
 from .reference import IndexViolationError  # noqa

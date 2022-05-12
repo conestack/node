@@ -40,7 +40,7 @@ class OrderReferenceNode(object):
 class TestOrder(NodeTestCase):
 
     def test_first_key(self):
-        node = OrderableNode('root')
+        node = OrderableNode(name='root')
         with self.assertRaises(KeyError):
             node.first_key
         node['0'] = OrderableNode()
@@ -49,7 +49,7 @@ class TestOrder(NodeTestCase):
         self.assertEqual(node.first_key, '0')
 
     def test_last_key(self):
-        node = OrderableNode('root')
+        node = OrderableNode(name='root')
         with self.assertRaises(KeyError):
             node.last_key
         node['0'] = OrderableNode()
@@ -58,7 +58,7 @@ class TestOrder(NodeTestCase):
         self.assertEqual(node.last_key, '1')
 
     def test_next_key(self):
-        node = OrderableNode('root')
+        node = OrderableNode(name='root')
         with self.assertRaises(KeyError):
             node.next_key('x')
         node['x'] = OrderableNode()
@@ -79,7 +79,7 @@ class TestOrder(NodeTestCase):
 
     def test_swap(self):
         # Test ``swap``
-        node = OrderableNode('root')
+        node = OrderableNode(name='root')
         node['0'] = OrderableNode()
         node['1'] = OrderableNode()
         node['2'] = OrderableNode()
@@ -136,7 +136,7 @@ class TestOrder(NodeTestCase):
         self.assertEqual(list(node.keys()), ['0', '1', '2', '3', '4'])
 
     def test_insertbefore(self):
-        node = OrderableNode('root')
+        node = OrderableNode(name='root')
         node['child1'] = OrderableNode()
 
         node.insertbefore(OrderableNode(name='child2'), node['child1'])
@@ -165,7 +165,7 @@ class TestOrder(NodeTestCase):
         )
 
     def test_insertafter(self):
-        node = OrderableNode('root')
+        node = OrderableNode(name='root')
         node['child1'] = OrderableNode()
 
         node.insertafter(OrderableNode(name='child2'), node['child1'])
@@ -194,7 +194,7 @@ class TestOrder(NodeTestCase):
         )
 
     def test_insertfirst(self):
-        node = OrderableNode('root')
+        node = OrderableNode(name='root')
         node['child1'] = OrderableNode()
 
         node.insertfirst(OrderableNode(name='child2'))
@@ -205,7 +205,7 @@ class TestOrder(NodeTestCase):
         ))
 
     def test_insertlast(self):
-        node = OrderableNode('root')
+        node = OrderableNode(name='root')
         node['child1'] = OrderableNode()
 
         node.insertlast(OrderableNode(name='child2'))
@@ -216,7 +216,7 @@ class TestOrder(NodeTestCase):
         ))
 
     def test_movebefore(self):
-        node = OrderableNode('root')
+        node = OrderableNode(name='root')
         node['child1'] = OrderableNode()
         node['child2'] = OrderableNode()
 
@@ -235,7 +235,7 @@ class TestOrder(NodeTestCase):
         ))
 
     def test_moveafter(self):
-        node = OrderableNode('root')
+        node = OrderableNode(name='root')
         node['child1'] = OrderableNode()
         node['child2'] = OrderableNode()
 
@@ -254,7 +254,7 @@ class TestOrder(NodeTestCase):
         ))
 
     def test_movefirst(self):
-        node = OrderableNode('root')
+        node = OrderableNode(name='root')
         node['child1'] = OrderableNode()
         node['child2'] = OrderableNode()
 
@@ -273,7 +273,7 @@ class TestOrder(NodeTestCase):
         ))
 
     def test_movelast(self):
-        node = OrderableNode('root')
+        node = OrderableNode(name='root')
         node['child1'] = OrderableNode()
         node['child2'] = OrderableNode()
 
@@ -292,7 +292,7 @@ class TestOrder(NodeTestCase):
         ))
 
     def test_validateinsertion(self):
-        node = OrderableNode('root')
+        node = OrderableNode(name='root')
         node['child1'] = OrderableNode()
 
         new = OrderableNode()
@@ -313,7 +313,7 @@ class TestOrder(NodeTestCase):
         # move from tree. Then insert the detached node elsewhere. In general,
         # you can insert the detached node or subtree to a complete different
         # tree
-        node = OrderableNode('root')
+        node = OrderableNode(name='root')
         node['child1'] = OrderableNode()
         node['child2'] = OrderableNode()
 

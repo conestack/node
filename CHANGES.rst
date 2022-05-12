@@ -5,6 +5,9 @@ Changes
 1.1 (unreleased)
 ----------------
 
+- Introduce ``node.interfaces.INodeInit`` and ``node.behaviors.NodeInit``.
+  [rnix]
+
 - Deprecate ``IFixedChildren.fixed_children_factories`` Use
   ``IFixedChildren.factories`` instead.
   [rnix]

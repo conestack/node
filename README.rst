@@ -370,8 +370,15 @@ General Behaviors
 ~~~~~~~~~~~~~~~~~
 
 **node.behaviors.DefaultInit**
-    Provide default ``__init__`` function on object.
+    Plumbing behavior providing default ``__init__`` function on node. This
+    behavior is going to be deprecated in future versions. Use
+    ``node.behaviors.NodeInit`` instead.
     See ``node.interfaces.IDefaultInit``.
+
+**node.behaviors.NodeInit**
+    Plumbing behavior for transparent setting of ``__name__`` and ``__parent__``
+    at object initialization time.
+    See ``node.interfaces.INodeInit``.
 
 **node.behaviors.Node**
     Fill in gaps for full INode API. See ``node.interfaces.INode``.

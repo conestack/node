@@ -1,6 +1,9 @@
-from node.behaviors.node import DefaultInit
-from node.behaviors.node import Node
+from node.behaviors import DefaultInit
+from node.behaviors import Node
+from node.behaviors import NodeInit
+from node.interfaces import IDefaultInit
 from node.interfaces import INode
+from node.interfaces import INodeInit
 from node.tests import NodeTestCase
 from plumber import plumbing
 from zope.interface import Interface
@@ -13,6 +16,14 @@ from zope.interface import Interface
 @plumbing(DefaultInit)
 class DefaultInitObject(object):
     pass
+
+
+@plumbing(NodeInit)
+class NodeInitObject(object):
+
+    def __init__(self, foo, bar=None):
+        self.foo = foo
+        self.bar = bar
 
 
 @plumbing(DefaultInit, Node)
@@ -32,8 +43,17 @@ class TestNode(NodeTestCase):
 
     def test_DefaultInit(self):
         obj = DefaultInitObject(name='name', parent='parent')
+        self.assertTrue(IDefaultInit.providedBy(obj))
         self.assertEqual(obj.__name__, 'name')
         self.assertEqual(obj.__parent__, 'parent')
+
+    def test_NodeInit(self):
+        obj = NodeInitObject('foo', name='name', parent='parent', bar='bar')
+        self.assertTrue(INodeInit.providedBy(obj))
+        self.assertEqual(obj.__name__, 'name')
+        self.assertEqual(obj.__parent__, 'parent')
+        self.assertEqual(obj.foo, 'foo')
+        self.assertEqual(obj.bar, 'bar')
 
     def test_Node(self):
         parent = NodeObject(name='parent')

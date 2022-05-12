@@ -206,7 +206,7 @@ class TestMapping(NodeTestCase):
             '``values``: OK'
         ))
 
-        root = RootMappingNode('root')
+        root = RootMappingNode(name='root')
         child = root['child'] = MappingNode()
         subchild = child['subchild'] = MappingNode()
         self.assertEqual(root.treerepr(), (

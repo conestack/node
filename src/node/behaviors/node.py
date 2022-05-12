@@ -4,6 +4,7 @@ from node.interfaces import IContentishNode
 from node.interfaces import IDefaultInit
 from node.interfaces import IMappingNode
 from node.interfaces import INode
+from node.interfaces import INodeInit
 from node.interfaces import IOrdered
 from node.interfaces import ISchemaProperties
 from node.interfaces import ISequenceNode
@@ -12,6 +13,7 @@ from node.utils import safe_decode
 from plumber import Behavior
 from plumber import default
 from plumber import override
+from plumber import plumb
 from zope.interface import implementer
 from zope.interface.interfaces import IInterface
 
@@ -23,6 +25,16 @@ class DefaultInit(Behavior):
     def __init__(self, name=None, parent=None):
         self.__name__ = name
         self.__parent__ = parent
+
+
+@implementer(INodeInit)
+class NodeInit(Behavior):
+
+    @plumb
+    def __init__(next_, self, *args, **kwargs):
+        self.__name__ = kwargs.pop('name', None)
+        self.__parent__ = kwargs.pop('parent', None)
+        next_(self, *args, **kwargs)
 
 
 @implementer(INode)
