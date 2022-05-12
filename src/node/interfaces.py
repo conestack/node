@@ -114,7 +114,7 @@ class ICallable(Interface):
 
 
 ###############################################################################
-# node
+# nodes
 ###############################################################################
 
 class INode(ILocation):
@@ -143,17 +143,6 @@ class IContentishNode(INode):
     def detach(name):
         """Detach child Node.
         """
-
-
-###############################################################################
-# plumbing behaviors
-###############################################################################
-
-class IDefaultInit(Interface):
-    """Plumbing behavior providing default ``__init__`` function on node."""
-
-    def __init__(name=None, parent=None):
-        """Set ``self.__name__`` and ``self.__parent__`` at init time."""
 
 
 class IMappingNode(IContentishNode, IFullMapping):
@@ -205,6 +194,17 @@ class ISequenceNode(IContentishNode, IMutableSequence):
         """The index of this node if contained in another sequence. If node not
         contained in a sequence node, an ``IndexError`` is raised.
         """
+
+
+###############################################################################
+# plumbing behaviors
+###############################################################################
+
+class IDefaultInit(Interface):
+    """Plumbing behavior providing default ``__init__`` function on node."""
+
+    def __init__(name=None, parent=None):
+        """Set ``self.__name__`` and ``self.__parent__`` at init time."""
 
 
 class IMappingAdopt(Interface):
