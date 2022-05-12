@@ -18,6 +18,7 @@ from .events import suppress_events  # noqa
 from .events import UnknownEvent  # noqa
 from .factories import ChildFactory  # noqa
 from .factories import FixedChildren  # noqa
+from .factories import WildcardFactory  # noqa
 from .fallback import Fallback  # noqa
 from .lifecycle import AttributesLifecycle  # noqa
 from .lifecycle import Lifecycle  # noqa

@@ -1,6 +1,8 @@
 from __future__ import absolute_import
+from node.compat import lru_cache
 from node.interfaces import IChildFactory
 from node.interfaces import IFixedChildren
+from node.interfaces import IWildcardFactory
 from odict import odict
 from plumber import Behavior
 from plumber import default
@@ -94,3 +96,73 @@ class FixedChildren(Behavior):
     @finalize
     def __iter__(self):
         return iter(self._children)
+
+
+@lru_cache(maxsize=32768)
+def _wildcard_pattern_occurrences(pattern):
+    # count characters, asterisks, question_marks and sequences in pattern
+    # a whole sequencs counts as one character
+    chars = asterisks = question_marks = sequences = 0
+    in_sequence = False
+    for char in pattern:
+        if char == '[':
+            in_sequence = True
+            continue
+        if in_sequence:
+            if char != ']':
+                continue
+            else:
+                in_sequence = False
+                sequences += 1
+        if char == '*':
+            asterisks += 1
+        elif char == '?':
+            question_marks += 1
+        chars += 1
+    if in_sequence:
+        raise ValueError('Pattern contains non-closing sequence')
+    return chars, asterisks, question_marks, sequences
+
+
+@lru_cache(maxsize=32768)
+def _wildcard_patterns_by_specificity(patterns):
+    # limitations:
+    #   * sequences are not weighted
+    #   * max 100 sequences in pattern
+    #   * max 100 question_marks in pattern
+    #   * max 100 asterisks in pattern
+    specificity_1 = []  # patterns with no wildcards
+    specificity_2 = []  # patterns with sequences only
+    specificity_3 = []  # patterns with sequences and question marks
+    specificity_4 = []  # patterns with sequences, question marks and asterisks
+    weights = dict()
+    for pattern in patterns:
+        (
+            chars, asterisks, question_marks, sequences
+        ) = _wildcard_pattern_occurrences(pattern)
+        weights[pattern] = (
+            0 - chars - sequences * .01 -
+            question_marks * .0001 - asterisks * .000001
+        )
+        if asterisks + question_marks + sequences == 0:
+            specificity_1.append(pattern)
+        elif asterisks + question_marks == 0:
+            specificity_2.append(pattern)
+        elif asterisks == 0:
+            specificity_3.append(pattern)
+        else:
+            specificity_4.append(pattern)
+    return tuple(
+        sorted(specificity_1, key=lambda x: weights[x]) +
+        sorted(specificity_2, key=lambda x: weights[x]) +
+        sorted(specificity_3, key=lambda x: weights[x]) +
+        sorted(specificity_4, key=lambda x: weights[x])
+    )
+
+
+@implementer(IWildcardFactory)
+class WildcardFactory(Behavior):
+    factories = default(odict())
+
+    def factory_for_name(self, name):
+        """"""

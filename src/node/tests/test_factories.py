@@ -4,6 +4,9 @@ from node.behaviors import FixedChildren
 from node.behaviors import MappingNode
 from node.behaviors import Node
 from node.behaviors import OdictStorage
+from node.behaviors import WildcardFactory
+from node.behaviors.factories import _wildcard_pattern_occurrences
+from node.behaviors.factories import _wildcard_patterns_by_specificity
 from node.tests import NodeTestCase
 from odict import odict
 from plumber import plumbing
@@ -76,3 +79,66 @@ class TestFactories(NodeTestCase):
 
         node = LegacyFixedChildrenNode()
         self.assertEqual(list(node.keys()), ['factory', 'legacy'])
+
+    def test_WildcardFactory(self):
+        self.assertEqual(_wildcard_pattern_occurrences('abc'), (3, 0, 0, 0))
+        self.assertEqual(_wildcard_pattern_occurrences('*a*b*'), (5, 3, 0, 0))
+        self.assertEqual(_wildcard_pattern_occurrences('?a?b?'), (5, 0, 3, 0))
+        self.assertEqual(
+            _wildcard_pattern_occurrences('[a-z]a[abc]b[!abc]'),
+            (5, 0, 0, 3)
+        )
+        self.assertEqual(
+            _wildcard_pattern_occurrences('*?[a-z]a*[abc]b?[!abc]?*'),
+            (11, 3, 3, 3)
+        )
+        with self.assertRaises(ValueError):
+            _wildcard_pattern_occurrences('*?[')
+        with self.assertRaises(ValueError):
+            _wildcard_pattern_occurrences('[*?')
+
+        # specificity 1
+        self.assertEqual(
+            _wildcard_patterns_by_specificity(('a', 'aa', 'aaa')),
+            ('aaa', 'aa', 'a')
+        )
+        # specificity 2
+        self.assertEqual(
+            _wildcard_patterns_by_specificity(('[a-z]', '[abc][abc]')),
+            ('[abc][abc]', '[a-z]')
+        )
+        # specificity 3
+        self.assertEqual(
+            _wildcard_patterns_by_specificity(('?', '??')),
+            ('??', '?')
+        )
+        self.assertEqual(
+            _wildcard_patterns_by_specificity(
+                ('?', '??', '[a-z]', '[abc][abc]')
+            ),
+            ('[abc][abc]', '[a-z]', '??', '?')
+        )
+        self.assertEqual(
+            _wildcard_patterns_by_specificity(
+                ('?', '??', '[a-z]', '[abc][abc]', '?[a-z]', '??[a-z]', '?[a-z][a-z]')
+            ),
+            ('[abc][abc]', '[a-z]', '?[a-z][a-z]', '??[a-z]', '?[a-z]', '??', '?')
+        )
+        # specificity 4
+        self.assertEqual(
+            _wildcard_patterns_by_specificity(('*', '*.*')),
+            ('*.*', '*')
+        )
+
+        self.assertEqual(
+            _wildcard_patterns_by_specificity(
+                ('*', '*bc', '?bc', '[xyz]bc', 'abc')
+            ),
+            ('abc', '[xyz]bc', '?bc', '*bc', '*')
+        )
+
+        @plumbing(WildcardFactory)
+        class WildCardFactoryNode(object):
+            factories = {
+                '*': 'default_factory'
+            }

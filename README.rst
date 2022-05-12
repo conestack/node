@@ -406,6 +406,10 @@ General Behaviors
     Plumbing behavior holding an index of nodes contained in the tree.
     See ``node.interfaces.INodeReference``.
 
+**node.behaviors.WildcardFactory**
+    Plumbing behavior providing factories by wildcard patterns.
+    See ``node.interfaces.IWildcardFactory``.
+
 
 Mapping Behaviors
 ~~~~~~~~~~~~~~~~~

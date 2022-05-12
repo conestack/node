@@ -402,6 +402,18 @@ class IFixedChildren(Interface):
         """Iterate fixed children keys."""
 
 
+class IWildcardFactory(Interface):
+    """Plumbing behavior providing factories by wildcard patterns.
+
+    Pattern matching rules are interpreted case sensitive with fnmatch.
+    """
+
+    factories = Attribute('Dict like object containing pattern/factory pairs.')
+
+    def factory_for_name(name):
+        """Return best matching factory for name or None if no pattern match."""
+
+
 class INodespaces(Interface):
     """Plumbing behavior for providing nodespaces on node.
 
