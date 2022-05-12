@@ -1,6 +1,4 @@
-from node.behaviors import ChildFactory
 from node.behaviors import DefaultInit
-from node.behaviors import FixedChildren
 from node.behaviors import MappingAdopt
 from node.behaviors import MappingNode
 from node.behaviors import OdictStorage
@@ -32,54 +30,6 @@ class TestCommon(NodeTestCase):
 
         del node['bar']
         self.assertEqual(list(node.keys()), [u'foo'])
-
-    def test_ChildFactory(self):
-        class FooChild(object):
-            pass
-
-        class BarChild(object):
-            pass
-
-        @plumbing(MappingNode, ChildFactory, OdictStorage)
-        class ChildFactoryNode(object):
-            factories = {
-                'foo': FooChild,
-                'bar': BarChild,
-            }
-
-        node = ChildFactoryNode()
-        self.checkOutput("""\
-        [('bar', <...BarChild object at ...>),
-        ('foo', <...FooChild object at ...>)]
-        """, str(sorted(node.items())))
-
-    def test_FixedChildren(self):
-        class FooChild(object):
-            pass
-
-        class BarChild(object):
-            pass
-
-        @plumbing(MappingNode, FixedChildren)
-        class FixedChildrenNode(object):
-            fixed_children_factories = (
-                ('foo', FooChild),
-                ('bar', BarChild),
-            )
-
-        node = FixedChildrenNode()
-        self.assertEqual(list(node.keys()), ['foo', 'bar'])
-        self.assertTrue(isinstance(node['foo'], FooChild))
-        self.assertTrue(isinstance(node['bar'], BarChild))
-        self.assertTrue(node['foo'] is node['foo'])
-
-        with self.assertRaises(NotImplementedError) as arc:
-            del node['foo']
-        self.assertEqual(str(arc.exception), 'read-only')
-
-        with self.assertRaises(NotImplementedError) as arc:
-            node['foo'] = 'foo'
-        self.assertEqual(str(arc.exception), 'read-only')
 
     def test_UUIDAware(self):
         # Create a uid aware node. ``copy`` is not supported on UUIDAware node

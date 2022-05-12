@@ -7,8 +7,6 @@ from .cache import Cache  # noqa
 from .cache import Invalidate  # noqa
 from .cache import VolatileStorageInvalidate  # noqa
 from .common import AsAttrAccess  # noqa
-from .common import ChildFactory  # noqa
-from .common import FixedChildren  # noqa
 from .common import UnicodeAware  # noqa
 from .common import UUIDAware  # noqa
 from .constraints import MappingConstraints  # noqa
@@ -18,6 +16,8 @@ from .events import EventAttribute  # noqa
 from .events import Events  # noqa
 from .events import suppress_events  # noqa
 from .events import UnknownEvent  # noqa
+from .factories import ChildFactory  # noqa
+from .factories import FixedChildren  # noqa
 from .fallback import Fallback  # noqa
 from .lifecycle import AttributesLifecycle  # noqa
 from .lifecycle import Lifecycle  # noqa

@@ -5,6 +5,10 @@ Changes
 1.1 (unreleased)
 ----------------
 
+- Deprecate ``IFixedChildren.fixed_children_factories`` Use
+  ``IFixedChildren.factories`` instead.
+  [rnix]
+
 - Introduce ``node.interfaces.IContentishNode`` and
   ``node.behaviors.ContentishNode``. Use as base for mapping and sequence nodes.
   [rnix]
@@ -47,8 +51,13 @@ Changes
 
 **Breaking changes**:
 
+- Importing ``ChildFactory`` and ``FixedChildren`` from
+  ``node.behaviors.common`` not works any more. Please import from
+  ``node.behaviors``.
+  [rnix]
+
 - Importing B/C ``Reference`` behavior from ``node.behaviors.reference``
-  directly not works any more. Please adopt your imports.
+  not works any more. Please import from ``node.behaviors``.
   [rnix]
 
 

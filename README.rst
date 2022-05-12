@@ -430,12 +430,11 @@ Mapping Behaviors
     See ``node.interfaces.IAsAttrAccess``.
 
 **node.behaviors.ChildFactory**
-    Plumbing behavior providing child factories which are invoked at
-    ``__getitem__`` if object by key is not present at plumbing endpoint yet.
+    Plumbing behavior providing child factories.
     See ``node.interfaces.IChildFactory``.
 
 **node.behaviors.FixedChildren**
-    Plumbing behavior that initializes a fixed dictionary as children.
+    Plumbing Behavior that initializes a fixed dictionary as children.
     See ``node.interfaces.IFixedChildren``.
 
 **node.behaviors.Nodespaces**

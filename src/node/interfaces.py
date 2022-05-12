@@ -338,8 +338,12 @@ class IAsAttrAccess(Interface):
 
 
 class IChildFactory(Interface):
-    """Plumbing behavior providing child factories which are invoked at
-    ``__getitem__`` if object by key is not present at plumbing endpoint yet.
+    """Plumbing behavior providing child factories.
+
+    Plumbing hooks:
+
+    * ``__getitem__``
+         Invoke factory if object by key is not present at plumbing endpoint.
     """
 
     factories = Attribute('Dict like object containing key/factory pairs.')
@@ -349,11 +353,9 @@ class IChildFactory(Interface):
 
 
 class IFixedChildren(Interface):
-    """Plumbing behavior that initializes a fixed dictionary as children.
+    """Plumbing Behavior that initializes a fixed dictionary as children.
 
-    The children are instantiated during ``__init__`` and adopted by the
-    class using this behavior. They cannot receive init arguments, but
-    could retrieve configuration from their parent.
+    The children are instantiated during __init__.
 
     Plumbing hooks:
 
@@ -361,15 +363,19 @@ class IFixedChildren(Interface):
         Create fixed children defined in ``fixed_children_factories``
     """
 
-    fixed_children_factories = Attribute(
-        'Dict like object containing child factories.'
-    )
-
-    def __delitem__(key):
-        """Deny deleting, read-only."""
+    factories = Attribute('Dict like object containing key/factory pairs.')
 
     def __setitem__(key, val):
-        """Deny setting item, read-only."""
+        """Deny setting item, read-only. Raises ``NotImplementedError``."""
+
+    def __getitem__(key):
+        """Returns fixed child."""
+
+    def __delitem__(key):
+        """Deny deleting, read-only. Raises ``NotImplementedError``"""
+
+    def __iter__():
+        """Iterate fixed children keys."""
 
 
 class INodespaces(Interface):
