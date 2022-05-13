@@ -98,42 +98,54 @@ class TestFactories(NodeTestCase):
             _wildcard_pattern_occurrences('[*?')
 
         # specificity 1
-        self.assertEqual(
-            _wildcard_patterns_by_specificity(('a', 'aa', 'aaa')),
+        self.assertEqual(_wildcard_patterns_by_specificity(
+            ('a', 'aa', 'aaa')),
             ('aaa', 'aa', 'a')
         )
+
         # specificity 2
-        self.assertEqual(
-            _wildcard_patterns_by_specificity(('[a-z]', '[abc][abc]')),
+        self.assertEqual(_wildcard_patterns_by_specificity(
+            ('[a-z]', '[abc][abc]')),
             ('[abc][abc]', '[a-z]')
         )
-        # specificity 3
-        self.assertEqual(
-            _wildcard_patterns_by_specificity(('?', '??')),
+        self.assertEqual(_wildcard_patterns_by_specificity(
+            ('?', '??')),
             ('??', '?')
         )
-        self.assertEqual(
-            _wildcard_patterns_by_specificity(
-                ('?', '??', '[a-z]', '[abc][abc]')
-            ),
-            ('[abc][abc]', '[a-z]', '??', '?')
+        self.assertEqual(_wildcard_patterns_by_specificity(
+            ('?', '??', '[a-z]', '[abc][abc]')),
+            ('[abc][abc]', '??', '[a-z]', '?')
         )
-        self.assertEqual(
-            _wildcard_patterns_by_specificity(
-                ('?', '??', '[a-z]', '[abc][abc]', '?[a-z]', '??[a-z]', '?[a-z][a-z]')
-            ),
-            ('[abc][abc]', '[a-z]', '?[a-z][a-z]', '??[a-z]', '?[a-z]', '??', '?')
+        self.assertEqual(_wildcard_patterns_by_specificity(
+            (
+                '?', '??', '[a-z]', '[abc][abc]',
+                '?[a-z]', '??[a-z]', '?[a-z][a-z]'
+            )),
+            (
+                '?[a-z][a-z]', '??[a-z]', '[abc][abc]',
+                '?[a-z]', '??', '[a-z]', '?'
+            )
         )
-        # specificity 4
-        self.assertEqual(
-            _wildcard_patterns_by_specificity(('*', '*.*')),
+        self.assertEqual(_wildcard_patterns_by_specificity(
+            ('*', '*.*')),
             ('*.*', '*')
         )
-
-        self.assertEqual(
-            _wildcard_patterns_by_specificity(
-                ('*', '*bc', '?bc', '[xyz]bc', 'abc')
-            ),
+        self.assertEqual(_wildcard_patterns_by_specificity(
+            ('*', '*.*', '?', '??')),
+            ('*.*', '??', '?', '*')
+        )
+        # XXX: '*.*' must be after '*.a'
+        self.assertEqual(_wildcard_patterns_by_specificity(
+            (
+                '*', '*.*', '*.a', '?.a', '?', '??',
+                '*[a][a]', '?[a][a]', '[a][a]')),
+            (
+                '?[a][a]', '*[a][a]', '?.a', '*.*',
+                '*.a', '[a][a]', '??', '?', '*'
+            )
+        )
+        self.assertEqual(_wildcard_patterns_by_specificity(
+            ('*', '*bc', '?bc', '[xyz]bc', 'abc')),
             ('abc', '[xyz]bc', '?bc', '*bc', '*')
         )
 

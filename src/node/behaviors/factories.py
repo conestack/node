@@ -109,6 +109,8 @@ def _wildcard_pattern_occurrences(pattern):
             in_sequence = True
             continue
         if in_sequence:
+            # XXX: count gap in sequence to make sequences like [][!] working.
+            #      https://man7.org/linux/man-pages/man7/glob.7.html
             if char != ']':
                 continue
             else:
@@ -126,15 +128,22 @@ def _wildcard_pattern_occurrences(pattern):
 
 @lru_cache(maxsize=32768)
 def _wildcard_patterns_by_specificity(patterns):
-    # limitations:
-    #   * sequences are not weighted
-    #   * max 100 sequences in pattern
-    #   * max 100 question_marks in pattern
-    #   * max 100 asterisks in pattern
+    """Simple wildcard pattern weighting.
+
+    Limitations:
+        * Sequences are not weighted.
+        * Max 100 sequences in pattern.
+        * Max 100 question_marks in pattern.
+        * Max 100 asterisks in pattern.
+
+    If we want to have a proper weighting of all pattern aspects, we'd need to
+    view patterns as finite state machines and count all required states
+    necessary to resolve the pattern. This count can then be used as weight.
+    https://github.com/adrian-thurston/ragel might be a starting point if we
+    somewhen want to implement this.
+    """
     specificity_1 = []  # patterns with no wildcards
-    specificity_2 = []  # patterns with sequences only
-    specificity_3 = []  # patterns with sequences and question marks
-    specificity_4 = []  # patterns with sequences, question marks and asterisks
+    specificity_2 = []  # patterns with wildcards
     weights = dict()
     for pattern in patterns:
         (
@@ -146,17 +155,11 @@ def _wildcard_patterns_by_specificity(patterns):
         )
         if asterisks + question_marks + sequences == 0:
             specificity_1.append(pattern)
-        elif asterisks + question_marks == 0:
-            specificity_2.append(pattern)
-        elif asterisks == 0:
-            specificity_3.append(pattern)
         else:
-            specificity_4.append(pattern)
+            specificity_2.append(pattern)
     return tuple(
         sorted(specificity_1, key=lambda x: weights[x]) +
-        sorted(specificity_2, key=lambda x: weights[x]) +
-        sorted(specificity_3, key=lambda x: weights[x]) +
-        sorted(specificity_4, key=lambda x: weights[x])
+        sorted(specificity_2, key=lambda x: weights[x])  # XXX: * -1?
     )
 
 
