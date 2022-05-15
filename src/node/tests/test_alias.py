@@ -18,10 +18,12 @@ class TestAlias(NodeTestCase):
 
         # By default, aliasing is strict, which means that only key/value pairs
         # set in aliaser are valid
-        err = self.expectError(KeyError, da.alias, 'foo')
-        self.assertEqual(str(err), '\'foo\'')
-        err = self.expectError(KeyError, da.unalias, 'foo')
-        self.assertEqual(str(err), '\'foo\'')
+        with self.assertRaises(KeyError) as arc:
+            da.alias('foo')
+        self.assertEqual(str(arc.exception), '\'foo\'')
+        with self.assertRaises(KeyError) as arc:
+            da.unalias('foo')
+        self.assertEqual(str(arc.exception), '\'foo\'')
 
         # By setting strict to False, inexistent keys are returned as fallback
         da = DictAliaser(
@@ -37,9 +39,10 @@ class TestAlias(NodeTestCase):
         self.assertEqual(pa.alias('foo'), 'prefix-foo')
         self.assertEqual(pa.unalias('prefix-foo'), 'foo')
 
-        err = self.expectError(KeyError, pa.unalias, 'foo')
+        with self.assertRaises(KeyError) as arc:
+            pa.unalias('foo')
         expected = '"key \'foo\' does not match prefix \'prefix-\'"'
-        self.assertTrue(str(err).find(expected) > -1)
+        self.assertTrue(str(arc.exception).find(expected) > -1)
 
     def test_SuffixAliaser(self):
         # An aliaser that simply suffixes all keys
@@ -47,9 +50,10 @@ class TestAlias(NodeTestCase):
         self.assertEqual(sa.alias('foo'), 'foo-suffix')
         self.assertEqual(sa.unalias('foo-suffix'), 'foo')
 
-        err = self.expectError(KeyError, sa.unalias, 'foo')
+        with self.assertRaises(KeyError) as arc:
+            sa.unalias('foo')
         expected = '"key \'foo\' does not match suffix \'-suffix\'"'
-        self.assertTrue(str(err).find(expected) > -1)
+        self.assertTrue(str(arc.exception).find(expected) > -1)
 
     def test_AliaserChain(self):
         # A chain of aliasers
@@ -122,20 +126,17 @@ class TestAlias(NodeTestCase):
 
         fail = FailDict()
 
-        def fail___setitem__():
+        with self.assertRaises(KeyError) as arc:
             fail['pre-foo'] = 1
-        err = self.expectError(KeyError, fail___setitem__)
-        self.assertEqual(str(err), '\'pre-foo\'')
+        self.assertEqual(str(arc.exception), '\'pre-foo\'')
 
-        def fail___getitem__():
+        with self.assertRaises(KeyError) as arc:
             fail['pre-foo']
-        err = self.expectError(KeyError, fail___getitem__)
-        self.assertEqual(str(err), '\'pre-foo\'')
+        self.assertEqual(str(arc.exception), '\'pre-foo\'')
 
-        def fail___delitem__():
+        with self.assertRaises(KeyError) as arc:
             del fail['pre-foo']
-        err = self.expectError(KeyError, fail___delitem__)
-        self.assertEqual(str(err), '\'pre-foo\'')
+        self.assertEqual(str(arc.exception), '\'pre-foo\'')
 
         # A prefix aliaser cannot raise a KeyError, nevertheless, if it does,
         # that error must not be caught by the code that handle alias KeyErrors
@@ -163,10 +164,9 @@ class TestAlias(NodeTestCase):
         # Let's put a key in the dict, that is not mapped by the dictionary
         # aliaser. This is not possible through the plumbing ``__setitem__``,
         # we need to use ``dict.__setitem__``
-        def fail___setitem__():
+        with self.assertRaises(KeyError) as arc:
             ad['abc'] = 1
-        err = self.expectError(KeyError, fail___setitem__)
-        self.assertEqual(str(err), '\'abc\'')
+        self.assertEqual(str(arc.exception), '\'abc\'')
 
         dict.__setitem__(ad, 'abc', 1)
         self.assertEqual([x for x in ad], ['foo'])

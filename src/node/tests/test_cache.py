@@ -57,8 +57,9 @@ class TestCache(NodeTestCase):
             '    <class \'node.tests.test_cache.Node\'>: d2\n'
         ))
 
-        err = self.expectError(KeyError, root.invalidate, key='c1')
-        self.assertEqual(str(err), '\'c1\'')
+        with self.assertRaises(KeyError) as arc:
+            root.invalidate(key='c1')
+        self.assertEqual(str(arc.exception), '\'c1\'')
 
         # Active invalidation of all children
         root['c2'].invalidate()
@@ -107,8 +108,9 @@ class TestCache(NodeTestCase):
             '    <class \'node.tests.test_cache.Node\'>: d2\n'
         ))
 
-        err = self.expectError(KeyError, root.invalidate, key='c1')
-        self.assertEqual(str(err), '\'c1\'')
+        with self.assertRaises(KeyError) as arc:
+            root.invalidate(key='c1')
+        self.assertEqual(str(arc.exception), '\'c1\'')
 
         # Active invalidation of all children
         root['c2'].invalidate()
@@ -153,8 +155,9 @@ class TestCache(NodeTestCase):
         node.invalidate()
         self.assertEqual(node.storage.items(), [])
 
-        err = self.expectError(KeyError, node.invalidate, 'baz')
-        self.assertEqual(str(err), '\'baz\'')
+        with self.assertRaises(KeyError) as arc:
+            node.invalidate('baz')
+        self.assertEqual(str(arc.exception), '\'baz\'')
 
     def test_Cache(self):
         # Build a node with active invalidation and cache functionality

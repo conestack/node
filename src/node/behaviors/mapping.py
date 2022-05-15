@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-from node.behaviors.node import Node
+from node.behaviors.node import ContentishNode
 from node.compat import ITER_FUNC
 from node.compat import iteritems
 from node.interfaces import IMappingNode
@@ -232,7 +232,7 @@ class FullMapping(ExtendedReadMapping,
 
 
 @implementer(IMappingNode)
-class MappingNode(Node, FullMapping):
+class MappingNode(ContentishNode, FullMapping):
 
     @plumb
     def copy(next_, self):

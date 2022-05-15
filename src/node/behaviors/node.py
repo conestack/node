@@ -1,8 +1,10 @@
 from __future__ import absolute_import
 from node.compat import IS_PY2
+from node.interfaces import IContentishNode
 from node.interfaces import IDefaultInit
 from node.interfaces import IMappingNode
 from node.interfaces import INode
+from node.interfaces import INodeInit
 from node.interfaces import IOrdered
 from node.interfaces import ISchemaProperties
 from node.interfaces import ISequenceNode
@@ -11,6 +13,7 @@ from node.utils import safe_decode
 from plumber import Behavior
 from plumber import default
 from plumber import override
+from plumber import plumb
 from zope.interface import implementer
 from zope.interface.interfaces import IInterface
 
@@ -22,6 +25,16 @@ class DefaultInit(Behavior):
     def __init__(self, name=None, parent=None):
         self.__name__ = name
         self.__parent__ = parent
+
+
+@implementer(INodeInit)
+class NodeInit(Behavior):
+
+    @plumb
+    def __init__(next_, self, *args, **kwargs):
+        self.__name__ = kwargs.pop('name', None)
+        self.__parent__ = kwargs.pop('parent', None)
+        next_(self, *args, **kwargs)
 
 
 @implementer(INode)
@@ -53,13 +66,6 @@ class Node(Behavior):
         for parent in LocationIterator(self):
             root = parent
         return root
-
-    @override
-    def detach(self, name):
-        # XXX: maybe reset __parent__ of detached node?
-        node = self[name]
-        del self[name]
-        return node
 
     @override
     def acquire(self, interface):
@@ -139,3 +145,14 @@ class Node(Behavior):
     @override
     def printtree(self):
         print(self.treerepr())                               # pragma: no cover
+
+
+@implementer(IContentishNode)
+class ContentishNode(Node):
+
+    @override
+    def detach(self, name):
+        node = self[name]
+        del self[name]
+        node.__parent__ = None
+        return node

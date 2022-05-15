@@ -48,11 +48,10 @@ class TestStorage(NodeTestCase):
         obj = MappingStorageObject()
         self.assertTrue(IMappingStorage.providedBy(obj))
 
-        def access_storage_fails():
+        with self.assertRaises(NotImplementedError) as arc:
             obj.storage
-        err = self.expectError(NotImplementedError, access_storage_fails)
         expected = 'Abstract ``MappingStorage`` does not implement ``storage``'
-        self.assertEqual(str(err), expected)
+        self.assertEqual(str(arc.exception), expected)
 
     def test_DictStorage(self):
         obj = DictStorageObject()
@@ -81,11 +80,10 @@ class TestStorage(NodeTestCase):
     def test_SequenceStorage(self):
         obj = SequenceStorageObject()
 
-        def access_storage_fails():
+        with self.assertRaises(NotImplementedError) as arc:
             obj.storage
-        err = self.expectError(NotImplementedError, access_storage_fails)
         expected = 'Abstract ``SequenceStorage`` does not implement ``storage``'
-        self.assertEqual(str(err), expected)
+        self.assertEqual(str(arc.exception), expected)
 
     def test_ListStorage(self):
         lseq = ListStorageObject()

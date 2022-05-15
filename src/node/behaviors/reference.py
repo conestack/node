@@ -1,12 +1,13 @@
 from __future__ import absolute_import
 from node.interfaces import IMappingNode
-from node.interfaces import INode
-from node.interfaces import IReference
+from node.interfaces import IMappingReference
+from node.interfaces import INodeReference
+from node.interfaces import ISequenceNode
+from node.interfaces import ISequenceReference
 from plumber import Behavior
 from plumber import default
 from plumber import override
 from plumber import plumb
-from plumber import plumbifexists
 from zope.interface import implementer
 from zope.interface.common.mapping import IReadMapping
 import uuid
@@ -28,8 +29,22 @@ class NodeIndex(object):
         return int(key) in self._index
 
 
-@implementer(IReference)
-class Reference(Behavior):
+class IndexViolationError(ValueError):
+
+    def __init__(self, message, colliding=[]):
+        super(IndexViolationError, self).__init__(message)
+        self.message = message
+        self.colliding = [uuid.UUID(int=iuuid) for iuuid in colliding]
+
+    def __repr__(self):
+        return 'Index Violation: {}\n  * {}'.format(
+            self.message,
+            '\n  * '.join([str(uuid_) for uuid_ in self.colliding])
+        )
+
+
+@implementer(INodeReference)
+class NodeReference(Behavior):
     _uuid = default(None)
 
     @plumb
@@ -38,36 +53,6 @@ class Reference(Behavior):
         self.uuid = uuid.uuid4()
         next_(self, *args, **kw)
 
-    @plumbifexists
-    def __setitem__(next_, self, key, val):
-        if INode.providedBy(val):
-            try:
-                next(val.iterkeys())
-                keys = set(self._index.keys())
-                if keys.intersection(val._index.keys()):
-                    raise ValueError('Node with uuid already exists')
-            except (AttributeError, StopIteration):
-                pass
-            self._index.update(val._index)
-            val._index = self._index
-        next_(self, key, val)
-
-    @plumbifexists
-    def __delitem__(next_, self, key):
-        # fail immediately if key does not exist
-        todel = self[key]
-        if hasattr(todel, '_to_delete'):
-            for iuuid in todel._to_delete():
-                del self._index[iuuid]
-        next_(self, key)
-
-    @plumb
-    def detach(next_, self, key):
-        node = next_(self, key)
-        node._index = {int(node.uuid): node}
-        node._index_nodes()
-        return node
-
     @property
     def uuid(self):
         return self._uuid
@@ -75,14 +60,17 @@ class Reference(Behavior):
     @override
     @uuid.setter
     def uuid(self, uuid):
-        iuuid = uuid is not None and int(uuid) or None
-        if iuuid in self._index \
-                and self._index[iuuid] is not self:
-            raise ValueError('Given uuid was already used for another Node')
-        siuuid = self._uuid is not None and int(self._uuid) or None
-        if siuuid in self._index:
-            del self._index[siuuid]
-        self._index[iuuid] = self
+        index = self._index
+        iuuid = None if uuid is None else int(uuid)
+        if iuuid in index and index[iuuid] is not self:
+            raise IndexViolationError(
+                'Given uuid was already used for another Node',
+                [iuuid]
+            )
+        siuuid = None if self._uuid is None else int(self._uuid)
+        if siuuid in index:
+            del index[siuuid]
+        index[iuuid] = self
         self._uuid = uuid
 
     @override
@@ -95,26 +83,119 @@ class Reference(Behavior):
         return self._index.get(int(uuid))
 
     @default
-    def _to_delete(self):
-        todel = [int(self.uuid)]
+    @property
+    def _referencable_child_nodes(self):
+        children = []
         if IMappingNode.providedBy(self):
-            for childkey in self:
-                try:
-                    todel += self[childkey]._to_delete()
-                except AttributeError:
-                    # Non-Node values or non referencing children are not told
-                    # about deletion.
-                    continue
-        return todel
+            children = self.values()
+        elif ISequenceNode.providedBy(self):
+            children = self
+        for child in children:
+            if INodeReference.providedBy(child):
+                yield child
 
     @default
-    def _index_nodes(self):
-        for node in self.values():
-            try:
-                uuid = int(node.uuid)
-            except AttributeError:
-                # non-Node values are a dead end, no magic for them
-                continue
-            self._index[uuid] = node
-            node._index = self._index
-            node._index_nodes()
+    @property
+    def _recursiv_reference_keys(self):
+        keys = [int(self.uuid)]
+        for node in self._referencable_child_nodes:
+            keys += node._recursiv_reference_keys
+        return keys
+
+    @default
+    def _init_reference_index(self):
+        index = self._index = {int(self.uuid): self}
+        def _init_children(node):
+            for child in node._referencable_child_nodes:
+                index[int(child.uuid)] = child
+                child._index = index
+                _init_children(child)
+        _init_children(self)
+
+    @default
+    def _update_reference_index(self, value):
+        if INodeReference.providedBy(value):
+            index = self._index
+            colliding = set(index).intersection(value._index)
+            if colliding:
+                raise IndexViolationError(
+                    (
+                        'Given node or members of it provide uuid(s) '
+                        'colliding with own index.'
+                    ),
+                    colliding
+                )
+            index.update(value._index)
+            def _set_index(node):
+                node._index = index
+                for child in node._referencable_child_nodes:
+                    _set_index(child)
+            _set_index(value)
+
+    @default
+    def _reduce_reference_index(self, value):
+        if INodeReference.providedBy(value):
+            index = self._index
+            for iuuid in value._recursiv_reference_keys:
+                del index[iuuid]
+
+
+class ContentishNodeReference(NodeReference):
+
+    @plumb
+    def __delitem__(next_, self, name):
+        # works on mapping and sequence nodes
+        # fail immediately if name does not exist
+        value = self[name]
+        self._reduce_reference_index(value)
+        next_(self, name)
+
+    @plumb
+    def detach(next_, self, key):
+        node = next_(self, key)
+        node._init_reference_index()
+        return node
+
+    @default
+    def _overwrite_reference_index(self, name, value):
+        existing = self.storage[name]
+        self._reduce_reference_index(existing)
+        try:
+            self._update_reference_index(value)
+        except IndexViolationError as e:
+            if INodeReference.providedBy(existing):
+                existing._init_reference_index()
+                self._update_reference_index(existing)
+            raise e
+
+
+@implementer(IMappingReference)
+class MappingReference(ContentishNodeReference):
+
+    @plumb
+    def __setitem__(next_, self, key, value):
+        if INodeReference.providedBy(value) and value._index is self._index:
+            raise IndexViolationError('Given node is already member of tree.')
+        if key in self.storage:
+            self._overwrite_reference_index(key, value)
+        else:
+            self._update_reference_index(value)
+        next_(self, key, value)
+
+
+@implementer(ISequenceReference)
+class SequenceReference(ContentishNodeReference):
+
+    @plumb
+    def __setitem__(next_, self, index, value):
+        if INodeReference.providedBy(value) and value._index is self._index:
+            raise IndexViolationError('Given node is already member of tree.')
+        self._overwrite_reference_index(int(index), value)
+        next_(self, index, value)
+
+    @plumb
+    def insert(next_, self, index, value):
+        if INodeReference.providedBy(value) and value._index is self._index:
+            raise IndexViolationError('Given node is already member of tree.')
+        self._update_reference_index(value)
+        next_(self, index, value)

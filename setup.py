@@ -46,7 +46,7 @@ setup(
     include_package_data=True,
     zip_safe=True,
     install_requires=[
-        'odict>=1.8.0',
+        'odict>=1.9.0',
         'plumber>=1.5',
         'setuptools',
         'zope.component',

@@ -163,7 +163,6 @@ class TestFallback(NodeTestCase):
         # goes up one level to 'root'. It has a fallback, but that one was
         # already visited. Next parent is None. Exit. No value found. Raise
         # KeyError
-        def case_5_raises():
+        with self.assertRaises(KeyError) as arc:
             self.fb_node['y']['2'].attrs['z']
-        err = self.expectError(KeyError, case_5_raises)
-        self.assertEqual(str(err), '\'z\'')
+        self.assertEqual(str(arc.exception), '\'z\'')

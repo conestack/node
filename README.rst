@@ -370,13 +370,23 @@ General Behaviors
 ~~~~~~~~~~~~~~~~~
 
 **node.behaviors.DefaultInit**
-    Provide default ``__init__`` function on object.
+    Plumbing behavior providing default ``__init__`` function on node. This
+    behavior is going to be deprecated in future versions. Use
+    ``node.behaviors.NodeInit`` instead.
     See ``node.interfaces.IDefaultInit``.
 
+**node.behaviors.NodeInit**
+    Plumbing behavior for transparent setting of ``__name__`` and ``__parent__``
+    at object initialization time.
+    See ``node.interfaces.INodeInit``.
+
 **node.behaviors.Node**
-    Fill in gaps for full INode API. See ``node.interfaces.INode``. Normally
-    not applied directly. Use ``node.behaviors.MappingNode`` and
-    ``node.behaviors.SequenceNode`` instead.
+    Fill in gaps for full INode API. See ``node.interfaces.INode``.
+
+**node.behaviors.ContentishNode**
+    A node which can contain children. See
+    ``node.interfaces.IContentishNode``. Concrete implementations are
+    ``node.behaviors.MappingNode`` and ``node.behaviors.SequenceNode``.
 
 **node.behaviors.Attributes**
     Provide attributes on node. See ``node.interfaces.IAttributes``. If
@@ -391,6 +401,14 @@ General Behaviors
 **node.behaviors.BoundContext**
     Mechanism for scoping objects to interfaces and classes.
     See ``node.interfaces.IBoundContext``.
+
+**node.behaviors.NodeReference**
+    Plumbing behavior holding an index of nodes contained in the tree.
+    See ``node.interfaces.INodeReference``.
+
+**node.behaviors.WildcardFactory**
+    Plumbing behavior providing factories by wildcard patterns.
+    See ``node.interfaces.IWildcardFactory``.
 
 
 Mapping Behaviors
@@ -422,12 +440,11 @@ Mapping Behaviors
     See ``node.interfaces.IAsAttrAccess``.
 
 **node.behaviors.ChildFactory**
-    Plumbing behavior providing child factories which are invoked at
-    ``__getitem__`` if object by key is not present at plumbing endpoint yet.
+    Plumbing behavior providing child factories.
     See ``node.interfaces.IChildFactory``.
 
 **node.behaviors.FixedChildren**
-    Plumbing behavior that initializes a fixed dictionary as children.
+    Plumbing Behavior that initializes a fixed dictionary as children.
     See ``node.interfaces.IFixedChildren``.
 
 **node.behaviors.Nodespaces**
@@ -462,9 +479,9 @@ Mapping Behaviors
     Plumbing behavior providing a uuid on nodes.
     See ``node.interfaces.IUUIDAware``.
 
-**node.behaviors.Reference**
-    Plumbing behavior holding an index of all nodes contained in the tree.
-    See ``node.interfaces.IReference``.
+**node.behaviors.MappingReference**
+    Plumbing behavior to provide ``node.interfaces.INodeReference`` on mapping
+    nodes. See ``node.interfaces.IMappingReference``.
 
 **node.behaviors.MappingStorage**
     Provide abstract mapping storage access.
@@ -518,6 +535,10 @@ Sequence Behaviors
 
 **node.behaviors.ListStorage**
     Provide list storage. See ``node.interfaces.ISequenceStorage``.
+
+**node.behaviors.SequenceReference**
+    Plumbing behavior to provide ``node.interfaces.INodeReference`` on sequence
+    nodes. See ``node.interfaces.ISequenceReference``.
 
 
 JSON Serialization

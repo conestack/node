@@ -4,6 +4,7 @@ from node.behaviors import FullMapping
 from node.behaviors import MappingAdopt
 from node.behaviors import MappingNode as MappingNodeBehavior
 from node.behaviors import OdictStorage
+from node.interfaces import IContentishNode
 from node.interfaces import IMappingNode
 from node.interfaces import INode
 from node.testing import FullMappingTester
@@ -163,6 +164,8 @@ class TestMapping(NodeTestCase):
 
     def test_MappingNode(self):
         root = MappingNode(name='root')
+        self.assertTrue(INode.providedBy(root))
+        self.assertTrue(IContentishNode.providedBy(root))
         self.assertTrue(IMappingNode.providedBy(root))
 
         root['child'] = MappingNode()
@@ -203,7 +206,7 @@ class TestMapping(NodeTestCase):
             '``values``: OK'
         ))
 
-        root = RootMappingNode('root')
+        root = RootMappingNode(name='root')
         child = root['child'] = MappingNode()
         subchild = child['subchild'] = MappingNode()
         self.assertEqual(root.treerepr(), (
@@ -229,6 +232,18 @@ class TestMapping(NodeTestCase):
         self.assertEqual(subchild.acquire(INodeInterface), child)
         self.assertEqual(subchild.acquire(INode), child)
         self.assertEqual(subchild.acquire(INoInterface), None)
+
+        # detach
+        self.assertEqual(child.name, 'child')
+        self.assertEqual(child.parent, root)
+        child = root.detach('child')
+        self.assertEqual(child.name, 'child')
+        self.assertEqual(child.parent, None)
+        self.assertFalse('child' in root)
+        self.checkOutput("""\
+        <class 'node.tests.test_mapping.MappingNode'>: child
+        __<class 'node.tests.test_mapping.MappingNode'>: subchild
+        """, child.treerepr(prefix='_'))
 
     def test_BC_imports(self):
         from node.behaviors import Nodify

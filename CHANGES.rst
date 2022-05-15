@@ -5,7 +5,67 @@ Changes
 1.1 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Introduce ``node.interfaces.IWildcardFactory`` and
+  ``node.behaviors.WildcardFactory``.
+  [rnix]
+
+- Introduce ``node.interfaces.INodeInit`` and ``node.behaviors.NodeInit``.
+  [rnix]
+
+- Deprecate ``IFixedChildren.fixed_children_factories`` Use
+  ``IFixedChildren.factories`` instead.
+  [rnix]
+
+- Introduce ``node.interfaces.IContentishNode`` and
+  ``node.behaviors.ContentishNode``. Use as base for mapping and sequence nodes.
+  [rnix]
+
+- ``insertbefore``, ``insertafter`` and ``swap`` in ``node.behaviors.Order``
+  alternatively accept node names as arguments where possible.
+  [rnix]
+
+- ``insertbefore``, ``insertafter``, and ``insertfirst`` and ``insertlast`` in
+  ``node.behaviors.Order`` internally use ``movebefore``, ``moveafter``,
+  ``movefirst`` and ``movelast`` of ``odict`` to avoid modifying the data
+  structure before ``__setitem__`` gets called.
+  [rnix]
+
+- Extend ``node.interfaces.IOrder``  respective ``node.behaviors.Order``
+  by ``movebefore``, ``moveafter``, ``movefirst`` and ``movelast``.
+  [rnix]
+
+- Reset ``__parent__`` in ``node.behaviors.Node.detach``. Node is no longer
+  contained in tree.
+  [rnix]
+
+- Introduce ``IndexViolationError`` which inherits from ``ValueError`` and
+  raise it in reference related behaviors instead of ``ValueError`` where
+  appropriate.
+  [rnix]
+
+- Introduce ``node.interfaces.INodeReference`` and
+  ``node.behaviors.NodeReference``.
+  [rnix]
+
+- Introduce ``node.interfaces.ISequenceReference`` and
+  ``node.behaviors.SequenceReference``.
+  [rnix]
+
+- Rename ``node.interfaces.IReference`` to ``node.interfaces.IMappingReference``
+  and ``node.behaviors.Reference`` to ``node.behaviors.MappingReference``.
+  B/C is kept.
+  [rnix]
+
+**Breaking changes**:
+
+- Importing ``ChildFactory`` and ``FixedChildren`` from
+  ``node.behaviors.common`` not works any more. Please import from
+  ``node.behaviors``.
+  [rnix]
+
+- Importing B/C ``Reference`` behavior from ``node.behaviors.reference``
+  not works any more. Please import from ``node.behaviors``.
+  [rnix]
 
 
 1.0 (2022-03-17)
@@ -96,15 +156,16 @@ Changes
   instead if you need to access node children via ``__getattr__``.
   [rnix]
 
-- Rename ``node.behaviors.nodify`` module to ``node.behaviors.node``. It's not
-  intended to import behaviors from modules contained in ``node.behaviors``
-  package directly but from ``node.behaviors``. Please adopt your imports.
+- Importing B/C ``Adopt`` behavior from ``node.behaviors.common``
+  not works any more. Please import from ``node.behaviors``.
   [rnix]
 
-- While import ``Nodify``, ``NodeChildValidate`` and ``Adopt`` behaviors from
-  ``node.behaviors`` still work for B/C reasons, importing them from
-  ``node.behaviors.nodify``, ``node.behaviors.common`` respective
-  ``node.behaviors.common`` not works any more. Please fix your imports.
+- Importing B/C ``NodeChildValidate`` behavior from ``node.behaviors.common``
+  not works any more. Please import from ``node.behaviors``.
+  [rnix]
+
+- Importing B/C ``Nodify`` behavior from ``node.behaviors.nodify``
+  not works any more. Please import from ``node.behaviors``.
   [rnix]
 
 - Remove deprecated B/C import location ``node.parts``.

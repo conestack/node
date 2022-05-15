@@ -13,3 +13,13 @@ def iteritems(obj):
 
 def func_name(func):
     return func.func_name if IS_PY2 else func.__name__
+
+
+try:  # pragma: no cover
+    from functools import lru_cache
+except ImportError:  # pragma: no cover
+    class lru_cache:
+        def __init__(self, **kwargs):
+            pass
+        def __call__(self, ob):
+            return ob

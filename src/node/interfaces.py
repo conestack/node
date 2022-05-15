@@ -114,7 +114,38 @@ class ICallable(Interface):
 
 
 ###############################################################################
-# node
+# initialization
+###############################################################################
+
+class IDefaultInit(Interface):
+    """Plumbing behavior providing default ``__init__`` function on node.
+
+    This behavior is going to be deprecated in future versions.
+    """
+
+    def __init__(name=None, parent=None):
+        """Set ``self.__name__`` and ``self.__parent__`` at init time."""
+
+
+class INodeInit(Interface):
+    """Plumbing behavior for transparent setting of ``__name__`` and
+    ``__parent__`` at object initialization time.
+
+    This behavior is going to be a transitional behavior. The plan is to
+    deprecate ``IDefaultInit`` in favor of ``INodeInit``. After some migration
+    time the functionality of this behavior will move to ``INode`` while this
+    behavior will do no modification any more and gets deprecated for itself.
+
+    Plumbing hooks:
+
+    * ``__init__``
+        Pops ``name`` and ``parent`` from keyword arguments and sets them
+        as ``__name__`` respective ``__parent__``.
+    """
+
+
+###############################################################################
+# nodes
 ###############################################################################
 
 class INode(ILocation):
@@ -128,9 +159,6 @@ class INode(ILocation):
         'implementing ``node.interfaces.IRoot``'
     )
 
-    def detach(name):
-        """Detach child Node."""
-
     def acquire(interface):
         """Traverse parents until interface provided. Return first parent
         providing interface or None if no parent matches.
@@ -140,18 +168,15 @@ class INode(ILocation):
         """Debugging helper."""
 
 
-###############################################################################
-# plumbing behaviors
-###############################################################################
+class IContentishNode(INode):
+    """A node which can contain children."""
 
-class IDefaultInit(Interface):
-    """Plumbing behavior providing default ``__init__`` function on node."""
-
-    def __init__(name=None, parent=None):
-        """Set ``self.__name__`` and ``self.__parent__`` at init time."""
+    def detach(name):
+        """Detach child Node.
+        """
 
 
-class IMappingNode(INode, IFullMapping):
+class IMappingNode(IContentishNode, IFullMapping):
     """Plumbing behavior to Fill in gaps for full mapping node API.
 
     Plumbing hooks:
@@ -174,7 +199,7 @@ deprecated(
 )
 
 
-class ISequenceNode(INode, IMutableSequence):
+class ISequenceNode(IContentishNode, IMutableSequence):
     """Plumbing behavior to Fill in gaps for full sequence node API.
 
     Plumbing hooks:
@@ -201,6 +226,10 @@ class ISequenceNode(INode, IMutableSequence):
         contained in a sequence node, an ``IndexError`` is raised.
         """
 
+
+###############################################################################
+# plumbing behaviors
+###############################################################################
 
 class IMappingAdopt(Interface):
     """Plumbing behavior that provides ``__name__`` and ``__parent__``
@@ -333,8 +362,12 @@ class IAsAttrAccess(Interface):
 
 
 class IChildFactory(Interface):
-    """Plumbing behavior providing child factories which are invoked at
-    ``__getitem__`` if object by key is not present at plumbing endpoint yet.
+    """Plumbing behavior providing child factories.
+
+    Plumbing hooks:
+
+    * ``__getitem__``
+         Invoke factory if object by key is not present at plumbing endpoint.
     """
 
     factories = Attribute('Dict like object containing key/factory pairs.')
@@ -344,11 +377,9 @@ class IChildFactory(Interface):
 
 
 class IFixedChildren(Interface):
-    """Plumbing behavior that initializes a fixed dictionary as children.
+    """Plumbing Behavior that initializes a fixed dictionary as children.
 
-    The children are instantiated during ``__init__`` and adopted by the
-    class using this behavior. They cannot receive init arguments, but
-    could retrieve configuration from their parent.
+    The children are instantiated during __init__.
 
     Plumbing hooks:
 
@@ -356,15 +387,32 @@ class IFixedChildren(Interface):
         Create fixed children defined in ``fixed_children_factories``
     """
 
-    fixed_children_factories = Attribute(
-        'Dict like object containing child factories.'
-    )
-
-    def __delitem__(key):
-        """Deny deleting, read-only."""
+    factories = Attribute('Dict like object containing key/factory pairs.')
 
     def __setitem__(key, val):
-        """Deny setting item, read-only."""
+        """Deny setting item, read-only. Raises ``NotImplementedError``."""
+
+    def __getitem__(key):
+        """Returns fixed child."""
+
+    def __delitem__(key):
+        """Deny deleting, read-only. Raises ``NotImplementedError``"""
+
+    def __iter__():
+        """Iterate fixed children keys."""
+
+
+class IWildcardFactory(Interface):
+    """Plumbing behavior providing factories by wildcard patterns.
+
+    Pattern matching rules are interpreted case sensitive with fnmatch.
+    """
+
+    factories = Attribute('Dict like object containing pattern/factory pairs.')
+    pattern_weighting = Attribute('Flag whether to compute pattern weighting.')
+
+    def factory_for_pattern(name):
+        """Return best matching factory for name or None if no pattern match."""
 
 
 class INodespaces(Interface):
@@ -497,32 +545,78 @@ class IOrder(Interface):
         """
 
     def swap(node_a, node_b):
-        """Swap 2 nodes."""
+        """Swap 2 nodes. Both nodes must be children of self.
 
-    def insertfirst(newnode):
-        """Insert newnode as first node."""
-
-    def insertlast(newnode):
-        """Insert newnode as last node."""
+        :param node_a: Either ``INode`` implementing object or node name
+            as string.
+        :param node_b: Either ``INode`` implementing object or node name
+            as string.
+        """
 
     def insertbefore(newnode, refnode):
-        """Insert newnode before refnode.
+        """Insert ``newnode`` before ``refnode``. ``__name__`` on ``newnode``
+        must be set. ``refnode`` must be children of self.
 
-        ``__name__`` on newnode must be set.
-
-        This function only supports adding of new nodes before the given
-        refnode. If you want to move nodes you have to detach them from the
-        tree first.
+        :param newnode: ``INode`` implementing object.
+        :param refnode: Either ``INode`` implementing object or node name
+            as string.
         """
 
     def insertafter(newnode, refnode):
-        """Insert newnode after refnode.
+        """Insert ``newnode`` after ``refnode``. ``__name__`` on ``newnode``
+        must be set. ``refnode`` must be children of self.
 
-        ``__name__`` on newnode must be set.
+        :param newnode: ``INode`` implementing object.
+        :param refnode: Either ``INode`` implementing object or node name
+            as string.
+        """
 
-        This function only supports adding of new nodes after the given
-        refnode. If you want to move nodes you have to detach them from the
-        tree first.
+    def insertfirst(newnode):
+        """Insert ``newnode`` as first node. ``__name__`` on ``newnode`` must
+        be set.
+
+        :param newnode: ``INode`` implementing object.
+        """
+
+    def insertlast(newnode):
+        """Insert ``newnode`` as last node. ``__name__`` on ``newnode`` must
+        be set.
+
+        :param newnode: ``INode`` implementing object.
+        """
+
+    def movebefore(movenode, refnode):
+        """Move ``movenode`` before ``refnode``. Both nodes must be children
+        of self.
+
+        :param movenode: Either ``INode`` implementing object or node name
+            as string.
+        :param refnode: Either ``INode`` implementing object or node name
+            as string.
+        """
+
+    def moveafter(movenode, refnode):
+        """Move ``movenode`` after ``refnode``. Both nodes must be children
+        of self.
+
+        :param movenode: Either ``INode`` implementing object or node name
+            as string.
+        :param refnode: Either ``INode`` implementing object or node name
+            as string.
+        """
+
+    def movefirst(movenode):
+        """Move ``movenode`` as first node. Node must be children of self.
+
+        :param movenode: Either ``INode`` implementing object or node name
+            as string.
+        """
+
+    def movelast(movenode):
+        """Move ``movenode`` as last node. Node must be children of self.
+
+        :param movenode: Either ``INode`` implementing object or node name
+            as string.
         """
 
 
@@ -560,13 +654,25 @@ class IUUIDAware(IUUID):
         """
 
 
-class IReference(IUUID):
-    """Plumbing behavior holding an index of all nodes contained in the tree.
+class INodeReference(IUUID):
+    """Plumbing behavior holding an index of nodes contained in the tree.
 
     Plumbing hooks:
 
     * ``__init__``
         Create and set uuid.
+    """
+
+    index = Attribute('The tree node index')
+
+    def node(uuid):
+        """Return node by uuid located anywhere in this tree."""
+
+
+class IMappingReference(INodeReference):
+    """Plumbing behavior to provide ``INodeReference`` on mapping nodes.
+
+    Plumbing hooks:
 
     * ``__setitem__``
         Set child in index.
@@ -575,13 +681,37 @@ class IReference(IUUID):
         Delete child from index.
 
     * ``detach``
-        Reduce index of detached child.
+        Reduce own index and initialize index of detached child.
     """
 
-    index = Attribute('The tree node index')
 
-    def node(uuid):
-        """Return node by uuid located anywhere in this nodetree."""
+# B/C 2022-05-06 -> node.interfaces.IReference
+deprecated(
+    (
+        '``IReference`` has been renamed to ``IMappingReference``. '
+        'Please fix your import'
+    ),
+    IReference='node.interfaces:IMappingReference',
+)
+
+
+class ISequenceReference(INodeReference):
+    """Plumbing behavior to provide ``INodeReference`` on sequence nodes.
+
+    Plumbing hooks:
+
+    * ``__setitem__``
+        Set child in index.
+
+    * ``__delitem__``
+        Delete child from index.
+
+    * ``insert``
+        Set child in index.
+
+    * ``detach``
+        Reduce own index and initialize index of detached child.
+    """
 
 
 class IMappingStorage(Interface):

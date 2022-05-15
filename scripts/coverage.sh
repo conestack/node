@@ -9,6 +9,7 @@ function run_coverage {
             --omit=src/node/testing/profiling.py \
             -m node.tests.__init__
         ./$target/bin/coverage report
+        ./$target/bin/coverage html
     else
         echo "Target $target not found."
     fi
