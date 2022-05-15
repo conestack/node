@@ -11,6 +11,10 @@ from node.behaviors import OdictStorage
 from node.behaviors import SequenceAdopt
 from node.behaviors import SequenceNode
 from node.behaviors import SequenceReference
+from node.interfaces import IMappingReference
+from node.interfaces import INodeReference
+from node.interfaces import IReference
+from node.interfaces import ISequenceReference
 from node.tests import NodeTestCase
 from plumber import plumbing
 from zope.interface.common.mapping import IReadMapping
@@ -61,6 +65,11 @@ class ReferenceSequenceNode(object):
 ###############################################################################
 
 class TestReference(NodeTestCase):
+
+    def test_interfaces(self):
+        self.assertTrue(INodeReference.providedBy(ReferenceNode()))
+        self.assertTrue(IMappingReference.providedBy(ReferenceMappingNode()))
+        self.assertTrue(ISequenceReference.providedBy(ReferenceSequenceNode()))
 
     def test_index(self):
         # Tree node index
@@ -529,3 +538,10 @@ class TestReference(NodeTestCase):
 
         del node['foo']
         self.assertEqual(len(node._index), 1)
+
+    def test_BC_imports(self):
+        from node.behaviors import Reference
+        self.assertTrue(Reference is MappingReference)
+
+        from node.interfaces import IReference
+        self.assertTrue(IReference is IMappingReference)

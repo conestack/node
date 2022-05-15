@@ -34,7 +34,7 @@ Changes
   by ``movebefore``, ``moveafter``, ``movefirst`` and ``movelast``.
   [rnix]
 
-- Reset ``__parent__`` in ``node.behaviors.Node.detach``. No is no longer
+- Reset ``__parent__`` in ``node.behaviors.Node.detach``. Node is no longer
   contained in tree.
   [rnix]
 
@@ -156,15 +156,16 @@ Changes
   instead if you need to access node children via ``__getattr__``.
   [rnix]
 
-- Rename ``node.behaviors.nodify`` module to ``node.behaviors.node``. It's not
-  intended to import behaviors from modules contained in ``node.behaviors``
-  package directly but from ``node.behaviors``. Please adopt your imports.
+- Importing B/C ``Adopt`` behavior from ``node.behaviors.common``
+  not works any more. Please import from ``node.behaviors``.
   [rnix]
 
-- While import ``Nodify``, ``NodeChildValidate`` and ``Adopt`` behaviors from
-  ``node.behaviors`` still work for B/C reasons, importing them from
-  ``node.behaviors.nodify``, ``node.behaviors.common`` respective
-  ``node.behaviors.common`` not works any more. Please fix your imports.
+- Importing B/C ``NodeChildValidate`` behavior from ``node.behaviors.common``
+  not works any more. Please import from ``node.behaviors``.
+  [rnix]
+
+- Importing B/C ``Nodify`` behavior from ``node.behaviors.nodify``
+  not works any more. Please import from ``node.behaviors``.
   [rnix]
 
 - Remove deprecated B/C import location ``node.parts``.
