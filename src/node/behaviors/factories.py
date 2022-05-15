@@ -10,6 +10,8 @@ from plumber import finalize
 from plumber import override
 from plumber import plumb
 from zope.interface import implementer
+import fnmatch
+import itertools
 import warnings
 
 
@@ -102,19 +104,19 @@ class FixedChildren(Behavior):
 def _wildcard_pattern_occurrences(pattern):
     # count characters, asterisks, question_marks and sequences in pattern
     # a whole sequencs counts as one character
+    # https://man7.org/linux/man-pages/man7/glob.7.html
     chars = asterisks = question_marks = sequences = 0
-    in_sequence = False
+    in_sequence = 0
     for char in pattern:
-        if char == '[':
-            in_sequence = True
+        if not in_sequence and char == '[':
+            in_sequence += 1
             continue
         if in_sequence:
-            # XXX: count gap in sequence to make sequences like [][!] working.
-            #      https://man7.org/linux/man-pages/man7/glob.7.html
-            if char != ']':
+            if in_sequence < 2 or char != ']':
+                in_sequence += 1
                 continue
             else:
-                in_sequence = False
+                in_sequence = 0
                 sequences += 1
         if char == '*':
             asterisks += 1
@@ -142,30 +144,57 @@ def _wildcard_patterns_by_specificity(patterns):
     https://github.com/adrian-thurston/ragel might be a starting point if we
     somewhen want to implement this.
     """
-    specificity_1 = []  # patterns with no wildcards
-    specificity_2 = []  # patterns with wildcards
+    specificities = [
+        [],  # patterns with no wildcards
+        [],  # patterns with sequences
+        [],  # patterns with sequences and question marks
+        []   # patterns with all wildcards
+    ]
     weights = dict()
     for pattern in patterns:
         (
-            chars, asterisks, question_marks, sequences
+            chars,
+            asterisks,
+            question_marks,
+            sequences
         ) = _wildcard_pattern_occurrences(pattern)
         weights[pattern] = (
-            0 - chars - sequences * .01 -
-            question_marks * .0001 - asterisks * .000001
+            0 - chars +
+            sequences / 1000000. +
+            question_marks / 10000. +
+            asterisks / 100.
         )
+        # patterns with no wildcards
         if asterisks + question_marks + sequences == 0:
-            specificity_1.append(pattern)
+            specificities[0].append(pattern)
+        # patterns with sequences
+        elif asterisks + question_marks == 0:
+            specificities[1].append(pattern)
+        # patterns with sequences and question marks
+        elif asterisks == 0:
+            specificities[2].append(pattern)
+        # patterns with all wildcards
         else:
-            specificity_2.append(pattern)
-    return tuple(
-        sorted(specificity_1, key=lambda x: weights[x]) +
-        sorted(specificity_2, key=lambda x: weights[x])  # XXX: * -1?
-    )
+            specificities[3].append(pattern)
+    return tuple(itertools.chain.from_iterable([
+        sorted(specificity, key=lambda x: weights[x])
+        for specificity in specificities
+    ]))
 
 
 @implementer(IWildcardFactory)
 class WildcardFactory(Behavior):
     factories = default(odict())
+    pattern_weighting = default(True)
 
-    def factory_for_name(self, name):
-        """"""
+    @default
+    def factory_for_pattern(self, name):
+        factories = self.factories
+        patterns = (
+            _wildcard_patterns_by_specificity(tuple(factories))
+            if self.pattern_weighting
+            else factories
+        )
+        for pattern in patterns:
+            if fnmatch.fnmatchcase(name, pattern):
+                return factories[pattern]

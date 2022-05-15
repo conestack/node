@@ -5,6 +5,10 @@ Changes
 1.1 (unreleased)
 ----------------
 
+- Introduce ``node.interfaces.IWildcardFactory`` and
+  ``node.behaviors.WildcardFactory``.
+  [rnix]
+
 - Introduce ``node.interfaces.INodeInit`` and ``node.behaviors.NodeInit``.
   [rnix]
 

@@ -80,10 +80,12 @@ class TestFactories(NodeTestCase):
         node = LegacyFixedChildrenNode()
         self.assertEqual(list(node.keys()), ['factory', 'legacy'])
 
-    def test_WildcardFactory(self):
+    def test__wildcard_pattern_occurrences(self):
         self.assertEqual(_wildcard_pattern_occurrences('abc'), (3, 0, 0, 0))
         self.assertEqual(_wildcard_pattern_occurrences('*a*b*'), (5, 3, 0, 0))
         self.assertEqual(_wildcard_pattern_occurrences('?a?b?'), (5, 0, 3, 0))
+        self.assertEqual(_wildcard_pattern_occurrences('[]]'), (1, 0, 0, 1))
+        self.assertEqual(_wildcard_pattern_occurrences('[][!]'), (1, 0, 0, 1))
         self.assertEqual(
             _wildcard_pattern_occurrences('[a-z]a[abc]b[!abc]'),
             (5, 0, 0, 3)
@@ -97,60 +99,69 @@ class TestFactories(NodeTestCase):
         with self.assertRaises(ValueError):
             _wildcard_pattern_occurrences('[*?')
 
-        # specificity 1
+    def test__wildcard_patterns_by_specificity(self):
         self.assertEqual(_wildcard_patterns_by_specificity(
-            ('a', 'aa', 'aaa')),
-            ('aaa', 'aa', 'a')
-        )
-
-        # specificity 2
-        self.assertEqual(_wildcard_patterns_by_specificity(
-            ('[a-z]', '[abc][abc]')),
-            ('[abc][abc]', '[a-z]')
+            ('*.*', '*.a', '?.a', 'a.a')),
+            ('a.a', '?.a', '*.a', '*.*')
         )
         self.assertEqual(_wildcard_patterns_by_specificity(
-            ('?', '??')),
-            ('??', '?')
+            ('*.*', '*.a', '*a', '?.*', '?.a', '?a')),
+            ('?.a', '?a', '*.a', '?.*', '*.*', '*a')
         )
         self.assertEqual(_wildcard_patterns_by_specificity(
-            ('?', '??', '[a-z]', '[abc][abc]')),
-            ('[abc][abc]', '??', '[a-z]', '?')
-        )
-        self.assertEqual(_wildcard_patterns_by_specificity(
-            (
-                '?', '??', '[a-z]', '[abc][abc]',
-                '?[a-z]', '??[a-z]', '?[a-z][a-z]'
-            )),
-            (
-                '?[a-z][a-z]', '??[a-z]', '[abc][abc]',
-                '?[a-z]', '??', '[a-z]', '?'
-            )
-        )
-        self.assertEqual(_wildcard_patterns_by_specificity(
-            ('*', '*.*')),
-            ('*.*', '*')
-        )
-        self.assertEqual(_wildcard_patterns_by_specificity(
-            ('*', '*.*', '?', '??')),
-            ('*.*', '??', '?', '*')
-        )
-        # XXX: '*.*' must be after '*.a'
-        self.assertEqual(_wildcard_patterns_by_specificity(
-            (
-                '*', '*.*', '*.a', '?.a', '?', '??',
-                '*[a][a]', '?[a][a]', '[a][a]')),
-            (
-                '?[a][a]', '*[a][a]', '?.a', '*.*',
-                '*.a', '[a][a]', '??', '?', '*'
-            )
+            ('?', '??', '[a-z]', '?[a-z]', '[abc][abc]')),
+            ('[abc][abc]', '[a-z]', '?[a-z]', '??', '?')
         )
         self.assertEqual(_wildcard_patterns_by_specificity(
             ('*', '*bc', '?bc', '[xyz]bc', 'abc')),
             ('abc', '[xyz]bc', '?bc', '*bc', '*')
         )
+        self.assertEqual(_wildcard_patterns_by_specificity(
+            ('*', 'file.txt', '*.txt', '*_[0-9][0-9].txt')),
+            ('file.txt', '*_[0-9][0-9].txt', '*.txt', '*')
+        )
 
+    def test_WildcardFactory(self):
         @plumbing(WildcardFactory)
         class WildCardFactoryNode(object):
             factories = {
-                '*': 'default_factory'
+                '*': 'default_factory',
+                'file.txt': 'specific_text_file_factory',
+                '*.txt': 'default_text_file_factory',
+                '*_[0-9][0-9].txt': 'pattern_text_file_factory'
             }
+
+        wcfn = WildCardFactoryNode()
+        self.assertTrue(wcfn.pattern_weighting)
+        self.assertEqual(
+            wcfn.factory_for_pattern('file.txt'),
+            'specific_text_file_factory'
+        )
+        self.assertEqual(
+            wcfn.factory_for_pattern('file_01.txt'),
+            'pattern_text_file_factory'
+        )
+        self.assertEqual(
+            wcfn.factory_for_pattern('default.txt'),
+            'default_text_file_factory'
+        )
+        self.assertEqual(
+            wcfn.factory_for_pattern('default'),
+            'default_factory'
+        )
+
+        @plumbing(WildcardFactory)
+        class UnweightedWildCardFactoryNode(object):
+            pattern_weighting = False
+            factories = odict([
+                ('*.txt', 'default_text_file_factory',),
+                ('file.txt', 'specific_text_file_factory')
+            ])
+
+        uwcfn = UnweightedWildCardFactoryNode()
+        # pattern weighting is disabled, patterns are searched in defined
+        # order, therefor factory for ``file.txt`` never applies.
+        self.assertEqual(
+            uwcfn.factory_for_pattern('file.txt'),
+            'default_text_file_factory'
+        )

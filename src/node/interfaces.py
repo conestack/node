@@ -409,8 +409,9 @@ class IWildcardFactory(Interface):
     """
 
     factories = Attribute('Dict like object containing pattern/factory pairs.')
+    pattern_weighting = Attribute('Flag whether to compute pattern weighting.')
 
-    def factory_for_name(name):
+    def factory_for_pattern(name):
         """Return best matching factory for name or None if no pattern match."""
 
 
