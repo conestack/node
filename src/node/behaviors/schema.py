@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 from contextlib import contextmanager
-from node.behaviors import MappingNode
+from node.behaviors.mapping import MappingNode
 from node.interfaces import IAttributes
 from node.interfaces import INodeAttributes
 from node.interfaces import ISchema
