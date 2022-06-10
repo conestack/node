@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+from contextlib import contextmanager
 from node.events import NodeAddedEvent
 from node.events import NodeCreatedEvent
 from node.events import NodeDetachedEvent
@@ -11,6 +12,21 @@ from plumber import default
 from plumber import plumb
 from zope.component.event import objectEventNotify
 from zope.interface import implementer
+import threading
+
+
+_lifecycle_context = threading.local()
+_lifecycle_context.suppress_events = False
+
+
+@contextmanager
+def suppress_lifecycle_events():
+    """Context manager to suppress lifecycle events."""
+    _lifecycle_context.suppress_events = True
+    try:
+        yield
+    finally:
+        _lifecycle_context.suppress_events = False
 
 
 @implementer(ILifecycle)
@@ -24,8 +40,6 @@ class Lifecycle(Behavior):
         'detached': NodeDetachedEvent,
     })
 
-    _notify_suppress = default(False)
-
     @plumb
     def __init__(next_, self, *args, **kw):
         next_(self, *args, **kw)
@@ -34,7 +48,7 @@ class Lifecycle(Behavior):
     @plumb
     def __setitem__(next_, self, key, val):
         next_(self, key, val)
-        if self._notify_suppress:
+        if _lifecycle_context.suppress_events:
             return
         objectEventNotify(self.events['added'](
             val,
@@ -46,7 +60,7 @@ class Lifecycle(Behavior):
     def __delitem__(next_, self, key):
         delnode = self[key]
         next_(self, key)
-        if self._notify_suppress:
+        if _lifecycle_context.suppress_events:
             return
         objectEventNotify(self.events['removed'](
             delnode,
@@ -56,9 +70,8 @@ class Lifecycle(Behavior):
 
     @plumb
     def detach(next_, self, key):
-        self._notify_suppress = True
-        node = next_(self, key)
-        self._notify_suppress = False
+        with suppress_lifecycle_events():
+            node = next_(self, key)
         objectEventNotify(self.events['detached'](
             node,
             oldParent=self,
@@ -73,13 +86,13 @@ class AttributesLifecycle(Behavior):
     @plumb
     def __setitem__(next_, self, key, val):
         next_(self, key, val)
-        if self.__parent__._notify_suppress:
+        if _lifecycle_context.suppress_events:
             return
         objectEventNotify(self.__parent__.events['modified'](self.__parent__))
 
     @plumb
     def __delitem__(next_, self, key):
         next_(self, key)
-        if self.__parent__._notify_suppress:
+        if _lifecycle_context.suppress_events:
             return
         objectEventNotify(self.__parent__.events['modified'](self.__parent__))

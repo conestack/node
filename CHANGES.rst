@@ -58,6 +58,10 @@ Changes
 
 **Breaking changes**:
 
+- Remove ``_notify_suppress`` flag from ``Lifecycle`` behavior. Introduce
+  ``suppress_lifecycle_events`` contextmanager as substitute.
+  [rnix]
+
 - Importing ``ChildFactory`` and ``FixedChildren`` from
   ``node.behaviors.common`` not works any more. Please import from
   ``node.behaviors``.

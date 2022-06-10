@@ -6,6 +6,7 @@ from node.behaviors import Lifecycle
 from node.behaviors import MappingNode
 from node.behaviors import NodeAttributes
 from node.behaviors import Nodespaces
+from node.behaviors import suppress_lifecycle_events
 from node.events import NodeAddedEvent
 from node.events import NodeCreatedEvent
 from node.events import NodeDetachedEvent
@@ -160,14 +161,16 @@ class TestLifecycle(NodeTestCase):
 
         self.handler.clear()
 
-        root._notify_suppress = True
-        root['child'] = NoLifecycleNode()
+        with suppress_lifecycle_events():
+            root['child'] = NoLifecycleNode()
         self.assertEqual(len(self.handler.handled), 0)
 
         # Check notify suppress on attributes manipulation
         attrs = root.attrs
-        attrs['foo'] = 'foo'
+        with suppress_lifecycle_events():
+            attrs['foo'] = 'foo'
         self.assertEqual(len(self.handler.handled), 0)
 
-        del attrs['foo']
+        with suppress_lifecycle_events():
+            del attrs['foo']
         self.assertEqual(len(self.handler.handled), 0)

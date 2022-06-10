@@ -22,6 +22,7 @@ from .factories import WildcardFactory  # noqa
 from .fallback import Fallback  # noqa
 from .lifecycle import AttributesLifecycle  # noqa
 from .lifecycle import Lifecycle  # noqa
+from .lifecycle import suppress_lifecycle_events  # noqa
 from .mapping import ClonableMapping  # noqa
 from .mapping import EnumerableMapping  # noqa
 from .mapping import ExtendedReadMapping  # noqa
