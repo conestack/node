@@ -85,6 +85,7 @@ def test_suite():
     from node.tests import test_events
     from node.tests import test_factories
     from node.tests import test_fallback
+    from node.tests import test_filter
     from node.tests import test_lifecycle
     from node.tests import test_locking
     from node.tests import test_mapping
@@ -121,6 +122,7 @@ def test_suite():
     suite.addTest(unittest.findTestCases(test_context))
     suite.addTest(unittest.findTestCases(test_factories))
     suite.addTest(unittest.findTestCases(test_fallback))
+    suite.addTest(unittest.findTestCases(test_filter))
     suite.addTest(unittest.findTestCases(test_lifecycle))
     suite.addTest(unittest.findTestCases(test_mapping))
     suite.addTest(unittest.findTestCases(test_node))

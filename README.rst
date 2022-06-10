@@ -512,6 +512,10 @@ Mapping Behaviors
     Provide schema fields as class properties.
     See ``node.interfaces.ISchemaProperties``.
 
+**node.behaviors.MappingFilter**
+    Filter mapping children by class or interface.
+    See ``node.interfaces.IChildFilter``.
+
 
 Sequence Behaviors
 ~~~~~~~~~~~~~~~~~~
@@ -539,6 +543,10 @@ Sequence Behaviors
 **node.behaviors.SequenceReference**
     Plumbing behavior to provide ``node.interfaces.INodeReference`` on sequence
     nodes. See ``node.interfaces.ISequenceReference``.
+
+**node.behaviors.SequenceFilter**
+    Filter sequence children by class or interface.
+    See ``node.interfaces.IChildFilter``.
 
 
 JSON Serialization

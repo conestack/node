@@ -20,6 +20,8 @@ from .factories import ChildFactory  # noqa
 from .factories import FixedChildren  # noqa
 from .factories import WildcardFactory  # noqa
 from .fallback import Fallback  # noqa
+from .filter import MappingFilter  # noqa
+from .filter import SequenceFilter  # noqa
 from .lifecycle import AttributesLifecycle  # noqa
 from .lifecycle import Lifecycle  # noqa
 from .lifecycle import suppress_lifecycle_events  # noqa

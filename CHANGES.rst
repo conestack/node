@@ -5,6 +5,10 @@ Changes
 1.1 (unreleased)
 ----------------
 
+- Introduce ``node.interfaces.IChildFilter``, ``node.behaviors.MappingFilter``
+  and ``node.behaviors.SequenceFilter``.
+  [rnix]
+
 - Introduce ``node.interfaces.IWildcardFactory`` and
   ``node.behaviors.WildcardFactory``.
   [rnix]

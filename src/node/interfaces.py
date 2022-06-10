@@ -900,8 +900,7 @@ class ISchemaProperties(Interface):
 
 
 class IBoundContext(Interface):
-    """Plumbing behavior for scoping objects to interfaces and classes.
-    """
+    """Plumbing behavior for scoping objects to interfaces and classes."""
 
     def bind_context(context):
         """Bind this object to context interfaces and or classes.
@@ -912,3 +911,13 @@ class IBoundContext(Interface):
 
     def context_matches(obj):
         """Check whether given object matches bound context scope."""
+
+
+class IChildFilter(Interface):
+    """Plumbing behavior for filtering node children by type or interface."""
+
+    def children_by_type(filter):
+        """Return filtered children of node.
+
+        :param filter: Either an interface or a class.
+        """
