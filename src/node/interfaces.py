@@ -916,7 +916,7 @@ class IBoundContext(Interface):
 class IChildFilter(Interface):
     """Plumbing behavior for filtering node children by type or interface."""
 
-    def children_by_type(filter):
+    def filtered_children(filter):
         """Return filtered children of node.
 
         :param filter: Either an interface or a class.
