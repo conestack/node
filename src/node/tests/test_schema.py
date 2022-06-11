@@ -805,26 +805,25 @@ class TestBehaviorsSchema(NodeTestCase):
 
         @plumbing(SchemaProperties)
         class SchemaPropertiesBase(BaseNode):
-
-            field_1 = schema.Str()
+            field_1 = schema.Int()
 
         @plumbing(SchemaProperties)
         class SchemaPropertiesDerived(SchemaPropertiesBase):
             child_constraints = None
-            field_2 = schema.Str()
+            field_2 = schema.Int()
 
         node = SchemaPropertiesDerived()
         with self.assertRaises(ValueError):
-            node.field_1 = 1
+            node.field_1 = 1.
         with self.assertRaises(ValueError):
-            node.field_2 = 1
-        node.field_1 = u'Field 1'
-        node.field_2 = u'Field 2'
+            node.field_2 = 2.
+        node.field_1 = 1
+        node.field_2 = 2
 
-        self.assertEqual(node['field_1'], 'Field 1')
-        self.assertEqual(node['field_2'], 'Field 2')
+        self.assertEqual(node['field_1'], 1)
+        self.assertEqual(node['field_2'], 2)
         self.checkOutput("""
         <class 'node.tests.test_schema.SchemaPropertiesDerived'>: None
-        __field_1: 'Field 1'
-        __field_2: 'Field 2'
+        __field_1: 1
+        __field_2: 2
         """, node.treerepr(prefix='_'))
