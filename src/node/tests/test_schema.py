@@ -818,8 +818,8 @@ class TestBehaviorsSchema(NodeTestCase):
             node.field_1 = 1
         with self.assertRaises(ValueError):
             node.field_2 = 1
-        node.field_1 = 'Field 1'
-        node.field_2 = 'Field 2'
+        node.field_1 = u'Field 1'
+        node.field_2 = u'Field 2'
 
         self.assertEqual(node['field_1'], 'Field 1')
         self.assertEqual(node['field_2'], 'Field 2')
