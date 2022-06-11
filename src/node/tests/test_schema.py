@@ -802,3 +802,29 @@ class TestBehaviorsSchema(NodeTestCase):
         del node.int_field
         self.assertFalse('int_field' in node.storage)
         self.assertEqual(node.int_field, 1)
+
+        @plumbing(SchemaProperties)
+        class SchemaPropertiesBase(BaseNode):
+
+            field_1 = schema.Str()
+
+        @plumbing(SchemaProperties)
+        class SchemaPropertiesDerived(SchemaPropertiesBase):
+            child_constraints = None
+            field_2 = schema.Str()
+
+        node = SchemaPropertiesDerived()
+        with self.assertRaises(ValueError):
+            node.field_1 = 1
+        with self.assertRaises(ValueError):
+            node.field_2 = 1
+        node.field_1 = 'Field 1'
+        node.field_2 = 'Field 2'
+
+        self.assertEqual(node['field_1'], 'Field 1')
+        self.assertEqual(node['field_2'], 'Field 2')
+        self.checkOutput("""
+        <class 'node.tests.test_schema.SchemaPropertiesDerived'>: None
+        __field_1: 'Field 1'
+        __field_2: 'Field 2'
+        """, node.treerepr(prefix='_'))

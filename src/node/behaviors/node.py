@@ -120,15 +120,27 @@ class Node(Behavior):
     def treerepr(self, indent=0, prefix=' '):
         res = '{}{}\n'.format(indent * prefix, self.noderepr)
         children = list()
+        schema_members = set()
         if ISchemaProperties.providedBy(self):
+            def collect_schema_members(cls):
+                for schema_member in getattr(cls, '__schema_members__', []):
+                    schema_members.add(schema_member)
+                for base in cls.__bases__:
+                    collect_schema_members(base)
+            collect_schema_members(self.__class__)
             children += sorted([
                 (name, getattr(self, name))
-                for name in self.__schema_members__
+                for name in schema_members
             ], key=lambda x: x[0])
         if IMappingNode.providedBy(self):
-            children += self.items() \
-                if IOrdered.providedBy(self) \
+            items = (
+                self.items()
+                if IOrdered.providedBy(self)
                 else sorted(self.items(), key=lambda x: safe_decode(x[0]))
+            )
+            for item in items:
+                if item[0] not in schema_members:
+                    children.append(item)
         elif ISequenceNode.providedBy(self):
             children += [(value.__name__, value) for value in self]
         for name, value in children:
