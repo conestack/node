@@ -132,8 +132,11 @@ def schema_properties_metclass_hook(cls, name, bases, dct):
             setattr(cls, key, SchemaProperty(key, val))
 
 
-_schema_property = threading.local()
-_schema_property.name = None
+class SchemaPropertyAccess(threading.local):
+    name = None
+
+
+_schema_property = SchemaPropertyAccess()
 
 
 @contextmanager

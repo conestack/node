@@ -15,8 +15,11 @@ from zope.interface import implementer
 import threading
 
 
-_lifecycle_context = threading.local()
-_lifecycle_context.suppress_events = False
+class LifecycleContext(threading.local):
+    suppress_events = False
+
+
+_lifecycle_context = LifecycleContext()
 
 
 @contextmanager

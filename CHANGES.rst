@@ -5,6 +5,13 @@ Changes
 1.1 (unreleased)
 ----------------
 
+- Subclass ``threading.local`` for
+  ``node.behaviors.lifecycle._lifecycle_context``,
+  ``node.behaviors.events._attribute_subscribers`` and
+  ``node.behaviors.schema._schema_property`` objects in order to safely provide
+  default values.
+  [rnix]
+
 - Introduce ``node.interfaces.IChildFilter``, ``node.behaviors.MappingFilter``
   and ``node.behaviors.SequenceFilter``.
   [rnix]

@@ -85,8 +85,11 @@ class UnknownEvent(ValueError):
     """Thrown on attempt to register a subscriber to an unknown event."""
 
 
-_attribute_subscribers = threading.local()
-_attribute_subscribers.subscribers = list()
+class AttributeSubscribers(threading.local):
+    subscribers = list()
+
+
+_attribute_subscribers = AttributeSubscribers()
 
 
 @contextmanager
