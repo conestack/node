@@ -166,10 +166,10 @@ class TestSchemaSerializer(unittest.TestCase):
         self.assertIsInstance(schema.datetime_serializer, schema.DateTimeSerializer)
         self.assertEqual(
             serializer.dump(datetime.datetime(2022, 1, 1, 0, 0)),
-            '2022-01-01T00:00:00'
+            '2022-01-01T00:00:00.000000'
         )
         self.assertEqual(
-            serializer.load('2022-01-01T00:00:00'),
+            serializer.load('2022-01-01T00:00:00.000000'),
             datetime.datetime(2022, 1, 1, 0, 0)
         )
 

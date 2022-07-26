@@ -235,13 +235,15 @@ class DateTimeSerializer(FieldSerializer):
     Creates datetime instance of string on deserialization.
     """
 
+    format = '%Y-%m-%dT%H:%M:%S.%f'
+
     def dump(self, value):
         """Dump datetime value as string.
 
         :param value: The datetime object to serialize.
         :return: Datetime as string.
         """
-        return value.isoformat()
+        return datetime.datetime.strftime(value, self.format)
 
     def load(self, value):
         """Load datetime value from string.
@@ -249,7 +251,7 @@ class DateTimeSerializer(FieldSerializer):
         :param value: The datetime string to deserialize.
         :return: Datetime object.
         """
-        return datetime.datetime.strptime(value, '%Y-%m-%dT%H:%M:%S')
+        return datetime.datetime.strptime(value, self.format)
 
 
 datetime_serializer = DateTimeSerializer()
