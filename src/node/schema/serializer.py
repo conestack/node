@@ -7,6 +7,7 @@ except ImportError:  # pragma: no cover
     from urllib.parse import quote
     from urllib.parse import unquote
 import base64
+import datetime
 import json
 import pickle
 import uuid
@@ -225,6 +226,33 @@ class PickleSerializer(FieldSerializer):
 
 
 pickle_serializer = PickleSerializer()
+
+
+class DateTimeSerializer(FieldSerializer):
+    """Serializer for datetime instances.
+
+    Converts value to string on serialization.
+    Creates datetime instance of string on deserialization.
+    """
+
+    def dump(self, value):
+        """Dump datetime value as string.
+
+        :param value: The datetime object to serialize.
+        :return: Datetime as string.
+        """
+        return value.isoformat()
+
+    def load(self, value):
+        """Load datetime value from string.
+
+        :param value: The datetime string to deserialize.
+        :return: Datetime object.
+        """
+        return datetime.datetime.strptime(value, '%Y-%m-%dT%H:%M:%S')
+
+
+datetime_serializer = DateTimeSerializer()
 
 
 class NodeSerializer(FieldSerializer):

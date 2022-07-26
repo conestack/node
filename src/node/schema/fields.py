@@ -4,6 +4,7 @@ from node.schema.scope import ScopeContext
 from node.schema.serializer import NodeSerializer
 from node.utils import UNSET
 from odict import odict
+import datetime
 import uuid
 
 
@@ -223,6 +224,22 @@ class UUID(Field):
         """
         super(UUID, self).__init__(
             type_=uuid.UUID,
+            default=default,
+            serializer=serializer
+        )
+
+
+class DateTime(Field):
+
+    def __init__(self, default=UNSET, serializer=UNSET):
+        """Create DateTime schema field.
+
+        :param default: Default value of the field. Optional.
+        :param serializer: ``Serializer`` instance. Supposed to be used if
+        field value needs to be converted for serialization. Optional.
+        """
+        super(DateTime, self).__init__(
+            type_=datetime.datetime,
             default=default,
             serializer=serializer
         )

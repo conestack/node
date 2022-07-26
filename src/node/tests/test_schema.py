@@ -14,6 +14,7 @@ from node.utils import AttributeAccess
 from node.utils import UNSET
 from odict import odict
 from plumber import plumbing
+import datetime
 import unittest
 import uuid
 
@@ -158,6 +159,19 @@ class TestSchemaSerializer(unittest.TestCase):
         obj = serializer.load(data)
         self.assertIsInstance(obj, TestObject)
         self.assertEqual(obj.value, 'value')
+
+    def test_DateTimeSerializer(self):
+        serializer = schema.DateTimeSerializer()
+        self.assertIsInstance(serializer, schema.FieldSerializer)
+        self.assertIsInstance(schema.datetime_serializer, schema.DateTimeSerializer)
+        self.assertEqual(
+            serializer.dump(datetime.datetime(2022, 1, 1, 0, 0)),
+            '2022-01-01T00:00:00'
+        )
+        self.assertEqual(
+            serializer.load('2022-01-01T00:00:00'),
+            datetime.datetime(2022, 1, 1, 0, 0)
+        )
 
     def test_NodeSerializer(self):
         serializer = schema.NodeSerializer(BaseNode)
@@ -352,6 +366,13 @@ class TestSchemaFields(unittest.TestCase):
         self.assertIsNone(field.validate(uuid.uuid4()))
         with self.assertRaises(ValueError):
             field.validate(u'1234')
+
+    def test_DateTime(self):
+        field = schema.DateTime()
+        self.assertIsInstance(field, schema.Field)
+        self.assertIsNone(field.validate(datetime.datetime.now()))
+        with self.assertRaises(ValueError):
+            field.validate(1)
 
     def test_Tuple(self):
         field = schema.Tuple()

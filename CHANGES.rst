@@ -5,6 +5,10 @@ Changes
 1.1 (unreleased)
 ----------------
 
+- Add ``node.schema.DateTime``, ``node.schema.DateTimeSerializer`` and
+  ``node.schema.datetime_serializer``.
+  [rnix]
+
 - Subclass ``threading.local`` for
   ``node.behaviors.lifecycle._lifecycle_context``,
   ``node.behaviors.events._attribute_subscribers`` and
