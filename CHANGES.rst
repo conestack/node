@@ -2,7 +2,7 @@
 Changes
 =======
 
-1.1 (unreleased)
+1.1 (2022-10-06)
 ----------------
 
 - Add ``node.schema.DateTime``, ``node.schema.DateTimeSerializer`` and
