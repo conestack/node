@@ -34,7 +34,7 @@ They utilize:
 One purpose of this package is to provide a unified API to different backend
 storages. Specific storage related implementations are for example:
 
-- `node.ext.directory <https://pypi.org/project/node.ext.directory>`_
+- `node.ext.fs <https://pypi.org/project/node.ext.fs>`_
 - `node.ext.ldap <https://pypi.org/project/node.ext.ldap>`_
 - `node.ext.yaml <https://pypi.org/project/node.ext.yaml>`_
 - `node.ext.zodb <https://pypi.org/project/node.ext.zodb>`_
