@@ -5,7 +5,9 @@ Changes
 1.2 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Add rich comparison functions ``__lt__``, ``__le__``, ``__gt__`` and
+  ``__ge__`` to ``node.utils.Unset``.
+  [rnix]
 
 
 1.1 (2022-10-06)

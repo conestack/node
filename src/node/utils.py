@@ -35,6 +35,18 @@ class Unset(object):
     def __deepcopy__(self, memo):
         return self
 
+    def __lt__(self, other):
+        return False
+
+    def __le__(self, other):
+        return False
+
+    def __gt__(self, other):
+        return False
+
+    def __ge__(self, other):
+        return False
+
 
 UNSET = Unset()
 

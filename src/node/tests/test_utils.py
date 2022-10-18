@@ -27,6 +27,10 @@ class TestUtils(NodeTestCase):
         self.assertEqual(len(UNSET), 0)
         self.assertTrue(copy.copy(UNSET) is UNSET)
         self.assertTrue(copy.deepcopy(UNSET) is UNSET)
+        self.assertFalse(UNSET < UNSET)
+        self.assertFalse(UNSET <= UNSET)
+        self.assertFalse(UNSET > UNSET)
+        self.assertFalse(UNSET >= UNSET)
 
     def test_ReverseMapping(self):
         context = odict([
