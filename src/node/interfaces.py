@@ -389,11 +389,11 @@ class IFixedChildren(Interface):
 
     factories = Attribute('Dict like object containing key/factory pairs.')
 
-    def __setitem__(key, val):
-        """Deny setting item, read-only. Raises ``NotImplementedError``."""
-
     def __getitem__(key):
         """Returns fixed child."""
+
+    def __setitem__(key, val):
+        """Deny setting item, read-only. Raises ``NotImplementedError``."""
 
     def __delitem__(key):
         """Deny deleting, read-only. Raises ``NotImplementedError``"""
