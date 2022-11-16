@@ -36,7 +36,7 @@ class ChildFactory(Behavior):
             except TypeError:
                 warnings.warn(
                     'Calling child factory without arguments is deprecated. '
-                    'Adopt your factoriy to accept ``name`` and ``parent``.'
+                    'Adopt your factory to accept ``name`` and ``parent``.'
                 )
                 child = factory()
             self[key] = child
