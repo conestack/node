@@ -1,13 +1,14 @@
 from __future__ import absolute_import
+from node.interfaces import IMappingOrder
 from node.interfaces import INode
-from node.interfaces import IOrder
+from node.interfaces import ISequenceOrder
 from plumber import Behavior
 from plumber import override
 from zope.interface import implementer
 
 
-@implementer(IOrder)
-class Order(Behavior):
+@implementer(IMappingOrder)
+class MappingOrder(Behavior):
 
     @override
     @property
@@ -102,3 +103,143 @@ class Order(Behavior):
             raise KeyError(
                 'Tree already contains node with name {}'.format(name)
             )
+
+
+@implementer(ISequenceOrder)
+class SequenceOrder(Behavior):
+
+    @override
+    @property
+    def first_index(self):
+        if not self.storage:
+            raise IndexError('Sequence is empty')
+        return 0
+
+    @override
+    @property
+    def last_index(self):
+        if not self.storage:
+            raise IndexError('Sequence is empty')
+        return len(self.storage) - 1
+
+    @override
+    def next_index(self, index):
+        index += 1
+        if index > self.last_index:
+            raise IndexError('No next index')
+        return index
+
+    @override
+    def prev_index(self, index):
+        index -= 1
+        if index < self.first_index:
+            raise IndexError('No previous index')
+        return index
+
+    @override
+    def swap(self, node_a, node_b):
+        index_a = self._lookup_node_index(node_a)
+        index_b = self._lookup_node_index(node_b)
+        storage = self.storage
+        storage[index_a], storage[index_b] = storage[index_b], storage[index_a]
+        self._update_indices()
+
+    @override
+    def insertbefore(self, newnode, refnode):
+        ref_index = self._lookup_node_index(refnode)
+        storage = self.storage
+        try:
+            storage.index(newnode)
+        except ValueError:
+            storage.insert(ref_index, newnode)
+            self._update_indices()
+            return
+        raise ValueError('Node already child of self')
+
+    @override
+    def insertafter(self, newnode, refnode):
+        ref_index = self._lookup_node_index(refnode)
+        storage = self.storage
+        try:
+            storage.index(newnode)
+        except ValueError:
+            storage.insert(ref_index + 1, newnode)
+            self._update_indices()
+            return
+        raise ValueError('Node already child of self')
+
+    @override
+    def insertfirst(self, newnode):
+        storage = self.storage
+        try:
+            storage.index(newnode)
+        except ValueError:
+            storage.insert(0, newnode)
+            self._update_indices()
+            return
+        raise ValueError('Node already child of self')
+
+    @override
+    def insertlast(self, newnode):
+        storage = self.storage
+        try:
+            storage.index(newnode)
+        except ValueError:
+            storage.append(newnode)
+            self._update_indices()
+            return
+        raise ValueError('Node already child of self')
+
+    @override
+    def movebefore(self, movenode, refnode):
+        move_index = self._lookup_node_index(movenode)
+        ref_index = self._lookup_node_index(refnode)
+        storage = self.storage
+        storage.insert(ref_index, movenode)
+        if ref_index > move_index:
+            del storage[move_index]
+        else:
+            del storage[move_index + 1]
+        self._update_indices()
+
+    @override
+    def moveafter(self, movenode, refnode):
+        move_index = self._lookup_node_index(movenode)
+        ref_index = self._lookup_node_index(refnode)
+        storage = self.storage
+        storage.insert(ref_index + 1, movenode)
+        if ref_index > move_index:
+            del storage[move_index]
+        else:
+            del storage[move_index + 1]
+        self._update_indices()
+
+    @override
+    def movefirst(self, movenode):
+        move_index = self._lookup_node_index(movenode)
+        storage = self.storage
+        del storage[move_index]
+        storage.insert(0, movenode)
+        self._update_indices()
+
+    @override
+    def movelast(self, movenode):
+        move_index = self._lookup_node_index(movenode)
+        storage = self.storage
+        del storage[move_index]
+        storage.append(movenode)
+        self._update_indices()
+
+    @override
+    def _lookup_node_index(self, node):
+        storage = self.storage
+        try:
+            if INode.providedBy(node):
+                index = storage.index(node)
+            else:
+                index = int(node)
+                if index < 0 or index + 1 > len(storage):
+                    raise ValueError()
+        except ValueError:
+            raise ValueError('Given reference node not child of self.')
+        return index
