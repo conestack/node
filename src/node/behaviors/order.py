@@ -151,8 +151,7 @@ class SequenceOrder(Behavior):
         try:
             storage.index(newnode)
         except ValueError:
-            storage.insert(ref_index, newnode)
-            self._update_indices()
+            self.insert(ref_index, newnode)
             return
         raise ValueError('Node already child of self')
 
@@ -163,8 +162,7 @@ class SequenceOrder(Behavior):
         try:
             storage.index(newnode)
         except ValueError:
-            storage.insert(ref_index + 1, newnode)
-            self._update_indices()
+            self.insert(ref_index + 1, newnode)
             return
         raise ValueError('Node already child of self')
 
@@ -174,8 +172,7 @@ class SequenceOrder(Behavior):
         try:
             storage.index(newnode)
         except ValueError:
-            storage.insert(0, newnode)
-            self._update_indices()
+            self.insert(0, newnode)
             return
         raise ValueError('Node already child of self')
 
@@ -185,8 +182,7 @@ class SequenceOrder(Behavior):
         try:
             storage.index(newnode)
         except ValueError:
-            storage.append(newnode)
-            self._update_indices()
+            self.append(newnode)
             return
         raise ValueError('Node already child of self')
 

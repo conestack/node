@@ -13,7 +13,6 @@ from node.behaviors import SequenceNode
 from node.behaviors import SequenceReference
 from node.interfaces import IMappingReference
 from node.interfaces import INodeReference
-from node.interfaces import IReference
 from node.interfaces import ISequenceReference
 from node.tests import NodeTestCase
 from plumber import plumbing

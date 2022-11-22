@@ -142,7 +142,7 @@ class Node(Behavior):
                 if item[0] not in schema_members:
                     children.append(item)
         elif ISequenceNode.providedBy(self):
-            children += [(value.__name__, value) for value in self]
+            children += [(index, value) for index, value in enumerate(self)]
         for name, value in children:
             if INode.providedBy(value):
                 res += value.treerepr(indent=indent + 2, prefix=prefix)
