@@ -99,10 +99,11 @@ class MappingOrder(Behavior):
         name = node.name
         if name is None:
             raise ValueError('Given node has no __name__ set.')
+        # XXX: better check for node in self.storage.values() and raise
+        #      ``ValueError``. Behavioral change, postpone.
         if name in self.storage:
-            raise KeyError(
-                'Tree already contains node with name {}'.format(name)
-            )
+            msg = 'Tree already contains node with name {}'.format(name)
+            raise KeyError(msg)
 
 
 @implementer(ISequenceOrder)
@@ -153,7 +154,7 @@ class SequenceOrder(Behavior):
         except ValueError:
             self.insert(ref_index, newnode)
             return
-        raise ValueError('Node already child of self')
+        raise ValueError('Given node already child of self.')
 
     @override
     def insertafter(self, newnode, refnode):
@@ -164,7 +165,7 @@ class SequenceOrder(Behavior):
         except ValueError:
             self.insert(ref_index + 1, newnode)
             return
-        raise ValueError('Node already child of self')
+        raise ValueError('Given node already child of self.')
 
     @override
     def insertfirst(self, newnode):
@@ -174,7 +175,7 @@ class SequenceOrder(Behavior):
         except ValueError:
             self.insert(0, newnode)
             return
-        raise ValueError('Node already child of self')
+        raise ValueError('Given node already child of self.')
 
     @override
     def insertlast(self, newnode):
@@ -184,7 +185,7 @@ class SequenceOrder(Behavior):
         except ValueError:
             self.append(newnode)
             return
-        raise ValueError('Node already child of self')
+        raise ValueError('Given node already child of self.')
 
     @override
     def movebefore(self, movenode, refnode):

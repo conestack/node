@@ -535,31 +535,29 @@ class INodeOrder(Interface):
         """
 
     def insertbefore(newnode, refnode):
-        """Insert ``newnode`` before ``refnode``. ``__name__`` on ``newnode``
-        must be set. ``refnode`` must be children of self.
+        """Insert ``newnode`` before ``refnode``. ``refnode`` must be children
+        of self.
 
         :param newnode: ``INode`` implementing object.
         :param refnode: Either ``INode`` implementing object or node name.
         """
 
     def insertafter(newnode, refnode):
-        """Insert ``newnode`` after ``refnode``. ``__name__`` on ``newnode``
-        must be set. ``refnode`` must be children of self.
+        """Insert ``newnode`` after ``refnode``. ``refnode`` must be children
+        of self.
 
         :param newnode: ``INode`` implementing object.
         :param refnode: Either ``INode`` implementing object or node name.
         """
 
     def insertfirst(newnode):
-        """Insert ``newnode`` as first node. ``__name__`` on ``newnode`` must
-        be set.
+        """Insert ``newnode`` as first node.
 
         :param newnode: ``INode`` implementing object.
         """
 
     def insertlast(newnode):
-        """Insert ``newnode`` as last node. ``__name__`` on ``newnode`` must
-        be set.
+        """Insert ``newnode`` as last node.
 
         :param newnode: ``INode`` implementing object.
         """

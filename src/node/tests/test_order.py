@@ -354,130 +354,85 @@ class TestMappingOrder(NodeTestCase):
     def test_order_with_references(self):
         node = OrderReferenceMappingNode(name='root')
         node['child1'] = OrderReferenceMappingNode()
+        node['child2'] = OrderReferenceMappingNode()
         node['child3'] = OrderReferenceMappingNode()
         node['child4'] = OrderReferenceMappingNode()
-        node['child2'] = OrderReferenceMappingNode()
         node['child5'] = OrderReferenceMappingNode()
+        self.assertEqual(len(node._index), 6)
 
-        self.assertEqual(len(node._index.keys()), 6)
-
-        with self.assertRaises(KeyError) as arc:
+        # no index changes on error
+        with self.assertRaises(KeyError):
             node.insertbefore(node['child2'], node['child1'])
-        self.assertEqual(
-            str(arc.exception),
-            "'Tree already contains node with name child2'"
-        )
+        with self.assertRaises(KeyError):
+            node.insertafter(node['child2'], node['child3'])
+        with self.assertRaises(KeyError):
+            node.insertfirst(node['child3'])
+        with self.assertRaises(KeyError):
+            node.insertlast(node['child3'])
+        self.assertEqual(len(node._index), 6)
 
-        self.assertEqual(len(node._index.keys()), 6)
+        # insertbefore
         detached = node.detach('child4')
-        self.assertEqual(detached.name, 'child4')
-        self.assertEqual(len(detached._index.keys()), 1)
-        self.assertEqual(len(node._index.keys()), 5)
-        self.assertEqual(len(node.values()), 4)
+        self.assertFalse(detached._index is node._index)
+        self.assertEqual(len(detached._index), 1)
+        self.assertEqual(len(node._index), 5)
+        node.insertbefore(detached, node['child5'])
+        self.assertEqual(len(node._index), 6)
+        self.assertTrue(detached._index is node._index)
 
-        node.insertbefore(detached, node['child1'])
-        self.assertEqual(node.treerepr(), (
-            "<class 'node.tests.test_order.OrderReferenceMappingNode'>: root\n"
-            "  <class 'node.tests.test_order.OrderReferenceMappingNode'>: child4\n"
-            "  <class 'node.tests.test_order.OrderReferenceMappingNode'>: child1\n"
-            "  <class 'node.tests.test_order.OrderReferenceMappingNode'>: child3\n"
-            "  <class 'node.tests.test_order.OrderReferenceMappingNode'>: child2\n"
-            "  <class 'node.tests.test_order.OrderReferenceMappingNode'>: child5\n"
-        ))
+        # insertafter
+        detached = node.detach('child4')
+        self.assertEqual(len(detached._index), 1)
+        self.assertEqual(len(node._index), 5)
+        node.insertafter(detached, node['child5'])
+        self.assertEqual(len(node._index), 6)
+        self.assertTrue(detached._index is node._index)
 
-        # Merge 2 Node Trees
-        tree1 = OrderReferenceMappingNode()
-        tree1['a'] = OrderReferenceMappingNode()
-        tree1['b'] = OrderReferenceMappingNode()
-        tree2 = OrderReferenceMappingNode()
-        tree2['d'] = OrderReferenceMappingNode()
-        tree2['e'] = OrderReferenceMappingNode()
+        # insertfirst
+        detached = node.detach('child4')
+        self.assertEqual(len(detached._index), 1)
+        self.assertEqual(len(node._index), 5)
+        node.insertfirst(detached)
+        self.assertEqual(len(node._index), 6)
+        self.assertTrue(detached._index is node._index)
 
-        self.assertFalse(tree1._index is tree2._index)
-        self.assertEqual(len(tree1._index.keys()), 3)
-        self.assertEqual(tree1.treerepr(), (
-            "<class 'node.tests.test_order.OrderReferenceMappingNode'>: None\n"
-            "  <class 'node.tests.test_order.OrderReferenceMappingNode'>: a\n"
-            "  <class 'node.tests.test_order.OrderReferenceMappingNode'>: b\n"
-        ))
+        # insertlast
+        detached = node.detach('child4')
+        self.assertEqual(len(detached._index), 1)
+        self.assertEqual(len(node._index), 5)
+        node.insertlast(detached)
+        self.assertEqual(len(node._index), 6)
+        self.assertTrue(detached._index is node._index)
 
-        self.assertEqual(len(tree2._index.keys()), 3)
-        self.assertEqual(tree2.treerepr(), (
-            "<class 'node.tests.test_order.OrderReferenceMappingNode'>: None\n"
-            "  <class 'node.tests.test_order.OrderReferenceMappingNode'>: d\n"
-            "  <class 'node.tests.test_order.OrderReferenceMappingNode'>: e\n"
-        ))
-
-        tree1['c'] = tree2
-        self.assertEqual(len(tree1._index.keys()), 6)
-        self.assertTrue(tree1._index is tree2._index)
-        self.assertEqual(tree1.treerepr(), (
-            "<class 'node.tests.test_order.OrderReferenceMappingNode'>: None\n"
-            "  <class 'node.tests.test_order.OrderReferenceMappingNode'>: a\n"
-            "  <class 'node.tests.test_order.OrderReferenceMappingNode'>: b\n"
-            "  <class 'node.tests.test_order.OrderReferenceMappingNode'>: c\n"
-            "    <class 'node.tests.test_order.OrderReferenceMappingNode'>: d\n"
-            "    <class 'node.tests.test_order.OrderReferenceMappingNode'>: e\n"
-        ))
-
-        # Detach subtree and insert elsewhere
-        sub = tree1.detach('c')
-        self.assertEqual(sub.treerepr(), (
-            "<class 'node.tests.test_order.OrderReferenceMappingNode'>: c\n"
-            "  <class 'node.tests.test_order.OrderReferenceMappingNode'>: d\n"
-            "  <class 'node.tests.test_order.OrderReferenceMappingNode'>: e\n"
-        ))
-        self.assertFalse(tree1._index is sub._index)
-        self.assertTrue(sub._index is sub['d']._index is sub['e']._index)
-        self.assertEqual(len(sub._index.keys()), 3)
-
-        self.assertEqual(tree1.treerepr(), (
-            "<class 'node.tests.test_order.OrderReferenceMappingNode'>: None\n"
-            "  <class 'node.tests.test_order.OrderReferenceMappingNode'>: a\n"
-            "  <class 'node.tests.test_order.OrderReferenceMappingNode'>: b\n"
-        ))
-        self.assertEqual(len(tree1._index.keys()), 3)
-
-        sub.__name__ = 'x'
-        tree1.insertbefore(sub, tree1['a'])
-        self.assertEqual(tree1.treerepr(), (
-            "<class 'node.tests.test_order.OrderReferenceMappingNode'>: None\n"
-            "  <class 'node.tests.test_order.OrderReferenceMappingNode'>: x\n"
-            "    <class 'node.tests.test_order.OrderReferenceMappingNode'>: d\n"
-            "    <class 'node.tests.test_order.OrderReferenceMappingNode'>: e\n"
-            "  <class 'node.tests.test_order.OrderReferenceMappingNode'>: a\n"
-            "  <class 'node.tests.test_order.OrderReferenceMappingNode'>: b\n"
-        ))
-        self.assertTrue(tree1._index is sub._index)
-        self.assertEqual(len(tree1._index.keys()), 6)
-
-        with self.assertRaises(KeyError) as arc:
-            tree1.insertbefore(sub, tree1['a'])
-        self.assertEqual(
-            str(arc.exception),
-            "'Tree already contains node with name x'"
+        # movebefore
+        node.movebefore('child1', 'child2')
+        self.assertEqual(len(node._index), 6)
+        self.assertTrue(
+            node._index is node['child1']._index is node['child2']._index
         )
 
-        self.assertEqual(tree2.treerepr(), (
-            "<class 'node.tests.test_order.OrderReferenceMappingNode'>: x\n"
-            "  <class 'node.tests.test_order.OrderReferenceMappingNode'>: d\n"
-            "  <class 'node.tests.test_order.OrderReferenceMappingNode'>: e\n"
-        ))
+        # moveafter
+        node.moveafter('child1', 'child2')
+        self.assertEqual(len(node._index), 6)
+        self.assertTrue(
+            node._index is node['child1']._index is node['child2']._index
+        )
 
-        tree2['d'].child_constraints = None
-        tree2['d']['a'] = object()
-        self.checkOutput("""\
-        <class 'node.tests.test_order.OrderReferenceMappingNode'>: x
-        __<class 'node.tests.test_order.OrderReferenceMappingNode'>: d
-        ____a: <object object at ...>
-        __<class 'node.tests.test_order.OrderReferenceMappingNode'>: e
-        """, tree2.treerepr(prefix='_'))
+        # movefirst
+        node.movefirst('child1')
+        self.assertEqual(len(node._index), 6)
+        self.assertTrue(node._index is node['child1']._index)
 
-        tree2.detach('d')
-        self.assertEqual(tree2.treerepr(), (
-            "<class 'node.tests.test_order.OrderReferenceMappingNode'>: x\n"
-            "  <class 'node.tests.test_order.OrderReferenceMappingNode'>: e\n"
-        ))
+        # movelast
+        node.movelast('child1')
+        self.assertEqual(len(node._index), 6)
+        self.assertTrue(node._index is node['child1']._index)
+
+        # swap
+        node.swap('child1', 'child2')
+        self.assertTrue(
+            node._index is node['child1']._index is node['child2']._index
+        )
 
 
 class TestSequenceOrder(NodeTestCase):
@@ -647,6 +602,13 @@ class TestSequenceOrder(NodeTestCase):
             'Given reference node not child of self.'
         )
 
+        with self.assertRaises(ValueError) as arc:
+            node.insertbefore(child_0, 0)
+        self.assertEqual(
+            str(arc.exception),
+            'Given node already child of self.'
+        )
+
     def test_insertafter(self):
         node = OrderableSequenceNode(name='root')
         child_0 = OrderableSequenceNode()
@@ -676,6 +638,13 @@ class TestSequenceOrder(NodeTestCase):
             'Given reference node not child of self.'
         )
 
+        with self.assertRaises(ValueError) as arc:
+            node.insertafter(child_0, 0)
+        self.assertEqual(
+            str(arc.exception),
+            'Given node already child of self.'
+        )
+
     def test_insertfirst(self):
         node = OrderableSequenceNode(name='root')
         child_0 = OrderableSequenceNode()
@@ -688,6 +657,13 @@ class TestSequenceOrder(NodeTestCase):
             [child_1, child_0]
         )
 
+        with self.assertRaises(ValueError) as arc:
+            node.insertfirst(child_0)
+        self.assertEqual(
+            str(arc.exception),
+            'Given node already child of self.'
+        )
+
     def test_insertlast(self):
         node = OrderableSequenceNode(name='root')
         child_0 = OrderableSequenceNode()
@@ -698,6 +674,13 @@ class TestSequenceOrder(NodeTestCase):
         self.assertEqual(
             [child for child in node],
             [child_0, child_1]
+        )
+
+        with self.assertRaises(ValueError) as arc:
+            node.insertlast(child_0)
+        self.assertEqual(
+            str(arc.exception),
+            'Given node already child of self.'
         )
 
     def test_movebefore(self):
@@ -802,7 +785,7 @@ class TestSequenceOrder(NodeTestCase):
             [child_2, child_1, child_0]
         )
 
-    def _test_movelast(self):
+    def test_movelast(self):
         node = OrderableSequenceNode(name='root')
         child_0 = OrderableSequenceNode()
         child_1 = OrderableSequenceNode()
@@ -875,135 +858,90 @@ class TestSequenceOrder(NodeTestCase):
         node.append(child_2)
         node.append(child_3)
         node.append(child_4)
+        self.assertEqual(len(node._index), 6)
 
-        self.assertEqual(len(node._index.keys()), 6)
+        # no index changes on error
+        with self.assertRaises(ValueError):
+            node.insertbefore(node[1], node[0])
+        with self.assertRaises(ValueError):
+            node.insertafter(node[1], node[2])
+        with self.assertRaises(ValueError):
+            node.insertfirst(node[2])
+        with self.assertRaises(ValueError):
+            node.insertlast(node[2])
+        self.assertEqual(len(node._index), 6)
 
-        with self.assertRaises(ValueError) as arc:
-            node.insertbefore(child_1, child_0)
-        self.assertEqual(
-            str(arc.exception),
-            'Node already child of self'
-        )
+        def check_indices():
+            return (
+                node._index is
+                child_0._index is
+                child_1._index is
+                child_2._index is
+                child_3._index is
+                child_4._index
+            )
 
-        self.assertEqual(len(node._index.keys()), 6)
-        detached = node.detach(3)
-        self.assertEqual(detached.name, '3')
-        self.assertEqual(len(detached._index.keys()), 1)
-        self.assertEqual(len(node._index.keys()), 5)
-        self.assertEqual(len(node), 4)
-        self.assertEqual(
-            [child for child in node],
-            [child_0, child_1, child_2, child_4]
-        )
+        # insertbefore
+        detached = node.detach(2)
+        self.assertFalse(detached._index is node._index)
+        self.assertEqual(len(detached._index), 1)
+        self.assertEqual(len(node._index), 5)
+        node.insertbefore(detached, node[2])
+        self.assertEqual(len(node._index), 6)
+        self.assertTrue(check_indices())
 
-        node.insertbefore(detached, child_0)
-        self.assertEqual(
-            [child for child in node],
-            [child_3, child_0, child_1, child_2, child_4]
-        )
+        # insertafter
+        detached = node.detach(2)
+        self.assertEqual(len(detached._index), 1)
+        self.assertEqual(len(node._index), 5)
+        node.insertafter(detached, node[2])
+        self.assertEqual(len(node._index), 6)
+        self.assertTrue(check_indices())
 
-        # Merge 2 Node Trees
-        tree1 = OrderReferenceSequenceNode()
-        tree1_0 = OrderReferenceSequenceNode()
-        tree1_1 = OrderReferenceSequenceNode()
-        tree1.append(tree1_0)
-        tree1.append(tree1_1)
+        # insertfirst
+        detached = node.detach(4)
+        self.assertEqual(len(detached._index), 1)
+        self.assertEqual(len(node._index), 5)
+        node.insertfirst(detached)
+        self.assertEqual(len(node._index), 6)
+        self.assertTrue(check_indices())
 
-        tree2 = OrderReferenceSequenceNode()
-        tree2_0 = OrderReferenceSequenceNode()
-        tree2_1 = OrderReferenceSequenceNode()
-        tree2.append(tree2_0)
-        tree2.append(tree2_1)
+        # insertlast
+        detached = node.detach(0)
+        self.assertEqual(len(detached._index), 1)
+        self.assertEqual(len(node._index), 5)
+        node.insertlast(detached)
+        self.assertEqual(len(node._index), 6)
+        self.assertTrue(check_indices())
 
-        self.assertFalse(tree1._index is tree2._index)
-        self.assertEqual(len(tree1._index.keys()), 3)
-        self.assertEqual(
-            [child for child in tree1],
-            [tree1_0, tree1_1]
-        )
+        # movebefore
+        node.movebefore(3, 2)
+        self.assertEqual(len(node._index), 6)
+        self.assertTrue(check_indices())
 
-        self.assertEqual(len(tree2._index.keys()), 3)
-        self.assertEqual(
-            [child for child in tree2],
-            [tree2_0, tree2_1]
-        )
+        # moveafter
+        node.moveafter(2, 3)
+        self.assertEqual(len(node._index), 6)
+        self.assertTrue(check_indices())
 
-        tree1.append(tree2)
-        self.assertEqual(len(tree1._index.keys()), 6)
-        self.assertTrue(tree1._index is tree2._index)
-        self.assertEqual(tree1.treerepr(), (
-            "<class 'node.tests.test_order.OrderReferenceSequenceNode'>: None\n"
-            "  <class 'node.tests.test_order.OrderReferenceSequenceNode'>: 0\n"
-            "  <class 'node.tests.test_order.OrderReferenceSequenceNode'>: 1\n"
-            "  <class 'node.tests.test_order.OrderReferenceSequenceNode'>: 2\n"
-            "    <class 'node.tests.test_order.OrderReferenceSequenceNode'>: 0\n"
-            "    <class 'node.tests.test_order.OrderReferenceSequenceNode'>: 1\n"
-        ))
+        # movefirst
+        node.movefirst(3)
+        self.assertEqual(len(node._index), 6)
+        self.assertTrue(check_indices())
 
-        self.assertTrue(tree1 in tree1._index.values())
-        self.assertTrue(tree1_0 in tree1._index.values())
-        self.assertTrue(tree1_1 in tree1._index.values())
-        self.assertTrue(tree2 in tree1._index.values())
-        self.assertTrue(tree2_0 in tree1._index.values())
-        self.assertTrue(tree2_1 in tree1._index.values())
+        # movelast
+        node.movelast(3)
+        self.assertEqual(len(node._index), 6)
+        self.assertTrue(check_indices())
 
-        # Detach subtree and insert elsewhere
-        sub = tree1.detach(2)
-        self.assertFalse(tree1._index is sub._index)
-        self.assertTrue(sub._index is sub[0]._index is sub[1]._index)
+        # swap
+        node.swap(0, 1)
+        self.assertTrue(check_indices())
 
-        self.assertEqual(len(sub._index.keys()), 3)
-        self.assertTrue(tree1 in tree1._index.values())
-        self.assertTrue(tree1_0 in tree1._index.values())
-        self.assertTrue(tree1_1 in tree1._index.values())
-        self.assertFalse(tree2 in tree1._index.values())
-        self.assertFalse(tree2_0 in tree1._index.values())
-        self.assertFalse(tree2_1 in tree1._index.values())
+    def test_BC_imports(self):
+        from node.behaviors import Order
+        self.assertTrue(Order is MappingOrder)
 
-        self.assertEqual(len(tree1._index.keys()), 3)
-        self.assertFalse(tree1 in sub._index.values())
-        self.assertFalse(tree1_0 in sub._index.values())
-        self.assertFalse(tree1_1 in sub._index.values())
-        self.assertTrue(tree2 in sub._index.values())
-        self.assertTrue(tree2_0 in sub._index.values())
-        self.assertTrue(tree2_1 in sub._index.values())
-
-        tree1.insertbefore(sub, tree1[0])
-        self.assertEqual(tree1.treerepr(), (
-            "<class 'node.tests.test_order.OrderReferenceSequenceNode'>: None\n"
-            "  <class 'node.tests.test_order.OrderReferenceSequenceNode'>: 0\n"
-            "    <class 'node.tests.test_order.OrderReferenceSequenceNode'>: 0\n"
-            "    <class 'node.tests.test_order.OrderReferenceSequenceNode'>: 1\n"
-            "  <class 'node.tests.test_order.OrderReferenceSequenceNode'>: 1\n"
-            "  <class 'node.tests.test_order.OrderReferenceSequenceNode'>: 2\n"
-        ))
-        self.assertTrue(tree1._index is sub._index)
-        self.assertEqual(len(tree1._index.keys()), 6)
-
-        with self.assertRaises(ValueError) as arc:
-            tree1.insertbefore(sub, tree1[0])
-        self.assertEqual(
-            str(arc.exception),
-            'Node already child of self'
-        )
-
-        self.assertEqual(tree2.treerepr(), (
-            "<class 'node.tests.test_order.OrderReferenceSequenceNode'>: 0\n"
-            "  <class 'node.tests.test_order.OrderReferenceSequenceNode'>: 0\n"
-            "  <class 'node.tests.test_order.OrderReferenceSequenceNode'>: 1\n"
-        ))
-
-        tree2[0].child_constraints = None
-        tree2[0].append(object())
-        self.checkOutput("""\
-        <class 'node.tests.test_order.OrderReferenceSequenceNode'>: 0
-        __<class 'node.tests.test_order.OrderReferenceSequenceNode'>: 0
-        ____0: <object object at ...>
-        __<class 'node.tests.test_order.OrderReferenceSequenceNode'>: 1
-        """, tree2.treerepr(prefix='_'))
-
-        tree2.detach(0)
-        self.assertEqual(tree2.treerepr(), (
-            "<class 'node.tests.test_order.OrderReferenceSequenceNode'>: 0\n"
-            "  <class 'node.tests.test_order.OrderReferenceSequenceNode'>: 0\n"
-        ))
+        from node.interfaces import IMappingOrder
+        from node.interfaces import IOrder
+        self.assertTrue(IOrder is IMappingOrder)
