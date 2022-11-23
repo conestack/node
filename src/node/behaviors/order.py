@@ -99,8 +99,6 @@ class MappingOrder(Behavior):
         name = node.name
         if name is None:
             raise ValueError('Given node has no __name__ set.')
-        # XXX: better check for node in self.storage.values() and raise
-        #      ``ValueError``. Behavioral change, postpone.
         if name in self.storage:
             msg = 'Tree already contains node with name {}'.format(name)
             raise KeyError(msg)
@@ -147,52 +145,37 @@ class SequenceOrder(Behavior):
 
     @override
     def insertbefore(self, newnode, refnode):
+        if newnode in self:
+            raise ValueError('Given node already child of self.')
         ref_index = self._lookup_node_index(refnode)
-        storage = self.storage
-        try:
-            storage.index(newnode)
-        except ValueError:
-            self.insert(ref_index, newnode)
-            return
-        raise ValueError('Given node already child of self.')
+        self.insert(ref_index, newnode)
 
     @override
     def insertafter(self, newnode, refnode):
+        if newnode in self:
+            raise ValueError('Given node already child of self.')
         ref_index = self._lookup_node_index(refnode)
-        storage = self.storage
-        try:
-            storage.index(newnode)
-        except ValueError:
-            self.insert(ref_index + 1, newnode)
-            return
-        raise ValueError('Given node already child of self.')
+        self.insert(ref_index + 1, newnode)
 
     @override
     def insertfirst(self, newnode):
-        storage = self.storage
-        try:
-            storage.index(newnode)
-        except ValueError:
-            self.insert(0, newnode)
-            return
-        raise ValueError('Given node already child of self.')
+        if newnode in self:
+            raise ValueError('Given node already child of self.')
+        self.insert(0, newnode)
 
     @override
     def insertlast(self, newnode):
-        storage = self.storage
-        try:
-            storage.index(newnode)
-        except ValueError:
-            self.append(newnode)
-            return
-        raise ValueError('Given node already child of self.')
+        if newnode in self:
+            raise ValueError('Given node already child of self.')
+        self.append(newnode)
 
     @override
     def movebefore(self, movenode, refnode):
         move_index = self._lookup_node_index(movenode)
         ref_index = self._lookup_node_index(refnode)
         storage = self.storage
-        storage.insert(ref_index, movenode)
+        move_val = storage[move_index]
+        storage.insert(ref_index, move_val)
         if ref_index > move_index:
             del storage[move_index]
         else:
@@ -204,7 +187,8 @@ class SequenceOrder(Behavior):
         move_index = self._lookup_node_index(movenode)
         ref_index = self._lookup_node_index(refnode)
         storage = self.storage
-        storage.insert(ref_index + 1, movenode)
+        move_val = storage[move_index]
+        storage.insert(ref_index + 1, move_val)
         if ref_index > move_index:
             del storage[move_index]
         else:
@@ -215,16 +199,18 @@ class SequenceOrder(Behavior):
     def movefirst(self, movenode):
         move_index = self._lookup_node_index(movenode)
         storage = self.storage
+        move_val = storage[move_index]
         del storage[move_index]
-        storage.insert(0, movenode)
+        storage.insert(0, move_val)
         self._update_indices()
 
     @override
     def movelast(self, movenode):
         move_index = self._lookup_node_index(movenode)
         storage = self.storage
+        move_val = storage[move_index]
         del storage[move_index]
-        storage.append(movenode)
+        storage.append(move_val)
         self._update_indices()
 
     @override
@@ -232,11 +218,11 @@ class SequenceOrder(Behavior):
         storage = self.storage
         try:
             if INode.providedBy(node):
-                index = storage.index(node)
+                index = int(node.name)
             else:
                 index = int(node)
-                if index < 0 or index + 1 > len(storage):
-                    raise ValueError()
-        except ValueError:
+            if index < 0 or index + 1 > len(storage):
+                raise ValueError()
+        except (ValueError, TypeError):
             raise ValueError('Given reference node not child of self.')
         return index
