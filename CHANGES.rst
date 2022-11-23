@@ -5,8 +5,27 @@ Changes
 1.2 (unreleased)
 ----------------
 
+- Rename ``node.interfaces.IOrder`` to ``node.interfaces.IMappingOrder``
+  and ``node.behaviors.Order`` to ``node.behaviors.MappingOrder``.
+  B/C is kept.
+  [rnix]
+
+- Introduce ``node.behaviors.ISequenceOrder`` and
+  ``node.interfaces.SequenceOrder``.
+  [rnix]
+
+- Introduce ``node.interfaces.INodeOrder``. Used as base for
+  ``node.interfaces.IMappingOrder`` and ``node.interfaces.ISequenceOrder``.
+  [rnix]
+
 - Add rich comparison functions ``__lt__``, ``__le__``, ``__gt__`` and
   ``__ge__`` to ``node.utils.Unset``.
+  [rnix]
+
+**Breaking changes**:
+
+- Importing B/C ``Order`` behavior from ``node.behaviors.order``
+  not works any more. Please import from ``node.behaviors``.
   [rnix]
 
 

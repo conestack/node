@@ -13,7 +13,6 @@ from node.behaviors import SequenceNode
 from node.behaviors import SequenceReference
 from node.interfaces import IMappingReference
 from node.interfaces import INodeReference
-from node.interfaces import IReference
 from node.interfaces import ISequenceReference
 from node.tests import NodeTestCase
 from plumber import plumbing
@@ -538,6 +537,40 @@ class TestReference(NodeTestCase):
 
         del node['foo']
         self.assertEqual(len(node._index), 1)
+
+    def test_subtree(self):
+        node = ReferenceMappingNode(name='root')
+        self.assertEqual(len(node._index), 1)
+
+        mapping = ReferenceMappingNode()
+        mapping['ref'] = ReferenceNode()
+        mapping['noref'] = NoReferenceNode()
+        self.assertEqual(len(mapping._index), 2)
+        self.assertFalse(node._index is mapping._index)
+
+        sequence = ReferenceSequenceNode()
+        sequence.append(ReferenceNode())
+        sequence.append(NoReferenceNode())
+        self.assertEqual(len(sequence._index), 2)
+        self.assertFalse(node._index is sequence._index)
+
+        node['mapping'] = mapping
+        node['sequence'] = sequence
+        self.assertTrue(node._index is mapping._index)
+        self.assertTrue(node._index is mapping['ref']._index)
+        self.assertTrue(node._index is sequence._index)
+        self.assertTrue(node._index is sequence[0]._index)
+        self.assertEqual(len(sequence._index), 5)
+
+        node.detach('mapping')
+        node.detach('sequence')
+        self.assertFalse(node._index is mapping._index)
+        self.assertFalse(node._index is sequence._index)
+        self.assertTrue(mapping._index is mapping['ref']._index)
+        self.assertTrue(sequence._index is sequence[0]._index)
+        self.assertEqual(len(node._index), 1)
+        self.assertEqual(len(mapping._index), 2)
+        self.assertEqual(len(sequence._index), 2)
 
     def test_BC_imports(self):
         from node.behaviors import Reference

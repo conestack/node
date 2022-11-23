@@ -41,7 +41,8 @@ from .node import DefaultInit  # noqa
 from .node import Node  # noqa
 from .node import NodeInit  # noqa
 from .nodespace import Nodespaces  # noqa
-from .order import Order  # noqa
+from .order import MappingOrder  # noqa
+from .order import SequenceOrder  # noqa
 from .reference import IndexViolationError  # noqa
 from .reference import MappingReference  # noqa
 from .reference import NodeIndex  # noqa
@@ -78,12 +79,15 @@ deprecated(
     '``Nodify`` has been renamed to ``MappingNode``. Please fix your import',
     Nodify='node.behaviors.mapping:MappingNode',
 )
+# B/C 2022-11-22 -> node.behaviors.Order
+deprecated(
+    '``Order`` has been renamed to ``MappingOrder``. Please fix your import',
+    Order='node.behaviors.order:MappingOrder',
+)
 # B/C 2022-05-06 -> node.behaviors.Reference
 deprecated(
-    (
-        '``Reference`` has been renamed to ``MappingReference``. '
-        'Please fix your import'
-    ),
+    '``Reference`` has been renamed to ``MappingReference``. '
+    'Please fix your import',
     Reference='node.behaviors.reference:MappingReference',
 )
 # B/C 2022-02-14 -> node.behaviors.Storage

@@ -524,8 +524,75 @@ class ICache(Interface):
     cache = Attribute('Dict like object representing the cache.')
 
 
-class IOrder(Interface):
+class INodeOrder(Interface):
     """Plumbing behavior for ordering support."""
+
+    def swap(node_a, node_b):
+        """Swap 2 nodes. Both nodes must be children of self.
+
+        :param node_a: Either ``INode`` implementing object or node name.
+        :param node_b: Either ``INode`` implementing object or node name.
+        """
+
+    def insertbefore(newnode, refnode):
+        """Insert ``newnode`` before ``refnode``. ``refnode`` must be children
+        of self.
+
+        :param newnode: ``INode`` implementing object.
+        :param refnode: Either ``INode`` implementing object or node name.
+        """
+
+    def insertafter(newnode, refnode):
+        """Insert ``newnode`` after ``refnode``. ``refnode`` must be children
+        of self.
+
+        :param newnode: ``INode`` implementing object.
+        :param refnode: Either ``INode`` implementing object or node name.
+        """
+
+    def insertfirst(newnode):
+        """Insert ``newnode`` as first node.
+
+        :param newnode: ``INode`` implementing object.
+        """
+
+    def insertlast(newnode):
+        """Insert ``newnode`` as last node.
+
+        :param newnode: ``INode`` implementing object.
+        """
+
+    def movebefore(movenode, refnode):
+        """Move ``movenode`` before ``refnode``. Both nodes must be children
+        of self.
+
+        :param movenode: Either ``INode`` implementing object or node name.
+        :param refnode: Either ``INode`` implementing object or node name.
+        """
+
+    def moveafter(movenode, refnode):
+        """Move ``movenode`` after ``refnode``. Both nodes must be children
+        of self.
+
+        :param movenode: Either ``INode`` implementing object or node name.
+        :param refnode: Either ``INode`` implementing object or node name.
+        """
+
+    def movefirst(movenode):
+        """Move ``movenode`` as first node. Node must be children of self.
+
+        :param movenode: Either ``INode`` implementing object or node name.
+        """
+
+    def movelast(movenode):
+        """Move ``movenode`` as last node. Node must be children of self.
+
+        :param movenode: Either ``INode`` implementing object or node name.
+        """
+
+
+class IMappingOrder(INodeOrder):
+    """Plumbing behavior for ordering support on mapping nodes."""
 
     first_key = Attribute(
         'First child key. ``KeyError`` is raised if node has no children.'
@@ -535,88 +602,41 @@ class IOrder(Interface):
     )
 
     def next_key(key):
-        """Return key after given key. Raise ``KeyError`` if key corresponds
-        to last item in node.
+        """Return key after given key. Raise ``KeyError`` if node has no
+        children or no key after given key.
         """
 
     def prev_key(key):
-        """Return key before given key. Raise ``KeyError`` if key corresponds
-        to first item in node.
+        """Return key before given key. Raise ``KeyError`` if node has no
+        children or no key before given key.
         """
 
-    def swap(node_a, node_b):
-        """Swap 2 nodes. Both nodes must be children of self.
 
-        :param node_a: Either ``INode`` implementing object or node name
-            as string.
-        :param node_b: Either ``INode`` implementing object or node name
-            as string.
+# B/C 2022-11-22 -> node.interfaces.IOrder
+deprecated(
+    '``IOrder`` has been renamed to ``IMappingOrder``. Please fix your import',
+    IOrder='node.interfaces:IMappingOrder',
+)
+
+
+class ISequenceOrder(INodeOrder):
+    """Plumbing behavior for ordering support on sequence nodes."""
+
+    first_index = Attribute(
+        'First child index. ``IndexError`` is raised if node has no children.'
+    )
+    last_index = Attribute(
+        'Last child index. ``IndexError`` is raised if node has no children.'
+    )
+
+    def next_index(index):
+        """Return index after given index. Raise ``IndexError`` if node has no
+        children or no index after given index.
         """
 
-    def insertbefore(newnode, refnode):
-        """Insert ``newnode`` before ``refnode``. ``__name__`` on ``newnode``
-        must be set. ``refnode`` must be children of self.
-
-        :param newnode: ``INode`` implementing object.
-        :param refnode: Either ``INode`` implementing object or node name
-            as string.
-        """
-
-    def insertafter(newnode, refnode):
-        """Insert ``newnode`` after ``refnode``. ``__name__`` on ``newnode``
-        must be set. ``refnode`` must be children of self.
-
-        :param newnode: ``INode`` implementing object.
-        :param refnode: Either ``INode`` implementing object or node name
-            as string.
-        """
-
-    def insertfirst(newnode):
-        """Insert ``newnode`` as first node. ``__name__`` on ``newnode`` must
-        be set.
-
-        :param newnode: ``INode`` implementing object.
-        """
-
-    def insertlast(newnode):
-        """Insert ``newnode`` as last node. ``__name__`` on ``newnode`` must
-        be set.
-
-        :param newnode: ``INode`` implementing object.
-        """
-
-    def movebefore(movenode, refnode):
-        """Move ``movenode`` before ``refnode``. Both nodes must be children
-        of self.
-
-        :param movenode: Either ``INode`` implementing object or node name
-            as string.
-        :param refnode: Either ``INode`` implementing object or node name
-            as string.
-        """
-
-    def moveafter(movenode, refnode):
-        """Move ``movenode`` after ``refnode``. Both nodes must be children
-        of self.
-
-        :param movenode: Either ``INode`` implementing object or node name
-            as string.
-        :param refnode: Either ``INode`` implementing object or node name
-            as string.
-        """
-
-    def movefirst(movenode):
-        """Move ``movenode`` as first node. Node must be children of self.
-
-        :param movenode: Either ``INode`` implementing object or node name
-            as string.
-        """
-
-    def movelast(movenode):
-        """Move ``movenode`` as last node. Node must be children of self.
-
-        :param movenode: Either ``INode`` implementing object or node name
-            as string.
+    def prev_index(index):
+        """Return index before given index. Raise ``IndexError`` if node has no
+        children or no index before given index.
         """
 
 
@@ -687,10 +707,8 @@ class IMappingReference(INodeReference):
 
 # B/C 2022-05-06 -> node.interfaces.IReference
 deprecated(
-    (
-        '``IReference`` has been renamed to ``IMappingReference``. '
-        'Please fix your import'
-    ),
+    '``IReference`` has been renamed to ``IMappingReference``. '
+    'Please fix your import',
     IReference='node.interfaces:IMappingReference',
 )
 

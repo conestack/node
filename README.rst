@@ -471,9 +471,9 @@ Mapping Behaviors
     Plumbing behavior for caching.
     See ``node.interfaces.ICache``.
 
-**node.behaviors.Order**
-    Plumbing behavior for ordering support.
-    See ``node.interfaces.IOrder``.
+**node.behaviors.MappingOrder**
+    Plumbing behavior for ordering support on mapping nodes.
+    See ``node.interfaces.IMappingOrder``.
 
 **node.behaviors.UUIDAware**
     Plumbing behavior providing a uuid on nodes.
@@ -547,6 +547,10 @@ Sequence Behaviors
 **node.behaviors.SequenceFilter**
     Filter sequence children by class or interface.
     See ``node.interfaces.IChildFilter``.
+
+**node.behaviors.SequenceOrder**
+    Plumbing behavior for ordering support on sequence nodes.
+    See ``node.interfaces.ISequenceOrder``.
 
 
 JSON Serialization
