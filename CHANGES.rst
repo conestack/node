@@ -5,6 +5,10 @@ Changes
 1.2 (unreleased)
 ----------------
 
+- Do not overwrite ``uuid`` in ``node.behaviors.UUIDAware.__init__`` if
+  ``uuid`` already set.
+  [rnix]
+
 - Rename ``node.interfaces.IOrder`` to ``node.interfaces.IMappingOrder``
   and ``node.behaviors.Order`` to ``node.behaviors.MappingOrder``.
   B/C is kept.

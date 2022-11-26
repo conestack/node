@@ -53,7 +53,8 @@ class UUIDAware(Behavior):
     @plumb
     def __init__(next_, self, *args, **kw):
         next_(self, *args, **kw)
-        self.uuid = self.uuid_factory()
+        if not self.uuid:
+            self.uuid = self.uuid_factory()
 
     @plumb
     def copy(next_, self):

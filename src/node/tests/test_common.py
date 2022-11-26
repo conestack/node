@@ -94,3 +94,8 @@ class TestCommon(NodeTestCase):
 
         self.assertTrue(c1_uid == detached.uuid)
         self.assertTrue(s1_uid == detached['s1'].uuid)
+
+        # uuid not gets overwritten on __init__ if already set
+        UUIDNode.uuid = uuid.UUID('3252e869-72cf-4426-9e34-abbc3cbe3af0')
+        uuid_node = UUIDNode()
+        self.assertEqual(uuid_node.uuid, UUIDNode.uuid)
