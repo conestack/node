@@ -2,7 +2,7 @@
 Changes
 =======
 
-1.2 (unreleased)
+1.2 (2022-12-05)
 ----------------
 
 - Do not overwrite ``uuid`` in ``node.behaviors.UUIDAware.__init__`` if
