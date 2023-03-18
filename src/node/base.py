@@ -9,7 +9,7 @@ from node.behaviors import MappingNode
 from node.behaviors import MappingReference
 from node.behaviors import Nodespaces
 from node.behaviors import OdictStorage
-from node.behaviors import Order
+from node.behaviors import MappingOrder
 from node.behaviors import SequenceAdopt
 from node.behaviors import SequenceConstraints
 from node.behaviors import SequenceNode
@@ -75,7 +75,7 @@ class ListNode(object):
     MappingAdopt,
     Attributes,
     MappingReference,
-    Order,
+    MappingOrder,
     AsAttrAccess,
     DefaultInit,
     MappingNode,
@@ -90,7 +90,7 @@ class Node(object):
     MappingAdopt,
     Attributes,
     MappingReference,
-    Order,
+    MappingOrder,
     AsAttrAccess,
     DefaultInit,
     MappingNode,

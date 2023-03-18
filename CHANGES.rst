@@ -2,10 +2,11 @@
 Changes
 =======
 
-1.3 (unreleased)
-----------------
+1.2.1 (unreleased)
+------------------
 
-- Nothing changed yet.
+- Replace deprecated import of ``Order`` with ``MappingOrder`` in ``node.base``.
+  [rnix]
 
 
 1.2 (2022-12-05)
