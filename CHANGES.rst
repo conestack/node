@@ -2,7 +2,7 @@
 Changes
 =======
 
-1.2.1 (unreleased)
+1.2.1 (2023-04-16)
 ------------------
 
 - Replace deprecated import of ``Order`` with ``MappingOrder`` in ``node.base``.
