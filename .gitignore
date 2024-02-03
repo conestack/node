@@ -1,8 +1,9 @@
+*.egg-info/
 *.pyc
 /.coverage
+/.mxmake
+/.ruff_cache
 /dist/
 /htmlcov/
-/py2/
-/py3/
-/pypy3/
-/src/node.egg-info/
+/requirements-mxdev.txt
+/venv
