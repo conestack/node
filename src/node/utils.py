@@ -14,6 +14,12 @@ logger = logging.getLogger('node')
 
 class Unset(object):
     """Identify unset values in contrast to None."""
+    instance = None
+
+    def __new__(cls):
+        if cls.instance is None:
+            cls.instance = object.__new__(cls)
+        return cls.instance
 
     def __nonzero__(self):
         return False

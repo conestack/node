@@ -13,9 +13,11 @@ from node.utils import safe_decode
 from node.utils import safe_encode
 from node.utils import StrCodec
 from node.utils import UNSET
+from node.utils import Unset
 from odict import odict
 import copy
 import logging
+import pickle
 
 
 class TestUtils(NodeTestCase):
@@ -31,6 +33,8 @@ class TestUtils(NodeTestCase):
         self.assertFalse(UNSET <= UNSET)
         self.assertFalse(UNSET > UNSET)
         self.assertFalse(UNSET >= UNSET)
+        self.assertTrue(Unset() is UNSET)
+        self.assertTrue(pickle.loads(pickle.dumps(UNSET)) is UNSET)
 
     def test_ReverseMapping(self):
         context = odict([

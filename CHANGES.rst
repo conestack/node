@@ -5,7 +5,9 @@ Changes
 1.2.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Make sure ``Unset`` class always returns the same instance in ``__new__``.
+  Fixes problems with pickle.
+  [rnix]
 
 
 1.2.1 (2023-04-16)

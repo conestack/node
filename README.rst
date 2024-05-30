@@ -10,7 +10,7 @@ Node
     :alt: Number of PyPI downloads
 
 .. image:: https://github.com/conestack/node/actions/workflows/test.yaml/badge.svg
-    :target: https://github.com/conestack/node/actions/workflows/test.yaml
+    :target: https://github.com/conestack/node/actions/workflows/test.yml
     :alt: Test node
 
 
