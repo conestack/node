@@ -2,7 +2,7 @@
 Changes
 =======
 
-1.2.2 (unreleased)
+1.2.2 (2024-05-30)
 ------------------
 
 - Make sure ``Unset`` class always returns the same instance in ``__new__``.
