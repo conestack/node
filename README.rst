@@ -9,7 +9,7 @@ Node
     :target: https://pypi.python.org/pypi/node
     :alt: Number of PyPI downloads
 
-.. image:: https://github.com/conestack/node/actions/workflows/test.yaml/badge.svg
+.. image:: https://github.com/conestack/node/actions/workflows/test.yml/badge.svg
     :target: https://github.com/conestack/node/actions/workflows/test.yml
     :alt: Test node
 
@@ -574,7 +574,7 @@ For details on serialization API please read file in
 Python Versions
 ---------------
 
-- Python 2.7, 3.7+
+- Python 3.8+ (tested)
 - May work with other versions (untested)
 
 
