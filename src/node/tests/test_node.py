@@ -1,4 +1,5 @@
 from node.behaviors import DefaultInit
+from node.behaviors import MappingNode
 from node.behaviors import Node
 from node.behaviors import NodeInit
 from node.interfaces import IDefaultInit
@@ -29,6 +30,13 @@ class NodeInitObject(object):
 @plumbing(DefaultInit, Node)
 class NodeObject(object):
     pass
+
+
+@plumbing(DefaultInit, Node, MappingNode)
+class BrokenMapping(object):
+
+    def __iter__(self):
+        yield 'child'
 
 
 class NoInterface(Interface):
@@ -98,3 +106,10 @@ class TestNode(NodeTestCase):
             node.noderepr,
             "<class 'node.tests.test_node.NodeObject'>: node"
         )
+
+        # treerepr
+        broken = BrokenMapping(name='broken')
+        self.checkOutput("""
+        <class 'node.tests.test_node.BrokenMapping'>: broken
+        __child: 'NotImplementedError()'
+        """, broken.treerepr(prefix='_'))

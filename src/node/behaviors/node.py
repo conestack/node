@@ -133,12 +133,19 @@ class Node(Behavior):
                 for name in schema_members
             ], key=lambda x: x[0])
         if IMappingNode.providedBy(self):
-            items = (
-                self.items()
+            items = list()
+            for key in self:
+                try:
+                    value = self[key]
+                except Exception as e:
+                    value = repr(e)
+                items.append((key, value))
+            sorted_items = (
+                items
                 if IOrdered.providedBy(self)
-                else sorted(self.items(), key=lambda x: safe_decode(x[0]))
+                else sorted(items, key=lambda x: safe_decode(x[0]))
             )
-            for item in items:
+            for item in sorted_items:
                 if item[0] not in schema_members:
                     children.append(item)
         elif ISequenceNode.providedBy(self):
