@@ -40,9 +40,9 @@ jobs:
       - name: Run tests
         run: |
           python --version
-          python -m node.tests.__init__
+          pytest src/node/tests
 
       - name: Run coverage
         run: |
-          coverage run --source=src/node --omit=src/node/testing/profiling.py -m node.tests.__init__
+          coverage run --source=src/node --omit=src/node/testing/profiling.py -m pytest src/node/tests
           coverage report --fail-under=100

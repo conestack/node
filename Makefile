@@ -7,7 +7,6 @@
 #: core.mxfiles
 #: core.packages
 #: qa.coverage
-#: qa.ruff
 #: qa.test
 #
 # SETTINGS (ALL CHANGES MADE BELOW SETTINGS WILL BE LOST)
@@ -46,8 +45,8 @@ EXTRA_PATH?=
 PRIMARY_PYTHON?=python3
 
 # Minimum required Python version.
-# Default: 3.7
-PYTHON_MIN_VERSION?=3.7
+# Default: 3.9
+PYTHON_MIN_VERSION?=3.9
 
 # Install packages using the given package installer method.
 # Supported are `pip` and `uv`. If uv is used, its global availability is
@@ -80,7 +79,7 @@ VENV_CREATE?=true
 # `VENV_CREATE` is false it is expected to point to an existing virtual
 # environment. If `VENV_ENABLED` is `false` it is ignored.
 # Default: .venv
-VENV_FOLDER?=venv
+VENV_FOLDER?=.venv
 
 # mxdev to install in virtual environment.
 # Default: mxdev
@@ -89,12 +88,6 @@ MXDEV?=mxdev
 # mxmake to install in virtual environment.
 # Default: mxmake
 MXMAKE?=mxmake
-
-## qa.ruff
-
-# Source folder to scan for Python files to run ruff on.
-# Default: src
-RUFF_SRC?=src
 
 ## core.mxfiles
 
@@ -114,7 +107,7 @@ PACKAGES_ALLOW_PRERELEASES?=false
 # The command which gets executed. Defaults to the location the
 # :ref:`run-tests` template gets rendered to if configured.
 # Default: .mxmake/files/run-tests.sh
-TEST_COMMAND?=$(VENV_FOLDER)/bin/python -m node.tests.__init__
+TEST_COMMAND?=$(VENV_FOLDER)/bin/pytest src/node/tests
 
 # Additional Python requirements for running tests to be
 # installed (via pip).
@@ -134,7 +127,7 @@ COVERAGE_COMMAND?=\
 	$(VENV_FOLDER)/bin/coverage run \
 		--source=src/node \
 		--omit=src/node/testing/profiling.py \
-		-m node.tests.__init__ \
+		-m pytest src/node/tests \
 	&& $(VENV_FOLDER)/bin/coverage report --fail-under=100
 
 ##############################################################################
@@ -174,6 +167,8 @@ $(SENTINEL): $(firstword $(MAKEFILE_LIST))
 ##############################################################################
 # mxenv
 ##############################################################################
+
+export OS:=$(OS)
 
 # Determine the executable path
 ifeq ("$(VENV_ENABLED)", "true")
@@ -248,41 +243,6 @@ endif
 INSTALL_TARGETS+=mxenv
 DIRTY_TARGETS+=mxenv-dirty
 CLEAN_TARGETS+=mxenv-clean
-
-##############################################################################
-# ruff
-##############################################################################
-
-RUFF_TARGET:=$(SENTINEL_FOLDER)/ruff.sentinel
-$(RUFF_TARGET): $(MXENV_TARGET)
-	@echo "Install Ruff"
-	@$(PYTHON_PACKAGE_COMMAND) install ruff
-	@touch $(RUFF_TARGET)
-
-.PHONY: ruff-check
-ruff-check: $(RUFF_TARGET)
-	@echo "Run ruff check"
-	@ruff check $(RUFF_SRC)
-
-.PHONY: ruff-format
-ruff-format: $(RUFF_TARGET)
-	@echo "Run ruff format"
-	@ruff format $(RUFF_SRC)
-
-.PHONY: ruff-dirty
-ruff-dirty:
-	@rm -f $(RUFF_TARGET)
-
-.PHONY: ruff-clean
-ruff-clean: ruff-dirty
-	@test -e $(MXENV_PYTHON) && $(MXENV_PYTHON) -m pip uninstall -y ruff || :
-	@rm -rf .ruff_cache
-
-INSTALL_TARGETS+=$(RUFF_TARGET)
-CHECK_TARGETS+=ruff-check
-FORMAT_TARGETS+=ruff-format
-DIRTY_TARGETS+=ruff-dirty
-CLEAN_TARGETS+=ruff-clean
 
 ##############################################################################
 # mxfiles
@@ -441,6 +401,10 @@ coverage-clean: coverage-dirty
 INSTALL_TARGETS+=$(COVERAGE_TARGET)
 DIRTY_TARGETS+=coverage-dirty
 CLEAN_TARGETS+=coverage-clean
+
+##############################################################################
+# Custom includes
+##############################################################################
 
 -include $(INCLUDE_MAKEFILE)
 

@@ -54,5 +54,5 @@ setup(
         'zope.deprecation',
         'zope.lifecycleevent'
     ],
-    test_suite='node.tests.test_suite'
+    extras_require=dict(test=['pytest']),
 )

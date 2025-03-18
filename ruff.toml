@@ -1,4 +1,0 @@
-target-version = "py37"
-
-[format]
-quote-style = "single"
