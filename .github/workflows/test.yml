@@ -35,7 +35,7 @@ jobs:
       - name: Install
         run: |
           pip install coverage
-          pip install -e .
+          pip install -e .[test]
 
       - name: Run tests
         run: |
