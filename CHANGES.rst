@@ -5,7 +5,8 @@ Changes
 1.2.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix ``Node.treerepr`` if mapping raises an exception on ``__getitem__``.
+  [rnix]
 
 
 1.2.2 (2024-05-30)
