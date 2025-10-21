@@ -40,5 +40,8 @@ test = [
 [project.urls]
 Homepage = "http://github.com/conestack/node"
 
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/node"]
 [tool.zest-releaser]
 create-wheel = true
