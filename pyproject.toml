@@ -22,7 +22,6 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
-    "Programming Language :: Python :: 3.10",
 ]
 dependencies = [
     "odict>=1.9.0",
@@ -43,5 +42,11 @@ Homepage = "http://github.com/conestack/node"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/node"]
+
+[tool.pytest.ini_options]
+consider_namespace_packages = true
+addopts = ["--import-mode=importlib"]
+pythonpath = "src"
+
 [tool.zest-releaser]
 create-wheel = true
