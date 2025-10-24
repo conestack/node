@@ -2,8 +2,11 @@
 Changes
 =======
 
-1.2.3 (unreleased)
+1.3.0 (unreleased)
 ------------------
+
+- Refactor package layout to use ``pyproject.toml`` and implecit namespace packages.
+  [rnix]
 
 - Fix ``Node.treerepr`` if mapping raises an exception on ``__getitem__``.
   [rnix]
