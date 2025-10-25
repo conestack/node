@@ -5,6 +5,9 @@ Changes
 1.2.3 (unreleased)
 ------------------
 
+- Pin upper versions of dependencies.
+  [rnix]
+
 - Fix ``Node.treerepr`` if mapping raises an exception on ``__getitem__``.
   [rnix]
 
