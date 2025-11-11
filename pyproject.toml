@@ -1,12 +1,13 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-fancy-pypi-readme"]
 build-backend = "hatchling.build"
 
 [project]
 name = "node"
 version = "2.0.0.dev0"
 description = "Building data structures as node trees"
-readme = "README.rst"
+dynamic = ["readme"]
+requires-python = ">=3.10"
 license = {text = "Simplified BSD"}
 authors = [{name = "Node Contributors", email = "dev@conestack.org"}]
 keywords = ["node", "tree", "fullmapping", "dict"]
@@ -39,6 +40,24 @@ test = [
 
 [project.urls]
 Homepage = "http://github.com/conestack/node"
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.metadata.hooks.fancy-pypi-readme]
+content-type = "text/x-rst"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+path = "README.rst"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+path = "CHANGES.rst"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+path = "LICENSE.rst"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/node"]
