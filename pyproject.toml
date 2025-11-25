@@ -43,15 +43,13 @@ Homepage = "http://github.com/conestack/node"
 
 [tool.hatch.metadata.hooks.fancy-pypi-readme]
 content-type = "text/x-rst"
-
-[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
-path = "README.rst"
-
-[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
-path = "CHANGES.rst"
-
-[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
-path = "LICENSE.rst"
+fragments = [
+    {path = "README.rst"},
+    {text = "\n\n"},
+    {path = "CHANGES.rst"},
+    {text = "\n\n"},
+    {path = "LICENSE.rst"},
+]
 
 [tool.hatch.build.targets.sdist]
 exclude = [
