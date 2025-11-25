@@ -92,7 +92,7 @@ VENV_CREATE?=true
 # `VENV_CREATE` is false it is expected to point to an existing virtual
 # environment. If `VENV_ENABLED` is `false` it is ignored.
 # Default: .venv
-VENV_FOLDER?=.venv
+VENV_FOLDER?=venv
 
 # mxdev to install in virtual environment.
 # Default: mxdev
