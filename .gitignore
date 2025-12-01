@@ -3,7 +3,10 @@
 /.coverage
 /.mxmake
 /.ruff_cache
-/.venv
+/build
+/constraints-mxdev.txt
 /dist/
 /htmlcov/
 /requirements-mxdev.txt
+/sources/
+/venv/

@@ -1,4 +1,0 @@
-graft src/node
-include *.rst
-global-exclude *.pyc
-prune scripts
