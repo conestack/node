@@ -8,6 +8,13 @@ Changes
 - Refactor package layout to use ``pyproject.toml`` and implecit namespace packages.
   [rnix]
 
+
+1.2.3 (2025-10-25)
+------------------
+
+- Pin upper versions of dependencies.
+  [rnix]
+
 - Fix ``Node.treerepr`` if mapping raises an exception on ``__getitem__``.
   [rnix]
 
