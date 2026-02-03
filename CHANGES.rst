@@ -2,7 +2,7 @@
 Changes
 =======
 
-2.0.0 (unreleased)
+2.0.0 (2026-02-03)
 ------------------
 
 - Refactor package layout to use ``pyproject.toml``.
