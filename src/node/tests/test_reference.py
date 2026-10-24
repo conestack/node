@@ -18,6 +18,7 @@ from node.tests import NodeTestCase
 from plumber import plumbing
 from zope.interface.common.mapping import IReadMapping
 import uuid
+import warnings
 
 
 ###############################################################################
@@ -539,10 +540,11 @@ class TestReference(NodeTestCase):
         self.assertEqual(len(sequence._index), 2)
 
     def test_BC_imports(self):
-        from node.behaviors import Reference
+        # deprecated aliases, the warnings are expected
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore', DeprecationWarning)
+            from node.behaviors import Reference
+            from node.interfaces import IReference
 
         self.assertTrue(Reference is MappingReference)
-
-        from node.interfaces import IReference
-
         self.assertTrue(IReference is IMappingReference)

@@ -10,6 +10,7 @@ from node.testing.env import MockupNode
 from node.testing.env import NoNode
 from node.tests import NodeTestCase
 from plumber import plumbing
+import warnings
 
 
 class TestAdopt(NodeTestCase):
@@ -111,10 +112,11 @@ class TestAdopt(NodeTestCase):
         self.assertEqual(node.__parent__, None)
 
     def test_BC_imports(self):
-        from node.behaviors import Adopt
+        # deprecated aliases, the warnings are expected
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore', DeprecationWarning)
+            from node.behaviors import Adopt
+            from node.interfaces import IAdopt
 
         self.assertTrue(Adopt is MappingAdopt)
-
-        from node.interfaces import IAdopt
-
         self.assertTrue(IAdopt is IMappingAdopt)

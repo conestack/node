@@ -12,6 +12,7 @@ from node.tests import NodeTestCase
 from plumber import plumbing
 from zope.interface import alsoProvides
 from zope.interface import Interface
+import warnings
 
 
 ###############################################################################
@@ -271,10 +272,11 @@ class TestMapping(NodeTestCase):
         )
 
     def test_BC_imports(self):
-        from node.behaviors import Nodify
+        # deprecated aliases, the warnings are expected
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore', DeprecationWarning)
+            from node.behaviors import Nodify
+            from node.interfaces import INodify
 
         self.assertTrue(Nodify is MappingNodeBehavior)
-
-        from node.interfaces import INodify
-
         self.assertTrue(INodify is IMappingNode)

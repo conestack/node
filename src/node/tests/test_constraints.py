@@ -13,6 +13,7 @@ from node.interfaces import IMappingConstraints
 from node.interfaces import INode
 from node.tests import NodeTestCase
 from plumber import plumbing
+import warnings
 
 
 class TestConstraints(NodeTestCase):
@@ -21,19 +22,23 @@ class TestConstraints(NodeTestCase):
             allow_non_node_childs = False
 
         ob = BC1()
-        self.assertEqual(child_constraints(ob), (INode,))
+        with self.assertWarns(UserWarning):
+            self.assertEqual(child_constraints(ob), (INode,))
 
         ob.allow_non_node_childs = True
-        self.assertEqual(child_constraints(ob), tuple())
+        with self.assertWarns(UserWarning):
+            self.assertEqual(child_constraints(ob), tuple())
 
         class BC2:
             allow_non_node_children = False
 
         ob = BC2()
-        self.assertEqual(child_constraints(ob), (INode,))
+        with self.assertWarns(UserWarning):
+            self.assertEqual(child_constraints(ob), (INode,))
 
         ob.allow_non_node_children = True
-        self.assertEqual(child_constraints(ob), tuple())
+        with self.assertWarns(UserWarning):
+            self.assertEqual(child_constraints(ob), tuple())
 
         class Constrains:
             child_constraints = None
@@ -109,10 +114,11 @@ class TestConstraints(NodeTestCase):
         self.assertEqual(node['0'], 0)
 
     def test_BC_imports(self):
-        from node.behaviors import NodeChildValidate
+        # deprecated aliases, the warnings are expected
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore', DeprecationWarning)
+            from node.behaviors import NodeChildValidate
+            from node.interfaces import INodeChildValidate
 
         self.assertTrue(MappingConstraints is NodeChildValidate)
-
-        from node.interfaces import INodeChildValidate
-
         self.assertTrue(IMappingConstraints is INodeChildValidate)

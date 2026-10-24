@@ -66,6 +66,9 @@ consider_namespace_packages = true
 addopts = ["--import-mode=importlib"]
 pythonpath = "src"
 
+[tool.coverage.run]
+omit = ["*/node/testing/profiling.py"]
+
 [tool.ruff]
 line-length = 90
 

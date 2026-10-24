@@ -31,14 +31,16 @@ class TestFactories(NodeTestCase):
         node = ChildFactoryNode()
         self.assertEqual(list(node.keys()), ['factory', 'legacy'])
         self.assertTrue(isinstance(node['factory'], Factory))
-        self.assertTrue(isinstance(node['legacy'], LegacyFactory))
+        with self.assertWarns(UserWarning):
+            self.assertTrue(isinstance(node['legacy'], LegacyFactory))
 
     def test_FixedChildren(self):
         @plumbing(MappingNode, FixedChildren)
         class FixedChildrenNode:
             factories = odict([('factory', Factory), ('legacy', LegacyFactory)])
 
-        node = FixedChildrenNode()
+        with self.assertWarns(UserWarning):
+            node = FixedChildrenNode()
         self.assertEqual(list(node.keys()), ['factory', 'legacy'])
         self.assertTrue(isinstance(node['factory'], Factory))
         self.assertTrue(isinstance(node['legacy'], LegacyFactory))
@@ -58,7 +60,8 @@ class TestFactories(NodeTestCase):
                 [('factory', Factory), ('legacy', LegacyFactory)]
             )
 
-        node = LegacyFixedChildrenNode()
+        with self.assertWarns(UserWarning):
+            node = LegacyFixedChildrenNode()
         self.assertEqual(list(node.keys()), ['factory', 'legacy'])
 
         # B/C interface violation
@@ -66,7 +69,8 @@ class TestFactories(NodeTestCase):
         class LegacyFixedChildrenNode:
             fixed_children_factories = (('factory', Factory), ('legacy', LegacyFactory))
 
-        node = LegacyFixedChildrenNode()
+        with self.assertWarns(UserWarning):
+            node = LegacyFixedChildrenNode()
         self.assertEqual(list(node.keys()), ['factory', 'legacy'])
 
     def test__wildcard_pattern_occurrences(self):

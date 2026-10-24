@@ -7,6 +7,7 @@ from node.interfaces import IMappingStorage
 from node.tests import NodeTestCase
 from odict import odict
 from plumber import plumbing
+import warnings
 
 
 ###############################################################################
@@ -113,10 +114,11 @@ class TestStorage(NodeTestCase):
             del lseq[0]
 
     def test_BC_imports(self):
-        from node.behaviors import Storage
+        # deprecated aliases, the warnings are expected
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore', DeprecationWarning)
+            from node.behaviors import Storage
+            from node.interfaces import IStorage
 
         self.assertTrue(Storage is MappingStorage)
-
-        from node.interfaces import IStorage
-
         self.assertTrue(IStorage is IMappingStorage)

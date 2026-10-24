@@ -18,7 +18,7 @@ import unittest
 import uuid
 
 
-class TestObject:
+class PickledObject:
     def __init__(self, value):
         self.value = value
 
@@ -151,9 +151,9 @@ class TestSchemaSerializer(unittest.TestCase):
         serializer = schema.PickleSerializer()
         self.assertIsInstance(serializer, schema.FieldSerializer)
         self.assertIsInstance(schema.pickle_serializer, schema.PickleSerializer)
-        data = serializer.dump(TestObject('value'))
+        data = serializer.dump(PickledObject('value'))
         obj = serializer.load(data)
-        self.assertIsInstance(obj, TestObject)
+        self.assertIsInstance(obj, PickledObject)
         self.assertEqual(obj.value, 'value')
 
     def test_DateTimeSerializer(self):

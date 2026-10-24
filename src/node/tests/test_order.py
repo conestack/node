@@ -11,6 +11,7 @@ from node.behaviors import SequenceOrder
 from node.behaviors import SequenceReference
 from node.tests import NodeTestCase
 from plumber import plumbing
+import warnings
 
 
 ###############################################################################
@@ -874,11 +875,12 @@ class TestSequenceOrder(NodeTestCase):
         self.assertTrue(check_indices())
 
     def test_BC_imports(self):
-        from node.behaviors import Order
+        # deprecated aliases, the warnings are expected
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore', DeprecationWarning)
+            from node.behaviors import Order
+            from node.interfaces import IMappingOrder
+            from node.interfaces import IOrder
 
         self.assertTrue(Order is MappingOrder)
-
-        from node.interfaces import IMappingOrder
-        from node.interfaces import IOrder
-
         self.assertTrue(IOrder is IMappingOrder)

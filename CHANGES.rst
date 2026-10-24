@@ -5,6 +5,9 @@ Changes
 2.1.0 (unreleased)
 ------------------
 
+- Omit the ``node.testing.profiling`` script from coverage.
+  [rnix]
+
 - Modernise the code ruff flags as outdated: ``u''`` prefixes, ``class
   X(object)``, ``.format()`` over f-strings, ``not x is y`` and bare
   ``except``. Behaviour unchanged. ``super(Class, self)`` is kept, see
