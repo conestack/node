@@ -13,10 +13,9 @@ from plumber import plumbing
 
 
 class TestAdopt(NodeTestCase):
-
     def test_MappingAdopt(self):
         @plumbing(MappingAdopt, FullMapping, DictStorage)
-        class AdoptingDict(object):
+        class AdoptingDict:
             pass
 
         ad = AdoptingDict()
@@ -38,7 +37,7 @@ class TestAdopt(NodeTestCase):
 
         # If something goes wrong, the adoption does not happen.
         # All exceptions are caught.
-        class FakeDict(object):
+        class FakeDict:
             def __setitem__(self, key, value):
                 raise KeyError(key)
 
@@ -60,7 +59,7 @@ class TestAdopt(NodeTestCase):
 
     def test_SequenceAdopt(self):
         @plumbing(SequenceAdopt, MutableSequence, ListStorage)
-        class AdoptingList(object):
+        class AdoptingList:
             pass
 
         al = AdoptingList()
@@ -91,7 +90,7 @@ class TestAdopt(NodeTestCase):
 
         # If something goes wrong, the adoption does not happen.
         # All exceptions are caught.
-        class FakeList(object):
+        class FakeList:
             def __setitem__(self, index, value):
                 pass  # pragma: no cover
 
@@ -113,7 +112,9 @@ class TestAdopt(NodeTestCase):
 
     def test_BC_imports(self):
         from node.behaviors import Adopt
+
         self.assertTrue(Adopt is MappingAdopt)
 
         from node.interfaces import IAdopt
+
         self.assertTrue(IAdopt is IMappingAdopt)

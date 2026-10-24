@@ -6,31 +6,25 @@ from node.behaviors import ListStorage
 from node.behaviors import MappingAdopt
 from node.behaviors import MappingConstraints
 from node.behaviors import MappingNode
+from node.behaviors import MappingOrder
 from node.behaviors import MappingReference
 from node.behaviors import Nodespaces
 from node.behaviors import OdictStorage
-from node.behaviors import MappingOrder
 from node.behaviors import SequenceAdopt
 from node.behaviors import SequenceConstraints
 from node.behaviors import SequenceNode
 from plumber import plumbing
 
 
-@plumbing(
-    MappingAdopt,
-    MappingNode)
-class AbstractNode(object):
+@plumbing(MappingAdopt, MappingNode)
+class AbstractNode:
     pass
 
 
 @plumbing(
-    MappingConstraints,
-    MappingAdopt,
-    AsAttrAccess,
-    DefaultInit,
-    MappingNode,
-    DictStorage)
-class BaseNode(object):
+    MappingConstraints, MappingAdopt, AsAttrAccess, DefaultInit, MappingNode, DictStorage
+)
+class BaseNode:
     """Base node, not ordered.
 
     Uses ``dict`` as mapping implementation.
@@ -38,26 +32,17 @@ class BaseNode(object):
 
 
 @plumbing(
-    MappingConstraints,
-    MappingAdopt,
-    AsAttrAccess,
-    DefaultInit,
-    MappingNode,
-    OdictStorage)
-class OrderedNode(object):
+    MappingConstraints, MappingAdopt, AsAttrAccess, DefaultInit, MappingNode, OdictStorage
+)
+class OrderedNode:
     """Ordered node.
 
     Uses ``odict`` as mapping implementation.
     """
 
 
-@plumbing(
-    SequenceConstraints,
-    SequenceAdopt,
-    DefaultInit,
-    SequenceNode,
-    ListStorage)
-class ListNode(object):
+@plumbing(SequenceConstraints, SequenceAdopt, DefaultInit, SequenceNode, ListStorage)
+class ListNode:
     """Sequence node.
 
     Uses ``list`` as sequence implementation.
@@ -69,6 +54,7 @@ class ListNode(object):
 # XXX: will be removed soon
 ###############################################################################
 
+
 @plumbing(
     MappingConstraints,
     Nodespaces,
@@ -79,8 +65,9 @@ class ListNode(object):
     AsAttrAccess,
     DefaultInit,
     MappingNode,
-    OdictStorage)
-class Node(object):
+    OdictStorage,
+)
+class Node:
     """A node with original functionality from zodict.node.Node."""
 
 
@@ -94,6 +81,7 @@ class Node(object):
     AsAttrAccess,
     DefaultInit,
     MappingNode,
-    OdictStorage)
-class AttributedNode(object):
+    OdictStorage,
+)
+class AttributedNode:
     """A node with original functionality from zodict.node.AttributedNode."""

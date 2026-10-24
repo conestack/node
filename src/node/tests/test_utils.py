@@ -20,7 +20,6 @@ import pickle
 
 
 class TestUtils(NodeTestCase):
-
     def test_UNSET(self):
         self.assertEqual(repr(UNSET), '<UNSET>')
         self.assertEqual(str(UNSET), '')
@@ -36,10 +35,7 @@ class TestUtils(NodeTestCase):
         self.assertTrue(pickle.loads(pickle.dumps(UNSET)) is UNSET)
 
     def test_ReverseMapping(self):
-        context = odict([
-            ('foo', 'a'),
-            ('bar', 'b')
-        ])
+        context = odict([('foo', 'a'), ('bar', 'b')])
         mapping = ReverseMapping(context)
         self.assertEqual([v for v in mapping], ['a', 'b'])
         self.assertEqual(mapping.keys(), ['a', 'b'])
@@ -51,15 +47,12 @@ class TestUtils(NodeTestCase):
         self.assertEqual(mapping['a'], 'foo')
         with self.assertRaises(KeyError) as arc:
             mapping['foo']
-        self.assertEqual(str(arc.exception), '\'foo\'')
+        self.assertEqual(str(arc.exception), "'foo'")
         self.assertEqual(mapping.get('b'), 'bar')
         self.assertEqual(mapping.get('foo', 'DEFAULT'), 'DEFAULT')
 
     def test_AttributeAccess(self):
-        context = odict([
-            ('foo', 'a'),
-            ('bar', 'b')
-        ])
+        context = odict([('foo', 'a'), ('bar', 'b')])
         attraccess = AttributeAccess(context)
         self.assertEqual(attraccess.foo, 'a')
         with self.assertRaises(AttributeError) as arc:
@@ -72,13 +65,11 @@ class TestUtils(NodeTestCase):
         self.assertEqual(attraccess.baz, 'bla')
         del attraccess['bar']
         self.assertEqual(
-            object.__getattribute__(attraccess, 'context').keys(),
-            ['foo', 'baz']
+            object.__getattribute__(attraccess, 'context').keys(), ['foo', 'baz']
         )
         attraccess.x = 0
         self.assertEqual(
-            object.__getattribute__(attraccess, 'context').keys(),
-            ['foo', 'baz', 'x']
+            object.__getattribute__(attraccess, 'context').keys(), ['foo', 'baz', 'x']
         )
 
     def test_encode(self):
@@ -86,58 +77,52 @@ class TestUtils(NodeTestCase):
             encode(
                 b'\x01\x05\x00\x00\x00\x00\x00\x05\x15\x00\x00\x00\xd4'
                 b'\xa0\xff\xff\xaeW\x82\xa9P\xcf8\xaf&\x0e\x00\x00'
-            ), (
+            ),
+            (
                 b'\x01\x05\x00\x00\x00\x00\x00\x05\x15\x00\x00\x00\xd4'
                 b'\xa0\xff\xff\xaeW\x82\xa9P\xcf8\xaf&\x0e\x00\x00'
-            )
+            ),
         )
-        self.assertEqual(encode(u'\xe4'), b'\xc3\xa4')
-        self.assertEqual(encode([u'\xe4']), [b'\xc3\xa4'])
-        self.assertEqual(
-            encode({u'\xe4': u'\xe4'}),
-            {b'\xc3\xa4': b'\xc3\xa4'}
-        )
+        self.assertEqual(encode('\xe4'), b'\xc3\xa4')
+        self.assertEqual(encode(['\xe4']), [b'\xc3\xa4'])
+        self.assertEqual(encode({'\xe4': '\xe4'}), {b'\xc3\xa4': b'\xc3\xa4'})
         self.assertEqual(encode(b'\xc3\xa4'), b'\xc3\xa4')
 
         node = BaseNode()
         node.child_constraints = None
-        node['foo'] = u'\xe4'
+        node['foo'] = '\xe4'
         self.assertEqual(encode(node), {b'foo': b'\xc3\xa4'})
 
     def test_decode(self):
-        self.assertEqual(decode(b'foo'), u'foo')
-        self.assertEqual(decode((b'foo', u'bar')), (u'foo', u'bar'))
-        self.assertEqual(decode({b'foo': b'bar'}), {u'foo': u'bar'})
+        self.assertEqual(decode(b'foo'), 'foo')
+        self.assertEqual(decode((b'foo', 'bar')), ('foo', 'bar'))
+        self.assertEqual(decode({b'foo': b'bar'}), {'foo': 'bar'})
         self.assertEqual(decode(b'fo\xe4'), b'fo\xe4')
 
         node = BaseNode()
         node.child_constraints = None
         node[b'foo'] = b'\xc3\xa4'
-        self.assertEqual(decode(node), {u'foo': u'\xe4'})
+        self.assertEqual(decode(node), {'foo': '\xe4'})
 
     def test_StrCodec(self):
         codec = StrCodec(soft=False)
         with self.assertRaises(UnicodeDecodeError) as arc:
             codec.decode(b'fo\xe4')
-        expected = (
-            'codec can\'t decode byte 0xe4 in position 2: '
-            'unexpected end of data'
-        )
+        expected = "codec can't decode byte 0xe4 in position 2: unexpected end of data"
         self.assertTrue(str(arc.exception).find(expected) > -1)
 
     def test_safe_encode(self):
-        self.assertEqual(safe_encode(u'äöü'), b'\xc3\xa4\xc3\xb6\xc3\xbc')
+        self.assertEqual(safe_encode('äöü'), b'\xc3\xa4\xc3\xb6\xc3\xbc')
         self.assertEqual(safe_encode(b'already_string'), b'already_string')
 
     def test_safe_decode(self):
-        self.assertEqual(safe_decode(b'\xc3\xa4\xc3\xb6\xc3\xbc'), u'äöü')
-        self.assertEqual(safe_decode(u'already_unicode'), u'already_unicode')
+        self.assertEqual(safe_decode(b'\xc3\xa4\xc3\xb6\xc3\xbc'), 'äöü')
+        self.assertEqual(safe_decode('already_unicode'), 'already_unicode')
 
     def test_instance_property(self):
         computed = list()
 
-        class InstancePropertyTest(object):
-
+        class InstancePropertyTest:
             @instance_property
             def property(self):
                 computed.append('Computed')
@@ -146,9 +131,7 @@ class TestUtils(NodeTestCase):
         obj = InstancePropertyTest()
         with self.assertRaises(AttributeError) as arc:
             obj._property
-        expected = (
-            '\'InstancePropertyTest\' object has no attribute \'_property\''
-        )
+        expected = "'InstancePropertyTest' object has no attribute '_property'"
         self.assertEqual(str(arc.exception), expected)
 
         self.assertEqual(obj.property, 'value')
@@ -179,7 +162,7 @@ class TestUtils(NodeTestCase):
 
         self.assertEqual(node_by_path(root, ['child', 'sub']), sub)
 
-        class CustomPathIterator(object):
+        class CustomPathIterator:
             def __iter__(self):
                 yield 'child'
                 yield 'sub'

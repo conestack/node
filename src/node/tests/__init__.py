@@ -2,8 +2,7 @@ import doctest
 import unittest
 
 
-class patch(object):
-
+class patch:
     def __init__(self, module, name, ob):
         self.module = module
         self.name = name
@@ -23,11 +22,11 @@ class patch(object):
             finally:
                 module, name, obj = orgin
                 setattr(module, name, obj)
+
         return _wrapped
 
 
-class Example(object):
-
+class Example:
     def __init__(self, want):
         self.want = want + '\n'
 
@@ -37,7 +36,6 @@ class Failure(Exception):
 
 
 class NodeTestCase(unittest.TestCase):
-
     def __init__(self, *args, **kw):
         unittest.TestCase.__init__(self, *args, **kw)
         self._checker = doctest.OutputChecker()
@@ -53,7 +51,7 @@ class NodeTestCase(unittest.TestCase):
         except exc as e:
             return e
         else:
-            msg = 'Expected \'{}\' when calling \'{}\''.format(exc, func)
+            msg = f"Expected '{exc}' when calling '{func}'"
             raise Exception(msg)
 
     # B/C
@@ -64,10 +62,9 @@ class NodeTestCase(unittest.TestCase):
             optionflags = self._optionflags
         success = self._checker.check_output(want, got, optionflags)
         if not success:
-            raise Failure(self._checker.output_difference(
-                Example(want),
-                got, optionflags
-            ))
+            raise Failure(
+                self._checker.output_difference(Example(want), got, optionflags)
+            )
 
     # B/C
     check_output = checkOutput

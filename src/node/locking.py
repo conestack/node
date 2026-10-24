@@ -1,8 +1,7 @@
 from threading import RLock
 
 
-class TreeLock(object):
-
+class TreeLock:
     def __init__(self, node):
         root = node.root
         self.lock = getattr(root, '_treelock', None)
@@ -23,6 +22,7 @@ class TreeLock(object):
 
 def locktree(fn):
     """Decorator for locking of a whole method."""
+
     def _locktree_decorator(self, *args, **kwargs):
         lock = TreeLock(self)
         lock.acquire()
@@ -31,4 +31,5 @@ def locktree(fn):
         finally:
             lock.release()
         return result
+
     return _locktree_decorator

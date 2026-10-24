@@ -53,19 +53,14 @@ class Field(ScopeContext):
         :raises Exception: If validation fails.
         """
         if not isinstance(value, self.type_):
-            raise ValueError(u'{} is no {} type'.format(value, self.type_))
+            raise ValueError(f'{value} is no {self.type_} type')
 
 
 class IterableField(Field):
     """An iterable schema field."""
 
     def __init__(
-        self,
-        type_,
-        default=UNSET,
-        serializer=UNSET,
-        value_type=UNSET,
-        size=UNSET
+        self, type_, default=UNSET, serializer=UNSET, value_type=UNSET, size=UNSET
     ):
         """Create iterable schema field.
 
@@ -77,11 +72,7 @@ class IterableField(Field):
         iterable. Optional.
         :param size: The allowed size of the iterable. Optional.
         """
-        super(IterableField, self).__init__(
-            type_,
-            default=default,
-            serializer=serializer
-        )
+        super(IterableField, self).__init__(type_, default=default, serializer=serializer)
         self.value_type = value_type
         self.size = size
 
@@ -94,9 +85,7 @@ class IterableField(Field):
         value_type = self.value_type
         if value_type is not UNSET:
             with scope_context(value_type, self.name, self.parent):
-                value = self.type_(
-                    [value_type.serialize(item) for item in value]
-                )
+                value = self.type_([value_type.serialize(item) for item in value])
         return super(IterableField, self).serialize(value)
 
     def deserialize(self, value):
@@ -120,11 +109,7 @@ class IterableField(Field):
         """
         super(IterableField, self).validate(value)
         if self.size is not UNSET and len(value) != self.size:
-            raise ValueError(u'{} has invalid size {} != {}'.format(
-                value,
-                len(value),
-                self.size
-            ))
+            raise ValueError(f'{value} has invalid size {len(value)} != {self.size}')
         value_type = self.value_type
         if value_type is not UNSET:
             with scope_context(value_type, self.name, self.parent):
@@ -133,7 +118,6 @@ class IterableField(Field):
 
 
 class Bool(Field):
-
     def __init__(self, default=UNSET, serializer=UNSET):
         """Create bool schema field.
 
@@ -141,15 +125,10 @@ class Bool(Field):
         :param serializer: ``Serializer`` instance. Supposed to be used if
         field value needs to be converted for serialization. Optional.
         """
-        super(Bool, self).__init__(
-            type_=bool,
-            default=default,
-            serializer=serializer
-        )
+        super(Bool, self).__init__(type_=bool, default=default, serializer=serializer)
 
 
 class Int(Field):
-
     def __init__(self, default=UNSET, serializer=UNSET):
         """Create int field.
 
@@ -157,15 +136,10 @@ class Int(Field):
         :param serializer: ``Serializer`` instance. Supposed to be used if
         field value needs to be converted for serialization. Optional.
         """
-        super(Int, self).__init__(
-            type_=int,
-            default=default,
-            serializer=serializer
-        )
+        super(Int, self).__init__(type_=int, default=default, serializer=serializer)
 
 
 class Float(Field):
-
     def __init__(self, default=UNSET, serializer=UNSET):
         """Create float schema field.
 
@@ -173,15 +147,10 @@ class Float(Field):
         :param serializer: ``Serializer`` instance. Supposed to be used if
         field value needs to be converted for serialization. Optional.
         """
-        super(Float, self).__init__(
-            type_=float,
-            default=default,
-            serializer=serializer
-        )
+        super(Float, self).__init__(type_=float, default=default, serializer=serializer)
 
 
 class Bytes(Field):
-
     def __init__(self, default=UNSET, serializer=UNSET):
         """Create bytes schema field.
 
@@ -189,15 +158,10 @@ class Bytes(Field):
         :param serializer: ``Serializer`` instance. Supposed to be used if
         field value needs to be converted for serialization. Optional.
         """
-        super(Bytes, self).__init__(
-            type_=bytes,
-            default=default,
-            serializer=serializer
-        )
+        super(Bytes, self).__init__(type_=bytes, default=default, serializer=serializer)
 
 
 class Str(Field):
-
     def __init__(self, default=UNSET, serializer=UNSET):
         """Create str schema field.
 
@@ -205,15 +169,10 @@ class Str(Field):
         :param serializer: ``Serializer`` instance. Supposed to be used if
         field value needs to be converted for serialization. Optional.
         """
-        super(Str, self).__init__(
-            type_=str,
-            default=default,
-            serializer=serializer
-        )
+        super(Str, self).__init__(type_=str, default=default, serializer=serializer)
 
 
 class UUID(Field):
-
     def __init__(self, default=UNSET, serializer=UNSET):
         """Create UUID schema field.
 
@@ -222,14 +181,11 @@ class UUID(Field):
         field value needs to be converted for serialization. Optional.
         """
         super(UUID, self).__init__(
-            type_=uuid.UUID,
-            default=default,
-            serializer=serializer
+            type_=uuid.UUID, default=default, serializer=serializer
         )
 
 
 class DateTime(Field):
-
     def __init__(self, default=UNSET, serializer=UNSET):
         """Create DateTime schema field.
 
@@ -238,21 +194,12 @@ class DateTime(Field):
         field value needs to be converted for serialization. Optional.
         """
         super(DateTime, self).__init__(
-            type_=datetime.datetime,
-            default=default,
-            serializer=serializer
+            type_=datetime.datetime, default=default, serializer=serializer
         )
 
 
 class Tuple(IterableField):
-
-    def __init__(
-        self,
-        default=UNSET,
-        serializer=UNSET,
-        value_type=UNSET,
-        size=UNSET
-    ):
+    def __init__(self, default=UNSET, serializer=UNSET, value_type=UNSET, size=UNSET):
         """Create tuple schema field.
 
         :param default: Default value of the field. Optional.
@@ -267,19 +214,12 @@ class Tuple(IterableField):
             default=default,
             serializer=serializer,
             value_type=value_type,
-            size=size
+            size=size,
         )
 
 
 class List(IterableField):
-
-    def __init__(
-        self,
-        default=UNSET,
-        serializer=UNSET,
-        value_type=UNSET,
-        size=UNSET
-    ):
+    def __init__(self, default=UNSET, serializer=UNSET, value_type=UNSET, size=UNSET):
         """Create list schema field.
 
         :param default: Default value of the field. Optional.
@@ -294,19 +234,12 @@ class List(IterableField):
             default=default,
             serializer=serializer,
             value_type=value_type,
-            size=size
+            size=size,
         )
 
 
 class Set(IterableField):
-
-    def __init__(
-        self,
-        default=UNSET,
-        serializer=UNSET,
-        value_type=UNSET,
-        size=UNSET
-    ):
+    def __init__(self, default=UNSET, serializer=UNSET, value_type=UNSET, size=UNSET):
         """Create set schema field.
 
         :param default: Default value of the field. Optional.
@@ -321,19 +254,18 @@ class Set(IterableField):
             default=default,
             serializer=serializer,
             value_type=value_type,
-            size=size
+            size=size,
         )
 
 
 class Dict(Field):
-
     def __init__(
         self,
         default=UNSET,
         serializer=UNSET,
         key_type=UNSET,
         value_type=UNSET,
-        size=UNSET
+        size=UNSET,
     ):
         """Create dict schema field.
 
@@ -346,11 +278,7 @@ class Dict(Field):
         iterable. Optional.
         :param size: The allowed size of the iterable. Optional.
         """
-        super(Dict, self).__init__(
-            type_=dict,
-            default=default,
-            serializer=serializer
-        )
+        super(Dict, self).__init__(type_=dict, default=default, serializer=serializer)
         self.key_type = key_type
         self.value_type = value_type
         self.size = size
@@ -404,11 +332,7 @@ class Dict(Field):
         """
         super(Dict, self).validate(value)
         if self.size is not UNSET and len(value) != self.size:
-            raise ValueError(u'{} has invalid size {} != {}'.format(
-                value,
-                len(value),
-                self.size
-            ))
+            raise ValueError(f'{value} has invalid size {len(value)} != {self.size}')
         key_type = self.key_type
         if key_type is not UNSET:
             with scope_context(key_type, self.name, self.parent):
@@ -422,14 +346,13 @@ class Dict(Field):
 
 
 class ODict(Dict):
-
     def __init__(
         self,
         default=UNSET,
         serializer=UNSET,
         key_type=UNSET,
         value_type=UNSET,
-        size=UNSET
+        size=UNSET,
     ):
         """Create ordered dict schema field.
 
@@ -447,13 +370,12 @@ class ODict(Dict):
             serializer=serializer,
             key_type=key_type,
             value_type=value_type,
-            size=size
+            size=size,
         )
         self.type_ = odict
 
 
 class Node(Field):
-
     def __init__(self, type_=UNSET, serializer=UNSET):
         """Create node schema field.
 

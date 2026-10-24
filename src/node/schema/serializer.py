@@ -10,8 +10,7 @@ import uuid
 
 
 class FieldSerializer(ScopeContext):
-    """Field serializer.
-    """
+    """Field serializer."""
 
     def dump(self, value):
         """Serialize given value.
@@ -92,7 +91,7 @@ class IterableSerializer(FieldSerializer):
         :return: Items of iterable joined by ',' as string.
         """
         items = sorted([quote(item) for item in value])
-        return u','.join(items)
+        return ','.join(items)
 
     def load(self, value):
         """Split string into iterable.
@@ -101,7 +100,7 @@ class IterableSerializer(FieldSerializer):
         :return: Instance of ``type_`` containing strings split by ',' from
         value.
         """
-        return self.type_([unquote(item) for item in value.split(u',')])
+        return self.type_([unquote(item) for item in value.split(',')])
 
 
 list_serializer = IterableSerializer(list)
@@ -130,10 +129,7 @@ class MappingSerializer(FieldSerializer):
         :return: Items of dict joined by ';' as string. Key/value pairs are
         joined by ','.
         """
-        return u';'.join([
-            u'{key},{value}'.format(key=quote(key), value=quote(val))
-            for key, val in value.items()
-        ])
+        return ';'.join([f'{quote(key)},{quote(val)}' for key, val in value.items()])
 
     def load(self, value):
         """Split string into dict.
@@ -143,8 +139,8 @@ class MappingSerializer(FieldSerializer):
         pairs are split by ','.
         """
         ret = self.type_()
-        for item in value.split(u';'):
-            key, val = item.split(u',')
+        for item in value.split(';'):
+            key, val = item.split(',')
             ret[unquote(key)] = unquote(val)
         return ret
 

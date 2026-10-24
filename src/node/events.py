@@ -19,6 +19,7 @@ from zope.lifecycleevent import ObjectRemovedEvent
 # Zope lifecycle events for ILifecycle
 ###############################################################################
 
+
 @implementer(INodeCreatedEvent)
 class NodeCreatedEvent(ObjectCreatedEvent):
     pass
@@ -48,6 +49,7 @@ class NodeDetachedEvent(ObjectRemovedEvent):
 # Event dispatcher using IEvents plumbing behavior
 ###############################################################################
 
+
 @plumbing(Events)
-class EventDispatcher(object):
+class EventDispatcher:
     """Object providing event dispatching."""

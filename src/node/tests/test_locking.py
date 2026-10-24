@@ -5,8 +5,7 @@ from node.tests import unittest
 import threading
 
 
-class MockLock(object):
-
+class MockLock:
     def __init__(self):
         self._lock = threading.RLock()
         self.count = 0
@@ -21,7 +20,6 @@ class MockLock(object):
 
 
 class TestLocking(unittest.TestCase):
-
     @patch(locking, 'RLock', MockLock)
     def test_TreeLock(self):
         node = BaseNode()

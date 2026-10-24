@@ -9,7 +9,7 @@ import threading
 _marker = dict()
 
 
-class fallback_processing(object):
+class fallback_processing:
     data = threading.local()
     data.processing = -1
 
@@ -22,8 +22,7 @@ class fallback_processing(object):
 
 
 def _to_root(node, path, visited):
-    """Traverse to root searching next fallback key. If no more parent, break.
-    """
+    """Traverse to root searching next fallback key. If no more parent, break."""
     parent = node.__parent__
     if parent is None:
         return _marker
@@ -36,7 +35,7 @@ def _to_root(node, path, visited):
 def _to_leaf(node, path, visited):
     """Traverse children, searching for fallback key."""
     current = node
-    for name in path[len(current.path):]:
+    for name in path[len(current.path) :]:
         new_current = current.get(name, _marker)
         if new_current is _marker:
             return _to_root(current, path=path, visited=visited)

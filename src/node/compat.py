@@ -31,5 +31,5 @@ deprecated(
         'lru_cache',
     ],
     'Python 2 compatibility is gone, use the builtins or ``functools`` '
-    'instead. Will be removed in node 3.0.'
+    'instead. Will be removed in node 3.0.',
 )

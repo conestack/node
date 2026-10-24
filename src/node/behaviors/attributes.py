@@ -13,28 +13,20 @@ from plumber import plumbing
 from zope.interface import implementer
 
 
-@plumbing(
-    MappingConstraints,
-    MappingAdopt,
-    MappingNode,
-    OdictStorage)
+@plumbing(MappingConstraints, MappingAdopt, MappingNode, OdictStorage)
 @implementer(INodeAttributes)
-class NodeAttributes(object):
+class NodeAttributes:
     child_constraints = None
 
     def __init__(self, name=None, parent=None):
         self.__name__ = name
         self.__parent__ = parent
         self.context = parent  # B/C 2011-01-31
-        self._node = parent    # B/C 2011-01-31
+        self._node = parent  # B/C 2011-01-31
 
     def __repr__(self):
         name = str(self.parent.name)
-        return '<{} object \'{}\' at {}>'.format(
-            self.__class__.__name__,
-            name,
-            hex(id(self))[:-1]
-        )
+        return f"<{self.__class__.__name__} object '{name}' at {hex(id(self))[:-1]}>"
 
 
 @implementer(IAttributes)
@@ -50,16 +42,14 @@ class Attributes(Behavior):
                 attrs = self.nodespaces['__attrs__']
             except KeyError:
                 attrs = self.nodespaces['__attrs__'] = self.attributes_factory(
-                    name='__attrs__',
-                    parent=self
+                    name='__attrs__', parent=self
                 )
         else:
             try:
                 attrs = self.__attrs__
             except AttributeError:
                 attrs = self.__attrs__ = self.attributes_factory(
-                    name='__attrs__',
-                    parent=self
+                    name='__attrs__', parent=self
                 )
         if self.attribute_access_for_attrs:
             return AttributeAccess(attrs)

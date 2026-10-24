@@ -5,7 +5,6 @@ import warnings
 
 
 class TestCompat(NodeTestCase):
-
     def deprecated_value(self, name):
         with warnings.catch_warnings(record=True) as log:
             warnings.simplefilter('always')

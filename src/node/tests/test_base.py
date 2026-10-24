@@ -16,13 +16,10 @@ import pickle
 
 
 class TestBase(NodeTestCase):
-
     def test_AbstractNode(self):
         self.assertEqual(AbstractNode.__bases__, (object,))
         abstract = AbstractNode()
-        self.assertTrue(
-            str(abstract).startswith('<AbstractNode object \'None\' at')
-        )
+        self.assertTrue(str(abstract).startswith("<AbstractNode object 'None' at"))
 
         # Storage related operations of ``AbstractNode`` raises
         # ``NotImplementedError``:
@@ -49,12 +46,11 @@ class TestBase(NodeTestCase):
         # ``node.testing.env`` contains a base node implementation inheriting
         # from ``AbstractNode`` for illustration purposes:
         mynode = MyNode()
-        self.assertTrue(
-            str(mynode).startswith('<MyNode object \'None\' at')
-        )
+        self.assertTrue(str(mynode).startswith("<MyNode object 'None' at"))
         fmtester = FullMappingTester(MyNode)
         fmtester.run()
-        self.checkOutput("""\
+        self.checkOutput(
+            """\
         ``__contains__``: OK
         ``__delitem__``: OK
         ``__getitem__``: OK
@@ -75,17 +71,18 @@ class TestBase(NodeTestCase):
         ``setdefault``: OK
         ``update``: OK
         ``values``: OK
-        """, fmtester.combined)
+        """,
+            fmtester.combined,
+        )
 
     def test_BaseNode(self):
         self.assertEqual(BaseNode.__bases__, (object,))
         basenode = BaseNode()
-        self.assertTrue(
-            str(basenode).startswith('<BaseNode object \'None\' at')
-        )
+        self.assertTrue(str(basenode).startswith("<BaseNode object 'None' at"))
         fmtester = FullMappingTester(BaseNode)
         fmtester.run()
-        self.checkOutput("""\
+        self.checkOutput(
+            """\
         ``__contains__``: OK
         ``__delitem__``: OK
         ``__getitem__``: OK
@@ -106,17 +103,18 @@ class TestBase(NodeTestCase):
         ``setdefault``: OK
         ``update``: OK
         ``values``: OK
-        """, fmtester.combined)
+        """,
+            fmtester.combined,
+        )
 
     def test_OrderedNode(self):
         self.assertEqual(OrderedNode.__bases__, (object,))
         orderednode = OrderedNode()
-        self.assertTrue(
-            str(orderednode).startswith('<OrderedNode object \'None\' at')
-        )
+        self.assertTrue(str(orderednode).startswith("<OrderedNode object 'None' at"))
         fmtester = FullMappingTester(OrderedNode)
         fmtester.run()
-        self.checkOutput("""\
+        self.checkOutput(
+            """\
         ``__contains__``: OK
         ``__delitem__``: OK
         ``__getitem__``: OK
@@ -137,19 +135,27 @@ class TestBase(NodeTestCase):
         ``setdefault``: OK
         ``update``: OK
         ``values``: OK
-        """, fmtester.combined)
+        """,
+            fmtester.combined,
+        )
 
         orderednode['child'] = OrderedNode()
-        self.checkOutput("""\
+        self.checkOutput(
+            """\
         <class 'node.base.OrderedNode'>: None
         __<class 'node.base.OrderedNode'>: child
-        """, orderednode.treerepr(prefix='_'))
+        """,
+            orderednode.treerepr(prefix='_'),
+        )
 
         unpickled = pickle.loads(pickle.dumps(orderednode))
-        self.checkOutput("""\
+        self.checkOutput(
+            """\
         <class 'node.base.OrderedNode'>: None
         __<class 'node.base.OrderedNode'>: child
-        """, unpickled.treerepr(prefix='_'))
+        """,
+            unpickled.treerepr(prefix='_'),
+        )
 
     def test_ILocation(self):
         # XXX: make tester object for ``ILocation`` contract.
@@ -158,9 +164,7 @@ class TestBase(NodeTestCase):
         # They are used to define tree hierarchy. As read only arguments they
         # are available at ``name`` and ``parent`` on nodes:
         mynode = create_tree(MyNode)
-        self.assertTrue(
-            str(mynode).startswith('<MyNode object \'None\' at')
-        )
+        self.assertTrue(str(mynode).startswith("<MyNode object 'None' at"))
         self.assertEqual(mynode.__name__, None)
         self.assertEqual(mynode.__parent__, None)
         self.assertEqual(mynode.name, None)
@@ -168,37 +172,25 @@ class TestBase(NodeTestCase):
         self.assertEqual(mynode['child_1'].name, 'child_1')
         self.assertTrue(mynode['child_1'].parent is mynode)
         self.assertEqual(mynode['child_1']['subchild_1'].name, 'subchild_1')
-        self.assertTrue(
-            mynode['child_1']['subchild_1'].parent.parent is mynode
-        )
+        self.assertTrue(mynode['child_1']['subchild_1'].parent.parent is mynode)
 
         basenode = create_tree(BaseNode)
-        self.assertTrue(
-            str(basenode).startswith('<BaseNode object \'None\' at')
-        )
+        self.assertTrue(str(basenode).startswith("<BaseNode object 'None' at"))
         self.assertEqual(basenode.name, None)
         self.assertEqual(basenode.parent, None)
         self.assertEqual(basenode['child_1'].name, 'child_1')
         self.assertTrue(basenode['child_1'].parent is basenode)
         self.assertEqual(basenode['child_1']['subchild_1'].name, 'subchild_1')
-        self.assertTrue(
-            basenode['child_1']['subchild_1'].parent.parent is basenode
-        )
+        self.assertTrue(basenode['child_1']['subchild_1'].parent.parent is basenode)
 
         orderednode = create_tree(OrderedNode)
-        self.assertTrue(
-            str(orderednode).startswith('<OrderedNode object \'None\' at')
-        )
+        self.assertTrue(str(orderednode).startswith("<OrderedNode object 'None' at"))
         self.assertEqual(orderednode.name, None)
         self.assertEqual(orderednode.parent, None)
         self.assertEqual(orderednode['child_1'].name, 'child_1')
         self.assertTrue(orderednode['child_1'].parent is orderednode)
-        self.assertEqual(
-            orderednode['child_1']['subchild_1'].name, 'subchild_1'
-        )
-        self.assertTrue(
-            orderednode['child_1']['subchild_1'].parent.parent is orderednode
-        )
+        self.assertEqual(orderednode['child_1']['subchild_1'].name, 'subchild_1')
+        self.assertTrue(orderednode['child_1']['subchild_1'].parent.parent is orderednode)
 
     def test_INode(self):
         # XXX: make tester object for INode contract
@@ -207,7 +199,8 @@ class TestBase(NodeTestCase):
 
         # printtree
         mynode = create_tree(MyNode)
-        self.checkOutput("""\
+        self.checkOutput(
+            """\
         <class 'node.testing.env.MyNode'>: None
         __<class 'node.testing.env.MyNode'>: child_0
         ____<class 'node.testing.env.MyNode'>: subchild_0
@@ -218,10 +211,13 @@ class TestBase(NodeTestCase):
         __<class 'node.testing.env.MyNode'>: child_2
         ____<class 'node.testing.env.MyNode'>: subchild_0
         ____<class 'node.testing.env.MyNode'>: subchild_1
-        """, mynode.treerepr(prefix='_'))
+        """,
+            mynode.treerepr(prefix='_'),
+        )
 
         basenode = create_tree(BaseNode)
-        self.checkOutput("""\
+        self.checkOutput(
+            """\
         <class 'node.base.BaseNode'>: None
         __<class 'node.base.BaseNode'>: child_...
         ____<class 'node.base.BaseNode'>: subchild_...
@@ -232,10 +228,13 @@ class TestBase(NodeTestCase):
         __<class 'node.base.BaseNode'>: child_...
         ____<class 'node.base.BaseNode'>: subchild_...
         ____<class 'node.base.BaseNode'>: subchild_...
-        """, basenode.treerepr(prefix='_'))
+        """,
+            basenode.treerepr(prefix='_'),
+        )
 
         orderednode = create_tree(OrderedNode)
-        self.checkOutput("""\
+        self.checkOutput(
+            """\
         <class 'node.base.OrderedNode'>: None
         __<class 'node.base.OrderedNode'>: child_0
         ____<class 'node.base.OrderedNode'>: subchild_0
@@ -246,36 +245,33 @@ class TestBase(NodeTestCase):
         __<class 'node.base.OrderedNode'>: child_2
         ____<class 'node.base.OrderedNode'>: subchild_0
         ____<class 'node.base.OrderedNode'>: subchild_1
-        """, orderednode.treerepr(prefix='_'))
+        """,
+            orderednode.treerepr(prefix='_'),
+        )
 
         # path
         mynode.__name__ = 'root'
         self.assertEqual(mynode.path, ['root'])
         self.assertEqual(
-            mynode['child_1']['subchild_1'].path,
-            ['root', 'child_1', 'subchild_1']
+            mynode['child_1']['subchild_1'].path, ['root', 'child_1', 'subchild_1']
         )
 
         basenode.__name__ = 'root'
         self.assertEqual(basenode.path, ['root'])
         self.assertEqual(
-            basenode['child_1']['subchild_1'].path,
-            ['root', 'child_1', 'subchild_1']
+            basenode['child_1']['subchild_1'].path, ['root', 'child_1', 'subchild_1']
         )
 
         orderednode.__name__ = 'root'
         self.assertEqual(orderednode.path, ['root'])
         self.assertEqual(
-            orderednode['child_1']['subchild_1'].path,
-            ['root', 'child_1', 'subchild_1']
+            orderednode['child_1']['subchild_1'].path, ['root', 'child_1', 'subchild_1']
         )
 
         # root
         self.assertTrue(mynode['child_1']['subchild_1'].root is mynode)
         self.assertTrue(basenode['child_1']['subchild_1'].root is basenode)
-        self.assertTrue(
-            orderednode['child_1']['subchild_1'].root is orderednode
-        )
+        self.assertTrue(orderednode['child_1']['subchild_1'].root is orderednode)
 
         # child_constraints
         self.assertEqual(mynode.child_constraints, (INode,))
@@ -283,17 +279,13 @@ class TestBase(NodeTestCase):
         with self.assertRaises(ValueError) as arc:
             mynode['foo'] = object()
         self.assertEqual(
-            str(arc.exception),
-            'Given value does not implement node.interfaces.INode'
+            str(arc.exception), 'Given value does not implement node.interfaces.INode'
         )
 
         mynode.child_constraints = (int,)
         with self.assertRaises(ValueError) as arc:
             mynode['foo'] = ''
-        self.assertEqual(
-            str(arc.exception),
-            'Given value is no instance of int'
-        )
+        self.assertEqual(str(arc.exception), 'Given value is no instance of int')
 
         mynode.child_constraints = None
         obj = mynode['foo'] = object()
@@ -307,40 +299,26 @@ class TestBase(NodeTestCase):
             pass
 
         directlyProvides(mynode['child_2'], IFilter)
-        self.assertEqual(
-            list(mynode.filtereditervalues(IFilter)),
-            [mynode['child_2']]
-        )
-        self.assertEqual(
-            mynode.filteredvalues(IFilter),
-            [mynode['child_2']]
-        )
+        self.assertEqual(list(mynode.filtereditervalues(IFilter)), [mynode['child_2']])
+        self.assertEqual(mynode.filteredvalues(IFilter), [mynode['child_2']])
         noLongerProvides(mynode['child_2'], IFilter)
         self.assertEqual(list(mynode.filtereditervalues(IFilter)), [])
         self.assertEqual(mynode.filteredvalues(IFilter), [])
 
         directlyProvides(basenode['child_2'], IFilter)
         self.assertEqual(
-            list(basenode.filtereditervalues(IFilter)),
-            [basenode['child_2']]
+            list(basenode.filtereditervalues(IFilter)), [basenode['child_2']]
         )
-        self.assertEqual(
-            basenode.filteredvalues(IFilter),
-            [basenode['child_2']]
-        )
+        self.assertEqual(basenode.filteredvalues(IFilter), [basenode['child_2']])
         noLongerProvides(basenode['child_2'], IFilter)
         self.assertEqual(list(basenode.filtereditervalues(IFilter)), [])
         self.assertEqual(basenode.filteredvalues(IFilter), [])
 
         directlyProvides(orderednode['child_2'], IFilter)
         self.assertEqual(
-            list(orderednode.filtereditervalues(IFilter)),
-            [orderednode['child_2']]
+            list(orderednode.filtereditervalues(IFilter)), [orderednode['child_2']]
         )
-        self.assertEqual(
-            orderednode.filteredvalues(IFilter),
-            [orderednode['child_2']]
-        )
+        self.assertEqual(orderednode.filteredvalues(IFilter), [orderednode['child_2']])
         noLongerProvides(orderednode['child_2'], IFilter)
         self.assertEqual(list(orderednode.filtereditervalues(IFilter)), [])
         self.assertEqual(orderednode.filteredvalues(IFilter), [])
@@ -355,8 +333,7 @@ class TestBase(NodeTestCase):
         with self.assertRaises(ValueError) as arc:
             myattrs.child_4 = object
         self.assertEqual(
-            str(arc.exception),
-            'Given value does not implement node.interfaces.INode'
+            str(arc.exception), 'Given value does not implement node.interfaces.INode'
         )
 
         baseattrs = basenode.as_attribute_access()
@@ -377,10 +354,13 @@ class TestBase(NodeTestCase):
 
         # Shallow copy of BaseNode
         copied_node = node.copy()
-        self.checkOutput("""\
+        self.checkOutput(
+            """\
         <class 'node.base.BaseNode'>: None
         __<class 'node.base.BaseNode'>: child
-        """, copied_node.treerepr(prefix='_'))
+        """,
+            copied_node.treerepr(prefix='_'),
+        )
 
         self.assertFalse(node is copied_node)
         self.assertTrue(node['child'] is copied_node['child'])
@@ -391,10 +371,13 @@ class TestBase(NodeTestCase):
 
         # Deep copy of base node
         copied_node = node.deepcopy()
-        self.checkOutput("""\
+        self.checkOutput(
+            """\
         <class 'node.base.BaseNode'>: None
         __<class 'node.base.BaseNode'>: child
-        """, copied_node.treerepr(prefix='_'))
+        """,
+            copied_node.treerepr(prefix='_'),
+        )
 
         self.assertFalse(node is copied_node)
         self.assertFalse(node['child'] is copied_node['child'])
@@ -408,10 +391,13 @@ class TestBase(NodeTestCase):
         node['child'] = OrderedNode()
 
         copied_node = node.copy()
-        self.checkOutput("""\
+        self.checkOutput(
+            """\
         <class 'node.base.OrderedNode'>: None
         __<class 'node.base.OrderedNode'>: child
-        """, copied_node.treerepr(prefix='_'))
+        """,
+            copied_node.treerepr(prefix='_'),
+        )
 
         self.assertFalse(node is copied_node)
         self.assertTrue(node['child'] is copied_node['child'])
@@ -425,10 +411,13 @@ class TestBase(NodeTestCase):
         node['child'] = OrderedNode()
 
         copied_node = node.deepcopy()
-        self.checkOutput("""\
+        self.checkOutput(
+            """\
         <class 'node.base.OrderedNode'>: None
         __<class 'node.base.OrderedNode'>: child
-        """, copied_node.treerepr(prefix='_'))
+        """,
+            copied_node.treerepr(prefix='_'),
+        )
 
         self.assertFalse(node is copied_node)
         self.assertFalse(node['child'] is copied_node['child'])
@@ -442,8 +431,11 @@ class TestBase(NodeTestCase):
         node.insert(0, BaseNode())
         node.insert(1, BaseNode())
 
-        self.checkOutput("""
+        self.checkOutput(
+            """
         <class 'node.base.ListNode'>: listnode
         __<class 'node.base.BaseNode'>: 0
         __<class 'node.base.BaseNode'>: 1
-        """, node.treerepr(prefix='_'))
+        """,
+            node.treerepr(prefix='_'),
+        )

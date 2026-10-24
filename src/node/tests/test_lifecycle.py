@@ -27,7 +27,8 @@ import zope.component
 # Mock objects
 ###############################################################################
 
-class Handler(object):
+
+class Handler:
     handled = []
 
     def __call__(self, obj, event):
@@ -37,11 +38,8 @@ class Handler(object):
         self.handled = []
 
 
-@plumbing(
-    DefaultInit,
-    MappingNode,
-    DictStorage)
-class NoLifecycleNode(object):
+@plumbing(DefaultInit, MappingNode, DictStorage)
+class NoLifecycleNode:
     pass
 
 
@@ -50,14 +48,8 @@ class LifecycleNodeAttributes(NodeAttributes):
     pass
 
 
-@plumbing(
-    Nodespaces,
-    Attributes,
-    Lifecycle,
-    DefaultInit,
-    MappingNode,
-    DictStorage)
-class LifecycleNode(object):
+@plumbing(Nodespaces, Attributes, Lifecycle, DefaultInit, MappingNode, DictStorage)
+class LifecycleNode:
     attributes_factory = LifecycleNodeAttributes
 
 
@@ -65,8 +57,8 @@ class LifecycleNode(object):
 # Tests
 ###############################################################################
 
-class TestLifecycle(NodeTestCase):
 
+class TestLifecycle(NodeTestCase):
     def setUp(self):
         super(TestLifecycle, self).setUp()
         handler = self.handler = Handler()

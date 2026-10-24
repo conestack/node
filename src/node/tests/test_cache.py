@@ -14,20 +14,14 @@ from plumber import plumbing
 
 
 class TestCache(NodeTestCase):
-
     def test_Invalidate(self):
         # When using default ``Invalidate``, Contents of node just gets
         # deleted. Be aware this implementation must not be used on persisting
         # nodes.
 
         # Build invalidating node
-        @plumbing(
-            MappingAdopt,
-            Invalidate,
-            DefaultInit,
-            MappingNode,
-            OdictStorage)
-        class Node(object):
+        @plumbing(MappingAdopt, Invalidate, DefaultInit, MappingNode, OdictStorage)
+        class Node:
             pass
 
         # Test tree
@@ -40,33 +34,42 @@ class TestCache(NodeTestCase):
         self.assertTrue(IInvalidate.providedBy(root))
         self.assertFalse(ICache.providedBy(root))
 
-        self.assertEqual(root.treerepr(), (
-            '<class \'node.tests.test_cache.Node\'>: None\n'
-            '  <class \'node.tests.test_cache.Node\'>: c1\n'
-            '  <class \'node.tests.test_cache.Node\'>: c2\n'
-            '    <class \'node.tests.test_cache.Node\'>: d1\n'
-            '    <class \'node.tests.test_cache.Node\'>: d2\n'
-        ))
+        self.assertEqual(
+            root.treerepr(),
+            (
+                "<class 'node.tests.test_cache.Node'>: None\n"
+                "  <class 'node.tests.test_cache.Node'>: c1\n"
+                "  <class 'node.tests.test_cache.Node'>: c2\n"
+                "    <class 'node.tests.test_cache.Node'>: d1\n"
+                "    <class 'node.tests.test_cache.Node'>: d2\n"
+            ),
+        )
 
         # Active invalidation of child by key
         root.invalidate(key='c1')
-        self.assertEqual(root.treerepr(), (
-            '<class \'node.tests.test_cache.Node\'>: None\n'
-            '  <class \'node.tests.test_cache.Node\'>: c2\n'
-            '    <class \'node.tests.test_cache.Node\'>: d1\n'
-            '    <class \'node.tests.test_cache.Node\'>: d2\n'
-        ))
+        self.assertEqual(
+            root.treerepr(),
+            (
+                "<class 'node.tests.test_cache.Node'>: None\n"
+                "  <class 'node.tests.test_cache.Node'>: c2\n"
+                "    <class 'node.tests.test_cache.Node'>: d1\n"
+                "    <class 'node.tests.test_cache.Node'>: d2\n"
+            ),
+        )
 
         with self.assertRaises(KeyError) as arc:
             root.invalidate(key='c1')
-        self.assertEqual(str(arc.exception), '\'c1\'')
+        self.assertEqual(str(arc.exception), "'c1'")
 
         # Active invalidation of all children
         root['c2'].invalidate()
-        self.assertEqual(root.treerepr(), (
-            '<class \'node.tests.test_cache.Node\'>: None\n'
-            '  <class \'node.tests.test_cache.Node\'>: c2\n'
-        ))
+        self.assertEqual(
+            root.treerepr(),
+            (
+                "<class 'node.tests.test_cache.Node'>: None\n"
+                "  <class 'node.tests.test_cache.Node'>: c2\n"
+            ),
+        )
 
     def test_VolatileStorageInvalidate(self):
         # When a node internally uses a volatile storage like ``DictStorage``
@@ -77,8 +80,9 @@ class TestCache(NodeTestCase):
             VolatileStorageInvalidate,
             DefaultInit,
             MappingNode,
-            OdictStorage)
-        class Node(object):
+            OdictStorage,
+        )
+        class Node:
             pass
 
         # Test tree:
@@ -91,33 +95,42 @@ class TestCache(NodeTestCase):
         self.assertTrue(IInvalidate.providedBy(root))
         self.assertFalse(ICache.providedBy(root))
 
-        self.assertEqual(root.treerepr(), (
-            '<class \'node.tests.test_cache.Node\'>: None\n'
-            '  <class \'node.tests.test_cache.Node\'>: c1\n'
-            '  <class \'node.tests.test_cache.Node\'>: c2\n'
-            '    <class \'node.tests.test_cache.Node\'>: d1\n'
-            '    <class \'node.tests.test_cache.Node\'>: d2\n'
-        ))
+        self.assertEqual(
+            root.treerepr(),
+            (
+                "<class 'node.tests.test_cache.Node'>: None\n"
+                "  <class 'node.tests.test_cache.Node'>: c1\n"
+                "  <class 'node.tests.test_cache.Node'>: c2\n"
+                "    <class 'node.tests.test_cache.Node'>: d1\n"
+                "    <class 'node.tests.test_cache.Node'>: d2\n"
+            ),
+        )
 
         # Active invalidation of child by key
         root.invalidate(key='c1')
-        self.assertEqual(root.treerepr(), (
-            '<class \'node.tests.test_cache.Node\'>: None\n'
-            '  <class \'node.tests.test_cache.Node\'>: c2\n'
-            '    <class \'node.tests.test_cache.Node\'>: d1\n'
-            '    <class \'node.tests.test_cache.Node\'>: d2\n'
-        ))
+        self.assertEqual(
+            root.treerepr(),
+            (
+                "<class 'node.tests.test_cache.Node'>: None\n"
+                "  <class 'node.tests.test_cache.Node'>: c2\n"
+                "    <class 'node.tests.test_cache.Node'>: d1\n"
+                "    <class 'node.tests.test_cache.Node'>: d2\n"
+            ),
+        )
 
         with self.assertRaises(KeyError) as arc:
             root.invalidate(key='c1')
-        self.assertEqual(str(arc.exception), '\'c1\'')
+        self.assertEqual(str(arc.exception), "'c1'")
 
         # Active invalidation of all children
         root['c2'].invalidate()
-        self.assertEqual(root.treerepr(), (
-            '<class \'node.tests.test_cache.Node\'>: None\n'
-            '  <class \'node.tests.test_cache.Node\'>: c2\n'
-        ))
+        self.assertEqual(
+            root.treerepr(),
+            (
+                "<class 'node.tests.test_cache.Node'>: None\n"
+                "  <class 'node.tests.test_cache.Node'>: c2\n"
+            ),
+        )
 
     def test_with_ChildFactory(self):
         # Check for ChildFactory Node
@@ -127,48 +140,52 @@ class TestCache(NodeTestCase):
             DefaultInit,
             MappingNode,
             ChildFactory,
-            OdictStorage)
-        class Node(object):
+            OdictStorage,
+        )
+        class Node:
             factories = {
                 'foo': BaseNode,
                 'bar': BaseNode,
             }
 
         node = Node()
-        self.checkOutput("""\
+        self.checkOutput(
+            """\
         [('bar', <BaseNode object 'bar' at ...>),
         ('foo', <BaseNode object 'foo' at ...>)]
-        """, str(sorted(node.items())))
+        """,
+            str(sorted(node.items())),
+        )
 
         node.invalidate('foo')
         self.assertEqual(sorted(node.keys()), ['bar', 'foo'])
 
-        self.checkOutput("""\
+        self.checkOutput(
+            """\
         [('bar', <BaseNode object 'bar' at ...>)]
-        """, str(node.storage.items()))
+        """,
+            str(node.storage.items()),
+        )
 
         node.invalidate('foo')
-        self.checkOutput("""\
+        self.checkOutput(
+            """\
         [('bar', <BaseNode object 'bar' at ...>)]
-        """, str(node.storage.items()))
+        """,
+            str(node.storage.items()),
+        )
 
         node.invalidate()
         self.assertEqual(node.storage.items(), [])
 
         with self.assertRaises(KeyError) as arc:
             node.invalidate('baz')
-        self.assertEqual(str(arc.exception), '\'baz\'')
+        self.assertEqual(str(arc.exception), "'baz'")
 
     def test_Cache(self):
         # Build a node with active invalidation and cache functionality
-        @plumbing(
-            MappingAdopt,
-            Cache,
-            Invalidate,
-            DefaultInit,
-            MappingNode,
-            OdictStorage)
-        class Node(object):
+        @plumbing(MappingAdopt, Cache, Invalidate, DefaultInit, MappingNode, OdictStorage)
+        class Node:
             pass
 
         root = Node()
@@ -182,17 +199,20 @@ class TestCache(NodeTestCase):
 
         # We just accessed 'c2' above, only cached value on root at the moment
         self.assertEqual(list(root.cache.keys()), ['c2'])
-        expected = '<Node object \'c2\' at'
+        expected = "<Node object 'c2' at"
         self.assertTrue(str(root.cache['c2']).startswith(expected))
 
-        expected = '<Node object \'c1\' at'
+        expected = "<Node object 'c1' at"
         self.assertTrue(str(root['c1']).startswith(expected))
 
         # After accessing 'c1', it is cached as well:
-        self.checkOutput("""\
+        self.checkOutput(
+            """\
         [('c1', <Node object 'c1' at ...>),
         ('c2', <Node object 'c2' at ...>)]
-        """, str(sorted(root.cache.items())))
+        """,
+            str(sorted(root.cache.items())),
+        )
 
         # Invalidate plumbing removes item from cache
         root.invalidate(key='c1')
@@ -201,35 +221,44 @@ class TestCache(NodeTestCase):
         root.invalidate()
         self.assertEqual(root.cache, {})
 
-        self.assertEqual(root.treerepr(), (
-            '<class \'node.tests.test_cache.Node\'>: None\n'
-        ))
+        self.assertEqual(
+            root.treerepr(), ("<class 'node.tests.test_cache.Node'>: None\n")
+        )
 
         # Test invalidation plumbing hook with missing cache values
         root['x1'] = Node()
         root['x2'] = Node()
-        self.assertEqual(root.treerepr(), (
-            '<class \'node.tests.test_cache.Node\'>: None\n'
-            '  <class \'node.tests.test_cache.Node\'>: x1\n'
-            '  <class \'node.tests.test_cache.Node\'>: x2\n'
-        ))
+        self.assertEqual(
+            root.treerepr(),
+            (
+                "<class 'node.tests.test_cache.Node'>: None\n"
+                "  <class 'node.tests.test_cache.Node'>: x1\n"
+                "  <class 'node.tests.test_cache.Node'>: x2\n"
+            ),
+        )
 
-        self.checkOutput("""\
+        self.checkOutput(
+            """\
         [('x1', <Node object 'x1' at ...>),
         ('x2', <Node object 'x2' at ...>)]
-        """, str(sorted(root.cache.items())))
+        """,
+            str(sorted(root.cache.items())),
+        )
 
         del root.cache['x1']
         del root.cache['x2']
 
         root.invalidate(key='x1')
-        self.assertEqual(root.treerepr(), (
-            '<class \'node.tests.test_cache.Node\'>: None\n'
-            '  <class \'node.tests.test_cache.Node\'>: x2\n'
-        ))
+        self.assertEqual(
+            root.treerepr(),
+            (
+                "<class 'node.tests.test_cache.Node'>: None\n"
+                "  <class 'node.tests.test_cache.Node'>: x2\n"
+            ),
+        )
 
         del root.cache['x2']
         root.invalidate()
-        self.assertEqual(root.treerepr(), (
-            '<class \'node.tests.test_cache.Node\'>: None\n'
-        ))
+        self.assertEqual(
+            root.treerepr(), ("<class 'node.tests.test_cache.Node'>: None\n")
+        )

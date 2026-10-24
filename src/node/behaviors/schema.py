@@ -50,8 +50,7 @@ class Schema(Behavior):
 
 @plumbing(MappingNode, Schema)
 @implementer(INodeAttributes)
-class SchemaAttributes(object):
-
+class SchemaAttributes:
     def __init__(self, name=None, parent=None):
         self.__name__ = name
         self.__parent__ = parent
@@ -93,19 +92,19 @@ class SchemaAsAttributes(Behavior):
     @plumb
     def __setitem__(next_, self, name, value):
         if name in self.schema:
-            raise KeyError('{} contained in schema. Use ``attrs``'.format(name))
+            raise KeyError(f'{name} contained in schema. Use ``attrs``')
         next_(self, name, value)
 
     @plumb
     def __getitem__(next_, self, name):
         if name in self.schema:
-            raise KeyError('{} contained in schema. Use ``attrs``'.format(name))
+            raise KeyError(f'{name} contained in schema. Use ``attrs``')
         return next_(self, name)
 
     @plumb
     def __delitem__(next_, self, name):
         if name in self.schema:
-            raise KeyError('{} contained in schema. Use ``attrs``'.format(name))
+            raise KeyError(f'{name} contained in schema. Use ``attrs``')
         next_(self, name)
 
     @plumb
@@ -140,8 +139,7 @@ _schema_property = SchemaPropertyAccess()
 
 @contextmanager
 def _property_access(name):
-    """Context manager to mark object property access from descriptor.
-    """
+    """Context manager to mark object property access from descriptor."""
     _schema_property.name = name
     try:
         yield
@@ -149,7 +147,7 @@ def _property_access(name):
         _schema_property.name = None
 
 
-class SchemaProperty(object):
+class SchemaProperty:
     """Descriptor object for schema properties.
 
     If a class gets plumbed with ``node.behaviors.SchemaProperties`` behavior,
@@ -269,19 +267,19 @@ class SchemaProperties(Behavior):
     @plumb
     def __setitem__(next_, self, name, value):
         if _schema_property.name != name and name in self.__schema_members__:
-            raise KeyError('{} is a schema property'.format(name))
+            raise KeyError(f'{name} is a schema property')
         next_(self, name, value)
 
     @plumb
     def __getitem__(next_, self, name):
         if _schema_property.name != name and name in self.__schema_members__:
-            raise KeyError('{} is a schema property'.format(name))
+            raise KeyError(f'{name} is a schema property')
         return next_(self, name)
 
     @plumb
     def __delitem__(next_, self, name):
         if _schema_property.name != name and name in self.__schema_members__:
-            raise KeyError('{} is a schema property'.format(name))
+            raise KeyError(f'{name} is a schema property')
         next_(self, name)
 
     @plumb

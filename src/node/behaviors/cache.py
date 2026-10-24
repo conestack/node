@@ -17,8 +17,7 @@ class Invalidate(Behavior):
 
     @default
     def invalidate(self, key=None):
-        """Raise KeyError if child does not exist for key if given.
-        """
+        """Raise KeyError if child does not exist for key if given."""
         if key is not None:
             del self[key]
         else:
@@ -34,8 +33,7 @@ class VolatileStorageInvalidate(Behavior):
 
     @default
     def invalidate(self, key=None):
-        """Raise KeyError if child does not exist for key if given.
-        """
+        """Raise KeyError if child does not exist for key if given."""
         storage = self.storage
         if key is not None:
             if key in self.keys():
@@ -52,7 +50,6 @@ class VolatileStorageInvalidate(Behavior):
 
 @implementer(ICache)
 class Cache(Behavior):
-
     @default
     @instance_property
     def cache(self):

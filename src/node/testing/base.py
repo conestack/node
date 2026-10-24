@@ -4,14 +4,13 @@ from odict import odict
 def create_tree(class_):
     root = class_()
     for i in range(3):
-        root['child_{}'.format(i)] = class_()
+        root[f'child_{i}'] = class_()
         for j in range(2):
-            root['child_{}'.format(i)]['subchild_{}'.format(j)] = class_()
+            root[f'child_{i}'][f'subchild_{j}'] = class_()
     return root
 
 
-class ResultWriter(object):
-
+class ResultWriter:
     def __init__(self, results, name=None):
         self.name = name
         self.results = results
@@ -20,14 +19,14 @@ class ResultWriter(object):
         self.results[self.name] = 'OK'
 
     def failed(self, exc):
-        self.results[self.name] = 'failed: {}'.format(repr(exc))
+        self.results[self.name] = f'failed: {repr(exc)}'
 
 
 class ContractError(Exception):
     pass
 
 
-class BaseTester(object):
+class BaseTester:
     # list of interface contract attributes to test.
     # test functions always are named 'test_[contractname]'.
     # execution is in order, so you might depend tests to prior happened
@@ -57,7 +56,7 @@ class BaseTester(object):
     def combined(self):
         res = list()
         for key, val in sorted(self.writer().results.items()):
-            res.append('``{}``: {}'.format(key, val))
+            res.append(f'``{key}``: {val}')
         return '\n'.join(res)
 
     @property
@@ -80,10 +79,7 @@ class BaseTester(object):
         for name in self.iface_contract:
             func = getattr(self, 'test_%s' % name, None)
             if func is None:
-                msg = '``{}`` does not provide ``test_{}``'.format(
-                    self.__class__.__name__,
-                    name
-                )
+                msg = f'``{self.__class__.__name__}`` does not provide ``test_{name}``'
                 raise ContractError(msg)
             writer = self.writer(name)
             if self.direct_error:

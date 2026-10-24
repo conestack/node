@@ -24,38 +24,24 @@ import uuid
 # Mock objects
 ###############################################################################
 
-@plumbing(
-    DefaultInit,
-    Node)
-class NoReferenceNode(object):
+
+@plumbing(DefaultInit, Node)
+class NoReferenceNode:
     pass
 
 
-@plumbing(
-    NodeReference,
-    DefaultInit,
-    Node)
-class ReferenceNode(object):
+@plumbing(NodeReference, DefaultInit, Node)
+class ReferenceNode:
     pass
 
 
-@plumbing(
-    MappingAdopt,
-    MappingReference,
-    DefaultInit,
-    MappingNode,
-    OdictStorage)
-class ReferenceMappingNode(object):
+@plumbing(MappingAdopt, MappingReference, DefaultInit, MappingNode, OdictStorage)
+class ReferenceMappingNode:
     pass
 
 
-@plumbing(
-    SequenceAdopt,
-    SequenceReference,
-    DefaultInit,
-    SequenceNode,
-    ListStorage)
-class ReferenceSequenceNode(object):
+@plumbing(SequenceAdopt, SequenceReference, DefaultInit, SequenceNode, ListStorage)
+class ReferenceSequenceNode:
     pass
 
 
@@ -63,8 +49,8 @@ class ReferenceSequenceNode(object):
 # Tests
 ###############################################################################
 
-class TestReference(NodeTestCase):
 
+class TestReference(NodeTestCase):
     def test_interfaces(self):
         self.assertTrue(INodeReference.providedBy(ReferenceNode()))
         self.assertTrue(IMappingReference.providedBy(ReferenceMappingNode()))
@@ -86,10 +72,10 @@ class TestReference(NodeTestCase):
         err = IndexViolationError('Message', [int(uid)])
         self.assertEqual(err.message, 'Message')
         self.assertEqual(err.colliding, [uid])
-        self.assertEqual(repr(err).split('\n'), [
-            'Index Violation: Message',
-            '  * c7022c39-aac3-42c8-b86e-6daddefa3425'
-        ])
+        self.assertEqual(
+            repr(err).split('\n'),
+            ['Index Violation: Message', '  * c7022c39-aac3-42c8-b86e-6daddefa3425'],
+        )
 
     def test_uuid(self):
         node = ReferenceNode(name='root')
@@ -106,8 +92,7 @@ class TestReference(NodeTestCase):
         with self.assertRaises(IndexViolationError) as arc:
             node.uuid = conflicting_uuid
         self.assertEqual(
-            arc.exception.message,
-            'Given uuid was already used for another Node'
+            arc.exception.message, 'Given uuid was already used for another Node'
         )
         self.assertEqual(arc.exception.colliding, [conflicting_uuid])
 
@@ -121,17 +106,13 @@ class TestReference(NodeTestCase):
         mapping['ref'] = ReferenceNode()
         mapping['noref'] = NoReferenceNode()
         self.assertEqual(
-            [it for it in mapping._referencable_child_nodes],
-            [mapping['ref']]
+            [it for it in mapping._referencable_child_nodes], [mapping['ref']]
         )
 
         sequence = ReferenceSequenceNode()
         sequence.append(ReferenceNode())
         sequence.append(NoReferenceNode())
-        self.assertEqual(
-            [it for it in sequence._referencable_child_nodes],
-            [sequence[0]]
-        )
+        self.assertEqual([it for it in sequence._referencable_child_nodes], [sequence[0]])
 
     def test__recursiv_reference_keys(self):
         node = ReferenceMappingNode(name='root')
@@ -146,13 +127,16 @@ class TestReference(NodeTestCase):
         sequence.append(NoReferenceNode())
         node['sequence'] = sequence
 
-        self.assertEqual(node._recursiv_reference_keys, [
-            int(node.uuid),
-            int(mapping.uuid),
-            int(mapping['ref'].uuid),
-            int(sequence.uuid),
-            int(sequence[0].uuid),
-        ])
+        self.assertEqual(
+            node._recursiv_reference_keys,
+            [
+                int(node.uuid),
+                int(mapping.uuid),
+                int(mapping['ref'].uuid),
+                int(sequence.uuid),
+                int(sequence[0].uuid),
+            ],
+        )
 
     def test__init_reference_index(self):
         node = ReferenceMappingNode(name='root')
@@ -205,7 +189,7 @@ class TestReference(NodeTestCase):
             node._update_reference_index(invalid)
         self.assertEqual(
             arc.exception.message,
-            'Given node or members of it provide uuid(s) colliding with own index.'
+            'Given node or members of it provide uuid(s) colliding with own index.',
         )
         self.assertEqual(arc.exception.colliding, [node.uuid])
 
@@ -278,37 +262,25 @@ class TestReference(NodeTestCase):
 
         with self.assertRaises(IndexViolationError) as arc:
             mapping['invalid'] = mapping['ref']
-        self.assertEqual(
-            arc.exception.message,
-            'Given node is already member of tree.'
-        )
+        self.assertEqual(arc.exception.message, 'Given node is already member of tree.')
         self.assertEqual(len(node._index), 6)
         self.assertEqual(mapping.keys(), ['ref', 'noref'])
 
         with self.assertRaises(IndexViolationError) as arc:
             sequence[0] = sequence[1]
-        self.assertEqual(
-            arc.exception.message,
-            'Given node is already member of tree.'
-        )
+        self.assertEqual(arc.exception.message, 'Given node is already member of tree.')
         self.assertEqual(len(node._index), 6)
         self.assertEqual(len(sequence), 3)
 
         with self.assertRaises(IndexViolationError) as arc:
             sequence.append(sequence[1])
-        self.assertEqual(
-            arc.exception.message,
-            'Given node is already member of tree.'
-        )
+        self.assertEqual(arc.exception.message, 'Given node is already member of tree.')
         self.assertEqual(len(node._index), 6)
         self.assertEqual(len(sequence), 3)
 
         with self.assertRaises(IndexViolationError) as arc:
             sequence.insert(0, sequence[1])
-        self.assertEqual(
-            arc.exception.message,
-            'Given node is already member of tree.'
-        )
+        self.assertEqual(arc.exception.message, 'Given node is already member of tree.')
         self.assertEqual(len(node._index), 6)
         self.assertEqual(len(sequence), 3)
 
@@ -318,7 +290,7 @@ class TestReference(NodeTestCase):
             mapping['invalid'] = invalid
         self.assertEqual(
             arc.exception.message,
-            'Given node or members of it provide uuid(s) colliding with own index.'
+            'Given node or members of it provide uuid(s) colliding with own index.',
         )
         self.assertEqual(arc.exception.colliding, [node.uuid])
         self.assertEqual(len(node._index), 6)
@@ -327,7 +299,7 @@ class TestReference(NodeTestCase):
             sequence[0] = invalid
         self.assertEqual(
             arc.exception.message,
-            'Given node or members of it provide uuid(s) colliding with own index.'
+            'Given node or members of it provide uuid(s) colliding with own index.',
         )
         self.assertEqual(arc.exception.colliding, [node.uuid])
         self.assertEqual(len(node._index), 6)
@@ -336,7 +308,7 @@ class TestReference(NodeTestCase):
             sequence.insert(0, invalid)
         self.assertEqual(
             arc.exception.message,
-            'Given node or members of it provide uuid(s) colliding with own index.'
+            'Given node or members of it provide uuid(s) colliding with own index.',
         )
         self.assertEqual(arc.exception.colliding, [node.uuid])
         self.assertEqual(len(node._index), 6)
@@ -345,7 +317,7 @@ class TestReference(NodeTestCase):
             sequence.append(invalid)
         self.assertEqual(
             arc.exception.message,
-            'Given node or members of it provide uuid(s) colliding with own index.'
+            'Given node or members of it provide uuid(s) colliding with own index.',
         )
         self.assertEqual(arc.exception.colliding, [node.uuid])
         self.assertEqual(len(node._index), 6)
@@ -367,18 +339,12 @@ class TestReference(NodeTestCase):
 
         with self.assertRaises(IndexViolationError) as arc:
             mapping['ref'] = mapping['ref']
-        self.assertEqual(
-            arc.exception.message,
-            'Given node is already member of tree.'
-        )
+        self.assertEqual(arc.exception.message, 'Given node is already member of tree.')
         self.assertEqual(len(node._index), 5)
 
         with self.assertRaises(IndexViolationError) as arc:
             sequence['0'] = sequence['0']
-        self.assertEqual(
-            arc.exception.message,
-            'Given node is already member of tree.'
-        )
+        self.assertEqual(arc.exception.message, 'Given node is already member of tree.')
         self.assertEqual(len(node._index), 5)
 
         new_mapping = ReferenceMappingNode()
@@ -417,7 +383,7 @@ class TestReference(NodeTestCase):
             node['mapping'] = invalid_mapping
         self.assertEqual(
             arc.exception.message,
-            'Given node or members of it provide uuid(s) colliding with own index.'
+            'Given node or members of it provide uuid(s) colliding with own index.',
         )
 
         self.assertEqual(arc.exception.colliding, [node.uuid])
@@ -427,7 +393,7 @@ class TestReference(NodeTestCase):
             node['mapping']['noref'] = invalid_mapping
         self.assertEqual(
             arc.exception.message,
-            'Given node or members of it provide uuid(s) colliding with own index.'
+            'Given node or members of it provide uuid(s) colliding with own index.',
         )
 
         self.assertEqual(arc.exception.colliding, [node.uuid])
@@ -441,7 +407,7 @@ class TestReference(NodeTestCase):
             node['sequence'] = invalid_sequence
         self.assertEqual(
             arc.exception.message,
-            'Given node or members of it provide uuid(s) colliding with own index.'
+            'Given node or members of it provide uuid(s) colliding with own index.',
         )
         self.assertEqual(arc.exception.colliding, [node.uuid])
         self.assertEqual(len(node._index), 5)
@@ -453,7 +419,7 @@ class TestReference(NodeTestCase):
             node['sequence'][0] = invalid_sequence_child
         self.assertEqual(
             arc.exception.message,
-            'Given node or members of it provide uuid(s) colliding with own index.'
+            'Given node or members of it provide uuid(s) colliding with own index.',
         )
         self.assertEqual(arc.exception.colliding, [node.uuid])
         self.assertEqual(len(node._index), 5)
@@ -462,7 +428,7 @@ class TestReference(NodeTestCase):
             node['sequence'][1] = invalid_sequence_child
         self.assertEqual(
             arc.exception.message,
-            'Given node or members of it provide uuid(s) colliding with own index.'
+            'Given node or members of it provide uuid(s) colliding with own index.',
         )
         self.assertEqual(arc.exception.colliding, [node.uuid])
         self.assertEqual(len(node._index), 5)
@@ -514,7 +480,7 @@ class TestReference(NodeTestCase):
             int(node['mapping'].uuid),
             int(node['mapping']['ref'].uuid),
             int(node['sequence'].uuid),
-            int(node['sequence']['0'].uuid)
+            int(node['sequence']['0'].uuid),
         ]
 
         index = node._index
@@ -574,7 +540,9 @@ class TestReference(NodeTestCase):
 
     def test_BC_imports(self):
         from node.behaviors import Reference
+
         self.assertTrue(Reference is MappingReference)
 
         from node.interfaces import IReference
+
         self.assertTrue(IReference is IMappingReference)

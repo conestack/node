@@ -18,7 +18,6 @@ from zope.interface.interfaces import IInterface
 
 @implementer(IDefaultInit)
 class DefaultInit(Behavior):
-
     @override
     def __init__(self, name=None, parent=None):
         self.__name__ = name
@@ -27,7 +26,6 @@ class DefaultInit(Behavior):
 
 @implementer(INodeInit)
 class NodeInit(Behavior):
-
     @plumb
     def __init__(next_, self, *args, **kwargs):
         self.__name__ = kwargs.pop('name', None)
@@ -70,12 +68,8 @@ class Node(Behavior):
         node = self.parent
         while node:
             if (
-                (
-                    IInterface.providedBy(interface)
-                    and interface.providedBy(node)
-                )
-                or isinstance(node, interface)
-            ):
+                IInterface.providedBy(interface) and interface.providedBy(node)
+            ) or isinstance(node, interface):
                 return node
             node = node.parent
 
@@ -87,11 +81,7 @@ class Node(Behavior):
     def __repr__(self):
         class_name = self.__class__.__name__
         name = str(self.name)
-        return '<{} object \'{}\' at {}>'.format(
-            class_name,
-            name,
-            hex(id(self))[:-1]
-        )
+        return f"<{class_name} object '{name}' at {hex(id(self))[:-1]}>"
 
     __str__ = override(__repr__)
 
@@ -106,24 +96,26 @@ class Node(Behavior):
         """
         class_name = self.__class__
         name = str(self.name)
-        return str(class_name) + ': ' + name[name.find(':') + 1:]
+        return str(class_name) + ': ' + name[name.find(':') + 1 :]
 
     @override
     def treerepr(self, indent=0, prefix=' '):
-        res = '{}{}\n'.format(indent * prefix, self.noderepr)
+        res = f'{indent * prefix}{self.noderepr}\n'
         children = list()
         schema_members = set()
         if ISchemaProperties.providedBy(self):
+
             def collect_schema_members(cls):
                 for schema_member in getattr(cls, '__schema_members__', []):
                     schema_members.add(schema_member)
                 for base in cls.__bases__:
                     collect_schema_members(base)
+
             collect_schema_members(self.__class__)
-            children += sorted([
-                (name, getattr(self, name))
-                for name in schema_members
-            ], key=lambda x: x[0])
+            children += sorted(
+                [(name, getattr(self, name)) for name in schema_members],
+                key=lambda x: x[0],
+            )
         if IMappingNode.providedBy(self):
             items = list()
             for key in self:
@@ -146,21 +138,16 @@ class Node(Behavior):
             if INode.providedBy(value):
                 res += value.treerepr(indent=indent + 2, prefix=prefix)
             else:
-                res += '{}{}: {}\n'.format(
-                    (indent + 2) * prefix,
-                    name,
-                    repr(value)
-                )
+                res += f'{(indent + 2) * prefix}{name}: {repr(value)}\n'
         return res
 
     @override
     def printtree(self):
-        print(self.treerepr())                               # pragma: no cover
+        print(self.treerepr())  # pragma: no cover
 
 
 @implementer(IContentishNode)
 class ContentishNode(Node):
-
     @override
     def detach(self, name):
         node = self[name]

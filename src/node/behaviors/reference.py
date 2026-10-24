@@ -13,8 +13,7 @@ import uuid
 
 
 @implementer(IReadMapping)
-class NodeIndex(object):
-
+class NodeIndex:
     def __init__(self, index):
         self._index = index
 
@@ -29,7 +28,6 @@ class NodeIndex(object):
 
 
 class IndexViolationError(ValueError):
-
     def __init__(self, message, colliding=[]):
         super(IndexViolationError, self).__init__(message)
         self.message = message
@@ -37,8 +35,7 @@ class IndexViolationError(ValueError):
 
     def __repr__(self):
         return 'Index Violation: {}\n  * {}'.format(
-            self.message,
-            '\n  * '.join([str(uuid_) for uuid_ in self.colliding])
+            self.message, '\n  * '.join([str(uuid_) for uuid_ in self.colliding])
         )
 
 
@@ -63,8 +60,7 @@ class NodeReference(Behavior):
         iuuid = None if uuid is None else int(uuid)
         if iuuid in index and index[iuuid] is not self:
             raise IndexViolationError(
-                'Given uuid was already used for another Node',
-                [iuuid]
+                'Given uuid was already used for another Node', [iuuid]
             )
         siuuid = None if self._uuid is None else int(self._uuid)
         if siuuid in index:
@@ -104,11 +100,13 @@ class NodeReference(Behavior):
     @default
     def _init_reference_index(self):
         index = self._index = {int(self.uuid): self}
+
         def _init_children(node):
             for child in node._referencable_child_nodes:
                 index[int(child.uuid)] = child
                 child._index = index
                 _init_children(child)
+
         _init_children(self)
 
     @default
@@ -122,13 +120,15 @@ class NodeReference(Behavior):
                         'Given node or members of it provide uuid(s) '
                         'colliding with own index.'
                     ),
-                    colliding
+                    colliding,
                 )
             index.update(value._index)
+
             def _set_index(node):
                 node._index = index
                 for child in node._referencable_child_nodes:
                     _set_index(child)
+
             _set_index(value)
 
     @default
@@ -140,7 +140,6 @@ class NodeReference(Behavior):
 
 
 class ContentishNodeReference(NodeReference):
-
     @plumb
     def __delitem__(next_, self, name):
         # works on mapping and sequence nodes
@@ -170,7 +169,6 @@ class ContentishNodeReference(NodeReference):
 
 @implementer(IMappingReference)
 class MappingReference(ContentishNodeReference):
-
     @plumb
     def __setitem__(next_, self, key, value):
         if INodeReference.providedBy(value) and value._index is self._index:
@@ -184,7 +182,6 @@ class MappingReference(ContentishNodeReference):
 
 @implementer(ISequenceReference)
 class SequenceReference(ContentishNodeReference):
-
     @plumb
     def __setitem__(next_, self, index, value):
         if INodeReference.providedBy(value) and value._index is self._index:

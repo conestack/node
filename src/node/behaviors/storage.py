@@ -11,7 +11,6 @@ from zope.interface import implementer
 
 @implementer(IMappingStorage)
 class MappingStorage(Behavior):
-
     @default
     @property
     def storage(self):
@@ -36,7 +35,6 @@ class MappingStorage(Behavior):
 
 
 class DictStorage(MappingStorage):
-
     @default
     @instance_property
     def storage(self):
@@ -45,7 +43,6 @@ class DictStorage(MappingStorage):
 
 @implementer(IOrdered)
 class OdictStorage(MappingStorage):
-
     @default
     @instance_property
     def storage(self):
@@ -54,7 +51,6 @@ class OdictStorage(MappingStorage):
 
 @implementer(ISequenceStorage)
 class SequenceStorage(Behavior):
-
     @default
     @property
     def storage(self):
@@ -83,7 +79,6 @@ class SequenceStorage(Behavior):
 
 
 class ListStorage(SequenceStorage):
-
     @default
     @instance_property
     def storage(self):

@@ -13,28 +13,29 @@ from plumber import plumbing
 # Mock objects
 ###############################################################################
 
+
 @plumbing(MappingStorage)
-class MappingStorageObject(object):
+class MappingStorageObject:
     pass
 
 
 @plumbing(DictStorage)
-class DictStorageObject(object):
+class DictStorageObject:
     pass
 
 
 @plumbing(OdictStorage)
-class OdictStorageObject(object):
+class OdictStorageObject:
     pass
 
 
 @plumbing(SequenceStorage)
-class SequenceStorageObject(object):
+class SequenceStorageObject:
     pass
 
 
 @plumbing(ListStorage)
-class ListStorageObject(object):
+class ListStorageObject:
     pass
 
 
@@ -42,8 +43,8 @@ class ListStorageObject(object):
 # Tests
 ###############################################################################
 
-class TestStorage(NodeTestCase):
 
+class TestStorage(NodeTestCase):
     def test_MappingStorage(self):
         obj = MappingStorageObject()
         self.assertTrue(IMappingStorage.providedBy(obj))
@@ -113,7 +114,9 @@ class TestStorage(NodeTestCase):
 
     def test_BC_imports(self):
         from node.behaviors import Storage
+
         self.assertTrue(Storage is MappingStorage)
 
         from node.interfaces import IStorage
+
         self.assertTrue(IStorage is IMappingStorage)

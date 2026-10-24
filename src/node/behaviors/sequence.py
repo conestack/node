@@ -24,7 +24,7 @@ def copy_func(f):
         f.__globals__,
         name=f.__name__,
         argdefs=f.__defaults__,
-        closure=f.__closure__
+        closure=f.__closure__,
     )
     fn = functools.update_wrapper(fn, f)
     fn.__kwdefaults__ = f.__kwdefaults__
@@ -83,7 +83,6 @@ class MutableSequence(Sequence):
 
 @implementer(ISequenceNode)
 class SequenceNode(ContentishNode, MutableSequence):
-
     @override
     def __index__(self):
         try:

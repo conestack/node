@@ -18,24 +18,19 @@ from zope.interface import Interface
 # Mock objects
 ###############################################################################
 
+
 @plumbing(FullMapping)
-class FailingFullMapping(object):
+class FailingFullMapping:
     pass
 
 
-@plumbing(
-    FullMapping,
-    DictStorage)
-class SuccessFullMapping(object):
+@plumbing(FullMapping, DictStorage)
+class SuccessFullMapping:
     pass
 
 
-@plumbing(
-    MappingAdopt,
-    DefaultInit,
-    MappingNodeBehavior,
-    OdictStorage)
-class MappingNode(object):
+@plumbing(MappingAdopt, DefaultInit, MappingNodeBehavior, OdictStorage)
+class MappingNode:
     pass
 
 
@@ -55,14 +50,15 @@ class INoInterface(Interface):
 # Tests
 ###############################################################################
 
-class TestMapping(NodeTestCase):
 
+class TestMapping(NodeTestCase):
     def test_fullmapping_fails(self):
         # A full mapping that is going to fail, because nobody takes care about
         # ``__delitem__``, ``__getitem__``, ``__iter__`` and ``__setitem__``
         tester = FullMappingTester(FailingFullMapping, node_checks=False)
         tester.run()
-        self.checkOutput("""\
+        self.checkOutput(
+            """\
         ``__contains__``: failed: NotImplementedError()
         ``__delitem__``: failed: NotImplementedError()
         ``__getitem__``: failed: NotImplementedError()
@@ -83,11 +79,14 @@ class TestMapping(NodeTestCase):
         ``setdefault``: failed: NotImplementedError()
         ``update``: failed: NotImplementedError()
         ``values``: failed: NotImplementedError()
-        """, tester.combined)
+        """,
+            tester.combined,
+        )
 
         # All methods are defined on the class by the FullMapping behavior,
         # none are inherited from base classes
-        self.checkOutput("""\
+        self.checkOutput(
+            """\
         __contains__: FailingFullMapping
         __delitem__: FailingFullMapping
         __getitem__: FailingFullMapping
@@ -108,13 +107,16 @@ class TestMapping(NodeTestCase):
         setdefault: FailingFullMapping
         update: FailingFullMapping
         values: FailingFullMapping
-        """, tester.wherefrom)
+        """,
+            tester.wherefrom,
+        )
 
     def test_fullmapping_success(self):
         # Use a storage
         tester = FullMappingTester(SuccessFullMapping, node_checks=False)
         tester.run()
-        self.checkOutput("""\
+        self.checkOutput(
+            """\
         ``__contains__``: OK
         ``__delitem__``: OK
         ``__getitem__``: OK
@@ -135,11 +137,14 @@ class TestMapping(NodeTestCase):
         ``setdefault``: OK
         ``update``: OK
         ``values``: OK
-        """, tester.combined)
+        """,
+            tester.combined,
+        )
 
         # Only the Four were taken from the base class, the others were filled
         # in by the FullMapping behavior
-        self.checkOutput("""\
+        self.checkOutput(
+            """\
         __contains__: SuccessFullMapping
         __delitem__: SuccessFullMapping
         __getitem__: SuccessFullMapping
@@ -160,7 +165,9 @@ class TestMapping(NodeTestCase):
         setdefault: SuccessFullMapping
         update: SuccessFullMapping
         values: SuccessFullMapping
-        """, tester.wherefrom)
+        """,
+            tester.wherefrom,
+        )
 
     def test_MappingNode(self):
         root = MappingNode(name='root')
@@ -175,57 +182,72 @@ class TestMapping(NodeTestCase):
         child = root['child']
         self.assertEqual(child.name, 'child')
         self.assertEqual(child.parent, root)
-        self.assertEqual(root.treerepr(), (
-            '<class \'node.tests.test_mapping.MappingNode\'>: root\n'
-            '  <class \'node.tests.test_mapping.MappingNode\'>: child\n'
-        ))
+        self.assertEqual(
+            root.treerepr(),
+            (
+                "<class 'node.tests.test_mapping.MappingNode'>: root\n"
+                "  <class 'node.tests.test_mapping.MappingNode'>: child\n"
+            ),
+        )
         self.assertTrue(bool(root))
 
         tester = FullMappingTester(MappingNode)
         tester.run()
-        self.assertEqual(tester.combined, (
-            '``__contains__``: OK\n'
-            '``__delitem__``: OK\n'
-            '``__getitem__``: OK\n'
-            '``__iter__``: OK\n'
-            '``__len__``: OK\n'
-            '``__setitem__``: OK\n'
-            '``clear``: OK\n'
-            '``copy``: OK\n'
-            '``get``: OK\n'
-            '``has_key``: OK\n'
-            '``items``: OK\n'
-            '``iteritems``: OK\n'
-            '``iterkeys``: OK\n'
-            '``itervalues``: OK\n'
-            '``keys``: OK\n'
-            '``pop``: OK\n'
-            '``popitem``: OK\n'
-            '``setdefault``: OK\n'
-            '``update``: OK\n'
-            '``values``: OK'
-        ))
+        self.assertEqual(
+            tester.combined,
+            (
+                '``__contains__``: OK\n'
+                '``__delitem__``: OK\n'
+                '``__getitem__``: OK\n'
+                '``__iter__``: OK\n'
+                '``__len__``: OK\n'
+                '``__setitem__``: OK\n'
+                '``clear``: OK\n'
+                '``copy``: OK\n'
+                '``get``: OK\n'
+                '``has_key``: OK\n'
+                '``items``: OK\n'
+                '``iteritems``: OK\n'
+                '``iterkeys``: OK\n'
+                '``itervalues``: OK\n'
+                '``keys``: OK\n'
+                '``pop``: OK\n'
+                '``popitem``: OK\n'
+                '``setdefault``: OK\n'
+                '``update``: OK\n'
+                '``values``: OK'
+            ),
+        )
 
         root = RootMappingNode(name='root')
         child = root['child'] = MappingNode()
         subchild = child['subchild'] = MappingNode()
-        self.assertEqual(root.treerepr(), (
-            '<class \'node.tests.test_mapping.RootMappingNode\'>: root\n'
-            '  <class \'node.tests.test_mapping.MappingNode\'>: child\n'
-            '    <class \'node.tests.test_mapping.MappingNode\'>: subchild\n'
-        ))
+        self.assertEqual(
+            root.treerepr(),
+            (
+                "<class 'node.tests.test_mapping.RootMappingNode'>: root\n"
+                "  <class 'node.tests.test_mapping.MappingNode'>: child\n"
+                "    <class 'node.tests.test_mapping.MappingNode'>: subchild\n"
+            ),
+        )
 
-        root[u'\xf6'] = MappingNode()
-        self.checkOutput("""\
+        root['\xf6'] = MappingNode()
+        self.checkOutput(
+            """\
         <class 'node.tests.test_mapping.RootMappingNode'>: root
         __<class 'node.tests.test_mapping.MappingNode'>: child
         ____<class 'node.tests.test_mapping.MappingNode'>: subchild
         __<class 'node.tests.test_mapping.MappingNode'>: ...
-        """, root.treerepr(prefix='_'))
+        """,
+            root.treerepr(prefix='_'),
+        )
 
-        self.checkOutput("""\
+        self.checkOutput(
+            """\
         <MappingNode object '...' at ...>
-        """, repr(root[u'\xf6']))
+        """,
+            repr(root['\xf6']),
+        )
 
         alsoProvides(child, INodeInterface)
         self.assertEqual(subchild.acquire(RootMappingNode), root)
@@ -240,14 +262,19 @@ class TestMapping(NodeTestCase):
         self.assertEqual(child.name, 'child')
         self.assertEqual(child.parent, None)
         self.assertFalse('child' in root)
-        self.checkOutput("""\
+        self.checkOutput(
+            """\
         <class 'node.tests.test_mapping.MappingNode'>: child
         __<class 'node.tests.test_mapping.MappingNode'>: subchild
-        """, child.treerepr(prefix='_'))
+        """,
+            child.treerepr(prefix='_'),
+        )
 
     def test_BC_imports(self):
         from node.behaviors import Nodify
+
         self.assertTrue(Nodify is MappingNodeBehavior)
 
         from node.interfaces import INodify
+
         self.assertTrue(INodify is IMappingNode)

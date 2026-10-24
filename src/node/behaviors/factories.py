@@ -48,6 +48,7 @@ class FixedChildren(Behavior):
 
     The children are instantiated during __init__.
     """
+
     factories = default(odict())
 
     @plumb
@@ -56,16 +57,14 @@ class FixedChildren(Behavior):
         self._children = odict()
         if hasattr(self, 'fixed_children_factories'):
             warnings.warn(
-                '``fixed_children_factories`` is deprecated, '
-                'use ``factories`` instead'
+                '``fixed_children_factories`` is deprecated, use ``factories`` instead'
             )
             factories = self.fixed_children_factories
             # This is a B/C interface contract violation hack. The interface
             # describes the factories as dict, but prior to node 1.1 the
             # implementation expected a tuple or list
             factories = (
-                odict(factories) if isinstance(factories, (list, tuple))
-                else factories
+                odict(factories) if isinstance(factories, (list, tuple)) else factories
             )
         else:
             factories = self.factories
@@ -147,21 +146,19 @@ def _wildcard_patterns_by_specificity(patterns):
         [],  # patterns with no wildcards
         [],  # patterns with sequences
         [],  # patterns with sequences and question marks
-        []   # patterns with all wildcards
+        [],  # patterns with all wildcards
     ]
     weights = dict()
     for pattern in patterns:
-        (
-            chars,
-            asterisks,
-            question_marks,
-            sequences
-        ) = _wildcard_pattern_occurrences(pattern)
+        (chars, asterisks, question_marks, sequences) = _wildcard_pattern_occurrences(
+            pattern
+        )
         weights[pattern] = (
-            0 - chars +
-            sequences / 1000000. +
-            question_marks / 10000. +
-            asterisks / 100.
+            0
+            - chars
+            + sequences / 1000000.0
+            + question_marks / 10000.0
+            + asterisks / 100.0
         )
         # patterns with no wildcards
         if asterisks + question_marks + sequences == 0:
@@ -175,10 +172,14 @@ def _wildcard_patterns_by_specificity(patterns):
         # patterns with all wildcards
         else:
             specificities[3].append(pattern)
-    return tuple(itertools.chain.from_iterable([
-        sorted(specificity, key=lambda x: weights[x])
-        for specificity in specificities
-    ]))
+    return tuple(
+        itertools.chain.from_iterable(
+            [
+                sorted(specificity, key=lambda x: weights[x])
+                for specificity in specificities
+            ]
+        )
+    )
 
 
 @implementer(IWildcardFactory)

@@ -16,7 +16,6 @@ from plumber import plumbing
 
 
 class TestConstraints(NodeTestCase):
-
     def test_child_constraints(self):
         class BC1:
             allow_non_node_childs = False
@@ -58,17 +57,13 @@ class TestConstraints(NodeTestCase):
         with self.assertRaises(ValueError) as arc:
             check_constraints(ob, object())
         self.assertEqual(
-            str(arc.exception),
-            'Given value does not implement node.interfaces.INode'
+            str(arc.exception), 'Given value does not implement node.interfaces.INode'
         )
 
         ob.child_constraints = (int,)
         with self.assertRaises(ValueError) as arc:
             check_constraints(ob, '')
-        self.assertEqual(
-            str(arc.exception),
-            'Given value is no instance of int'
-        )
+        self.assertEqual(str(arc.exception), 'Given value is no instance of int')
         self.assertEqual(check_constraints(ob, 0), None)
 
         ob.child_constraints = None
@@ -76,15 +71,14 @@ class TestConstraints(NodeTestCase):
 
     def test_MappingConstraints(self):
         @plumbing(MappingConstraints, DefaultInit, MappingNode, OdictStorage)
-        class MappingConstraintsNode(object):
+        class MappingConstraintsNode:
             pass
 
         node = MappingConstraintsNode()
         with self.assertRaises(ValueError) as arc:
             node['child'] = 1
         self.assertEqual(
-            str(arc.exception),
-            'Given value does not implement node.interfaces.INode'
+            str(arc.exception), 'Given value does not implement node.interfaces.INode'
         )
 
         node.child_constraints = None
@@ -93,21 +87,19 @@ class TestConstraints(NodeTestCase):
 
     def test_SequenceConstraints(self):
         @plumbing(SequenceConstraints, DefaultInit, SequenceNode, ListStorage)
-        class SequenceConstraintsNode(object):
+        class SequenceConstraintsNode:
             pass
 
         node = SequenceConstraintsNode()
         with self.assertRaises(ValueError) as arc:
             node.insert(0, 1)
         self.assertEqual(
-            str(arc.exception),
-            'Given value does not implement node.interfaces.INode'
+            str(arc.exception), 'Given value does not implement node.interfaces.INode'
         )
         with self.assertRaises(ValueError) as arc:
             node['0'] = 1
         self.assertEqual(
-            str(arc.exception),
-            'Given value does not implement node.interfaces.INode'
+            str(arc.exception), 'Given value does not implement node.interfaces.INode'
         )
 
         node.child_constraints = None
@@ -118,7 +110,9 @@ class TestConstraints(NodeTestCase):
 
     def test_BC_imports(self):
         from node.behaviors import NodeChildValidate
+
         self.assertTrue(MappingConstraints is NodeChildValidate)
 
         from node.interfaces import INodeChildValidate
+
         self.assertTrue(IMappingConstraints is INodeChildValidate)

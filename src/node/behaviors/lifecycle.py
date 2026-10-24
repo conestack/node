@@ -33,14 +33,15 @@ def suppress_lifecycle_events():
 
 @implementer(ILifecycle)
 class Lifecycle(Behavior):
-
-    events = default({
-        'created': NodeCreatedEvent,
-        'added': NodeAddedEvent,
-        'modified': NodeModifiedEvent,
-        'removed': NodeRemovedEvent,
-        'detached': NodeDetachedEvent,
-    })
+    events = default(
+        {
+            'created': NodeCreatedEvent,
+            'added': NodeAddedEvent,
+            'modified': NodeModifiedEvent,
+            'removed': NodeRemovedEvent,
+            'detached': NodeDetachedEvent,
+        }
+    )
 
     @plumb
     def __init__(next_, self, *args, **kw):
@@ -52,11 +53,7 @@ class Lifecycle(Behavior):
         next_(self, key, val)
         if _lifecycle_context.suppress_events:
             return
-        objectEventNotify(self.events['added'](
-            val,
-            newParent=self,
-            newName=key
-        ))
+        objectEventNotify(self.events['added'](val, newParent=self, newName=key))
 
     @plumb
     def __delitem__(next_, self, key):
@@ -64,27 +61,18 @@ class Lifecycle(Behavior):
         next_(self, key)
         if _lifecycle_context.suppress_events:
             return
-        objectEventNotify(self.events['removed'](
-            delnode,
-            oldParent=self,
-            oldName=key
-        ))
+        objectEventNotify(self.events['removed'](delnode, oldParent=self, oldName=key))
 
     @plumb
     def detach(next_, self, key):
         with suppress_lifecycle_events():
             node = next_(self, key)
-        objectEventNotify(self.events['detached'](
-            node,
-            oldParent=self,
-            oldName=key
-        ))
+        objectEventNotify(self.events['detached'](node, oldParent=self, oldName=key))
         return node
 
 
 @implementer(IAttributesLifecycle)
 class AttributesLifecycle(Behavior):
-
     @plumb
     def __setitem__(next_, self, key, val):
         next_(self, key, val)

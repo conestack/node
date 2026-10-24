@@ -10,21 +10,17 @@ from zope.interface import implementer
 
 
 @implementer(INode)
-class MockupNode(object):
+class MockupNode:
     __name__ = None
     __parent__ = None
 
 
-class NoNode(object):
+class NoNode:
     pass
 
 
 @plumbing(
-    MappingConstraints,
-    DefaultInit,
-    MappingAdopt,
-    AsAttrAccess,
-    MappingNode,
-    OdictStorage)
-class MyNode(object):
+    MappingConstraints, DefaultInit, MappingAdopt, AsAttrAccess, MappingNode, OdictStorage
+)
+class MyNode:
     pass

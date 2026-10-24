@@ -16,8 +16,8 @@ import unittest
 # Mock objects
 ###############################################################################
 
-class Subscriber(object):
 
+class Subscriber:
     def __call__(self, *args, **kw):
         self.args = args
         self.kw = kw
@@ -42,12 +42,12 @@ class AttributedDispatcher(AttributedNode):
 
 
 @plumbing(Events)
-class MixedEventDeclatationsDispatcher(object):
+class MixedEventDeclatationsDispatcher:
     __events__ = ['event_a']
 
 
 @plumbing(Events)
-class AlwaysDispatchingAttributedDispatcher(object):
+class AlwaysDispatchingAttributedDispatcher:
     attr = EventAttribute(always_dispatch=True)
 
 
@@ -78,8 +78,8 @@ class PlumbedSubscriberDecoratorDispatcher(EventDispatcher):
 # Tests
 ###############################################################################
 
-class TestEvents(unittest.TestCase):
 
+class TestEvents(unittest.TestCase):
     def test_implements(self):
         dispatcher = EventDispatcher()
         self.assertTrue(IEvents.providedBy(dispatcher))
@@ -105,28 +105,19 @@ class TestEvents(unittest.TestCase):
         self.assertEqual(dispatcher.__subscribers__, {})
 
         # bind to unknown event
-        self.assertRaises(
-            UnknownEvent,
-            lambda: dispatcher.bind(my_event=Subscriber())
-        )
+        self.assertRaises(UnknownEvent, lambda: dispatcher.bind(my_event=Subscriber()))
 
         # register event and bind subscriber to it
         dispatcher.register_event('my_event')
         subscriber = Subscriber()
         dispatcher.bind(my_event=subscriber)
 
-        self.assertEqual(
-            dispatcher.__subscribers__,
-            {'my_event': [subscriber]}
-        )
+        self.assertEqual(dispatcher.__subscribers__, {'my_event': [subscriber]})
 
         # register same subscriber again, still just one Registration
         dispatcher.bind(my_event=subscriber)
 
-        self.assertEqual(
-            dispatcher.__subscribers__,
-            {'my_event': [subscriber]}
-        )
+        self.assertEqual(dispatcher.__subscribers__, {'my_event': [subscriber]})
 
     def test_mixed_event_declarations(self):
         dispatcher = MixedEventDeclatationsDispatcher()
@@ -135,10 +126,9 @@ class TestEvents(unittest.TestCase):
         subscriber = Subscriber()
         dispatcher.bind(event_a=subscriber)
         dispatcher.bind(event_b=subscriber)
-        self.assertEqual(dispatcher.__subscribers__, {
-            'event_a': [subscriber],
-            'event_b': [subscriber]
-        })
+        self.assertEqual(
+            dispatcher.__subscribers__, {'event_a': [subscriber], 'event_b': [subscriber]}
+        )
 
     def test_unbind(self):
         dispatcher = EventDispatcher()
@@ -149,36 +139,28 @@ class TestEvents(unittest.TestCase):
 
         # event is None and subscriber is None
         dispatcher.bind(event_1=subscriber, event_2=subscriber)
-        self.assertEqual(dispatcher.__subscribers__, {
-            'event_1': [subscriber],
-            'event_2': [subscriber]
-        })
+        self.assertEqual(
+            dispatcher.__subscribers__, {'event_1': [subscriber], 'event_2': [subscriber]}
+        )
         dispatcher.unbind()
         self.assertEqual(dispatcher.__subscribers__, {})
 
         # event is not None and subscriber is None
         dispatcher.bind(event_1=subscriber, event_2=subscriber)
-        self.assertEqual(dispatcher.__subscribers__, {
-            'event_1': [subscriber],
-            'event_2': [subscriber]
-        })
+        self.assertEqual(
+            dispatcher.__subscribers__, {'event_1': [subscriber], 'event_2': [subscriber]}
+        )
         dispatcher.unbind(event='event_1')
-        self.assertEqual(dispatcher.__subscribers__, {
-            'event_2': [subscriber]
-        })
+        self.assertEqual(dispatcher.__subscribers__, {'event_2': [subscriber]})
         dispatcher.unbind()
 
         # event is None and subscriber is not None
         dispatcher.bind(event_1=subscriber, event_2=subscriber)
-        self.assertEqual(dispatcher.__subscribers__, {
-            'event_1': [subscriber],
-            'event_2': [subscriber]
-        })
+        self.assertEqual(
+            dispatcher.__subscribers__, {'event_1': [subscriber], 'event_2': [subscriber]}
+        )
         dispatcher.unbind(subscriber=subscriber)
-        self.assertEqual(dispatcher.__subscribers__, {
-            'event_1': [],
-            'event_2': []
-        })
+        self.assertEqual(dispatcher.__subscribers__, {'event_1': [], 'event_2': []})
         dispatcher.unbind()
 
         # event is not None and subscriber is not None
@@ -186,13 +168,11 @@ class TestEvents(unittest.TestCase):
         subscriber_2 = Subscriber()
         dispatcher.bind(event_1=subscriber_1)
         dispatcher.bind(event_1=subscriber_2)
-        self.assertEqual(dispatcher.__subscribers__, {
-            'event_1': [subscriber_1, subscriber_2]
-        })
+        self.assertEqual(
+            dispatcher.__subscribers__, {'event_1': [subscriber_1, subscriber_2]}
+        )
         dispatcher.unbind(event='event_1', subscriber=subscriber_1)
-        self.assertEqual(dispatcher.__subscribers__, {
-            'event_1': [subscriber_2]
-        })
+        self.assertEqual(dispatcher.__subscribers__, {'event_1': [subscriber_2]})
         dispatcher.unbind()
 
     def test_dispatch(self):

@@ -28,9 +28,7 @@ class Nodespaces(Behavior):
         # blend in our nodespaces as children, with name __<name>__
         # isinstance check is required because odict tries to get item possibly
         # with ``_nil`` key, which is actually an object
-        if isinstance(key, str) \
-                and key.startswith('__') \
-                and key.endswith('__'):
+        if isinstance(key, str) and key.startswith('__') and key.endswith('__'):
             # a reserved child key mapped to the nodespace behind
             # nodespaces[key], nodespaces is an odict
             return self.nodespaces[key]

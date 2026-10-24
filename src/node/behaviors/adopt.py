@@ -31,7 +31,6 @@ def adopt_node(name, parent, value):
 
 @implementer(IMappingAdopt)
 class MappingAdopt(Behavior):
-
     @plumb
     def __setitem__(next_, self, key, value):
         with adopt_node(key, self, value):
@@ -50,7 +49,6 @@ class MappingAdopt(Behavior):
 
 @implementer(ISequenceAdopt)
 class SequenceAdopt(Behavior):
-
     @plumb
     def __setitem__(next_, self, index, value):
         if type(index) is slice:

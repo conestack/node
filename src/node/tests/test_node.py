@@ -14,27 +14,26 @@ from zope.interface import Interface
 # Mock objects
 ###############################################################################
 
+
 @plumbing(DefaultInit)
-class DefaultInitObject(object):
+class DefaultInitObject:
     pass
 
 
 @plumbing(NodeInit)
-class NodeInitObject(object):
-
+class NodeInitObject:
     def __init__(self, foo, bar=None):
         self.foo = foo
         self.bar = bar
 
 
 @plumbing(DefaultInit, Node)
-class NodeObject(object):
+class NodeObject:
     pass
 
 
 @plumbing(DefaultInit, Node, MappingNode)
-class BrokenMapping(object):
-
+class BrokenMapping:
     def __iter__(self):
         yield 'child'
 
@@ -47,8 +46,8 @@ class NoInterface(Interface):
 # Tests
 ###############################################################################
 
-class TestNode(NodeTestCase):
 
+class TestNode(NodeTestCase):
     def test_DefaultInit(self):
         obj = DefaultInitObject(name='name', parent='parent')
         self.assertTrue(IDefaultInit.providedBy(obj))
@@ -97,19 +96,22 @@ class TestNode(NodeTestCase):
         self.assertTrue(bool(node))
 
         # __repr__, __str__
-        self.checkOutput("""
+        self.checkOutput(
+            """
         <NodeObject object 'node' at ...>
-        """, str(node))
+        """,
+            str(node),
+        )
 
         # noderepr
-        self.assertEqual(
-            node.noderepr,
-            "<class 'node.tests.test_node.NodeObject'>: node"
-        )
+        self.assertEqual(node.noderepr, "<class 'node.tests.test_node.NodeObject'>: node")
 
         # treerepr
         broken = BrokenMapping(name='broken')
-        self.checkOutput("""
+        self.checkOutput(
+            """
         <class 'node.tests.test_node.BrokenMapping'>: broken
         __child: 'NotImplementedError()'
-        """, broken.treerepr(prefix='_'))
+        """,
+            broken.treerepr(prefix='_'),
+        )

@@ -14,7 +14,6 @@ def filter_objects(objects, filter):
 
 @implementer(IChildFilter)
 class MappingFilter(Behavior):
-
     @default
     def filtered_children(self, filter):
         return filter_objects(self.values(), filter)
@@ -22,7 +21,6 @@ class MappingFilter(Behavior):
 
 @implementer(IChildFilter)
 class SequenceFilter(Behavior):
-
     @default
     def filtered_children(self, filter):
         return filter_objects(self, filter)

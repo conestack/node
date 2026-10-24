@@ -17,45 +17,28 @@ from plumber import plumbing
 # Mock objects
 ###############################################################################
 
-@plumbing(
-    NodeInit,
-    MappingAdopt,
-    MappingOrder,
-    MappingNode,
-    OdictStorage)
-class OrderableMappingNode(object):
+
+@plumbing(NodeInit, MappingAdopt, MappingOrder, MappingNode, OdictStorage)
+class OrderableMappingNode:
     pass
 
 
 @plumbing(
-    NodeInit,
-    MappingAdopt,
-    MappingOrder,
-    MappingReference,
-    MappingNode,
-    OdictStorage)
-class OrderReferenceMappingNode(object):
+    NodeInit, MappingAdopt, MappingOrder, MappingReference, MappingNode, OdictStorage
+)
+class OrderReferenceMappingNode:
+    pass
+
+
+@plumbing(NodeInit, SequenceAdopt, SequenceOrder, SequenceNode, ListStorage)
+class OrderableSequenceNode:
     pass
 
 
 @plumbing(
-    NodeInit,
-    SequenceAdopt,
-    SequenceOrder,
-    SequenceNode,
-    ListStorage)
-class OrderableSequenceNode(object):
-    pass
-
-
-@plumbing(
-    NodeInit,
-    SequenceAdopt,
-    SequenceOrder,
-    SequenceReference,
-    SequenceNode,
-    ListStorage)
-class OrderReferenceSequenceNode(object):
+    NodeInit, SequenceAdopt, SequenceOrder, SequenceReference, SequenceNode, ListStorage
+)
+class OrderReferenceSequenceNode:
     pass
 
 
@@ -63,8 +46,8 @@ class OrderReferenceSequenceNode(object):
 # Tests
 ###############################################################################
 
-class TestMappingOrder(NodeTestCase):
 
+class TestMappingOrder(NodeTestCase):
     def test_first_key(self):
         node = OrderableMappingNode(name='root')
         with self.assertRaises(KeyError):
@@ -166,80 +149,90 @@ class TestMappingOrder(NodeTestCase):
         node['child1'] = OrderableMappingNode()
 
         node.insertbefore(OrderableMappingNode(name='child2'), node['child1'])
-        self.assertEqual(node.treerepr(), (
-            "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
-        ))
+        self.assertEqual(
+            node.treerepr(),
+            (
+                "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
+            ),
+        )
 
         node.insertbefore(OrderableMappingNode(name='child3'), 'child1')
-        self.assertEqual(node.treerepr(), (
-            "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child3\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
-        ))
+        self.assertEqual(
+            node.treerepr(),
+            (
+                "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child3\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
+            ),
+        )
 
         with self.assertRaises(ValueError) as arc:
             node.insertbefore(
-                OrderableMappingNode(name='new'),
-                OrderableMappingNode(name='ref')
+                OrderableMappingNode(name='new'), OrderableMappingNode(name='ref')
             )
-        self.assertEqual(
-            str(arc.exception),
-            'Given reference node not child of self.'
-        )
+        self.assertEqual(str(arc.exception), 'Given reference node not child of self.')
 
     def test_insertafter(self):
         node = OrderableMappingNode(name='root')
         node['child1'] = OrderableMappingNode()
 
         node.insertafter(OrderableMappingNode(name='child2'), node['child1'])
-        self.assertEqual(node.treerepr(), (
-            "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
-        ))
+        self.assertEqual(
+            node.treerepr(),
+            (
+                "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
+            ),
+        )
 
         node.insertafter(OrderableMappingNode(name='child3'), 'child1')
-        self.assertEqual(node.treerepr(), (
-            "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child3\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
-        ))
+        self.assertEqual(
+            node.treerepr(),
+            (
+                "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child3\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
+            ),
+        )
 
         with self.assertRaises(ValueError) as arc:
             node.insertafter(
-                OrderableMappingNode(name='new'),
-                OrderableMappingNode(name='ref')
+                OrderableMappingNode(name='new'), OrderableMappingNode(name='ref')
             )
-        self.assertEqual(
-            str(arc.exception),
-            'Given reference node not child of self.'
-        )
+        self.assertEqual(str(arc.exception), 'Given reference node not child of self.')
 
     def test_insertfirst(self):
         node = OrderableMappingNode(name='root')
         node['child1'] = OrderableMappingNode()
 
         node.insertfirst(OrderableMappingNode(name='child2'))
-        self.assertEqual(node.treerepr(), (
-            "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
-        ))
+        self.assertEqual(
+            node.treerepr(),
+            (
+                "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
+            ),
+        )
 
     def test_insertlast(self):
         node = OrderableMappingNode(name='root')
         node['child1'] = OrderableMappingNode()
 
         node.insertlast(OrderableMappingNode(name='child2'))
-        self.assertEqual(node.treerepr(), (
-            "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
-        ))
+        self.assertEqual(
+            node.treerepr(),
+            (
+                "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
+            ),
+        )
 
     def test_movebefore(self):
         node = OrderableMappingNode(name='root')
@@ -247,18 +240,24 @@ class TestMappingOrder(NodeTestCase):
         node['child2'] = OrderableMappingNode()
 
         node.movebefore(node['child2'], node['child1'])
-        self.assertEqual(node.treerepr(), (
-            "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
-        ))
+        self.assertEqual(
+            node.treerepr(),
+            (
+                "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
+            ),
+        )
 
         node.movebefore('child1', 'child2')
-        self.assertEqual(node.treerepr(), (
-            "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
-        ))
+        self.assertEqual(
+            node.treerepr(),
+            (
+                "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
+            ),
+        )
 
     def test_moveafter(self):
         node = OrderableMappingNode(name='root')
@@ -266,18 +265,24 @@ class TestMappingOrder(NodeTestCase):
         node['child2'] = OrderableMappingNode()
 
         node.moveafter(node['child1'], node['child2'])
-        self.assertEqual(node.treerepr(), (
-            "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
-        ))
+        self.assertEqual(
+            node.treerepr(),
+            (
+                "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
+            ),
+        )
 
         node.moveafter('child2', 'child1')
-        self.assertEqual(node.treerepr(), (
-            "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
-        ))
+        self.assertEqual(
+            node.treerepr(),
+            (
+                "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
+            ),
+        )
 
     def test_movefirst(self):
         node = OrderableMappingNode(name='root')
@@ -285,18 +290,24 @@ class TestMappingOrder(NodeTestCase):
         node['child2'] = OrderableMappingNode()
 
         node.movefirst(node['child2'])
-        self.assertEqual(node.treerepr(), (
-            "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
-        ))
+        self.assertEqual(
+            node.treerepr(),
+            (
+                "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
+            ),
+        )
 
         node.movefirst('child1')
-        self.assertEqual(node.treerepr(), (
-            "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
-        ))
+        self.assertEqual(
+            node.treerepr(),
+            (
+                "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
+            ),
+        )
 
     def test_movelast(self):
         node = OrderableMappingNode(name='root')
@@ -304,18 +315,24 @@ class TestMappingOrder(NodeTestCase):
         node['child2'] = OrderableMappingNode()
 
         node.movelast(node['child1'])
-        self.assertEqual(node.treerepr(), (
-            "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
-        ))
+        self.assertEqual(
+            node.treerepr(),
+            (
+                "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
+            ),
+        )
 
         node.movelast('child2')
-        self.assertEqual(node.treerepr(), (
-            "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
-        ))
+        self.assertEqual(
+            node.treerepr(),
+            (
+                "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
+            ),
+        )
 
     def test_validateinsertion(self):
         node = OrderableMappingNode(name='root')
@@ -330,8 +347,7 @@ class TestMappingOrder(NodeTestCase):
         with self.assertRaises(KeyError) as arc:
             node.insertafter(new, node['child1'])
         self.assertEqual(
-            str(arc.exception),
-            "'Tree already contains node with name child1'"
+            str(arc.exception), "'Tree already contains node with name child1'"
         )
 
     def test_detach_and_add(self):
@@ -345,11 +361,14 @@ class TestMappingOrder(NodeTestCase):
 
         detached = node.detach('child1')
         node.insertafter(detached, node['child2'])
-        self.assertEqual(node.treerepr(), (
-            "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
-            "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
-        ))
+        self.assertEqual(
+            node.treerepr(),
+            (
+                "<class 'node.tests.test_order.OrderableMappingNode'>: root\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child2\n"
+                "  <class 'node.tests.test_order.OrderableMappingNode'>: child1\n"
+            ),
+        )
 
     def test_order_with_references(self):
         node = OrderReferenceMappingNode(name='root')
@@ -407,16 +426,12 @@ class TestMappingOrder(NodeTestCase):
         # movebefore
         node.movebefore('child1', 'child2')
         self.assertEqual(len(node._index), 6)
-        self.assertTrue(
-            node._index is node['child1']._index is node['child2']._index
-        )
+        self.assertTrue(node._index is node['child1']._index is node['child2']._index)
 
         # moveafter
         node.moveafter('child1', 'child2')
         self.assertEqual(len(node._index), 6)
-        self.assertTrue(
-            node._index is node['child1']._index is node['child2']._index
-        )
+        self.assertTrue(node._index is node['child1']._index is node['child2']._index)
 
         # movefirst
         node.movefirst('child1')
@@ -430,13 +445,10 @@ class TestMappingOrder(NodeTestCase):
 
         # swap
         node.swap('child1', 'child2')
-        self.assertTrue(
-            node._index is node['child1']._index is node['child2']._index
-        )
+        self.assertTrue(node._index is node['child1']._index is node['child2']._index)
 
 
 class TestSequenceOrder(NodeTestCase):
-
     def test_first_index(self):
         node = OrderableSequenceNode(name='root')
         with self.assertRaises(IndexError):
@@ -492,85 +504,73 @@ class TestSequenceOrder(NodeTestCase):
         # Case first 2, a < b
         node.swap(node['0'], node['1'])
         self.assertEqual(
-            [child for child in node],
-            [child_1, child_0, child_2, child_3, child_4]
+            [child for child in node], [child_1, child_0, child_2, child_3, child_4]
         )
 
         # Case first 2, a > b
         node.swap(node['0'], node['1'])
         self.assertEqual(
-            [child for child in node],
-            [child_0, child_1, child_2, child_3, child_4]
+            [child for child in node], [child_0, child_1, child_2, child_3, child_4]
         )
 
         # Case last 2, a < b
         node.swap(node['3'], node['4'])
         self.assertEqual(
-            [child for child in node],
-            [child_0, child_1, child_2, child_4, child_3]
+            [child for child in node], [child_0, child_1, child_2, child_4, child_3]
         )
 
         # Case last 2, a > b
         node.swap(node['3'], node['4'])
         self.assertEqual(
-            [child for child in node],
-            [child_0, child_1, child_2, child_3, child_4]
+            [child for child in node], [child_0, child_1, child_2, child_3, child_4]
         )
 
         # Case neighbors, a < b
         node.swap(node['1'], node['2'])
         self.assertEqual(
-            [child for child in node],
-            [child_0, child_2, child_1, child_3, child_4]
+            [child for child in node], [child_0, child_2, child_1, child_3, child_4]
         )
 
         # Case neighbors, a > b
         node.swap(node['1'], node['2'])
         self.assertEqual(
-            [child for child in node],
-            [child_0, child_1, child_2, child_3, child_4]
+            [child for child in node], [child_0, child_1, child_2, child_3, child_4]
         )
 
         # Case non neighbors, one node first, a < b
         node.swap(node['0'], node['2'])
         self.assertEqual(
-            [child for child in node],
-            [child_2, child_1, child_0, child_3, child_4]
+            [child for child in node], [child_2, child_1, child_0, child_3, child_4]
         )
 
         # Case non neighbors, one node first, a > b
         node.swap(node['0'], node['2'])
         self.assertEqual(
-            [child for child in node],
-            [child_0, child_1, child_2, child_3, child_4]
+            [child for child in node], [child_0, child_1, child_2, child_3, child_4]
         )
 
         # Case non neighbors, one node last, a < b
         node.swap(node['2'], node['4'])
         self.assertEqual(
-            [child for child in node],
-            [child_0, child_1, child_4, child_3, child_2]
+            [child for child in node], [child_0, child_1, child_4, child_3, child_2]
         )
 
         # Case non neighbors, one node last, a > b
         node.swap(node['2'], node['4'])
         self.assertEqual(
-            [child for child in node],
-            [child_0, child_1, child_2, child_3, child_4]
+            [child for child in node], [child_0, child_1, child_2, child_3, child_4]
         )
 
         # Case non neighbors, a < b
         node.swap(node['1'], node['3'])
         self.assertEqual(
-            [child for child in node],
-            [child_0, child_3, child_2, child_1, child_4]
+            [child for child in node], [child_0, child_3, child_2, child_1, child_4]
         )
 
         # Case non neighbors, a > b
         node.swap(node['1'], node['3'])
         self.assertEqual(
-            [child for child in node],
-            [child_0, child_1, child_2, child_3, child_4]
+            [child for child in node], [child_0, child_1, child_2, child_3, child_4]
         )
 
     def test_insertbefore(self):
@@ -580,34 +580,19 @@ class TestSequenceOrder(NodeTestCase):
 
         child_1 = OrderableSequenceNode()
         node.insertbefore(child_1, node[0])
-        self.assertEqual(
-            [child for child in node],
-            [child_1, child_0]
-        )
+        self.assertEqual([child for child in node], [child_1, child_0])
 
         child_2 = OrderableSequenceNode()
         node.insertbefore(child_2, '1')
-        self.assertEqual(
-            [child for child in node],
-            [child_1, child_2, child_0]
-        )
+        self.assertEqual([child for child in node], [child_1, child_2, child_0])
 
         with self.assertRaises(ValueError) as arc:
-            node.insertbefore(
-                OrderableSequenceNode(),
-                OrderableSequenceNode()
-            )
-        self.assertEqual(
-            str(arc.exception),
-            'Given reference node not child of self.'
-        )
+            node.insertbefore(OrderableSequenceNode(), OrderableSequenceNode())
+        self.assertEqual(str(arc.exception), 'Given reference node not child of self.')
 
         with self.assertRaises(ValueError) as arc:
             node.insertbefore(child_0, 0)
-        self.assertEqual(
-            str(arc.exception),
-            'Given node already child of self.'
-        )
+        self.assertEqual(str(arc.exception), 'Given node already child of self.')
 
     def test_insertafter(self):
         node = OrderableSequenceNode(name='root')
@@ -616,34 +601,19 @@ class TestSequenceOrder(NodeTestCase):
 
         child_1 = OrderableSequenceNode()
         node.insertafter(child_1, node[0])
-        self.assertEqual(
-            [child for child in node],
-            [child_0, child_1]
-        )
+        self.assertEqual([child for child in node], [child_0, child_1])
 
         child_2 = OrderableSequenceNode()
         node.insertafter(child_2, 0)
-        self.assertEqual(
-            [child for child in node],
-            [child_0, child_2, child_1]
-        )
+        self.assertEqual([child for child in node], [child_0, child_2, child_1])
 
         with self.assertRaises(ValueError) as arc:
-            node.insertafter(
-                OrderableSequenceNode(),
-                OrderableSequenceNode()
-            )
-        self.assertEqual(
-            str(arc.exception),
-            'Given reference node not child of self.'
-        )
+            node.insertafter(OrderableSequenceNode(), OrderableSequenceNode())
+        self.assertEqual(str(arc.exception), 'Given reference node not child of self.')
 
         with self.assertRaises(ValueError) as arc:
             node.insertafter(child_0, 0)
-        self.assertEqual(
-            str(arc.exception),
-            'Given node already child of self.'
-        )
+        self.assertEqual(str(arc.exception), 'Given node already child of self.')
 
     def test_insertfirst(self):
         node = OrderableSequenceNode(name='root')
@@ -652,17 +622,11 @@ class TestSequenceOrder(NodeTestCase):
 
         child_1 = OrderableSequenceNode()
         node.insertfirst(child_1)
-        self.assertEqual(
-            [child for child in node],
-            [child_1, child_0]
-        )
+        self.assertEqual([child for child in node], [child_1, child_0])
 
         with self.assertRaises(ValueError) as arc:
             node.insertfirst(child_0)
-        self.assertEqual(
-            str(arc.exception),
-            'Given node already child of self.'
-        )
+        self.assertEqual(str(arc.exception), 'Given node already child of self.')
 
     def test_insertlast(self):
         node = OrderableSequenceNode(name='root')
@@ -671,17 +635,11 @@ class TestSequenceOrder(NodeTestCase):
 
         child_1 = OrderableSequenceNode()
         node.insertlast(child_1)
-        self.assertEqual(
-            [child for child in node],
-            [child_0, child_1]
-        )
+        self.assertEqual([child for child in node], [child_0, child_1])
 
         with self.assertRaises(ValueError) as arc:
             node.insertlast(child_0)
-        self.assertEqual(
-            str(arc.exception),
-            'Given node already child of self.'
-        )
+        self.assertEqual(str(arc.exception), 'Given node already child of self.')
 
     def test_movebefore(self):
         node = OrderableSequenceNode(name='root')
@@ -699,29 +657,25 @@ class TestSequenceOrder(NodeTestCase):
         # move left, no gap
         node.movebefore(child_1, child_0)
         self.assertEqual(
-            [child for child in node],
-            [child_1, child_0, child_2, child_3, child_4]
+            [child for child in node], [child_1, child_0, child_2, child_3, child_4]
         )
 
         # move left, gap
         node.movebefore(child_2, child_1)
         self.assertEqual(
-            [child for child in node],
-            [child_2, child_1, child_0, child_3, child_4]
+            [child for child in node], [child_2, child_1, child_0, child_3, child_4]
         )
 
         # move right, no gap
         node.movebefore(child_1, child_0)
         self.assertEqual(
-            [child for child in node],
-            [child_2, child_1, child_0, child_3, child_4]
+            [child for child in node], [child_2, child_1, child_0, child_3, child_4]
         )
 
         # move right, gap
         node.movebefore(child_1, child_4)
         self.assertEqual(
-            [child for child in node],
-            [child_2, child_0, child_3, child_1, child_4]
+            [child for child in node], [child_2, child_0, child_3, child_1, child_4]
         )
 
     def test_moveafter(self):
@@ -740,29 +694,25 @@ class TestSequenceOrder(NodeTestCase):
         # move right, no gap
         node.moveafter(child_0, child_1)
         self.assertEqual(
-            [child for child in node],
-            [child_1, child_0, child_2, child_3, child_4]
+            [child for child in node], [child_1, child_0, child_2, child_3, child_4]
         )
 
         # move right, gap
         node.moveafter(child_1, child_2)
         self.assertEqual(
-            [child for child in node],
-            [child_0, child_2, child_1, child_3, child_4]
+            [child for child in node], [child_0, child_2, child_1, child_3, child_4]
         )
 
         # move left, no gap
         node.moveafter(child_2, child_0)
         self.assertEqual(
-            [child for child in node],
-            [child_0, child_2, child_1, child_3, child_4]
+            [child for child in node], [child_0, child_2, child_1, child_3, child_4]
         )
 
         # move left, gap
         node.moveafter(child_4, child_0)
         self.assertEqual(
-            [child for child in node],
-            [child_0, child_4, child_2, child_1, child_3]
+            [child for child in node], [child_0, child_4, child_2, child_1, child_3]
         )
 
     def test_movefirst(self):
@@ -775,15 +725,9 @@ class TestSequenceOrder(NodeTestCase):
         node.append(child_2)
 
         node.movefirst(child_1)
-        self.assertEqual(
-            [child for child in node],
-            [child_1, child_0, child_2]
-        )
+        self.assertEqual([child for child in node], [child_1, child_0, child_2])
         node.movefirst(child_2)
-        self.assertEqual(
-            [child for child in node],
-            [child_2, child_1, child_0]
-        )
+        self.assertEqual([child for child in node], [child_2, child_1, child_0])
 
     def test_movelast(self):
         node = OrderableSequenceNode(name='root')
@@ -795,16 +739,10 @@ class TestSequenceOrder(NodeTestCase):
         node.append(child_2)
 
         node.movelast(child_0)
-        self.assertEqual(
-            [child for child in node],
-            [child_1, child_2, child_0]
-        )
+        self.assertEqual([child for child in node], [child_1, child_2, child_0])
 
         node.movelast(child_2)
-        self.assertEqual(
-            [child for child in node],
-            [child_1, child_0, child_2]
-        )
+        self.assertEqual([child for child in node], [child_1, child_0, child_2])
 
     def test_lookup_node_index(self):
         node = OrderableSequenceNode(name='root')
@@ -841,10 +779,7 @@ class TestSequenceOrder(NodeTestCase):
 
         detached = node.detach(0)
         node.insertafter(detached, 1)
-        self.assertEqual(
-            [child for child in node],
-            [child_1, child_2, child_0]
-        )
+        self.assertEqual([child for child in node], [child_1, child_2, child_0])
 
     def test_order_with_references(self):
         node = OrderReferenceSequenceNode(name='root')
@@ -873,12 +808,12 @@ class TestSequenceOrder(NodeTestCase):
 
         def check_indices():
             return (
-                node._index is
-                child_0._index is
-                child_1._index is
-                child_2._index is
-                child_3._index is
-                child_4._index
+                node._index
+                is child_0._index
+                is child_1._index
+                is child_2._index
+                is child_3._index
+                is child_4._index
             )
 
         # insertbefore
@@ -940,8 +875,10 @@ class TestSequenceOrder(NodeTestCase):
 
     def test_BC_imports(self):
         from node.behaviors import Order
+
         self.assertTrue(Order is MappingOrder)
 
         from node.interfaces import IMappingOrder
         from node.interfaces import IOrder
+
         self.assertTrue(IOrder is IMappingOrder)

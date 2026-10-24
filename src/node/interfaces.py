@@ -11,7 +11,8 @@ from zope.lifecycleevent import IObjectRemovedEvent
 
 try:
     from zope.location.interfaces import ILocation
-except ImportError as e:
+except ImportError:
+
     class ILocation(Interface):
         """Objects that can be located in a hierachy.
 
@@ -33,6 +34,7 @@ except ImportError as e:
 ###############################################################################
 # events
 ###############################################################################
+
 
 class INodeCreatedEvent(IObjectCreatedEvent):
     """An new Node was born."""
@@ -57,6 +59,7 @@ class INodeDetachedEvent(IObjectRemovedEvent):
 ###############################################################################
 # helpers
 ###############################################################################
+
 
 class IAttributeAccess(Interface):
     """Provides Attribute access to dict like context.
@@ -94,6 +97,7 @@ class IAliaser(Interface):
 # markers
 ###############################################################################
 
+
 class IRoot(Interface):
     """Marker for a root node."""
 
@@ -116,6 +120,7 @@ class ICallable(Interface):
 ###############################################################################
 # initialization
 ###############################################################################
+
 
 class IDefaultInit(Interface):
     """Plumbing behavior providing default ``__init__`` function on node.
@@ -148,6 +153,7 @@ class INodeInit(Interface):
 # nodes
 ###############################################################################
 
+
 class INode(ILocation):
     """Basic node interface."""
 
@@ -172,8 +178,7 @@ class IContentishNode(INode):
     """A node which can contain children."""
 
     def detach(name):
-        """Detach child Node.
-        """
+        """Detach child Node."""
 
 
 class IMappingNode(IContentishNode, IFullMapping):
@@ -231,6 +236,7 @@ class ISequenceNode(IContentishNode, IMutableSequence):
 # plumbing behaviors
 ###############################################################################
 
+
 class IMappingAdopt(Interface):
     """Plumbing behavior that provides ``__name__`` and ``__parent__``
     attribute adoption on child nodes of mapping.
@@ -270,8 +276,7 @@ class ISequenceAdopt(Interface):
 
 
 class IConstraints(Interface):
-    """Base interface for defining node constraints.
-    """
+    """Base interface for defining node constraints."""
 
     child_constraints = Attribute(
         'Sequence of types or interfaces of allowed node children '
@@ -471,9 +476,7 @@ class ILifecycle(Interface):
         Trigger detached event.
     """
 
-    events = Attribute(
-        'Dict with lifecycle event classes to use for notification.'
-    )
+    events = Attribute('Dict with lifecycle event classes to use for notification.')
 
 
 class IAttributesLifecycle(Interface):
@@ -663,7 +666,7 @@ class IUUIDAware(IUUID):
         'Flag whether to set new UUID on children as well when calling '
         '``node.copy()``. This only makes sence for nodes performing a '
         '``deepcopy`` or anythin equivalent also creating copies '
-        'of it\'s children.'
+        "of it's children."
     )
     uuid_factory = Attribute('Factory function creating new uuid instances')
 
@@ -707,8 +710,7 @@ class IMappingReference(INodeReference):
 
 # B/C 2022-05-06 -> node.interfaces.IReference
 deprecated(
-    '``IReference`` has been renamed to ``IMappingReference``. '
-    'Please fix your import',
+    '``IReference`` has been renamed to ``IMappingReference``. Please fix your import',
     IReference='node.interfaces:IMappingReference',
 )
 
@@ -793,9 +795,7 @@ class IFallback(Interface):
     until desired value is found.
     """
 
-    fallback_key = Attribute(
-        'Key to be used as fallback if an item was not found.'
-    )
+    fallback_key = Attribute('Key to be used as fallback if an item was not found.')
 
     def __getitem__(key):
         """Lookup fallback if item is not available on node."""

@@ -112,7 +112,6 @@ class Mapping(WriteMapping, EnumerableMapping):
 
 @implementer(IIterableMapping)
 class IterableMapping(EnumerableMapping):
-
     @default
     def iterkeys(self):
         """Uses ``__iter__``."""
@@ -139,7 +138,6 @@ class IterableMapping(EnumerableMapping):
 
 @implementer(IClonableMapping)
 class ClonableMapping(Behavior):
-
     @default
     def copy(self):
         return copy.copy(self)
@@ -152,7 +150,6 @@ class ClonableMapping(Behavior):
 
 @implementer(IExtendedReadMapping)
 class ExtendedReadMapping(IterableMapping):
-
     @default
     def has_key(self, key):
         """Uses ``__iter__``."""
@@ -161,7 +158,6 @@ class ExtendedReadMapping(IterableMapping):
 
 @implementer(IExtendedWriteMapping)
 class ExtendedWriteMapping(WriteMapping):
-
     @default
     def clear(self):
         """Works only if together with EnumerableMapping."""
@@ -171,7 +167,7 @@ class ExtendedWriteMapping(WriteMapping):
     @default
     def update(self, *args, **kw):
         if len(args) > 1:
-            msg = 'At most one positional argument, not: {}.'.format(len(args))
+            msg = f'At most one positional argument, not: {len(args)}.'
             raise TypeError(msg)
         if args:
             data = args[0]
@@ -214,10 +210,7 @@ class ExtendedWriteMapping(WriteMapping):
 
 
 @implementer(IFullMapping)
-class FullMapping(ExtendedReadMapping,
-                  ExtendedWriteMapping,
-                  ClonableMapping,
-                  Mapping):
+class FullMapping(ExtendedReadMapping, ExtendedWriteMapping, ClonableMapping, Mapping):
     """Provides defaults for IFullMapping
 
     NotImplementedError is raised by defaults for:
@@ -230,7 +223,6 @@ class FullMapping(ExtendedReadMapping,
 
 @implementer(IMappingNode)
 class MappingNode(ContentishNode, FullMapping):
-
     @plumb
     def copy(next_, self):
         new = next_(self)

@@ -39,7 +39,7 @@ class DictAliaser(odict):
 
 
 @implementer(IAliaser)
-class PrefixAliaser(object):
+class PrefixAliaser:
     """An aliaser that prefix all keys.
 
     As it never raise KeyError it is not whitelisting.
@@ -55,15 +55,12 @@ class PrefixAliaser(object):
         """Returns the real key for a prefixed_key."""
         prefix = self.prefix or ''
         if not prefixed_key.startswith(prefix):
-            raise KeyError(u"key '{}' does not match prefix '{}'".format(
-                prefixed_key,
-                prefix
-            ))
-        return prefixed_key[len(prefix):]
+            raise KeyError(f"key '{prefixed_key}' does not match prefix '{prefix}'")
+        return prefixed_key[len(prefix) :]
 
 
 @implementer(IAliaser)
-class SuffixAliaser(object):
+class SuffixAliaser:
     """An aliaser that suffixes all keys.
 
     As it never raise KeyError it is not whitelisting.
@@ -79,15 +76,12 @@ class SuffixAliaser(object):
         """returns the real key for a suffixed_key."""
         suffix = self.suffix or ''
         if not suffixed_key.endswith(suffix):
-            raise KeyError(u"key '{}' does not match suffix '{}'".format(
-                suffixed_key,
-                suffix
-            ))
-        return suffixed_key[:-len(suffix)]
+            raise KeyError(f"key '{suffixed_key}' does not match suffix '{suffix}'")
+        return suffixed_key[: -len(suffix)]
 
 
 @implementer(IAliaser)
-class AliaserChain(object):
+class AliaserChain:
     """A chain of aliasers.
 
     chain = [aliaser1, aliaser2]

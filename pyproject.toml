@@ -66,5 +66,24 @@ consider_namespace_packages = true
 addopts = ["--import-mode=importlib"]
 pythonpath = "src"
 
+[tool.ruff]
+line-length = 90
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "UP"]
+# UP008: zero-argument ``super()`` breaks on ``@plumbing`` decorated classes.
+# UP031: ``%`` formatting is kept.
+ignore = ["UP008", "UP031"]
+
+[tool.ruff.lint.isort]
+force-single-line = true
+from-first = true
+no-sections = true
+lines-after-imports = 2
+order-by-type = false
+
+[tool.ruff.format]
+quote-style = "single"
+
 [tool.zest-releaser]
 create-wheel = true

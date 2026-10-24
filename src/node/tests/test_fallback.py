@@ -14,16 +14,10 @@ from plumber import plumbing
 # Mock objects
 ###############################################################################
 
-@plumbing(
-    Nodespaces,
-    Fallback,
-    MappingAdopt,
-    DefaultInit,
-    MappingNode,
-    OdictStorage)
-class FallbackNodeAttributes(object):
-    """Attributes Node for testing
-    """
+
+@plumbing(Nodespaces, Fallback, MappingAdopt, DefaultInit, MappingNode, OdictStorage)
+class FallbackNodeAttributes:
+    """Attributes Node for testing"""
 
 
 @plumbing(
@@ -33,10 +27,11 @@ class FallbackNodeAttributes(object):
     Attributes,
     DefaultInit,
     MappingNode,
-    OdictStorage)
-class FallbackNode(object):
-    """Normal Node for testing
-    """
+    OdictStorage,
+)
+class FallbackNode:
+    """Normal Node for testing"""
+
     attributes_factory = FallbackNodeAttributes
 
 
@@ -44,8 +39,8 @@ class FallbackNode(object):
 # Tests
 ###############################################################################
 
-class TestFallback(NodeTestCase):
 
+class TestFallback(NodeTestCase):
     def setUp(self):
         # Setup test data
         super(TestFallback, self).setUp()
@@ -94,15 +89,18 @@ class TestFallback(NodeTestCase):
 
     def test_test_data(self):
         # Visualize the tree
-        self.assertEqual(self.fb_node.treerepr(), (
-            '<class \'node.tests.test_fallback.FallbackNode\'>: root\n'
-            '  <class \'node.tests.test_fallback.FallbackNode\'>: x\n'
-            '    <class \'node.tests.test_fallback.FallbackNode\'>: 1\n'
-            '    <class \'node.tests.test_fallback.FallbackNode\'>: 2\n'
-            '  <class \'node.tests.test_fallback.FallbackNode\'>: y\n'
-            '    <class \'node.tests.test_fallback.FallbackNode\'>: 1\n'
-            '    <class \'node.tests.test_fallback.FallbackNode\'>: 2\n'
-        ))
+        self.assertEqual(
+            self.fb_node.treerepr(),
+            (
+                "<class 'node.tests.test_fallback.FallbackNode'>: root\n"
+                "  <class 'node.tests.test_fallback.FallbackNode'>: x\n"
+                "    <class 'node.tests.test_fallback.FallbackNode'>: 1\n"
+                "    <class 'node.tests.test_fallback.FallbackNode'>: 2\n"
+                "  <class 'node.tests.test_fallback.FallbackNode'>: y\n"
+                "    <class 'node.tests.test_fallback.FallbackNode'>: 1\n"
+                "    <class 'node.tests.test_fallback.FallbackNode'>: 2\n"
+            ),
+        )
 
     def test_Fallback(self):
         # We always ask for attributes in the path 'root, y, 2, attrs'.
@@ -165,4 +163,4 @@ class TestFallback(NodeTestCase):
         # KeyError
         with self.assertRaises(KeyError) as arc:
             self.fb_node['y']['2'].attrs['z']
-        self.assertEqual(str(arc.exception), '\'z\'')
+        self.assertEqual(str(arc.exception), "'z'")

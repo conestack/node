@@ -10,36 +10,24 @@ from plumber import plumbing
 import unittest
 
 
-@plumbing(
-    NodeInit,
-    MappingNode,
-    MappingFilter,
-    DictStorage)
-class FilterMappingNode(object):
+@plumbing(NodeInit, MappingNode, MappingFilter, DictStorage)
+class FilterMappingNode:
     pass
 
 
-@plumbing(
-    NodeInit,
-    SequenceNode,
-    SequenceFilter,
-    ListStorage)
-class FilterSequenceNode(object):
+@plumbing(NodeInit, SequenceNode, SequenceFilter, ListStorage)
+class FilterSequenceNode:
     pass
 
 
 class TestFilter(unittest.TestCase):
-
     def test_MappingFilter(self):
         node = FilterMappingNode()
         node_1 = node['1'] = FilterMappingNode()
         node_2 = node['2'] = FilterSequenceNode()
 
         self.assertEqual(node.filtered_children(FilterMappingNode), [node_1])
-        self.assertEqual(
-            node.filtered_children(IChildFilter),
-            [node_1, node_2]
-        )
+        self.assertEqual(node.filtered_children(IChildFilter), [node_1, node_2])
 
     def test_SequenceFilter(self):
         node = FilterSequenceNode()
@@ -49,7 +37,4 @@ class TestFilter(unittest.TestCase):
         node.append(node_2)
 
         self.assertEqual(node.filtered_children(FilterMappingNode), [node_1])
-        self.assertEqual(
-            node.filtered_children(IChildFilter),
-            [node_1, node_2]
-        )
+        self.assertEqual(node.filtered_children(IChildFilter), [node_1, node_2])

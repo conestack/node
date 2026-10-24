@@ -10,37 +10,28 @@ import uuid
 
 
 class TestCommon(NodeTestCase):
-
     def test_UnicodeAware(self):
         @plumbing(MappingNode, UnicodeAware, OdictStorage)
-        class UnicodeNode(object):
+        class UnicodeNode:
             pass
 
         node = UnicodeNode()
         node['foo'] = UnicodeNode()
-        self.assertEqual(list(node.keys()), [u'foo'])
+        self.assertEqual(list(node.keys()), ['foo'])
 
         node['bar'] = 'bar'
-        self.assertEqual(
-            node.items(),
-            [(u'foo', node['foo']), (u'bar', u'bar')]
-        )
+        self.assertEqual(node.items(), [('foo', node['foo']), ('bar', 'bar')])
 
         self.assertTrue(isinstance(node['foo'], UnicodeNode))
 
         del node['bar']
-        self.assertEqual(list(node.keys()), [u'foo'])
+        self.assertEqual(list(node.keys()), ['foo'])
 
     def test_UUIDAware(self):
         # Create a uid aware node. ``copy`` is not supported on UUIDAware node
         # trees, ``deepcopy`` must be used
-        @plumbing(
-            MappingAdopt,
-            DefaultInit,
-            MappingNode,
-            OdictStorage,
-            UUIDAware)
-        class UUIDNode(object):
+        @plumbing(MappingAdopt, DefaultInit, MappingNode, OdictStorage, UUIDAware)
+        class UUIDNode:
             pass
 
         # UUID is set at init time
@@ -61,18 +52,24 @@ class TestCommon(NodeTestCase):
         # Create children, copy tree and check if all uuids have changed
         c1 = root['c1'] = UUIDNode()
         c1['s1'] = UUIDNode()
-        self.assertEqual(root.treerepr(), (
-            "<class 'node.tests.test_common.UUIDNode'>: root\n"
-            "  <class 'node.tests.test_common.UUIDNode'>: c1\n"
-            "    <class 'node.tests.test_common.UUIDNode'>: s1\n"
-        ))
+        self.assertEqual(
+            root.treerepr(),
+            (
+                "<class 'node.tests.test_common.UUIDNode'>: root\n"
+                "  <class 'node.tests.test_common.UUIDNode'>: c1\n"
+                "    <class 'node.tests.test_common.UUIDNode'>: s1\n"
+            ),
+        )
 
         root_cp = root.deepcopy()
-        self.assertEqual(root_cp.treerepr(), (
-            "<class 'node.tests.test_common.UUIDNode'>: root\n"
-            "  <class 'node.tests.test_common.UUIDNode'>: c1\n"
-            "    <class 'node.tests.test_common.UUIDNode'>: s1\n"
-        ))
+        self.assertEqual(
+            root_cp.treerepr(),
+            (
+                "<class 'node.tests.test_common.UUIDNode'>: root\n"
+                "  <class 'node.tests.test_common.UUIDNode'>: c1\n"
+                "    <class 'node.tests.test_common.UUIDNode'>: s1\n"
+            ),
+        )
 
         self.assertFalse(root.uuid == root_cp.uuid)
         self.assertFalse(root['c1'].uuid == root_cp['c1'].uuid)
@@ -83,14 +80,17 @@ class TestCommon(NodeTestCase):
         s1_uid = root['c1']['s1'].uuid
         detached = root.detach('c1')
 
-        self.assertEqual(root.treerepr(), (
-            "<class 'node.tests.test_common.UUIDNode'>: root\n"
-        ))
+        self.assertEqual(
+            root.treerepr(), ("<class 'node.tests.test_common.UUIDNode'>: root\n")
+        )
 
-        self.assertEqual(detached.treerepr(), (
-            "<class 'node.tests.test_common.UUIDNode'>: c1\n"
-            "  <class 'node.tests.test_common.UUIDNode'>: s1\n"
-        ))
+        self.assertEqual(
+            detached.treerepr(),
+            (
+                "<class 'node.tests.test_common.UUIDNode'>: c1\n"
+                "  <class 'node.tests.test_common.UUIDNode'>: s1\n"
+            ),
+        )
 
         self.assertTrue(c1_uid == detached.uuid)
         self.assertTrue(s1_uid == detached['s1'].uuid)

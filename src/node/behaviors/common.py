@@ -12,7 +12,6 @@ import uuid
 
 @implementer(IAsAttrAccess)
 class AsAttrAccess(Behavior):
-
     @default
     def as_attribute_access(self):
         return AttributeAccess(self)

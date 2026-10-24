@@ -11,10 +11,9 @@ from plumber import plumbing
 
 
 class TestAttributes(NodeTestCase):
-
     def test_Attributes(self):
         @plumbing(Attributes, DefaultInit, MappingNode, DictStorage)
-        class AttributedNode(object):
+        class AttributedNode:
             pass
 
         node = AttributedNode(name='attributed')
@@ -29,7 +28,7 @@ class TestAttributes(NodeTestCase):
         self.assertIsInstance(node.attrs, NodeAttributes)
         self.assertTrue(INodeAttributes.providedBy(node.attrs))
 
-        expected = '<NodeAttributes object \'attributed\' at '
+        expected = "<NodeAttributes object 'attributed' at "
         self.assertTrue(repr(attrs).startswith(expected))
 
         attrs['foo'] = 'bar'
@@ -38,13 +37,12 @@ class TestAttributes(NodeTestCase):
         with self.assertRaises(AttributeError) as arc:
             node.attrs.foo
         self.assertEqual(
-            str(arc.exception),
-            '\'NodeAttributes\' object has no attribute \'foo\''
+            str(arc.exception), "'NodeAttributes' object has no attribute 'foo'"
         )
 
     def test_AttributesWithNodespaces(self):
         @plumbing(Nodespaces, Attributes, MappingNode, DictStorage)
-        class AttributedNode(object):
+        class AttributedNode:
             pass
 
         node = AttributedNode()
@@ -54,7 +52,7 @@ class TestAttributes(NodeTestCase):
 
     def test_attribute_access_for_attrs(self):
         @plumbing(Attributes, MappingNode, DictStorage)
-        class AttributedNode(object):
+        class AttributedNode:
             pass
 
         node = AttributedNode()

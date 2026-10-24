@@ -22,13 +22,14 @@ import uuid
 # Mock objects
 ###############################################################################
 
+
 def referenced_function():
-    pass                                                     # pragma: no cover
+    pass  # pragma: no cover
 
 
-class ReferencedClass(object):
+class ReferencedClass:
     def foo(self):
-        pass                                                 # pragma: no cover
+        pass  # pragma: no cover
 
 
 class ICustomNode(Interface):
@@ -71,18 +72,15 @@ def class_bound_deserialize_custom_node(encoder, node, data):
 @serializer(CustomInitNode)
 def serialize_custom_node(encoder, node, data):
     class_bound_serialize_custom_node(encoder, node, data)
-    data['kw'] = {
-        'a': node.a,
-        'b': node.b
-    }
+    data['kw'] = {'a': node.a, 'b': node.b}
 
 
 ###############################################################################
 # Tests
 ###############################################################################
 
-class TestSerializer(NodeTestCase):
 
+class TestSerializer(NodeTestCase):
     ###########################################################################
     # Serializer settings
     ###########################################################################
@@ -127,28 +125,28 @@ class TestSerializer(NodeTestCase):
         self.assertEqual(node_data['name'], None)
 
         node = deserialize(json_data)
-        self.assertTrue(str(node).startswith('<BaseNode object \'None\' at'))
+        self.assertTrue(str(node).startswith("<BaseNode object 'None' at"))
 
     def test_children(self):
         # Node children serializition
         node = OrderedNode(name='base')
         node['child'] = OrderedNode()
         node['child']['sub'] = OrderedNode()
-        self.assertEqual(node.treerepr(), (
-            '<class \'node.base.OrderedNode\'>: base\n'
-            '  <class \'node.base.OrderedNode\'>: child\n'
-            '    <class \'node.base.OrderedNode\'>: sub\n'
-        ))
+        self.assertEqual(
+            node.treerepr(),
+            (
+                "<class 'node.base.OrderedNode'>: base\n"
+                "  <class 'node.base.OrderedNode'>: child\n"
+                "    <class 'node.base.OrderedNode'>: sub\n"
+            ),
+        )
 
         json_data = serialize(node)
         data = json.loads(json_data)
         self.assertEqual(list(data.keys()), ['__node__'])
 
         node_data = data['__node__']
-        self.assertEqual(
-            list(sorted(node_data.keys())),
-            ['children', 'class', 'name']
-        )
+        self.assertEqual(list(sorted(node_data.keys())), ['children', 'class', 'name'])
         self.assertEqual(node_data['class'], 'node.base.OrderedNode')
         self.assertEqual(node_data['name'], 'base')
         self.assertEqual(len(node_data['children']), 1)
@@ -164,32 +162,41 @@ class TestSerializer(NodeTestCase):
         self.assertEqual(node_data['name'], 'sub')
 
         node = deserialize(json_data)
-        self.assertEqual(node.treerepr(), (
-            '<class \'node.base.OrderedNode\'>: base\n'
-            '  <class \'node.base.OrderedNode\'>: child\n'
-            '    <class \'node.base.OrderedNode\'>: sub\n'
-        ))
+        self.assertEqual(
+            node.treerepr(),
+            (
+                "<class 'node.base.OrderedNode'>: base\n"
+                "  <class 'node.base.OrderedNode'>: child\n"
+                "    <class 'node.base.OrderedNode'>: sub\n"
+            ),
+        )
 
         # Deserialize using given root node
         root = BaseNode(name='root')
         node = deserialize(json_data, root=root)
-        self.assertEqual(root.treerepr(), (
-            '<class \'node.base.BaseNode\'>: root\n'
-            '  <class \'node.base.OrderedNode\'>: base\n'
-            '    <class \'node.base.OrderedNode\'>: child\n'
-            '      <class \'node.base.OrderedNode\'>: sub\n'
-        ))
+        self.assertEqual(
+            root.treerepr(),
+            (
+                "<class 'node.base.BaseNode'>: root\n"
+                "  <class 'node.base.OrderedNode'>: base\n"
+                "    <class 'node.base.OrderedNode'>: child\n"
+                "      <class 'node.base.OrderedNode'>: sub\n"
+            ),
+        )
 
     def test_children_as_list(self):
         # Serialize list of nodes
         node = OrderedNode(name='base')
         node['child_1'] = OrderedNode()
         node['child_2'] = OrderedNode()
-        self.assertEqual(node.treerepr(), (
-            '<class \'node.base.OrderedNode\'>: base\n'
-            '  <class \'node.base.OrderedNode\'>: child_1\n'
-            '  <class \'node.base.OrderedNode\'>: child_2\n'
-        ))
+        self.assertEqual(
+            node.treerepr(),
+            (
+                "<class 'node.base.OrderedNode'>: base\n"
+                "  <class 'node.base.OrderedNode'>: child_1\n"
+                "  <class 'node.base.OrderedNode'>: child_2\n"
+            ),
+        )
 
         json_data = serialize(node.values())
         data = json.loads(json_data)
@@ -210,25 +217,34 @@ class TestSerializer(NodeTestCase):
         root = OrderedNode(name='root')
         nodes = deserialize(json_data, root=root)
         self.assertEqual(len(nodes), 2)
-        self.checkOutput("""\
+        self.checkOutput(
+            """\
         [<OrderedNode object 'child_1' at ...>,
         <OrderedNode object 'child_2' at ...>]
-        """, str(nodes))
+        """,
+            str(nodes),
+        )
 
-        self.assertEqual(root.treerepr(), (
-            '<class \'node.base.OrderedNode\'>: root\n'
-            '  <class \'node.base.OrderedNode\'>: child_1\n'
-            '  <class \'node.base.OrderedNode\'>: child_2\n'
-        ))
+        self.assertEqual(
+            root.treerepr(),
+            (
+                "<class 'node.base.OrderedNode'>: root\n"
+                "  <class 'node.base.OrderedNode'>: child_1\n"
+                "  <class 'node.base.OrderedNode'>: child_2\n"
+            ),
+        )
 
     def test_custom_children_key(self):
         # Serialize and deserialize children to custom key
         node = OrderedNode(name='root')
         node['child'] = OrderedNode()
-        self.assertEqual(node.treerepr(), (
-            '<class \'node.base.OrderedNode\'>: root\n'
-            '  <class \'node.base.OrderedNode\'>: child\n'
-        ))
+        self.assertEqual(
+            node.treerepr(),
+            (
+                "<class 'node.base.OrderedNode'>: root\n"
+                "  <class 'node.base.OrderedNode'>: child\n"
+            ),
+        )
 
         settings = SerializerSettings()
         settings.set(I_NODE_NS, 'children_key', 'child_nodes')
@@ -238,16 +254,16 @@ class TestSerializer(NodeTestCase):
         self.assertFalse('children' in data['__node__'])
         self.assertTrue('child_nodes' in data['__node__'])
         self.assertEqual(len(data['__node__']['child_nodes']), 1)
-        self.assertEqual(
-            data['__node__']['child_nodes'][0]['__node__']['name'],
-            'child'
-        )
+        self.assertEqual(data['__node__']['child_nodes'][0]['__node__']['name'], 'child')
 
         node = deserialize(json_data, settings=settings)
-        self.assertEqual(node.treerepr(), (
-            '<class \'node.base.OrderedNode\'>: root\n'
-            '  <class \'node.base.OrderedNode\'>: child\n'
-        ))
+        self.assertEqual(
+            node.treerepr(),
+            (
+                "<class 'node.base.OrderedNode'>: root\n"
+                "  <class 'node.base.OrderedNode'>: child\n"
+            ),
+        )
 
     ###########################################################################
     # Attribute serialization
@@ -268,17 +284,14 @@ class TestSerializer(NodeTestCase):
         self.assertEqual(list(data.keys()), ['__node__'])
 
         node_data = data['__node__']
-        self.assertEqual(
-            list(sorted(node_data.keys())),
-            ['attrs', 'class', 'name']
-        )
+        self.assertEqual(list(sorted(node_data.keys())), ['attrs', 'class', 'name'])
         self.assertEqual(node_data['class'], 'node.base.AttributedNode')
         self.assertEqual(node_data['name'], 'base')
 
         attrs_data = node_data['attrs']
         self.assertEqual(
             list(sorted(attrs_data.keys())),
-            ['float', 'int', 'list', 'str', 'unset', 'uuid']
+            ['float', 'int', 'list', 'str', 'unset', 'uuid'],
         )
         self.assertEqual(attrs_data['int'], 0)
         self.assertEqual(attrs_data['float'], 0.0)
@@ -286,13 +299,12 @@ class TestSerializer(NodeTestCase):
         self.assertEqual(attrs_data['list'], [0, 0.0, 'str', '<UNSET>'])
         self.assertEqual(attrs_data['unset'], '<UNSET>')
         self.assertEqual(
-            attrs_data['uuid'],
-            '<UUID>:fcb30f5a-20c7-43aa-9537-2a25fef0248d'
+            attrs_data['uuid'], '<UUID>:fcb30f5a-20c7-43aa-9537-2a25fef0248d'
         )
 
         # Deserialize node implementing ``IAttributes``
         node = deserialize(json_data)
-        expected = '<AttributedNode object \'base\' at'
+        expected = "<AttributedNode object 'base' at"
         self.assertTrue(str(node).startswith(expected))
         self.assertEqual(node.attrs['int'], 0)
         self.assertEqual(node.attrs['float'], 0.0)
@@ -300,8 +312,7 @@ class TestSerializer(NodeTestCase):
         self.assertEqual(node.attrs['list'], [0, 0.0, 'str', UNSET])
         self.assertEqual(node.attrs['unset'], UNSET)
         self.assertEqual(
-            node.attrs['uuid'],
-            uuid.UUID('fcb30f5a-20c7-43aa-9537-2a25fef0248d')
+            node.attrs['uuid'], uuid.UUID('fcb30f5a-20c7-43aa-9537-2a25fef0248d')
         )
 
     def test_custom_attrs_key(self):
@@ -337,33 +348,25 @@ class TestSerializer(NodeTestCase):
         self.assertEqual(list(data.keys()), ['__node__'])
 
         node_data = data['__node__']
-        self.assertEqual(
-            list(sorted(node_data.keys())),
-            ['attrs', 'class', 'name']
-        )
+        self.assertEqual(list(sorted(node_data.keys())), ['attrs', 'class', 'name'])
         self.assertEqual(node_data['class'], 'node.base.AttributedNode')
         self.assertEqual(node_data['name'], None)
 
         attrs_data = node_data['attrs']
+        self.assertEqual(list(sorted(attrs_data.keys())), ['class', 'func', 'method'])
         self.assertEqual(
-            list(sorted(attrs_data.keys())),
-            ['class', 'func', 'method']
+            attrs_data['class']['__ob__'], 'node.tests.test_serializer.ReferencedClass'
         )
         self.assertEqual(
-            attrs_data['class']['__ob__'],
-            'node.tests.test_serializer.ReferencedClass'
-        )
-        self.assertEqual(
-            attrs_data['func']['__ob__'],
-            'node.tests.test_serializer.referenced_function'
+            attrs_data['func']['__ob__'], 'node.tests.test_serializer.referenced_function'
         )
         self.assertEqual(
             attrs_data['method']['__ob__'],
-            'node.tests.test_serializer.ReferencedClass.foo'
+            'node.tests.test_serializer.ReferencedClass.foo',
         )
 
         node = deserialize(json_data)
-        expected = '<AttributedNode object \'None\' at'
+        expected = "<AttributedNode object 'None' at"
         self.assertTrue(str(node).startswith(expected))
         self.assertEqual(node.attrs['func'], referenced_function)
         self.assertEqual(node.attrs['class'], ReferencedClass)
@@ -378,7 +381,7 @@ class TestSerializer(NodeTestCase):
         data = json.loads(json_data)
         self.assertEqual(
             data['__node__']['attrs']['method']['__ob__'],
-            'node.tests.test_serializer.ReferencedClass.foo'
+            'node.tests.test_serializer.ReferencedClass.foo',
         )
 
         node = deserialize(json_data)
@@ -387,8 +390,7 @@ class TestSerializer(NodeTestCase):
         json_data = serialize(node, simple_mode=True)
         data = json.loads(json_data)
         self.assertEqual(
-            data['attrs']['method'],
-            'node.tests.test_serializer.ReferencedClass.foo'
+            data['attrs']['method'], 'node.tests.test_serializer.ReferencedClass.foo'
         )
 
     ###########################################################################
@@ -409,19 +411,16 @@ class TestSerializer(NodeTestCase):
         node_data = data['__node__']
         self.assertEqual(
             list(sorted(node_data.keys())),
-            ['attrs', 'class', 'class_attr', 'iface_attr', 'name']
+            ['attrs', 'class', 'class_attr', 'iface_attr', 'name'],
         )
-        self.assertEqual(
-            node_data['class'],
-            'node.tests.test_serializer.CustomNode'
-        )
+        self.assertEqual(node_data['class'], 'node.tests.test_serializer.CustomNode')
         self.assertEqual(node_data['name'], 'custom')
         self.assertEqual(node_data['attrs'], {})
         self.assertEqual(node_data['iface_attr'], 'Iface Attr Value')
         self.assertEqual(node_data['class_attr'], 'Class Attr Value')
 
         node = deserialize(json_data)
-        expected = '<CustomNode object \'custom\' at'
+        expected = "<CustomNode object 'custom' at"
         self.assertTrue(str(node).startswith(expected))
         self.assertEqual(node.iface_attr, 'Iface Attr Value')
         self.assertEqual(node.class_attr, 'Class Attr Value')
@@ -437,12 +436,9 @@ class TestSerializer(NodeTestCase):
         node_data = data['__node__']
         self.assertEqual(
             list(sorted(node_data.keys())),
-            ['attrs', 'class', 'class_attr', 'iface_attr', 'kw', 'name']
+            ['attrs', 'class', 'class_attr', 'iface_attr', 'kw', 'name'],
         )
-        self.assertEqual(
-            node_data['class'],
-            'node.tests.test_serializer.CustomInitNode'
-        )
+        self.assertEqual(node_data['class'], 'node.tests.test_serializer.CustomInitNode')
         self.assertEqual(node_data['name'], None)
         self.assertEqual(node_data['attrs'], {})
         self.assertEqual(node_data['kw'], {'a': 'A', 'b': 'B'})
@@ -450,7 +446,7 @@ class TestSerializer(NodeTestCase):
         self.assertEqual(node_data['class_attr'], None)
 
         node = deserialize(json_data)
-        expected = '<CustomInitNode object \'None\' at'
+        expected = "<CustomInitNode object 'None' at"
         self.assertTrue(str(node).startswith(expected))
         self.assertEqual(node.a, 'A')
         self.assertEqual(node.b, 'B')
@@ -489,19 +485,13 @@ class TestSerializer(NodeTestCase):
         # class name, pass ``include_class=True`` to ``serialize``
         json_data = serialize(node, simple_mode=True, include_class=True)
         data = json.loads(json_data)
-        self.assertEqual(
-            sorted(list(data.keys())),
-            ['children', 'class', 'name']
-        )
+        self.assertEqual(sorted(list(data.keys())), ['children', 'class', 'name'])
         self.assertEqual(data['class'], 'node.base.BaseNode')
         self.assertEqual(data['name'], 'base')
         self.assertEqual(len(data['children']), 1)
 
         child_data = data['children'][0]
-        self.assertEqual(
-            sorted(list(child_data.keys())),
-            ['attrs', 'class', 'name']
-        )
+        self.assertEqual(sorted(list(child_data.keys())), ['attrs', 'class', 'name'])
         self.assertEqual(child_data['class'], 'node.base.AttributedNode')
         self.assertEqual(child_data['name'], 'child')
 

@@ -20,9 +20,8 @@ def scope_context(context, name, parent):
         context.name = context.parent = None
 
 
-class ScopeContext(object):
-    """A scoped context.
-    """
+class ScopeContext:
+    """A scoped context."""
 
     name = None
     """Name of the field while scoped."""

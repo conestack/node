@@ -8,8 +8,9 @@ import logging
 logger = logging.getLogger('node')
 
 
-class Unset(object):
+class Unset:
     """Identify unset values in contrast to None."""
+
     instance = None
 
     def __new__(cls):
@@ -62,7 +63,7 @@ def LocationIterator(obj):
 
 
 @implementer(IEnumerableMapping)
-class ReverseMapping(object):
+class ReverseMapping:
     """Reversed IEnumerableMapping."""
 
     def __init__(self, context):
@@ -109,7 +110,7 @@ class ReverseMapping(object):
 
 
 @implementer(IAttributeAccess)
-class AttributeAccess(object):
+class AttributeAccess:
     """If someone really needs to access the original context (which should
     not happen), she hast to use ``object.__getattr__(attraccess, 'context')``.
     """
@@ -144,7 +145,7 @@ class AttributeAccess(object):
 CHARACTER_ENCODING = 'utf-8'
 
 
-class StrCodec(object):
+class StrCodec:
     """Encode unicodes to strs and decode strs to unicodes.
 
     We will recursively work on arbitrarily nested structures consisting of
@@ -238,8 +239,9 @@ def instance_property(func):
 
     Set instance attribute with '_' prefix.
     """
+
     def wrapper(self):
-        attribute_name = '_{}'.format(func.__name__)
+        attribute_name = f'_{func.__name__}'
         # do not use hasattr/getattr to avoid problems when overwriting
         # __getattr__ on a class which also uses instance_property
         try:
@@ -247,6 +249,7 @@ def instance_property(func):
         except AttributeError:
             setattr(self, attribute_name, func(self))
             return object.__getattribute__(self, attribute_name)
+
     wrapper.__doc__ = func.__doc__
     return property(wrapper)
 
@@ -266,17 +269,12 @@ def node_by_path(root, path):
 
 def debug(func):
     """Decorator for logging debug messages."""
+
     def wrapped(*args, **kws):
-        logger.debug(u'{}: args={}, kws={}'.format(
-            func.__name__,
-            str(args),
-            str(kws)
-        ))
+        logger.debug(f'{func.__name__}: args={str(args)}, kws={str(kws)}')
         f_result = func(*args, **kws)
-        logger.debug(u'{}: --> {}'.format(
-            func.__name__,
-            str(f_result)
-        ))
+        logger.debug(f'{func.__name__}: --> {str(f_result)}')
         return f_result
+
     wrapped.__doc__ = func.__doc__
     return wrapped

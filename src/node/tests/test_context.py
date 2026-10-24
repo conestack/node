@@ -10,13 +10,12 @@ class IBoundInterface(Interface):
     pass
 
 
-class BoundClass(object):
+class BoundClass:
     pass
 
 
 @plumbing(BoundContext)
-class ContextAware(object):
-
+class ContextAware:
     @classmethod
     def unbind_context(cls):
         cls.__bound_context_interfaces__ = ()
@@ -24,7 +23,6 @@ class ContextAware(object):
 
 
 class TestContext(NodeTestCase):
-
     def test_BoundContext_bind_context(self):
         self.assertEqual(ContextAware.__bound_context_interfaces__, ())
         self.assertEqual(ContextAware.__bound_context_classes__, ())
@@ -37,31 +35,19 @@ class TestContext(NodeTestCase):
         self.assertTrue(IBoundContext.providedBy(ca))
 
         ContextAware.bind_context(IBoundInterface)
-        self.assertEqual(
-            ContextAware.__bound_context_interfaces__,
-            (IBoundInterface,)
-        )
+        self.assertEqual(ContextAware.__bound_context_interfaces__, (IBoundInterface,))
         self.assertEqual(ContextAware.__bound_context_classes__, ())
 
         ContextAware.unbind_context()
 
         ContextAware.bind_context(BoundClass)
         self.assertEqual(ContextAware.__bound_context_interfaces__, ())
-        self.assertEqual(
-            ContextAware.__bound_context_classes__,
-            (BoundClass,)
-        )
+        self.assertEqual(ContextAware.__bound_context_classes__, (BoundClass,))
 
         ContextAware.unbind_context()
         ContextAware.bind_context(IBoundInterface, BoundClass)
-        self.assertEqual(
-            ContextAware.__bound_context_interfaces__,
-            (IBoundInterface,)
-        )
-        self.assertEqual(
-            ContextAware.__bound_context_classes__,
-            (BoundClass,)
-        )
+        self.assertEqual(ContextAware.__bound_context_interfaces__, (IBoundInterface,))
+        self.assertEqual(ContextAware.__bound_context_classes__, (BoundClass,))
 
         with self.assertRaises(RuntimeError):
             ContextAware.bind_context(object)
@@ -72,7 +58,7 @@ class TestContext(NodeTestCase):
 
     def test_BoundContext_context_matches(self):
         @implementer(IBoundInterface)
-        class BoundInterface(object):
+        class BoundInterface:
             pass
 
         ContextAware.unbind_context()

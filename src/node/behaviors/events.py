@@ -7,6 +7,7 @@ from plumber import plumber
 from zope.interface import implementer
 import threading
 
+
 ###############################################################################
 # Event dispatcher and event dispatching class attribute descriptor
 #
@@ -34,7 +35,7 @@ def event_dispatcher_metclass_hook(cls, name, bases, dct):
 ALL_EVENTS = object()
 
 
-class suppress_events(object):
+class suppress_events:
     """Context manager to suppress event notification.
 
     Dedicated to be used in node implementations to internally modify data
@@ -58,6 +59,7 @@ class suppress_events(object):
         with suppress_events(['event_1', 'event_2']):
             pass  # do something
     """
+
     data = threading.local()
     data.suppress = 0
     data.events = list()
@@ -102,7 +104,7 @@ def _subscribers(subscribers):
     yield
 
 
-class EventAttribute(object):
+class EventAttribute:
     """Descriptor which can be used on ``Events`` behavior using objects.
 
     It's possible to bind subscribers to object attributes of type
@@ -150,11 +152,10 @@ class EventAttribute(object):
             def on_example_attribute(self, value):
                 pass  # do something
     """
+
     name = None
 
-    def __init__(self, default=UNSET,
-                 storage='__dict__',
-                 always_dispatch=False):
+    def __init__(self, default=UNSET, storage='__dict__', always_dispatch=False):
         """Initialize attribute.
 
         :param default: Default value. Defaults to UNSET
@@ -229,8 +230,7 @@ class Events(Behavior):
 
     @finalize
     def __new__(cls, *args, **kw):
-        """Set ``__events__`` and ``__subscribers__`` attributes on instance.
-        """
+        """Set ``__events__`` and ``__subscribers__`` attributes on instance."""
         inst = super(type, cls).__new__(cls, *args, **kw)
         inst.__events__ = list()
         inst.__subscribers__ = dict()
@@ -253,8 +253,7 @@ class Events(Behavior):
             value is the subscriber callable.
         """
         for event, subscriber in kw.items():
-            if event not in self.__events__ \
-                    and event not in self.__class__.__events__:
+            if event not in self.__events__ and event not in self.__class__.__events__:
                 raise UnknownEvent(event)
             subscribers = self.__subscribers__.setdefault(event, list())
             if subscriber not in subscribers:

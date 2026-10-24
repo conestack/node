@@ -2,8 +2,7 @@ from node.testing.base import BaseTester
 
 
 class FullMappingTester(BaseTester):
-    """Test node against ``zope.interface.mapping.IFullMaping`` interface.
-    """
+    """Test node against ``zope.interface.mapping.IFullMaping`` interface."""
 
     iface_contract = [
         '__setitem__',
@@ -55,16 +54,14 @@ class FullMappingTester(BaseTester):
 
     def _check_keys(self, keys, expected):
         if len(keys) != len(expected):
-            raise Exception('Expected {}-length result. Got ``{}``'.format(
-                len(expected),
-                len(keys)
-            ))
+            raise Exception(
+                f'Expected {len(expected)}-length result. Got ``{len(keys)}``'
+            )
         for key in keys:
             if key not in expected:
-                raise Exception('Expected ``{}`` as keys. Got ``{}``'.format(
-                    str(keys),
-                    str(expected)
-                ))
+                raise Exception(
+                    f'Expected ``{str(keys)}`` as keys. Got ``{str(expected)}``'
+                )
 
     def test___iter__(self):
         keys = [key for key in self.context]
@@ -80,14 +77,12 @@ class FullMappingTester(BaseTester):
 
     def _check_values(self, values, expected):
         if len(values) != len(expected):
-            raise Exception('Expected {}-length result. Got ``{}``'.format(
-                len(expected),
-                len(values)
-            ))
+            raise Exception(
+                f'Expected {len(expected)}-length result. Got ``{len(values)}``'
+            )
         if self.node_checks:
             values = sorted(
-                values,
-                key=lambda x: '' if x.__name__ is None else x.__name__
+                values, key=lambda x: '' if x.__name__ is None else x.__name__
             )
             for value in values:
                 if value.__name__ not in expected:
@@ -104,32 +99,22 @@ class FullMappingTester(BaseTester):
 
     def _check_items(self, items, expected):
         if len(items) != len(expected):
-            raise Exception('Expected {}-length result. Got ``{}``'.format(
-                len(expected),
-                len(items)
-            ))
-        items = sorted(
-            items,
-            key=lambda x: '' if x[0] is None else x[0],
-            reverse=True
-        )
+            raise Exception(
+                f'Expected {len(expected)}-length result. Got ``{len(items)}``'
+            )
+        items = sorted(items, key=lambda x: '' if x[0] is None else x[0], reverse=True)
         for key, value in items:
             if key not in expected:
-                raise Exception('Expected keys ``{}``. Got ``{}``'.format(
-                    str(expected),
-                    key
-                ))
+                raise Exception(f'Expected keys ``{str(expected)}``. Got ``{key}``')
             if self.node_checks:
                 if key != value.__name__:
-                    msg = 'Expected same value for ``key`` "{}" and ' + \
-                          '``__name__`` "{}"'
+                    msg = (
+                        'Expected same value for ``key`` "{}" and ' + '``__name__`` "{}"'
+                    )
                     raise Exception(msg.format(str(key), str(value.__name__)))
         for key, value in items:
             if value is not self.context[key]:
-                raise Exception('Expected {}, got {}'.format(
-                    str(value),
-                    str(self.context[key])
-                ))
+                raise Exception(f'Expected {str(value)}, got {str(self.context[key])}')
 
     def test_items(self):
         self._check_items(self.context.items(), ['foo', 'bar'])
@@ -141,27 +126,19 @@ class FullMappingTester(BaseTester):
     def test___contains__(self):
         if 'foo' not in self.context or 'bar' not in self.context:
             raise Exception(
-                'Expected ``foo`` and ``bar`` return ``True`` '
-                'by ``__contains__``'
+                'Expected ``foo`` and ``bar`` return ``True`` by ``__contains__``'
             )
         if 'xxx' in self.context:
-            raise Exception(
-                'Expected __contains__ to return False for non-existent key'
-            )
+            raise Exception('Expected __contains__ to return False for non-existent key')
 
     def test_has_key(self):
-        if not self.context.has_key('foo') \
-                or not self.context.has_key('bar'):
-            raise Exception(
-                'Expected ``foo`` and ``bar`` return ``True`` by ``has_key``'
-            )
+        if not self.context.has_key('foo') or not self.context.has_key('bar'):
+            raise Exception('Expected ``foo`` and ``bar`` return ``True`` by ``has_key``')
 
     def test___len__(self):
         count = len(self.context)
         if count != 2:
-            raise Exception(
-                'Expected 2-length result. Got ``{}``'.format(count)
-            )
+            raise Exception(f'Expected 2-length result. Got ``{count}``')
 
     def test_update(self):
         baz = self.class_()
@@ -173,25 +150,22 @@ class FullMappingTester(BaseTester):
             self.context['baz']
             self.context['blub']
         except KeyError:
-            raise Exception(
-                'KeyError, Expected ``baz`` and ``blub`` after update'
-            )
+            raise Exception('KeyError, Expected ``baz`` and ``blub`` after update')
         if baz is not self.context['baz']:
             raise Exception('Object at ``baz`` not expected one after update')
         if blub is not self.context['blub']:
             raise Exception('Object at ``blub`` not expected one after update')
         try:
             del self.context['blub']
-        except:
+        except Exception:
             try:
                 del self.context.data['blub']
-            except:
+            except Exception:
                 raise RuntimeError('Cannot del test key.')
         try:
             self.context.update(dict(), dict())
             raise Exception(
-                'Expected TypeError for update with more than one positional '
-                'argument.'
+                'Expected TypeError for update with more than one positional argument.'
             )
         except TypeError:
             pass
@@ -213,7 +187,7 @@ class FullMappingTester(BaseTester):
         copied = self.context.copy()
         if copied is self.context:
             raise Exception('``copied`` is ``context``')
-        if not copied['foo'] is self.context['foo']:
+        if copied['foo'] is not self.context['foo']:
             raise Exception("``copied['foo']`` is not ``context['foo']``")
         if self.node_checks:
             if copied.__name__ != self.context.__name__:
@@ -227,7 +201,7 @@ class FullMappingTester(BaseTester):
         new = self.class_()
         if self.context.setdefault('foo', new) is new:
             raise Exception('Replaced already existing item.')
-        if not self.context.setdefault('bar', new) is new:
+        if self.context.setdefault('bar', new) is not new:
             raise Exception('Inserted item not same instance.')
         self._check_items(self.context.items(), ['foo', 'bar', 'baz'])
 
@@ -238,7 +212,7 @@ class FullMappingTester(BaseTester):
         except KeyError:
             pass
         default = object()
-        if not self.context.pop('xxx', default) is default:
+        if self.context.pop('xxx', default) is not default:
             raise Exception('Returned default is not same instance')
         originlen = len(self.context)
         topop = self.context['foo']
@@ -254,15 +228,11 @@ class FullMappingTester(BaseTester):
         self.context.popitem()
         count = len(self.context.keys())
         if count != 1:
-            raise Exception(
-                'Expected 1-length result. Got ``{}``'.format(count)
-            )
+            raise Exception(f'Expected 1-length result. Got ``{count}``')
         self.context.popitem()
         try:
             self.context.popitem()
-            raise Exception(
-                'Expected ``KeyError`` when called on empty mapping'
-            )
+            raise Exception('Expected ``KeyError`` when called on empty mapping')
         except KeyError:
             pass
 

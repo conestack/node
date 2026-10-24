@@ -86,8 +86,7 @@ deprecated(
 )
 # B/C 2022-05-06 -> node.behaviors.Reference
 deprecated(
-    '``Reference`` has been renamed to ``MappingReference``. '
-    'Please fix your import',
+    '``Reference`` has been renamed to ``MappingReference``. Please fix your import',
     Reference='node.behaviors.reference:MappingReference',
 )
 # B/C 2022-02-14 -> node.behaviors.Storage

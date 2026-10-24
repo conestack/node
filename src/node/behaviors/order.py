@@ -8,7 +8,6 @@ from zope.interface import implementer
 
 @implementer(IMappingOrder)
 class MappingOrder(Behavior):
-
     @override
     @property
     def first_key(self):
@@ -99,13 +98,12 @@ class MappingOrder(Behavior):
         if name is None:
             raise ValueError('Given node has no __name__ set.')
         if name in self.storage:
-            msg = 'Tree already contains node with name {}'.format(name)
+            msg = f'Tree already contains node with name {name}'
             raise KeyError(msg)
 
 
 @implementer(ISequenceOrder)
 class SequenceOrder(Behavior):
-
     @override
     @property
     def first_index(self):

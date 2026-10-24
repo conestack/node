@@ -5,6 +5,21 @@ Changes
 2.1.0 (unreleased)
 ------------------
 
+- Modernise the code ruff flags as outdated: ``u''`` prefixes, ``class
+  X(object)``, ``.format()`` over f-strings, ``not x is y`` and bare
+  ``except``. Behaviour unchanged. ``super(Class, self)`` is kept, see
+  ``cone.app``.
+  [rnix]
+
+- Sort the imports with ruff (one per line, ``from`` imports first, no
+  sections) and format the code with ``ruff format`` (90 characters per line,
+  single quotes).
+  [rnix]
+
+- Add ``qa.ruff`` domain to Makefile and pin the ruff configuration in
+  ``pyproject.toml``, ``make check`` runs ``ruff check``.
+  [rnix]
+
 - Deprecate the Python 2 compatibility names in ``node.compat``:
   ``IS_PY2``, ``STR_TYPE``, ``UNICODE_TYPE``, ``ITER_FUNC``, ``iteritems``,
   ``func_name`` and ``lru_cache``. Use the builtins or ``functools`` instead.

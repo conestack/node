@@ -12,21 +12,14 @@ from plumber import plumbing
 # Mock objects
 ###############################################################################
 
-@plumbing(
-    MappingAdopt,
-    Nodespaces,
-    MappingNode,
-    OdictStorage)
+
+@plumbing(MappingAdopt, Nodespaces, MappingNode, OdictStorage)
 class NodespacesNode(odict):
     pass
 
 
-@plumbing(
-    MappingAdopt,
-    MappingNode,
-    DefaultInit,
-    OdictStorage)
-class SomeNode(object):
+@plumbing(MappingAdopt, MappingNode, DefaultInit, OdictStorage)
+class SomeNode:
     pass
 
 
@@ -34,8 +27,8 @@ class SomeNode(object):
 # Tests
 ###############################################################################
 
-class TestNodespace(NodeTestCase):
 
+class TestNodespace(NodeTestCase):
     def test_Nodespaces(self):
         node = NodespacesNode()
         self.assertTrue(isinstance(node.nodespaces, odict))
@@ -60,11 +53,11 @@ class TestNodespace(NodeTestCase):
 
         with self.assertRaises(KeyError) as arc:
             node['__inexistent__']
-        self.assertEqual(str(arc.exception), '\'__inexistent__\'')
+        self.assertEqual(str(arc.exception), "'__inexistent__'")
 
         with self.assertRaises(KeyError) as arc:
             node['inexistent']
-        self.assertEqual(str(arc.exception), '\'inexistent\'')
+        self.assertEqual(str(arc.exception), "'inexistent'")
 
         del node['child']
         self.assertEqual(node.keys(), [])

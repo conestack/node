@@ -15,7 +15,8 @@ import uuid
 # API
 ###############################################################################
 
-class SerializerSettings(object):
+
+class SerializerSettings:
     """Object for defining serializer settings.
 
     It holds settings for all registered serializers. When serializers provide
@@ -31,24 +32,24 @@ class SerializerSettings(object):
     @classmethod
     def claim_namespace(cls, ns):
         if ns in cls._ns:
-            raise ValueError('Namespace "{}" already taken.'.format(ns))
+            raise ValueError(f'Namespace "{ns}" already taken.')
         cls._ns.setdefault(ns, {})
 
     @classmethod
     def set_default(cls, ns, key, val):
         if ns not in cls._ns:
-            raise ValueError('Unknown namespace "{}".'.format(ns))
-        cls._ns['{}.{}'.format(ns, key)] = val
+            raise ValueError(f'Unknown namespace "{ns}".')
+        cls._ns[f'{ns}.{key}'] = val
 
     def set(self, ns, key, val):
         if ns not in self._ns:
-            raise ValueError('Unknown namespace "{}".'.format(ns))
-        self._ns['{}.{}'.format(ns, key)] = val
+            raise ValueError(f'Unknown namespace "{ns}".')
+        self._ns[f'{ns}.{key}'] = val
 
     def get(self, ns, key):
         if ns not in self._ns:
-            raise ValueError('Unknown namespace "{}".'.format(ns))
-        return self._ns['{}.{}'.format(ns, key)]
+            raise ValueError(f'Unknown namespace "{ns}".')
+        return self._ns[f'{ns}.{key}']
 
 
 def serialize(ob, simple_mode=False, include_class=False, settings=None):
@@ -56,13 +57,17 @@ def serialize(ob, simple_mode=False, include_class=False, settings=None):
 
     Return JSON dump.
     """
+
     def encoder_factory(**kw):
-        kw.update(dict(
-            simple_mode=simple_mode,
-            include_class=include_class,
-            settings=settings if settings else SerializerSettings()
-        ))
+        kw.update(
+            dict(
+                simple_mode=simple_mode,
+                include_class=include_class,
+                settings=settings if settings else SerializerSettings(),
+            )
+        )
         return NodeEncoder(**kw)
+
     return json.dumps(ob, cls=encoder_factory)
 
 
@@ -80,8 +85,10 @@ def deserialize(json_data, root=None, settings=None):
 # serializer registry
 ###############################################################################
 
-class _serializer_registry(object):
+
+class _serializer_registry:
     """Serializer registry decorator base class."""
+
     # must be set on subclass
     registry = None
 
@@ -95,11 +102,13 @@ class _serializer_registry(object):
 
 class serializer(_serializer_registry):
     """Serializer registry decorator."""
+
     registry = odict()
 
 
 class deserializer(_serializer_registry):
     """Deserializer registry decorator."""
+
     registry = odict()
 
 
@@ -107,8 +116,8 @@ class deserializer(_serializer_registry):
 # encoder
 ###############################################################################
 
-class NodeEncoder(json.JSONEncoder):
 
+class NodeEncoder(json.JSONEncoder):
     def __init__(self, **kw):
         # flag whether to serialize without type information
         self.simple_mode = kw.pop('simple_mode')
@@ -131,7 +140,7 @@ class NodeEncoder(json.JSONEncoder):
             return '<UNSET>'
         # serialize UUID
         if isinstance(ob, uuid.UUID):
-            return '<UUID>:{}'.format(ob)
+            return f'<UUID>:{ob}'
         # serialize Node
         if INode.providedBy(ob):
             ret = dict()
@@ -161,8 +170,8 @@ class NodeEncoder(json.JSONEncoder):
 # decoder
 ###############################################################################
 
-class NodeDecoder(object):
 
+class NodeDecoder:
     def __init__(self, settings):
         # serializer settings instance
         self.settings = settings

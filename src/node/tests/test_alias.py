@@ -9,7 +9,6 @@ from plumber import plumbing
 
 
 class TestAlias(NodeTestCase):
-
     def test_DictAliaser(self):
         # A dict aliaser takes a dictionary as base for aliasing
         da = DictAliaser([('alias1', 'key1'), ('alias2', 'key2')])
@@ -20,16 +19,13 @@ class TestAlias(NodeTestCase):
         # set in aliaser are valid
         with self.assertRaises(KeyError) as arc:
             da.alias('foo')
-        self.assertEqual(str(arc.exception), '\'foo\'')
+        self.assertEqual(str(arc.exception), "'foo'")
         with self.assertRaises(KeyError) as arc:
             da.unalias('foo')
-        self.assertEqual(str(arc.exception), '\'foo\'')
+        self.assertEqual(str(arc.exception), "'foo'")
 
         # By setting strict to False, inexistent keys are returned as fallback
-        da = DictAliaser(
-            [('alias1', 'key1'), ('alias2', 'key2')],
-            strict=False
-        )
+        da = DictAliaser([('alias1', 'key1'), ('alias2', 'key2')], strict=False)
         self.assertEqual(da.alias('foo'), 'foo')
         self.assertEqual(da.unalias('foo'), 'foo')
 
@@ -41,7 +37,7 @@ class TestAlias(NodeTestCase):
 
         with self.assertRaises(KeyError) as arc:
             pa.unalias('foo')
-        expected = '"key \'foo\' does not match prefix \'prefix-\'"'
+        expected = "\"key 'foo' does not match prefix 'prefix-'\""
         self.assertTrue(str(arc.exception).find(expected) > -1)
 
     def test_SuffixAliaser(self):
@@ -52,7 +48,7 @@ class TestAlias(NodeTestCase):
 
         with self.assertRaises(KeyError) as arc:
             sa.unalias('foo')
-        expected = '"key \'foo\' does not match suffix \'-suffix\'"'
+        expected = "\"key 'foo' does not match suffix '-suffix'\""
         self.assertTrue(str(arc.exception).find(expected) > -1)
 
     def test_AliaserChain(self):
@@ -94,7 +90,7 @@ class TestAlias(NodeTestCase):
         # A dictionary that uses the alias plumbing with a prefix aliaser
         @plumbing(Alias)
         class AliasDict(dict):
-            aliaser = PrefixAliaser(prefix="pre-")
+            aliaser = PrefixAliaser(prefix='pre-')
 
         ad = AliasDict()
         ad['pre-foo'] = 1
@@ -107,7 +103,7 @@ class TestAlias(NodeTestCase):
     def test_KeyError_with_aliased_key(self):
         # KeyErrors in the backend are caught and re-raised with the value of
         # the aliased key
-        class FakeDict(object):
+        class FakeDict:
             def __delitem__(self, key):
                 raise KeyError(key)
 
@@ -122,21 +118,21 @@ class TestAlias(NodeTestCase):
 
         @plumbing(Alias)
         class FailDict(FakeDict):
-            aliaser = PrefixAliaser(prefix="pre-")
+            aliaser = PrefixAliaser(prefix='pre-')
 
         fail = FailDict()
 
         with self.assertRaises(KeyError) as arc:
             fail['pre-foo'] = 1
-        self.assertEqual(str(arc.exception), '\'pre-foo\'')
+        self.assertEqual(str(arc.exception), "'pre-foo'")
 
         with self.assertRaises(KeyError) as arc:
             fail['pre-foo']
-        self.assertEqual(str(arc.exception), '\'pre-foo\'')
+        self.assertEqual(str(arc.exception), "'pre-foo'")
 
         with self.assertRaises(KeyError) as arc:
             del fail['pre-foo']
-        self.assertEqual(str(arc.exception), '\'pre-foo\'')
+        self.assertEqual(str(arc.exception), "'pre-foo'")
 
         # A prefix aliaser cannot raise a KeyError, nevertheless, if it does,
         # that error must not be caught by the code that handle alias KeyErrors
@@ -149,6 +145,7 @@ class TestAlias(NodeTestCase):
 
         def fail_alias():
             [x for x in fail]
+
         self.assertRaises(KeyError, fail_alias)
 
     def test_Alias_with_DictAliaser(self):
@@ -166,14 +163,11 @@ class TestAlias(NodeTestCase):
         # we need to use ``dict.__setitem__``
         with self.assertRaises(KeyError) as arc:
             ad['abc'] = 1
-        self.assertEqual(str(arc.exception), '\'abc\'')
+        self.assertEqual(str(arc.exception), "'abc'")
 
         dict.__setitem__(ad, 'abc', 1)
         self.assertEqual([x for x in ad], ['foo'])
 
         # To see the keys that are really in the dictionary, we use
         # ``dict.__iter__``, not the plumbing ``__iter__``
-        self.assertEqual(
-            [x for x in sorted(dict.__iter__(ad))],
-            ['abc', 'f00']
-        )
+        self.assertEqual([x for x in sorted(dict.__iter__(ad))], ['abc', 'f00'])

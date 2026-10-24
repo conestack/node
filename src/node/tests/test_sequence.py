@@ -13,10 +13,9 @@ from zope.interface import Interface
 
 
 class TestSequence(NodeTestCase):
-
     def test_Sequence(self):
         @plumbing(Sequence)
-        class AbstractTestSequence(object):
+        class AbstractTestSequence:
             pass
 
         seq = AbstractTestSequence()
@@ -30,7 +29,7 @@ class TestSequence(NodeTestCase):
             seq[0]
 
         @plumbing(Sequence)
-        class TestSequence(object):
+        class TestSequence:
             def __init__(self, data):
                 self.data = data
 
@@ -71,7 +70,7 @@ class TestSequence(NodeTestCase):
 
     def test_MutableSequence(self):
         @plumbing(MutableSequence)
-        class AbstractTestMutableSequence(object):
+        class AbstractTestMutableSequence:
             pass
 
         mseq = AbstractTestMutableSequence()
@@ -89,7 +88,7 @@ class TestSequence(NodeTestCase):
             mseq.insert(0, 0)
 
         @plumbing(MutableSequence)
-        class TestMutableSequence(object):
+        class TestMutableSequence:
             def __init__(self, data):
                 self.data = data
 
@@ -153,7 +152,7 @@ class TestSequence(NodeTestCase):
 
     def test_SequenceNode(self):
         @plumbing(SequenceNodeBehavior, ListStorage)
-        class SequenceNode(object):
+        class SequenceNode:
             pass
 
         root = BaseNode()
@@ -228,10 +227,13 @@ class TestSequence(NodeTestCase):
         self.assertEqual(node[:], [child_0, child_1, child_2])
 
         # printtree
-        self.checkOutput("""
+        self.checkOutput(
+            """
         <class 'node.base.BaseNode'>: None
         __<class 'node.tests.test_sequence.SequenceNode'>: seq
         ____<class 'node.tests.test_sequence.SequenceNode'>: 0
         ____<class 'node.base.BaseNode'>: 1
         ____<class 'node.base.BaseNode'>: 2
-        """, root.treerepr(prefix='_'))
+        """,
+            root.treerepr(prefix='_'),
+        )

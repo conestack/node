@@ -9,11 +9,12 @@ from node.tests import unittest
 # Mock objects
 ###############################################################################
 
-class PatchedMockupNode(object):
+
+class PatchedMockupNode:
     pass
 
 
-class PatchedNoNode(object):
+class PatchedNoNode:
     pass
 
 
@@ -21,8 +22,8 @@ class PatchedNoNode(object):
 # Tests
 ###############################################################################
 
-class TestPatch(unittest.TestCase):
 
+class TestPatch(unittest.TestCase):
     @patch(env, 'MockupNode', PatchedMockupNode)
     def test_patch(self):
         self.assertEqual(env.MockupNode, PatchedMockupNode)
@@ -50,15 +51,16 @@ class TestPatch(unittest.TestCase):
 
 
 class TestNodeTestCase(NodeTestCase):
-
     def test_expectError(self):
         def func_raises():
             raise Exception('Function raises')
+
         err = self.expectError(Exception, func_raises)
         self.assertEqual(str(err), 'Function raises')
 
         def func_passes():
             pass
+
         err = None
         try:
             self.expectError(Exception, func_passes)
@@ -66,7 +68,7 @@ class TestNodeTestCase(NodeTestCase):
             err = e
         finally:
             expected = (
-                'Expected \'<class \'Exception\'>\' when calling \'<function '
+                "Expected '<class 'Exception'>' when calling '<function "
                 'TestNodeTestCase.test_expectError.<locals>.func_passes at'
             )
             self.assertTrue(str(err).startswith(expected))
@@ -78,9 +80,7 @@ class TestNodeTestCase(NodeTestCase):
         want = 'Hello'
         with self.assertRaises(Failure) as arc:
             self.checkOutput(want, got)
-        self.assertEqual(str(arc.exception).split('\n'), [
-            'Expected:',
-            '    Hello',
-            'Got:',
-            '    Leading Hello Trailing'
-        ])
+        self.assertEqual(
+            str(arc.exception).split('\n'),
+            ['Expected:', '    Hello', 'Got:', '    Leading Hello Trailing'],
+        )
