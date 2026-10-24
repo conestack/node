@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from node.interfaces import IMappingStorage
 from node.interfaces import IOrdered
 from node.interfaces import ISequenceStorage

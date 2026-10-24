@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from contextlib import contextmanager
 from node.events import NodeAddedEvent
 from node.events import NodeCreatedEvent

@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from node.interfaces import IMappingNode
 from node.interfaces import IMappingReference
 from node.interfaces import INodeReference

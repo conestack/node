@@ -93,7 +93,7 @@ class TestNode(NodeTestCase):
         self.assertEqual(node.acquire(INode), parent)
         self.assertEqual(node.acquire(NodeObject), parent)
 
-        # __nonzero__, __bool__
+        # __bool__
         self.assertTrue(bool(node))
 
         # __repr__, __str__

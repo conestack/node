@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "node"
-version = "2.0.1.dev0"
+version = "2.1.0.dev0"
 description = "Building data structures as node trees"
 dynamic = ["readme"]
 requires-python = ">=3.10"

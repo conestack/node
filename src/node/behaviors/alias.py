@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from node.interfaces import IAlias
 from node.interfaces import IAliaser
 from node.utils import ReverseMapping

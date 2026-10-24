@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from node.base import BaseNode
 from node.tests import NodeTestCase
 from node.utils import AttributeAccess

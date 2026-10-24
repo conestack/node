@@ -2,10 +2,25 @@
 Changes
 =======
 
-2.0.1 (unreleased)
+2.1.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Deprecate the Python 2 compatibility names in ``node.compat``:
+  ``IS_PY2``, ``STR_TYPE``, ``UNICODE_TYPE``, ``ITER_FUNC``, ``iteritems``,
+  ``func_name`` and ``lru_cache``. Use the builtins or ``functools`` instead.
+  They will be removed in node 3.0. ``IS_PYPY`` stays.
+  [rnix]
+
+- Drop the Python 2 remnants: ``node.compat`` usage, ``IS_PY2`` branches,
+  ``from __future__`` imports, ``# -*- coding: utf-8 -*-``, the
+  ``collections``/``urllib`` import fallbacks, ``__nonzero__`` and the
+  ``_keys`` helper in ``node.behaviors.cache``.
+  [rnix]
+
+- Fix serializing a bound method. ``NodeEncoder.dotted_name`` still used the
+  Python 2 ``im_class`` and raised ``AttributeError``. A bound method is
+  serialized by the dotted name of its function now, like an unbound one.
+  [rnix]
 
 
 2.0.0 (2026-02-03)

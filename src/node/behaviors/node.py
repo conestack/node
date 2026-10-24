@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-from node.compat import IS_PY2
 from node.interfaces import IContentishNode
 from node.interfaces import IDefaultInit
 from node.interfaces import IMappingNode
@@ -82,17 +80,13 @@ class Node(Behavior):
             node = node.parent
 
     @default
-    def __nonzero__(self):
+    def __bool__(self):
         return True
-
-    __bool__ = default(__nonzero__)
 
     @override
     def __repr__(self):
         class_name = self.__class__.__name__
-        name = self.name.encode('ascii', 'replace') \
-            if IS_PY2 and isinstance(self.name, unicode) \
-            else str(self.name)
+        name = str(self.name)
         return '<{} object \'{}\' at {}>'.format(
             class_name,
             name,
@@ -111,9 +105,7 @@ class Node(Behavior):
         representation, also used as ``__str__`` on nodes.
         """
         class_name = self.__class__
-        name = self.name.encode('ascii', 'replace') \
-            if IS_PY2 and isinstance(self.name, unicode) \
-            else str(self.name)
+        name = str(self.name)
         return str(class_name) + ': ' + name[name.find(':') + 1:]
 
     @override

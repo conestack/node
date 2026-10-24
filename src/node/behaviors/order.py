@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from node.interfaces import IMappingOrder
 from node.interfaces import INode
 from node.interfaces import ISequenceOrder

@@ -1,7 +1,4 @@
-from __future__ import absolute_import
 from node.behaviors.node import ContentishNode
-from node.compat import ITER_FUNC
-from node.compat import iteritems
 from node.interfaces import IMappingNode
 from node.utils import UNSET
 from plumber import Behavior
@@ -178,11 +175,11 @@ class ExtendedWriteMapping(WriteMapping):
             raise TypeError(msg)
         if args:
             data = args[0]
-            if hasattr(data, ITER_FUNC):
-                data = iteritems(data)
+            if hasattr(data, 'items'):
+                data = data.items()
             for key, val in data:
                 self[key] = val
-        for key, val in iteritems(kw):
+        for key, val in kw.items():
             self[key] = val
 
     @default

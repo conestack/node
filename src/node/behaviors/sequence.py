@@ -1,12 +1,6 @@
-from __future__ import absolute_import
-try:  # pragma: no cover
-    from collections.abc import MutableSequence as ABCMutableSequence
-    from collections.abc import Sequence as ABCSequence
-except ImportError:  # pragma: no cover
-    from collections import MutableSequence as ABCMutableSequence
-    from collections import Sequence as ABCSequence
+from collections.abc import MutableSequence as ABCMutableSequence
+from collections.abc import Sequence as ABCSequence
 from node.behaviors.node import ContentishNode
-from node.compat import IS_PY2
 from node.interfaces import INode
 from node.interfaces import ISequenceNode
 from plumber import Behavior
@@ -26,15 +20,14 @@ def copy_func(f):
     Based on http://stackoverflow.com/a/6528148/190597 (Glenn Maynard)
     """
     fn = types.FunctionType(
-        f.func_code if IS_PY2 else f.__code__,
-        f.func_globals if IS_PY2 else f.__globals__,
-        name=f.func_name if IS_PY2 else f.__name__,
-        argdefs=f.func_defaults if IS_PY2 else f.__defaults__,
-        closure=f.func_closure if IS_PY2 else f.__closure__
+        f.__code__,
+        f.__globals__,
+        name=f.__name__,
+        argdefs=f.__defaults__,
+        closure=f.__closure__
     )
     fn = functools.update_wrapper(fn, f)
-    if not IS_PY2:  # pragma: no cover
-        fn.__kwdefaults__ = f.__kwdefaults__
+    fn.__kwdefaults__ = f.__kwdefaults__
     return fn
 
 

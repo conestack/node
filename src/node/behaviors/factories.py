@@ -1,5 +1,4 @@
-from __future__ import absolute_import
-from node.compat import lru_cache
+from functools import lru_cache
 from node.interfaces import IChildFactory
 from node.interfaces import IFixedChildren
 from node.interfaces import IWildcardFactory

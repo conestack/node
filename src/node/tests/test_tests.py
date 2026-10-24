@@ -1,4 +1,3 @@
-from node.compat import IS_PY2
 from node.testing import env
 from node.tests import Failure
 from node.tests import NodeTestCase
@@ -67,9 +66,6 @@ class TestNodeTestCase(NodeTestCase):
             err = e
         finally:
             expected = (
-                'Expected \'<type \'exceptions.Exception\'>\' when calling'
-                ' \'<function func_passes at '
-            ) if IS_PY2 else (
                 'Expected \'<class \'Exception\'>\' when calling \'<function '
                 'TestNodeTestCase.test_expectError.<locals>.func_passes at'
             )

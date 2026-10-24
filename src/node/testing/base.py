@@ -56,7 +56,7 @@ class BaseTester(object):
     @property
     def combined(self):
         res = list()
-        for key, val in sorted(self.writer().results.iteritems()):
+        for key, val in sorted(self.writer().results.items()):
             res.append('``{}``: {}'.format(key, val))
         return '\n'.join(res)
 

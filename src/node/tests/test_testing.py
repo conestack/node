@@ -1,6 +1,4 @@
-from node.compat import IS_PY2
 from node.compat import IS_PYPY
-from node.compat import iteritems
 from node.testing import FullMappingTester
 from node.testing.base import BaseTester
 from node.testing.base import ContractError
@@ -77,7 +75,7 @@ class MockMappingContains(MockMappingIterItems):
 
 class MockMappingHasKey(MockMappingContains):
     def has_key(self, key):
-        return self.data.has_key(key) if IS_PY2 else key in self.data
+        return key in self.data
 
 
 class MockMappingLen(MockMappingHasKey):
@@ -89,7 +87,7 @@ class MockMappingUpdate(MockMappingLen):
     def update(self, data=(), **kw):
         for key, value in data:
             self[key] = value
-        for key, value in iteritems(kw):
+        for key, value in kw.items():
             self[key] = value
 
 
@@ -388,9 +386,7 @@ class TestFullmapping(NodeTestCase):
         fmtester = FullMappingTester(MockMapping)
         with self.assertRaises(TypeError) as arc:
             fmtester.test___getitem__()
-        exp = '\'MockMapping\' object has no attribute \'__getitem__\'' \
-            if (IS_PY2 and not IS_PYPY) else \
-            '\'MockMapping\' object is not subscriptable'
+        exp = '\'MockMapping\' object is not subscriptable'
         self.assertTrue(str(arc.exception).startswith(exp))
 
         fmtester = FullMappingTester(MockMappingGetItem)
@@ -749,7 +745,7 @@ class TestFullmapping(NodeTestCase):
             def update(self, data=(), **kw):
                 for key, _ in data:
                     self[key] = object()
-                for key, _ in iteritems(kw):
+                for key, _ in kw.items():
                     self[key] = object()
 
         fmtester = FullMappingTester(FailingMockMappingUpdate2)
@@ -762,7 +758,7 @@ class TestFullmapping(NodeTestCase):
             def update(self, data=(), **kw):
                 for key, value in data:
                     self[key] = value
-                for key, value in iteritems(kw):
+                for key, value in kw.items():
                     self[key] = object()
 
         fmtester = FullMappingTester(FailingMockMappingUpdate3)
@@ -783,7 +779,7 @@ class TestFullmapping(NodeTestCase):
             def update(self, data=(), **kw):
                 for key, value in data:
                     self[key] = value
-                for key, value in iteritems(kw):
+                for key, value in kw.items():
                     self[key] = value
 
         fmtester = FullMappingTester(FailingMockMappingUpdate4)
@@ -795,7 +791,7 @@ class TestFullmapping(NodeTestCase):
             def update(self, data=(), data1=(), **kw):
                 for key, value in data:
                     self[key] = value
-                for key, value in iteritems(kw):
+                for key, value in kw.items():
                     self[key] = value
 
         fmtester = FullMappingTester(FailingMockMappingUpdate5)

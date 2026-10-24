@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from node.interfaces import IFallback
 from plumber import Behavior
 from plumber import default

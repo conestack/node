@@ -1,4 +1,3 @@
-from node import compat
 from node import schema
 from node.base import BaseNode
 from node.behaviors import Schema
@@ -262,7 +261,7 @@ class TestSchemaFields(unittest.TestCase):
         field = schema.IterableField(tuple, serializer=schema.list_serializer)
         self.assertEqual(field.serialize((u'a', u'b', u'c')), u'a,b,c')
         self.assertEqual(field.deserialize(u'a,b,c'), (u'a', u'b', u'c'))
-        with self.assertRaises(AttributeError if compat.IS_PY2 else TypeError):
+        with self.assertRaises(TypeError):
             field.serialize([1, 2, 3])
 
         field = schema.IterableField(
@@ -436,7 +435,7 @@ class TestSchemaFields(unittest.TestCase):
             field.deserialize(u'foo,bar'),
             {u'foo': u'bar'}
         )
-        with self.assertRaises(AttributeError if compat.IS_PY2 else TypeError):
+        with self.assertRaises(TypeError):
             field.serialize({1: 1})
 
         field = schema.Dict(
@@ -520,7 +519,7 @@ class TestSchemaFields(unittest.TestCase):
             u'foo,bar;baz,bam'
         )
         self.assertEqual(field.deserialize(u'foo,bar;baz,bam'), od)
-        with self.assertRaises(AttributeError if compat.IS_PY2 else TypeError):
+        with self.assertRaises(TypeError):
             od = odict()
             od[1] = 1
             field.serialize(od)

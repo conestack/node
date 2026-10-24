@@ -1,4 +1,3 @@
-from node import compat
 from node.schema.scope import scope_context
 from node.schema.scope import ScopeContext
 from node.schema.serializer import NodeSerializer
@@ -207,7 +206,7 @@ class Str(Field):
         field value needs to be converted for serialization. Optional.
         """
         super(Str, self).__init__(
-            type_=compat.UNICODE_TYPE,
+            type_=str,
             default=default,
             serializer=serializer
         )

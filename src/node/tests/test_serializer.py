@@ -369,6 +369,28 @@ class TestSerializer(NodeTestCase):
         self.assertEqual(node.attrs['class'], ReferencedClass)
         self.assertEqual(node.attrs['method'], ReferencedClass.foo)
 
+    def test_referencing_bound_method(self):
+        # A bound method is referenced by the function it is bound to
+        node = AttributedNode()
+        node.attrs['method'] = ReferencedClass().foo
+
+        json_data = serialize(node)
+        data = json.loads(json_data)
+        self.assertEqual(
+            data['__node__']['attrs']['method']['__ob__'],
+            'node.tests.test_serializer.ReferencedClass.foo'
+        )
+
+        node = deserialize(json_data)
+        self.assertEqual(node.attrs['method'], ReferencedClass.foo)
+
+        json_data = serialize(node, simple_mode=True)
+        data = json.loads(json_data)
+        self.assertEqual(
+            data['attrs']['method'],
+            'node.tests.test_serializer.ReferencedClass.foo'
+        )
+
     ###########################################################################
     # Custom serializer
     ###########################################################################

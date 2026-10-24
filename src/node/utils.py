@@ -1,7 +1,3 @@
-from node.compat import func_name
-from node.compat import iteritems
-from node.compat import STR_TYPE
-from node.compat import UNICODE_TYPE
 from node.interfaces import IAttributeAccess
 from node.interfaces import INode
 from zope.interface import implementer
@@ -21,10 +17,8 @@ class Unset(object):
             cls.instance = object.__new__(cls)
         return cls.instance
 
-    def __nonzero__(self):
+    def __bool__(self):
         return False
-
-    __bool__ = __nonzero__
 
     def __str__(self):
         return ''
@@ -188,24 +182,24 @@ class StrCodec(object):
         if isinstance(arg, (list, tuple)):
             arg = arg.__class__(map(self.encode, arg))
         elif isinstance(arg, dict):
-            arg = dict([self.encode(t) for t in iteritems(arg)])
+            arg = dict([self.encode(t) for t in arg.items()])
         elif isinstance(arg, bytes):
             arg = self.decode(arg)
             # If UnicodeDecodeError, binary data is expected. Return value
             # as is.
             if not isinstance(arg, bytes):
                 arg = self.encode(arg)
-        elif isinstance(arg, UNICODE_TYPE):
+        elif isinstance(arg, str):
             arg = arg.encode(self._encoding)
         elif INode.providedBy(arg):
-            arg = dict([self.encode(t) for t in iteritems(arg)])
+            arg = dict([self.encode(t) for t in arg.items()])
         return arg
 
     def decode(self, arg):
         if isinstance(arg, (list, tuple)):
             arg = arg.__class__(map(self.decode, arg))
         elif isinstance(arg, dict):
-            arg = dict([self.decode(t) for t in iteritems(arg)])
+            arg = dict([self.decode(t) for t in arg.items()])
         elif isinstance(arg, bytes):
             try:
                 arg = arg.decode(self._encoding)
@@ -215,7 +209,7 @@ class StrCodec(object):
                 if not self._soft:
                     raise
         elif INode.providedBy(arg):
-            arg = dict([self.decode(t) for t in iteritems(arg)])
+            arg = dict([self.decode(t) for t in arg.items()])
         return arg
 
 
@@ -226,14 +220,14 @@ decode = strcodec.decode
 
 def safe_encode(value, encoding=CHARACTER_ENCODING):
     """Encode value to bytes with encoding if value not already bytes."""
-    if isinstance(value, UNICODE_TYPE):
+    if isinstance(value, str):
         value = value.encode(encoding)
     return value
 
 
 def safe_decode(value, encoding=CHARACTER_ENCODING):
     """Decode value to string with encoding if value not already string."""
-    if not isinstance(value, UNICODE_TYPE):
+    if not isinstance(value, str):
         value = value.decode(encoding)
     return value
 
@@ -259,7 +253,7 @@ def instance_property(func):
 
 def node_by_path(root, path):
     """Return node by path from root."""
-    if isinstance(path, STR_TYPE):
+    if isinstance(path, str):
         path = path.strip('/')
         path = path.split('/') if path else []
     if not path:
@@ -274,14 +268,14 @@ def debug(func):
     """Decorator for logging debug messages."""
     def wrapped(*args, **kws):
         logger.debug(u'{}: args={}, kws={}'.format(
-            func_name(func),
-            UNICODE_TYPE(args),
-            UNICODE_TYPE(kws)
+            func.__name__,
+            str(args),
+            str(kws)
         ))
         f_result = func(*args, **kws)
         logger.debug(u'{}: --> {}'.format(
-            func_name(func),
-            UNICODE_TYPE(f_result)
+            func.__name__,
+            str(f_result)
         ))
         return f_result
     wrapped.__doc__ = func.__doc__

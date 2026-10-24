@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from contextlib import contextmanager
 from node.interfaces import IEvents
 from node.utils import UNSET

@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-from node.compat import IS_PY2
 from node.interfaces import ICache
 from node.interfaces import IInvalidate
 from node.utils import instance_property
@@ -7,21 +5,6 @@ from plumber import Behavior
 from plumber import default
 from plumber import plumb
 from zope.interface import implementer
-
-
-def _keys(obj):
-    """Compat function to always get keys as list.
-
-    Currently used to avoid modification of dict while iterating in python 3.
-        for key in _keys(ob):
-            del ob[key]
-
-    Can probably be replaced by just using.
-        ob.clear()
-
-    Business logic changes after whole stack has been migrated to python 3.
-    """
-    return obj.keys() if IS_PY2 else list(obj.keys())
 
 
 @implementer(IInvalidate)
@@ -39,7 +22,7 @@ class Invalidate(Behavior):
         if key is not None:
             del self[key]
         else:
-            for key in _keys(self):
+            for key in list(self.keys()):
                 del self[key]
 
 
@@ -55,7 +38,7 @@ class VolatileStorageInvalidate(Behavior):
         """
         storage = self.storage
         if key is not None:
-            if key in _keys(self):
+            if key in self.keys():
                 try:
                     del storage[key]
                 except KeyError:
@@ -63,7 +46,7 @@ class VolatileStorageInvalidate(Behavior):
             else:
                 raise KeyError(key)
         else:
-            for key in _keys(storage):
+            for key in list(storage.keys()):
                 del storage[key]
 
 
@@ -85,7 +68,7 @@ class Cache(Behavior):
             except KeyError:
                 pass
         else:
-            for key in _keys(cache):
+            for key in list(cache.keys()):
                 del cache[key]
         next_(self, key=key)
 

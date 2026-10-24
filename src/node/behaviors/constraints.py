@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from node.interfaces import IConstraints
 from node.interfaces import IMappingConstraints
 from node.interfaces import INode

@@ -1,9 +1,7 @@
-from __future__ import absolute_import
 from node.behaviors.adopt import MappingAdopt
 from node.behaviors.constraints import MappingConstraints
 from node.behaviors.mapping import MappingNode
 from node.behaviors.storage import OdictStorage
-from node.compat import IS_PY2
 from node.interfaces import IAttributes
 from node.interfaces import INodeAttributes
 from node.interfaces import INodespaces
@@ -31,9 +29,7 @@ class NodeAttributes(object):
         self._node = parent    # B/C 2011-01-31
 
     def __repr__(self):
-        name = self.parent.name.encode('ascii', 'replace') \
-            if IS_PY2 and isinstance(self.parent.name, unicode) \
-            else str(self.parent.name)
+        name = str(self.parent.name)
         return '<{} object \'{}\' at {}>'.format(
             self.__class__.__name__,
             name,

@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-from node.compat import STR_TYPE
 from node.interfaces import INodespaces
 from odict import odict
 from plumber import Behavior
@@ -30,7 +28,7 @@ class Nodespaces(Behavior):
         # blend in our nodespaces as children, with name __<name>__
         # isinstance check is required because odict tries to get item possibly
         # with ``_nil`` key, which is actually an object
-        if isinstance(key, STR_TYPE) \
+        if isinstance(key, str) \
                 and key.startswith('__') \
                 and key.endswith('__'):
             # a reserved child key mapped to the nodespace behind

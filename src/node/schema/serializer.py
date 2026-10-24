@@ -1,11 +1,7 @@
 from node.schema.scope import ScopeContext
 from odict import odict
-try:  # pragma: no cover
-    from urllib import quote
-    from urllib import unquote
-except ImportError:  # pragma: no cover
-    from urllib.parse import quote
-    from urllib.parse import unquote
+from urllib.parse import quote
+from urllib.parse import unquote
 import base64
 import datetime
 import json

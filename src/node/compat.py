@@ -1,25 +1,35 @@
+from functools import lru_cache  # noqa
+from zope.deprecation import deprecated
 import sys
 
-IS_PY2 = sys.version_info[0] < 3
+
 IS_PYPY = '__pypy__' in sys.builtin_module_names
-STR_TYPE = basestring if IS_PY2 else str
-UNICODE_TYPE = unicode if IS_PY2 else str
-ITER_FUNC = 'iteritems' if IS_PY2 else 'items'
+
+# Python 2 compatibility, kept for B/C only
+IS_PY2 = False
+STR_TYPE = str
+UNICODE_TYPE = str
+ITER_FUNC = 'items'
 
 
 def iteritems(obj):
-    return getattr(obj, ITER_FUNC)()
+    return obj.items()
 
 
 def func_name(func):
-    return func.func_name if IS_PY2 else func.__name__
+    return func.__name__
 
 
-try:  # pragma: no cover
-    from functools import lru_cache
-except ImportError:  # pragma: no cover
-    class lru_cache:
-        def __init__(self, **kwargs):
-            pass
-        def __call__(self, ob):
-            return ob
+deprecated(
+    [
+        'IS_PY2',
+        'STR_TYPE',
+        'UNICODE_TYPE',
+        'ITER_FUNC',
+        'iteritems',
+        'func_name',
+        'lru_cache',
+    ],
+    'Python 2 compatibility is gone, use the builtins or ``functools`` '
+    'instead. Will be removed in node 3.0.'
+)
