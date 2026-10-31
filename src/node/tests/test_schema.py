@@ -818,7 +818,9 @@ class TestBehaviorsSchema(NodeTestCase):
             child_constraints = None
             field_2 = schema.Int()
 
-        self.assertEqual(SchemaPropertiesDerived.__schema_members__, ['field_2'])
+        self.assertEqual(
+            sorted(SchemaPropertiesDerived.__schema_members__), ['field_1', 'field_2']
+        )
 
         node = SchemaPropertiesDerived()
         with self.assertRaises(ValueError):
@@ -828,7 +830,8 @@ class TestBehaviorsSchema(NodeTestCase):
         node.field_1 = 1
         node.field_2 = 2
 
-        self.assertEqual(node['field_1'], 1)
+        with self.assertRaises(KeyError):
+            node['field_1']
         with self.assertRaises(KeyError):
             node['field_2']
         self.checkOutput(
@@ -853,8 +856,42 @@ class TestBehaviorsSchema(NodeTestCase):
             child_constraints = None
             field_2 = schema.Int()
 
-        self.assertEqual(SchemaPropertiesDerived.__schema_members__, ['field_2'])
+        self.assertEqual(
+            sorted(SchemaPropertiesDerived.__schema_members__), ['field_1', 'field_2']
+        )
         node = SchemaPropertiesDerived()
         node.field_2 = 2
         with self.assertRaises(KeyError):
             node['field_2']
+
+    def test_SchemaProperties_inherited(self):
+        @plumbing(SchemaProperties)
+        class SchemaPropertiesBase(BaseNode):
+            child_constraints = None
+            field_1 = schema.Int()
+
+        class SchemaPropertiesDerived(SchemaPropertiesBase):
+            field_2 = schema.Int()
+
+        self.assertEqual(
+            sorted(SchemaPropertiesDerived.__schema_members__), ['field_1', 'field_2']
+        )
+        node = SchemaPropertiesDerived()
+        node.field_1 = 1
+        with self.assertRaises(KeyError):
+            node['field_1']
+        self.assertEqual(list(node.keys()), [])
+
+    def test_SchemaProperties_overwritten(self):
+        @plumbing(SchemaProperties)
+        class SchemaPropertiesBase(BaseNode):
+            child_constraints = None
+            field_1 = schema.Int()
+
+        class SchemaPropertiesDerived(SchemaPropertiesBase):
+            field_1 = None
+
+        self.assertEqual(SchemaPropertiesDerived.__schema_members__, [])
+        node = SchemaPropertiesDerived()
+        node['field_1'] = 1
+        self.assertEqual(node['field_1'], 1)

@@ -116,6 +116,18 @@ class SchemaAsAttributes(Behavior):
             yield name
 
 
+def _schema_members(cls):
+    """Names of the attributes of ``cls`` resolving to a ``SchemaProperty``.
+
+    Includes inherited schema properties, excludes schema properties
+    overwritten by other attributes.
+    """
+    resolved = dict()
+    for base in reversed(cls.__mro__):
+        resolved.update(base.__dict__)
+    return [name for name, val in resolved.items() if isinstance(val, SchemaProperty)]
+
+
 @plumber.metaclasshook
 def schema_properties_metclass_hook(cls, name, bases, dct):
     """Plumber metaclass hook handling proper post initialization of
@@ -123,15 +135,10 @@ def schema_properties_metclass_hook(cls, name, bases, dct):
     """
     if not ISchemaProperties.implementedBy(cls):
         return
-    members = cls.__schema_members__ = list()
     for key, val in dct.items():
-        # The ``plumbing`` decorator recreates the class from the namespace of
-        # a class this hook already processed, if a base class is a plumbing.
-        if isinstance(val, SchemaProperty):
-            members.append(key)
-        elif isinstance(val, Field):
-            members.append(key)
+        if isinstance(val, Field):
             setattr(cls, key, SchemaProperty(key, val))
+    cls.__schema_members__ = _schema_members(cls)
 
 
 class SchemaPropertyAccess(threading.local):

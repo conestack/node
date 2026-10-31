@@ -104,14 +104,7 @@ class Node(Behavior):
         children = list()
         schema_members = set()
         if ISchemaProperties.providedBy(self):
-
-            def collect_schema_members(cls):
-                for schema_member in getattr(cls, '__schema_members__', []):
-                    schema_members.add(schema_member)
-                for base in cls.__bases__:
-                    collect_schema_members(base)
-
-            collect_schema_members(self.__class__)
+            schema_members = set(getattr(self, '__schema_members__', []))
             children += sorted(
                 [(name, getattr(self, name)) for name in schema_members],
                 key=lambda x: x[0],

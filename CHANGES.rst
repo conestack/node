@@ -13,6 +13,12 @@ Changes
   into account.
   [rnix]
 
+- ``__schema_members__`` of classes using ``SchemaProperties`` contains the
+  inherited schema properties, schema properties overwritten by other
+  attributes are excluded. Inherited schema properties could be accessed as
+  items before and were listed by ``__iter__``.
+  [rnix]
+
 
 2.1.0 (2026-10-31)
 ------------------
