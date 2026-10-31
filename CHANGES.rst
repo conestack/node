@@ -2,7 +2,7 @@
 Changes
 =======
 
-2.1.0 (unreleased)
+2.1.0 (2026-10-31)
 ------------------
 
 - Omit the ``node.testing.profiling`` script from coverage.
