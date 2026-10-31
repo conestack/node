@@ -12,6 +12,7 @@ from node.tests import NodeTestCase
 from node.utils import AttributeAccess
 from node.utils import UNSET
 from odict import odict
+from plumber import Behavior
 from plumber import plumbing
 import datetime
 import unittest
@@ -817,6 +818,8 @@ class TestBehaviorsSchema(NodeTestCase):
             child_constraints = None
             field_2 = schema.Int()
 
+        self.assertEqual(SchemaPropertiesDerived.__schema_members__, ['field_2'])
+
         node = SchemaPropertiesDerived()
         with self.assertRaises(ValueError):
             node.field_1 = 1.0
@@ -826,7 +829,8 @@ class TestBehaviorsSchema(NodeTestCase):
         node.field_2 = 2
 
         self.assertEqual(node['field_1'], 1)
-        self.assertEqual(node['field_2'], 2)
+        with self.assertRaises(KeyError):
+            node['field_2']
         self.checkOutput(
             """
         <class 'node.tests.test_schema.SchemaPropertiesDerived'>: None
@@ -835,3 +839,22 @@ class TestBehaviorsSchema(NodeTestCase):
         """,
             node.treerepr(prefix='_'),
         )
+
+    def test_SchemaProperties_plumbed_subclass(self):
+        class OtherBehavior(Behavior):
+            pass
+
+        @plumbing(SchemaProperties)
+        class SchemaPropertiesBase(BaseNode):
+            field_1 = schema.Int()
+
+        @plumbing(OtherBehavior)
+        class SchemaPropertiesDerived(SchemaPropertiesBase):
+            child_constraints = None
+            field_2 = schema.Int()
+
+        self.assertEqual(SchemaPropertiesDerived.__schema_members__, ['field_2'])
+        node = SchemaPropertiesDerived()
+        node.field_2 = 2
+        with self.assertRaises(KeyError):
+            node['field_2']

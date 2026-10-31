@@ -2,10 +2,16 @@
 Changes
 =======
 
-2.1.1 (unreleased)
+2.2.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix ``__schema_members__`` of plumbing classes using ``SchemaProperties``,
+  if the class subclasses another such plumbing class. It was empty, so the
+  schema properties of the class could be accessed as items. The ``plumbing``
+  decorator recreates the class from the namespace the metaclass hook already
+  processed, the hook now takes the ``SchemaProperty`` instances found there
+  into account.
+  [rnix]
 
 
 2.1.0 (2026-10-31)

@@ -125,7 +125,11 @@ def schema_properties_metclass_hook(cls, name, bases, dct):
         return
     members = cls.__schema_members__ = list()
     for key, val in dct.items():
-        if isinstance(val, Field):
+        # The ``plumbing`` decorator recreates the class from the namespace of
+        # a class this hook already processed, if a base class is a plumbing.
+        if isinstance(val, SchemaProperty):
+            members.append(key)
+        elif isinstance(val, Field):
             members.append(key)
             setattr(cls, key, SchemaProperty(key, val))
 
