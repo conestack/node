@@ -2,7 +2,7 @@
 Changes
 =======
 
-2.2.0 (unreleased)
+2.2.0 (2026-11-09)
 ------------------
 
 - Fix ``__schema_members__`` of plumbing classes using ``SchemaProperties``,
